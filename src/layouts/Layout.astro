@@ -2,8 +2,10 @@
 import '@fontsource-variable/fraunces';
 import '@fontsource-variable/nunito';
 import '../styles/global.css';
+import { Image } from 'astro:assets';
 import { ClientRouter } from 'astro:transitions';
 import Nav from '../components/Nav.astro';
+import pichaPhoto from '../assets/picha.jpg';
 
 interface Props {
   title: string;
@@ -20,6 +22,11 @@ const {
 // BASE_URL is "/picha/" in production; join without doubling the slash.
 const asset = (p: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${p}`;
 const ogImage = new URL(asset('icon-512.png'), Astro.site);
+
+// Mobile app-bar label per tab.
+const appTitle = { home: 'Picha', health: 'Health', care: 'Care', tools: 'Tools' }[
+  current
+];
 ---
 
 <!doctype html>
@@ -52,13 +59,33 @@ const ogImage = new URL(asset('icon-512.png'), Astro.site);
     <ClientRouter />
   </head>
   <body
-    class="min-h-screen bg-paper-100 pb-24 font-sans text-ink-900 md:pb-0 dark:bg-plum-950 dark:text-paper-100"
+    class="min-h-screen bg-paper-100 pb-20 font-sans text-ink-900 md:pb-0 dark:bg-plum-950 dark:text-paper-100"
   >
     <!-- ambient blush glow -->
     <div
       class="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(70%_45%_at_50%_-5%,var(--color-blush-100),transparent)] dark:bg-[radial-gradient(70%_45%_at_50%_-5%,#3b1d2e,transparent)]"
     >
     </div>
+
+    <!-- mobile: app bar -->
+    <header
+      class="sticky top-0 z-40 flex items-center gap-2.5 border-b border-paper-300/50 bg-paper-100/85 px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur-md md:hidden dark:border-plum-800/60 dark:bg-plum-950/85"
+    >
+      <span
+        class="block h-7 w-7 overflow-hidden rounded-full ring-1 ring-blush-200 dark:ring-plum-700"
+      >
+        <Image
+          src={pichaPhoto}
+          alt=""
+          width={56}
+          densities={[1, 2]}
+          class="h-full w-full object-cover"
+          style="object-position: 50% 22%"
+          loading="eager"
+        />
+      </span>
+      <span class="font-display text-lg font-semibold tracking-tight">{appTitle}</span>
+    </header>
 
     <Nav current={current} />
 

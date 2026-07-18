@@ -11,11 +11,11 @@ interface Props {
 const { title, kicker, blurb } = Astro.props;
 ---
 
-<header class="mx-auto w-full max-w-2xl px-5 pt-10 pb-2 sm:pt-14">
+<header class="mx-auto w-full max-w-2xl px-5 pt-6 pb-2 md:pt-14">
   <div class="hero-pop flex items-center gap-4">
     <a
       href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`}
-      class="wiggle-hover block h-14 w-14 shrink-0 overflow-hidden rounded-full ring-2 ring-blush-200 dark:ring-plum-700"
+      class="wiggle-hover hidden h-14 w-14 shrink-0 overflow-hidden rounded-full ring-2 ring-blush-200 md:block dark:ring-plum-700"
       aria-label="Back to Picha's profile"
     >
       <Image

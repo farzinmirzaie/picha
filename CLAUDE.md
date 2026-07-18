@@ -39,8 +39,8 @@ src/
   layouts/Layout.astro # <html> shell, fonts, PWA, ClientRouter, shared scripts
   components/
     Nav.astro          # tab nav: desktop pill bar + mobile bottom tab bar (TABS array)
-    PageHeader.astro   # sub-page header (mini avatar, kicker, serif title, blurb)
-    Footer.astro       # paw divider, "if found" contact, credits
+    PageHeader.astro   # sub-page header (kicker, serif title, blurb; avatar md+ only)
+    Footer.astro       # paw divider + credits — desktop-only unless `showOnMobile`
   pages/
     index.astro        # Home — hero, passport dialog, story, get-to-know-her
     health.astro       # Health — status, treatment, timeline (done/next/to-book), emergency
@@ -141,6 +141,10 @@ The site installs as an app (Add to Home Screen / install icon):
   standalone)` (global.css), and `Layout.astro` fires `navigator.vibrate(8)` on
   `pointerdown` of any link/button (Android haptics; iOS lacks the API — safe
   no-op). Keep both when adding new interactive UI.
+- **Mobile chrome**: sticky app bar (avatar + tab label, in `Layout.astro`,
+  `md:hidden`) on top + bottom tab bar. The footer is desktop-only except on
+  Tools (`<Footer showOnMobile />`); body bottom padding (`pb-20 md:pb-0`)
+  clears the tab bar.
 - **Notifications**: local `showNotification()` works while the app is open;
   background/scheduled reminders would need a Web Push backend (Notification
   Triggers API is dead). Planned as a future tool, not built.
