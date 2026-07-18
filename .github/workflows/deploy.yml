@@ -34,10 +34,9 @@ jobs:
 
       - run: pnpm build
 
-      # Auto-enables Pages on first run (Settings → Pages → Source: GitHub Actions).
+      # Requires Pages to be enabled once: Settings → Pages → Source: "GitHub Actions".
+      # (Auto-enablement via the default token isn't permitted on this repo.)
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
