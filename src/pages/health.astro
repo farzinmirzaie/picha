@@ -6,16 +6,17 @@ import Footer from '../components/Footer.astro';
 import {
   vet,
   contact,
+  weight,
   healthTimeline,
   treatment,
   recovery,
-  weight,
   callVetIf,
+  ageLabel,
 } from '../data/picha';
 
 // Split the timeline by date: past = done, future = coming up (soonest first,
 // the first one is "next"), undated = still to book. The split is computed at
-// build time; the visible countdown chips update client-side via [data-until].
+// build time; countdown chips and the progress bar update client-side.
 const today = new Date().toISOString().slice(0, 10);
 const dated = healthTimeline.filter((e) => e.date);
 const done = dated
@@ -25,23 +26,106 @@ const upcoming = dated
   .filter((e) => e.date! >= today)
   .sort((a, b) => a.date!.localeCompare(b.date!));
 const toBook = healthTimeline.filter((e) => !e.date);
+const next = upcoming[0];
 
 const fmt = new Intl.DateTimeFormat('en-GB', {
   day: 'numeric',
   month: 'long',
   year: 'numeric',
 });
+const fmtShort = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' });
 const dateLabel = (iso: string) => fmt.format(new Date(iso));
+const shortLabel = (iso: string) => fmtShort.format(new Date(iso));
+
+// Build-time baseline for the recovery progress (client script refreshes it).
+const spanDays =
+  (Date.parse(recovery.clearedByDate) - Date.parse(recovery.surgeryDate)) / 86_400_000;
+const elapsedDays =
+  (Date.parse(today) - Date.parse(recovery.surgeryDate)) / 86_400_000;
+const progressPct = Math.max(0, Math.min(100, Math.round((elapsedDays / spanDays) * 100)));
+
+const segments = [
+  { id: 'upcoming', label: 'Coming up' },
+  { id: 'done', label: 'The record' },
+  { id: 'tobook', label: 'To book' },
+];
 ---
 
 <Layout title="Health · Picha 🐾" current="health">
   <PageHeader
     kicker="Vet & Health"
     title="Her health file"
-    blurb={`Meticulous records, kept by the staff. ${vet.status} — recent care at ${vet.recentClinic}.`}
+    blurb={`Meticulous records, kept by the staff. ${vet.status}.`}
   />
 
-  <!-- Current status -->
+  <!-- Vitals strip: horizontally snap-scrolling stat tiles -->
+  <section aria-label="Vitals" class="mx-auto w-full max-w-2xl pt-4">
+    <div
+      class="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-1"
+    >
+      <div
+        class="reveal min-w-[8.5rem] shrink-0 snap-start rounded-2xl border border-blush-200/70 bg-paper-50 p-4 dark:border-plum-700 dark:bg-plum-900"
+      >
+        <div class="flex items-center gap-1.5 text-blush-500 dark:text-blush-300">
+          <Icon name="ph:scales" class="h-4 w-4" aria-hidden="true" />
+          <span class="text-[10px] font-bold tracking-[0.14em] uppercase">Weight</span>
+        </div>
+        <p class="font-display mt-1.5 text-xl font-semibold">{weight.current}</p>
+        <p class="mt-0.5 text-[11px] leading-tight text-ink-400">
+          target {weight.healthyTarget}
+        </p>
+      </div>
+
+      <div
+        class="reveal min-w-[8.5rem] shrink-0 snap-start rounded-2xl border border-blush-200/70 bg-paper-50 p-4 [--reveal-delay:60ms] dark:border-plum-700 dark:bg-plum-900"
+      >
+        <div class="flex items-center gap-1.5 text-blush-500 dark:text-blush-300">
+          <Icon name="ph:cake" class="h-4 w-4" aria-hidden="true" />
+          <span class="text-[10px] font-bold tracking-[0.14em] uppercase">Age</span>
+        </div>
+        <p class="font-display mt-1.5 text-xl font-semibold" data-age>{ageLabel()}</p>
+        <p class="mt-0.5 text-[11px] leading-tight text-ink-400">
+          adult at ~1.5–2 years
+        </p>
+      </div>
+
+      <div
+        class="reveal min-w-[8.5rem] shrink-0 snap-start rounded-2xl border border-amber-300/60 bg-paper-50 p-4 [--reveal-delay:120ms] dark:border-amber-700/40 dark:bg-plum-900"
+      >
+        <div class="flex items-center gap-1.5 text-amber-700 dark:text-amber-300">
+          <Icon name="ph:bandaids" class="h-4 w-4" aria-hidden="true" />
+          <span class="text-[10px] font-bold tracking-[0.14em] uppercase">Recovery</span>
+        </div>
+        <p class="font-display mt-1.5 text-xl font-semibold">
+          {shortLabel(recovery.clearedByDate)}
+        </p>
+        <p class="mt-0.5 text-[11px] leading-tight text-ink-400">
+          all-clear target<span data-until={recovery.clearedByDate}></span>
+        </p>
+      </div>
+
+      {
+        next && (
+          <div class="reveal min-w-[8.5rem] shrink-0 snap-start rounded-2xl border border-blush-200/70 bg-paper-50 p-4 [--reveal-delay:180ms] dark:border-plum-700 dark:bg-plum-900">
+            <div class="flex items-center gap-1.5 text-blush-500 dark:text-blush-300">
+              <Icon name="ph:calendar-check" class="h-4 w-4" aria-hidden="true" />
+              <span class="text-[10px] font-bold tracking-[0.14em] uppercase">
+                Next visit
+              </span>
+            </div>
+            <p class="font-display mt-1.5 text-xl font-semibold">
+              {shortLabel(next.date!)}
+            </p>
+            <p class="mt-0.5 truncate text-[11px] leading-tight text-ink-400">
+              {next.title.toLowerCase()}
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Current status: recovery progress -->
   <section class="mx-auto w-full max-w-2xl px-5 pt-6" aria-label="Current status">
     <div
       class="reveal rounded-3xl border border-amber-300/60 bg-gradient-to-br from-amber-300/15 to-transparent p-6 dark:border-amber-700/40"
@@ -54,11 +138,32 @@ const dateLabel = (iso: string) => fmt.format(new Date(iso));
           {recovery.headline}
         </h2>
       </div>
-      <p class="mt-2 text-sm text-ink-600 dark:text-ink-400">
-        Take it easy until <strong class="text-ink-900 dark:text-paper-100"
-          >{recovery.clearedByLabel}</strong
-        ><span data-until={recovery.clearedByDate}></span> or until the vet clears her.
-      </p>
+
+      <!-- progress: surgery → all-clear -->
+      <div class="mt-4">
+        <div
+          class="h-2 overflow-hidden rounded-full bg-amber-300/25 dark:bg-amber-700/25"
+          role="progressbar"
+          aria-valuenow={progressPct}
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-label="Recovery progress"
+        >
+          <div
+            class="progress-fill h-full rounded-full bg-amber-500"
+            style={`width: ${progressPct}%`}
+            data-recovery-progress
+            data-start={recovery.surgeryDate}
+            data-end={recovery.clearedByDate}
+          >
+          </div>
+        </div>
+        <div class="mt-1.5 flex justify-between text-[11px] font-bold text-amber-700/80 dark:text-amber-300/80">
+          <span>{shortLabel(recovery.surgeryDate)} · surgery</span>
+          <span>{shortLabel(recovery.clearedByDate)} · all-clear<span data-until={recovery.clearedByDate}></span></span>
+        </div>
+      </div>
+
       <ul class="mt-4 space-y-2 text-sm text-ink-600 dark:text-ink-400">
         {
           recovery.points.map((p) => (
@@ -101,170 +206,244 @@ const dateLabel = (iso: string) => fmt.format(new Date(iso));
     }
   </section>
 
-  <!-- Coming up -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="Coming up">
-    <h2
-      class="reveal text-[11px] font-bold tracking-[0.24em] text-amber-700 uppercase dark:text-amber-300"
+  <!-- Timeline with segmented control -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Timeline">
+    <div
+      class="reveal relative grid grid-cols-3 rounded-full bg-paper-200/80 p-1 dark:bg-plum-800/80"
+      role="tablist"
+      aria-label="Timeline filter"
+      data-seg
     >
-      Coming up
-    </h2>
-    <ol class="mt-4 border-l-2 border-amber-300/60 pl-6 dark:border-amber-700/40">
+      <span
+        class="pointer-events-none absolute inset-y-1 left-1 w-[calc((100%-0.5rem)/3)] rounded-full bg-paper-50 shadow-sm transition-transform duration-300 ease-out dark:bg-plum-950"
+        data-seg-thumb
+        aria-hidden="true"
+      >
+      </span>
       {
-        upcoming.map((e, i) => (
-          <li
-            class="reveal relative pb-8 last:pb-2"
-            style={`--reveal-delay: ${i * 90}ms`}
+        segments.map((s, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`seg-tab-${s.id}`}
+            aria-controls={`seg-panel-${s.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            data-seg-tab={s.id}
+            class:list={[
+              'relative z-10 rounded-full py-1.5 text-xs font-bold transition-colors duration-200',
+              i === 0
+                ? 'text-blush-700 dark:text-blush-300'
+                : 'text-ink-400',
+            ]}
           >
-            <span
-              class:list={[
-                'absolute -left-[40px] flex h-8 w-8 items-center justify-center rounded-full text-sm ring-4 ring-paper-100 dark:ring-plum-950',
-                i === 0
-                  ? 'bg-amber-300/60 text-amber-800 dark:bg-amber-700/50 dark:text-amber-200'
-                  : 'bg-paper-200 text-ink-600 dark:bg-plum-800 dark:text-ink-400',
-              ]}
-              aria-hidden="true"
-            >
-              <Icon name={e.icon} class="h-4 w-4" />
-            </span>
-            <div class="flex flex-wrap items-center gap-2 pt-1">
-              <h3 class="font-display text-lg font-semibold">{e.title}</h3>
-              {i === 0 && (
-                <span class="rounded-full bg-amber-300/40 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:bg-amber-700/30 dark:text-amber-300">
-                  Next up
-                </span>
-              )}
-            </div>
-            <p class="text-xs font-bold text-amber-700/80 dark:text-amber-300/80">
-              {dateLabel(e.date!)}
-              <span data-until={e.date} />
-            </p>
-            <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-              {e.detail}
-            </p>
-          </li>
+            {s.label}
+          </button>
         ))
       }
-    </ol>
+    </div>
 
-    <!-- to book -->
-    <h3
-      class="reveal mt-8 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
-    >
-      Still to book
-    </h3>
-    <ul class="mt-3 space-y-2.5">
-      {
-        toBook.map((e, i) => (
-          <li
-            class="reveal flex items-start gap-3 text-sm text-ink-600 dark:text-ink-400"
-            style={`--reveal-delay: ${i * 70}ms`}
-          >
-            <span
-              class="mt-0.5 inline-block h-4 w-4 shrink-0 rounded-full border-2 border-dashed border-blush-300 dark:border-plum-600"
-              aria-hidden="true"
-            />
-            <span>
-              <span class="mr-1.5" aria-hidden="true">
+    <!-- Coming up -->
+    <div id="seg-panel-upcoming" role="tabpanel" aria-labelledby="seg-tab-upcoming" data-seg-panel="upcoming" class="pt-6">
+      <ol class="border-l-2 border-amber-300/60 pl-6 dark:border-amber-700/40">
+        {
+          upcoming.map((e, i) => (
+            <li class="relative pb-8 last:pb-2">
+              <span
+                class:list={[
+                  'absolute -left-[40px] flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-paper-100 dark:ring-plum-950',
+                  i === 0
+                    ? 'bg-amber-300/60 text-amber-800 dark:bg-amber-700/50 dark:text-amber-200'
+                    : 'bg-paper-200 text-ink-600 dark:bg-plum-800 dark:text-ink-400',
+                ]}
+                aria-hidden="true"
+              >
                 <Icon name={e.icon} class="h-4 w-4" />
               </span>
-              <strong class="font-semibold text-ink-900 dark:text-paper-100">
-                {e.title}
-              </strong>{' '}
-              — {e.detail}
-            </span>
-          </li>
-        ))
-      }
-    </ul>
-  </section>
+              <div class="flex flex-wrap items-center gap-2 pt-1">
+                <h3 class="font-display text-lg font-semibold">{e.title}</h3>
+                {i === 0 && (
+                  <span class="rounded-full bg-amber-300/40 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:bg-amber-700/30 dark:text-amber-300">
+                    Next up
+                  </span>
+                )}
+              </div>
+              <p class="text-xs font-bold text-amber-700/80 dark:text-amber-300/80">
+                {dateLabel(e.date!)}
+                <span data-until={e.date} />
+              </p>
+              <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+                {e.detail}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
 
-  <!-- The record -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="Medical record">
-    <h2
-      class="reveal text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
-    >
-      The record so far
-    </h2>
-    <ol class="mt-4 border-l-2 border-blush-200 pl-6 dark:border-plum-700">
-      {
-        done.map((e, i) => (
-          <li
-            class="reveal relative pb-8 last:pb-2"
-            style={`--reveal-delay: ${i * 90}ms`}
-          >
-            <span
-              class="absolute -left-[40px] flex h-8 w-8 items-center justify-center rounded-full bg-blush-100 text-blush-600 ring-4 dark:text-blush-300 ring-paper-100 dark:bg-plum-800 dark:ring-plum-950"
-              aria-hidden="true"
-            >
-              <Icon name={e.icon} class="h-4 w-4" />
-            </span>
-            <h3 class="font-display pt-1 text-lg font-semibold">{e.title}</h3>
-            <p class="text-xs font-bold text-blush-500/90 dark:text-blush-300/80">
-              {dateLabel(e.date!)}
-            </p>
-            <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-              {e.detail}
-            </p>
-          </li>
-        ))
-      }
-      <li class="reveal relative">
-        <span
-          class="absolute -left-[40px] flex h-8 w-8 items-center justify-center rounded-full border-2 border-dashed border-blush-300 bg-paper-100 text-sm dark:border-plum-700 dark:bg-plum-950"
-          aria-hidden="true"><Icon name="ph:scales" class="h-4 w-4" /></span
-        >
-        <h3 class="font-display pt-1 text-lg font-semibold">Weight check</h3>
-        <p class="text-xs font-bold text-blush-500/90 dark:text-blush-300/80">
-          {weight.measuredOn}
-        </p>
-        <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-          {weight.current} — healthy adult target {weight.healthyTarget}.
-          {weight.note}
-        </p>
-      </li>
-    </ol>
-  </section>
-
-  <!-- Emergency: deliberately plain-spoken. -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="Emergency">
-    <div
-      class="reveal rounded-3xl bg-red-50 p-6 ring-1 ring-red-200 dark:bg-red-950/30 dark:ring-red-900/50"
-    >
-      <h2 class="font-display text-lg font-semibold text-red-600 dark:text-red-300">
-        <Icon name="ph:warning" class="h-4.5 w-4.5 shrink-0" aria-hidden="true" /> Call the vet if…
-      </h2>
-      <ul class="mt-3 space-y-2 text-sm text-red-900/80 dark:text-red-100/80">
+    <!-- The record -->
+    <div id="seg-panel-done" role="tabpanel" aria-labelledby="seg-tab-done" data-seg-panel="done" class="hidden pt-6">
+      <ol class="border-l-2 border-blush-200 pl-6 dark:border-plum-700">
         {
-          callVetIf.map((c) => (
-            <li class="flex gap-2.5">
-              <span class="text-red-400" aria-hidden="true">
-                •
+          done.map((e) => (
+            <li class="relative pb-8 last:pb-2">
+              <span
+                class="absolute -left-[40px] flex h-8 w-8 items-center justify-center rounded-full bg-blush-100 text-blush-600 ring-4 ring-paper-100 dark:bg-plum-800 dark:text-blush-300 dark:ring-plum-950"
+                aria-hidden="true"
+              >
+                <Icon name={e.icon} class="h-4 w-4" />
               </span>
-              {c}
+              <h3 class="font-display pt-1 text-lg font-semibold">{e.title}</h3>
+              <p class="text-xs font-bold text-blush-500/90 dark:text-blush-300/80">
+                {dateLabel(e.date!)}
+              </p>
+              <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+                {e.detail}
+              </p>
+            </li>
+          ))
+        }
+        <li class="relative">
+          <span
+            class="absolute -left-[40px] flex h-8 w-8 items-center justify-center rounded-full border-2 border-dashed border-blush-300 bg-paper-100 text-blush-600 dark:border-plum-700 dark:bg-plum-950 dark:text-blush-300"
+            aria-hidden="true"><Icon name="ph:scales" class="h-4 w-4" /></span
+          >
+          <h3 class="font-display pt-1 text-lg font-semibold">Weight check</h3>
+          <p class="text-xs font-bold text-blush-500/90 dark:text-blush-300/80">
+            {weight.measuredOn}
+          </p>
+          <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+            {weight.current} — healthy adult target {weight.healthyTarget}.
+            {weight.note}
+          </p>
+        </li>
+      </ol>
+    </div>
+
+    <!-- To book -->
+    <div id="seg-panel-tobook" role="tabpanel" aria-labelledby="seg-tab-tobook" data-seg-panel="tobook" class="hidden pt-6">
+      <ul class="space-y-3">
+        {
+          toBook.map((e) => (
+            <li class="flex items-start gap-3 text-sm text-ink-600 dark:text-ink-400">
+              <span
+                class="mt-0.5 inline-block h-4 w-4 shrink-0 rounded-full border-2 border-dashed border-blush-300 dark:border-plum-600"
+                aria-hidden="true"
+              />
+              <span>
+                <strong class="font-semibold text-ink-900 dark:text-paper-100">
+                  {e.title}
+                </strong>{' '}
+                — {e.detail}
+              </span>
             </li>
           ))
         }
       </ul>
-      <div class="mt-5 flex flex-wrap gap-2.5">
+    </div>
+  </section>
+
+  <!-- Emergency: deliberately plain-spoken. -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Emergency">
+    <div
+      class="reveal overflow-hidden rounded-3xl bg-red-50 ring-1 ring-red-200 dark:bg-red-950/30 dark:ring-red-900/50"
+    >
+      <div class="p-6 pb-4">
+        <h2 class="font-display flex items-center gap-2 text-lg font-semibold text-red-600 dark:text-red-300">
+          <Icon name="ph:warning" class="h-4.5 w-4.5 shrink-0" aria-hidden="true" /> Call the vet if…
+        </h2>
+        <ul class="mt-3 space-y-2 text-sm text-red-900/80 dark:text-red-100/80">
+          {
+            callVetIf.map((c) => (
+              <li class="flex gap-2.5">
+                <span class="text-red-400" aria-hidden="true">
+                  •
+                </span>
+                {c}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="divide-y divide-red-200/70 border-t border-red-200/70 dark:divide-red-900/40 dark:border-red-900/40">
         {
           contact.owners.map((o) => (
             <a
               href={`tel:${o.phone.replace(/\s/g, '')}`}
-              class="rounded-full bg-red-600 px-4 py-2 text-sm font-bold text-white transition-transform duration-200 hover:scale-[1.03] active:scale-95"
+              class="flex items-center gap-3 px-6 py-3.5 text-sm font-bold text-red-700 transition-colors active:bg-red-100/60 dark:text-red-300 dark:active:bg-red-900/30"
             >
-              <Icon name="ph:phone" class="h-4 w-4" aria-hidden="true" /> {o.name} · {o.phone}
+              <Icon name="ph:phone" class="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
+              <span class="flex-1">
+                {o.name} <span class="font-semibold opacity-70">· {o.phone}</span>
+              </span>
+              <Icon name="ph:caret-right" class="h-4 w-4 opacity-50" aria-hidden="true" />
             </a>
           ))
         }
         <a
           href={`tel:${vet.recentPhone.replace(/[\s-]/g, '')}`}
-          class="rounded-full bg-white px-4 py-2 text-sm font-bold text-red-600 ring-1 ring-red-200 transition-transform duration-200 hover:scale-[1.03] active:scale-95 dark:bg-plum-900 dark:text-red-300 dark:ring-red-900/50"
+          class="flex items-center gap-3 px-6 py-3.5 text-sm font-bold text-red-700 transition-colors active:bg-red-100/60 dark:text-red-300 dark:active:bg-red-900/30"
         >
-          <Icon name="ph:buildings" class="h-4 w-4" aria-hidden="true" /> Recent clinic · {vet.recentPhone}
+          <Icon name="ph:buildings" class="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
+          <span class="flex-1">
+            Recent clinic <span class="font-semibold opacity-70">· {vet.recentPhone}</span>
+          </span>
+          <Icon name="ph:caret-right" class="h-4 w-4 opacity-50" aria-hidden="true" />
         </a>
       </div>
     </div>
+    <p class="mt-3 px-1 text-xs text-ink-400">
+      Recent care: {vet.recentClinic}
+    </p>
   </section>
 
   <Footer />
+
+  <script>
+    // Segmented control: slide the thumb, toggle panels.
+    function setupSegments() {
+      const seg = document.querySelector<HTMLElement>('[data-seg]');
+      if (!seg || seg.dataset.bound) return;
+      seg.dataset.bound = '1';
+      const thumb = seg.querySelector<HTMLElement>('[data-seg-thumb]')!;
+      const tabs = Array.from(seg.querySelectorAll<HTMLButtonElement>('[data-seg-tab]'));
+      const panels = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-seg-panel]'),
+      );
+      tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => {
+          thumb.style.transform = `translateX(${i * 100}%)`;
+          tabs.forEach((t) => {
+            const active = t === tab;
+            t.setAttribute('aria-selected', String(active));
+            t.classList.toggle('text-blush-700', active);
+            t.classList.toggle('dark:text-blush-300', active);
+            t.classList.toggle('text-ink-400', !active);
+          });
+          panels.forEach((p) =>
+            p.classList.toggle('hidden', p.dataset.segPanel !== tab.dataset.segTab),
+          );
+        });
+      });
+    }
+
+    // Recovery progress: recompute against the visitor's clock.
+    function refreshProgress() {
+      const bar = document.querySelector<HTMLElement>('[data-recovery-progress]');
+      if (!bar) return;
+      const start = Date.parse(bar.dataset.start!);
+      const end = Date.parse(bar.dataset.end!);
+      const pct = Math.max(0, Math.min(100, ((Date.now() - start) / (end - start)) * 100));
+      bar.style.width = `${pct}%`;
+      bar
+        .closest('[role="progressbar"]')
+        ?.setAttribute('aria-valuenow', String(Math.round(pct)));
+    }
+
+    setupSegments();
+    refreshProgress();
+    document.addEventListener('astro:page-load', () => {
+      setupSegments();
+      refreshProgress();
+    });
+  </script>
 </Layout>

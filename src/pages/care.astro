@@ -7,6 +7,7 @@ import Footer from '../components/Footer.astro';
 import pichaPhoto from '../assets/picha.jpg';
 import {
   identity,
+  dailyChecklist,
   treatment,
   food,
   grooming,
@@ -17,8 +18,7 @@ import {
   contact,
 } from '../data/picha';
 
-// The routine, arranged as a day rhythm: ongoing treatment first, then
-// grooming sorted from most to least frequent (data keeps its own order).
+// The full protocol, grouped-list style: treatment first, then grooming.
 const rhythm = [...treatment, ...grooming];
 ---
 
@@ -26,41 +26,114 @@ const rhythm = [...treatment, ...grooming];
   <PageHeader
     kicker="Daily Care"
     title="A day with Picha"
-    blurb="Serving Picha is a full-time position. The daily protocol — and the house rules — as dictated by management."
+    blurb="Serving Picha is a full-time position. Check off today's rounds — she is keeping score."
   />
 
-  <!-- The rhythm -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-6" aria-label="Routine">
-    <ul class="divide-y divide-paper-300/70 dark:divide-plum-800">
-      {
-        rhythm.map((item, i) => (
-          <li
-            class="reveal flex items-start gap-4 py-5"
-            style={`--reveal-delay: ${i * 70}ms`}
-          >
-            <span
-              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
-              aria-hidden="true"
-            >
-              <Icon name={item.icon} class="h-5.5 w-5.5" />
-            </span>
-            <div class="min-w-0">
-              <div class="flex flex-wrap items-center gap-2">
-                <h3 class="font-display text-lg font-semibold">{item.title}</h3>
-                {item.cadence && (
-                  <span class="rounded-full bg-blush-100 px-2.5 py-0.5 text-[11px] font-bold whitespace-nowrap text-blush-700 dark:bg-plum-800 dark:text-blush-300">
-                    {item.cadence}
+  <!-- Today's rounds: interactive checklist (localStorage, resets daily) -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-4" aria-label="Today's rounds">
+    <div class="mb-2 flex items-baseline justify-between">
+      <h2
+        class="reveal text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
+      >
+        Today's rounds
+      </h2>
+      <span
+        class="text-xs font-bold text-ink-400"
+        data-check-count
+        aria-live="polite">0/{dailyChecklist.length}</span
+      >
+    </div>
+    <div
+      class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
+    >
+      <ul class="divide-y divide-paper-200 dark:divide-plum-800">
+        {
+          dailyChecklist.map((item) => (
+            <li>
+              <button
+                type="button"
+                data-check-item={item.id}
+                aria-pressed="false"
+                class="flex w-full items-center gap-3.5 px-5 py-3.5 text-left transition-colors active:bg-blush-100/50 dark:active:bg-plum-800/50"
+              >
+                <span
+                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
+                  aria-hidden="true"
+                >
+                  <Icon name={item.icon} class="h-5 w-5" />
+                </span>
+                <span class="min-w-0 flex-1">
+                  <span
+                    class="block font-bold text-ink-900 transition-colors dark:text-paper-100"
+                    data-check-label
+                  >
+                    {item.label}
                   </span>
-                )}
+                  <span class="block truncate text-xs text-ink-400">{item.hint}</span>
+                </span>
+                <span
+                  class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-blush-200 text-white transition-all duration-200 dark:border-plum-600"
+                  data-check-box
+                  aria-hidden="true"
+                >
+                  <Icon name="ph:check" class="h-3.5 w-3.5 opacity-0 transition-opacity" />
+                </span>
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+      <p
+        class="hidden items-center gap-2 border-t border-paper-200 bg-blush-100/40 px-5 py-3 text-xs font-bold text-blush-700 dark:border-plum-800 dark:bg-plum-800/40 dark:text-blush-300"
+        data-check-praise
+      >
+        <Icon name="ph:paw-print" class="h-4 w-4 shrink-0" aria-hidden="true" />
+        All rounds complete. Management is pleased and will nap accordingly.
+      </p>
+    </div>
+    <p class="mt-2 px-1 text-[11px] text-ink-400">
+      Resets every morning. Ticks live only on this device.
+    </p>
+  </section>
+
+  <!-- The full protocol -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Routine">
+    <h2
+      class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
+    >
+      The full protocol
+    </h2>
+    <div
+      class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
+    >
+      <ul class="divide-y divide-paper-200 dark:divide-plum-800">
+        {
+          rhythm.map((item) => (
+            <li class="flex items-start gap-3.5 px-5 py-4">
+              <span
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
+                aria-hidden="true"
+              >
+                <Icon name={item.icon} class="h-5 w-5" />
+              </span>
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="font-display font-semibold">{item.title}</h3>
+                  {item.cadence && (
+                    <span class="rounded-full bg-blush-100 px-2 py-0.5 text-[10px] font-bold whitespace-nowrap text-blush-700 dark:bg-plum-800 dark:text-blush-300">
+                      {item.cadence}
+                    </span>
+                  )}
+                </div>
+                <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+                  {item.detail}
+                </p>
               </div>
-              <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-                {item.detail}
-              </p>
-            </div>
-          </li>
-        ))
-      }
-    </ul>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </section>
 
   <!-- On the menu -->
@@ -99,64 +172,69 @@ const rhythm = [...treatment, ...grooming];
     </div>
   </section>
 
-  <!-- Litter corner -->
+  <!-- Litter corner + house rules, one grouped card each -->
   <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Litter">
     <h2
-      class="reveal text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
+      class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
     >
       The litter corner
     </h2>
-    <div class="mt-3 space-y-4">
-      {
-        litter.map((l) => (
-          <p class="reveal flex gap-2.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-            <Icon
-              name={l.icon}
-              class="mt-0.5 h-4.5 w-4.5 shrink-0 text-blush-500 dark:text-blush-300"
-              aria-hidden="true"
-            />
-            <span>
-              <strong class="font-semibold text-ink-900 dark:text-paper-100">
-                {l.title}:
-              </strong>{' '}
-              {l.detail}
-            </span>
-          </p>
-        ))
-      }
+    <div
+      class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
+    >
+      <ul class="divide-y divide-paper-200 dark:divide-plum-800">
+        {
+          litter.map((l) => (
+            <li class="flex items-start gap-3.5 px-5 py-4">
+              <span
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
+                aria-hidden="true"
+              >
+                <Icon name={l.icon} class="h-5 w-5" />
+              </span>
+              <div>
+                <h3 class="font-display font-semibold">{l.title}</h3>
+                <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+                  {l.detail}
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
-  <!-- House rules (formerly the Safety tab) -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="House rules">
+  <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="House rules">
     <h2
-      class="reveal text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
+      class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
     >
       House rules
     </h2>
-    <ul class="divide-y divide-paper-300/70 dark:divide-plum-800">
-      {
-        safety.map((s, i) => (
-          <li
-            class="reveal flex items-start gap-4 py-5"
-            style={`--reveal-delay: ${i * 80}ms`}
-          >
-            <span
-              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
-              aria-hidden="true"
-            >
-              <Icon name={s.icon} class="h-5.5 w-5.5" />
-            </span>
-            <div>
-              <h3 class="font-display text-lg font-semibold">{s.title}</h3>
-              <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-                {s.detail}
-              </p>
-            </div>
-          </li>
-        ))
-      }
-    </ul>
+    <div
+      class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
+    >
+      <ul class="divide-y divide-paper-200 dark:divide-plum-800">
+        {
+          safety.map((s) => (
+            <li class="flex items-start gap-3.5 px-5 py-4">
+              <span
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
+                aria-hidden="true"
+              >
+                <Icon name={s.icon} class="h-5 w-5" />
+              </span>
+              <div>
+                <h3 class="font-display font-semibold">{s.title}</h3>
+                <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+                  {s.detail}
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
 
     <!-- Toxic list: deliberately plain-spoken. -->
     <h3
@@ -180,7 +258,7 @@ const rhythm = [...treatment, ...grooming];
   </section>
 
   <!-- If found -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="If found">
+  <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="If found">
     <div
       class="reveal overflow-hidden rounded-3xl border-2 border-dashed border-blush-300 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
     >
@@ -233,4 +311,72 @@ const rhythm = [...treatment, ...grooming];
   </section>
 
   <Footer />
+
+  <script>
+    // "Today's rounds" checklist — checked state per calendar day, on-device.
+    const STORE_KEY = 'picha-rounds';
+
+    type Store = { date: string; done: string[] };
+
+    function loadStore(): Store {
+      const today = new Date().toDateString();
+      try {
+        const raw = JSON.parse(localStorage.getItem(STORE_KEY) ?? '');
+        if (raw && raw.date === today && Array.isArray(raw.done)) return raw;
+      } catch {
+        /* fresh start */
+      }
+      return { date: today, done: [] };
+    }
+
+    function setupChecklist() {
+      const items = Array.from(
+        document.querySelectorAll<HTMLButtonElement>('[data-check-item]'),
+      );
+      if (!items.length) return;
+      let store = loadStore();
+
+      const paint = () => {
+        items.forEach((btn) => {
+          const checked = store.done.includes(btn.dataset.checkItem!);
+          btn.setAttribute('aria-pressed', String(checked));
+          const box = btn.querySelector<HTMLElement>('[data-check-box]')!;
+          const tick = box.querySelector('svg');
+          const label = btn.querySelector<HTMLElement>('[data-check-label]')!;
+          box.classList.toggle('bg-blush-600', checked);
+          box.classList.toggle('border-blush-600', checked);
+          tick?.classList.toggle('opacity-0', !checked);
+          label.classList.toggle('line-through', checked);
+          label.classList.toggle('opacity-60', checked);
+        });
+        const count = document.querySelector('[data-check-count]');
+        if (count) count.textContent = `${store.done.length}/${items.length}`;
+        document
+          .querySelector('[data-check-praise]')
+          ?.classList.toggle('hidden', store.done.length !== items.length);
+        document
+          .querySelector('[data-check-praise]')
+          ?.classList.toggle('flex', store.done.length === items.length);
+      };
+
+      items.forEach((btn) => {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', () => {
+          store = loadStore(); // re-check the date on every tap
+          const id = btn.dataset.checkItem!;
+          store.done = store.done.includes(id)
+            ? store.done.filter((d) => d !== id)
+            : [...store.done, id];
+          localStorage.setItem(STORE_KEY, JSON.stringify(store));
+          paint();
+        });
+      });
+
+      paint();
+    }
+
+    setupChecklist();
+    document.addEventListener('astro:page-load', setupChecklist);
+  </script>
 </Layout>

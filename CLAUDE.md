@@ -43,8 +43,8 @@ src/
     Footer.astro       # paw divider + credits — desktop-only unless `showOnMobile`
   pages/
     index.astro        # Home — hero, passport dialog, story, get-to-know-her
-    health.astro       # Health — status, treatment, timeline (done/next/to-book), emergency
-    care.astro         # Care — day rhythm, food menu, litter, house rules, "if found"
+    health.astro       # Health — vitals strip, recovery progress, segmented timeline, emergency
+    care.astro         # Care — "Today's rounds" checklist, protocol, menu, litter, rules, "if found"
     tools.astro        # Tools — future tools land here ("in the workshop" list)
   styles/global.css    # Tailwind @theme (paper/plum/ink/blush/amber) + animations
   assets/
@@ -141,10 +141,19 @@ The site installs as an app (Add to Home Screen / install icon):
   standalone)` (global.css), and `Layout.astro` fires `navigator.vibrate(8)` on
   `pointerdown` of any link/button (Android haptics; iOS lacks the API — safe
   no-op). Keep both when adding new interactive UI.
-- **Mobile chrome**: sticky app bar (avatar + tab label, in `Layout.astro`,
-  `md:hidden`) on top + bottom tab bar. The footer is desktop-only except on
-  Tools (`<Footer showOnMobile />`); body bottom padding (`pb-20 md:pb-0`)
-  clears the tab bar.
+- **Mobile chrome**: sticky app bar (tab label + optional right-side action,
+  in `Layout.astro`, `md:hidden`) on top + bottom tab bar. The footer is
+  desktop-only except on Tools (`<Footer showOnMobile />`); body bottom padding
+  (`pb-20 md:pb-0`) clears the tab bar.
+- **Native UI patterns in use** (reuse these before inventing new ones):
+  snap-scroll stat tiles (`.no-scrollbar` strip, Health vitals), segmented
+  control with sliding thumb (`[data-seg]`, Health timeline), grouped inset
+  lists (rounded card + `divide-y` rows, Care/emergency), progress bar
+  (`[data-recovery-progress]`, recomputed client-side), and the "Today's
+  rounds" checklist (localStorage key `picha-rounds`, `{date, done[]}`, resets
+  when the stored date ≠ today; item ids come from `dailyChecklist` in
+  picha.ts — keep them stable). Content inside initially-hidden panels must
+  NOT use `.reveal` (the observer never fires for them).
 - **Notifications**: local `showNotification()` works while the app is open;
   background/scheduled reminders would need a Web Push backend (Notification
   Triggers API is dead). Planned as a future tool, not built.

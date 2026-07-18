@@ -141,6 +141,50 @@ export const healthTimeline: TimelineEntry[] = [
   },
 ];
 
+/**
+ * The staff's daily to-dos — rendered as an interactive checklist on the Care
+ * page (checked state lives in localStorage and resets each day). Keep ids
+ * stable: they're the storage keys.
+ */
+export const dailyChecklist = [
+  {
+    id: 'ear-care',
+    icon: 'ph:ear',
+    label: 'Morning ear care',
+    hint: 'ORI-EAR clean, Oridermyl ointment, massage the base',
+  },
+  {
+    id: 'combing',
+    icon: 'ph:paint-brush',
+    label: 'The daily combing',
+    hint: 'Both sides — she will rotate herself',
+  },
+  {
+    id: 'meals',
+    icon: 'ph:bowl-food',
+    label: 'Measured meals',
+    hint: 'Weighed portions, no free buffet',
+  },
+  {
+    id: 'water',
+    icon: 'ph:drop',
+    label: 'Fountain check',
+    hint: 'Fresh water, rinse if needed',
+  },
+  {
+    id: 'play',
+    icon: 'ph:feather',
+    label: 'Hunt session',
+    hint: '10–15 min of wand-toy duty',
+  },
+  {
+    id: 'litter',
+    icon: 'ph:toilet',
+    label: 'Scoop the litter',
+    hint: 'Daily — she has standards',
+  },
+];
+
 /** Ongoing daily treatment. Keep instructions exact — this one is medical. */
 export const treatment: CareItem[] = [
   {
@@ -154,6 +198,7 @@ export const treatment: CareItem[] = [
 
 export const recovery = {
   headline: 'Recovering from spay (surgery 11 July 2026)',
+  surgeryDate: '2026-07-11',
   clearedByLabel: '~25 July 2026',
   clearedByDate: '2026-07-25',
   points: [

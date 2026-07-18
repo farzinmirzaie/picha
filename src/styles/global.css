@@ -171,6 +171,20 @@ body {
   }
 }
 
+/* Horizontal scrollers (stat strips) hide their bar everywhere. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Recovery progress fill animates in once its width is set client-side. */
+.progress-fill {
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 /* Underline slide for inline links */
 .link-slide {
   background-image: linear-gradient(currentColor, currentColor);
