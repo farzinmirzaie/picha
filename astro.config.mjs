@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import icon from 'astro-icon';
 
 // Deployed as a GitHub Pages *project* site: https://farzinmirzaie.github.io/picha
 // `site` + `base` must match the repo so asset URLs resolve correctly.
@@ -8,6 +9,10 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://farzinmirzaie.github.io',
   base: '/picha',
+  integrations: [icon()],
+  // The Safety tab was folded into Care; keep old links working.
+  // NOTE: destination must include the base — Astro doesn't prepend it here.
+  redirects: { '/safety': '/picha/care/' },
   vite: {
     plugins: [tailwindcss()],
   },

@@ -46,15 +46,32 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Installed as a PWA: hide scrollbars everywhere for a native-app feel
-   (content still scrolls — only the bars disappear). */
+/* No blue tap flash anywhere — buttons/links have their own pressed states. */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Installed as a PWA: native-app feel — no scrollbars, no text selection,
+   no long-press callout, no pinch/double-tap zoom. Content still scrolls. */
 @media (display-mode: standalone) {
   * {
     scrollbar-width: none;
     -ms-overflow-style: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
   }
   *::-webkit-scrollbar {
     display: none;
+  }
+  html {
+    touch-action: pan-x pan-y;
+  }
+  /* Things that should stay copyable (e.g. the microchip number). */
+  .select-text,
+  .select-text * {
+    -webkit-user-select: text;
+    user-select: text;
   }
 }
 

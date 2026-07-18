@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import pichaPhoto from '../assets/picha.jpg';
@@ -46,14 +47,16 @@ const particulars = [
           loading="eager"
         />
       </div>
-      <span
-        class="float-slow absolute -right-8 top-6 text-2xl opacity-60"
-        aria-hidden="true">🐾</span
-      >
-      <span
-        class="float-slow absolute -left-7 bottom-10 text-xl opacity-40 [animation-delay:1.2s]"
-        aria-hidden="true">🐾</span
-      >
+      <Icon
+        name="ph:paw-print"
+        class="float-slow absolute -right-8 top-6 h-7 w-7 rotate-12 text-blush-400/70"
+        aria-hidden="true"
+      />
+      <Icon
+        name="ph:paw-print"
+        class="float-slow absolute -left-7 bottom-10 h-5 w-5 -rotate-12 text-blush-400/50 [animation-delay:1.2s]"
+        aria-hidden="true"
+      />
     </div>
 
     <h1
@@ -73,7 +76,8 @@ const particulars = [
       type="button"
       class="mt-6 inline-flex items-center gap-2 rounded-full border border-blush-300/70 bg-paper-50 px-5 py-2 text-sm font-bold text-blush-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-900 dark:text-blush-300"
     >
-      🛂 View her passport
+      <Icon name="ph:identification-card" class="h-4.5 w-4.5" aria-hidden="true" />
+      View her passport
     </button>
   </header>
 
@@ -89,56 +93,12 @@ const particulars = [
     </p>
   </section>
 
-  <!-- Likes & dislikes -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-14" aria-label="Likes and dislikes">
-    <div class="grid gap-8 sm:grid-cols-2">
-      <div>
-        <h2
-          class="reveal text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
-        >
-          💗 Loves
-        </h2>
-        <ul class="mt-3 flex flex-wrap gap-2">
-          {
-            likes.map((l, i) => (
-              <li
-                class="reveal rounded-full bg-blush-100 px-3.5 py-1.5 text-sm font-bold text-blush-700 dark:bg-plum-800 dark:text-blush-300"
-                style={`--reveal-delay: ${i * 60}ms`}
-              >
-                {l}
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-      <div>
-        <h2
-          class="reveal text-[11px] font-bold tracking-[0.24em] text-ink-400 uppercase"
-        >
-          🙅 Could live without
-        </h2>
-        <ul class="mt-3 flex flex-wrap gap-2">
-          {
-            dislikes.map((d, i) => (
-              <li
-                class="reveal rounded-full border border-paper-300 bg-paper-50 px-3.5 py-1.5 text-sm font-bold text-ink-600 dark:border-plum-700 dark:bg-plum-900 dark:text-ink-400"
-                style={`--reveal-delay: ${i * 60}ms`}
-              >
-                {d}
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- Personality -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-14" aria-label="Personality">
+  <!-- Get to know her -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-14" aria-label="Get to know her">
     <h2
       class="reveal text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
     >
-      What she's like
+      Get to know her
     </h2>
     <ul class="mt-2 divide-y divide-paper-300/70 dark:divide-plum-800">
       {
@@ -148,10 +108,10 @@ const particulars = [
             style={`--reveal-delay: ${i * 80}ms`}
           >
             <span
-              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-xl dark:bg-plum-800"
+              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
               aria-hidden="true"
             >
-              {p.icon}
+              <Icon name={p.icon} class="h-5.5 w-5.5" />
             </span>
             <div>
               <h3 class="font-display text-lg font-semibold">{p.title}</h3>
@@ -163,6 +123,38 @@ const particulars = [
         ))
       }
     </ul>
+
+    <!-- quick intel: compact, inline — the traits above carry the depth -->
+    <div class="reveal mt-6 space-y-3 border-t border-paper-300/70 pt-6 dark:border-plum-800">
+      <div class="flex flex-wrap items-center gap-2">
+        <span
+          class="flex items-center gap-1.5 text-[11px] font-bold tracking-[0.18em] text-blush-500 uppercase dark:text-blush-300"
+        >
+          <Icon name="ph:heart" class="h-3.5 w-3.5" aria-hidden="true" /> Loves
+        </span>
+        {
+          likes.map((l) => (
+            <span class="rounded-full bg-blush-100 px-3 py-1 text-xs font-bold text-blush-700 dark:bg-plum-800 dark:text-blush-300">
+              {l}
+            </span>
+          ))
+        }
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <span
+          class="flex items-center gap-1.5 text-[11px] font-bold tracking-[0.18em] text-ink-400 uppercase"
+        >
+          <Icon name="ph:prohibit" class="h-3.5 w-3.5" aria-hidden="true" /> Hard pass
+        </span>
+        {
+          dislikes.map((d) => (
+            <span class="rounded-full border border-paper-300 bg-paper-50 px-3 py-1 text-xs font-bold text-ink-600 dark:border-plum-700 dark:bg-plum-900 dark:text-ink-400">
+              {d}
+            </span>
+          ))
+        }
+      </div>
+    </div>
   </section>
 
   <Footer />
@@ -183,7 +175,7 @@ const particulars = [
             class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/35"
             aria-label="Close passport"
           >
-            ✕
+            <Icon name="ph:x" class="h-4 w-4" aria-hidden="true" />
           </button>
         </form>
       </div>
@@ -211,7 +203,9 @@ const particulars = [
             class="mt-6 -rotate-3 rounded-lg border-2 border-blush-400/70 px-3 py-2 text-center text-[9px] font-bold tracking-[0.14em] text-blush-500/90 uppercase w-fit"
             aria-hidden="true"
           >
-            🐾 Royal Household of Picha<br />
+            <span class="inline-flex items-center gap-1">
+              <Icon name="ph:paw-print" class="h-3 w-3" /> Royal Household of Picha
+            </span><br />
             <span class="font-normal normal-case italic tracking-normal"
               >Signature: paw on file</span
             >
@@ -228,7 +222,7 @@ const particulars = [
             <p class="text-[10px] font-bold">Microchip No.</p>
             <div class="mt-1.5 rounded-md border border-[#d8cfc0] bg-white px-3 py-2">
               <div class="barcode h-9 w-full" aria-hidden="true"></div>
-              <p class="mt-1 text-center font-mono text-xs tracking-[0.28em]">
+              <p class="select-text mt-1 text-center font-mono text-xs tracking-[0.28em]">
                 {microchip}
               </p>
             </div>

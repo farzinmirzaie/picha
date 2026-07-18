@@ -76,66 +76,66 @@ export const microchip = '458098500319352';
  */
 export const healthTimeline: TimelineEntry[] = [
   {
-    icon: '💉',
+    icon: 'ph:syringe',
     title: 'FVRCP vaccine — dose 1',
     detail: 'Felocell 4, first dose. Taken like a champ (allegedly).',
     date: '2026-05-10',
   },
   {
-    icon: '💉',
+    icon: 'ph:syringe',
     title: 'FVRCP vaccine — dose 2',
     detail: 'Felocell 4, second dose. Series complete.',
     date: '2026-06-22',
   },
   {
-    icon: '🐛',
+    icon: 'ph:bug',
     title: 'Parasite control',
     detail: 'Revolution Plus applied — fleas, ticks and worms evicted.',
     date: '2026-06-24',
   },
   {
-    icon: '💊',
+    icon: 'ph:pill',
     title: 'Dewormed',
     detail: 'Interior pest control, completed.',
     date: '2026-06-25',
   },
   {
-    icon: '🏥',
+    icon: 'ph:first-aid',
     title: 'Spay + microchip',
     detail: 'Both done in one visit. She billed the recovery time as spa leave.',
     date: '2026-07-11',
   },
   {
-    icon: '🩹',
+    icon: 'ph:bandaids',
     title: 'Spay recovery check',
     detail:
       'Target date for the all-clear — jumping and climbing privileges to be reinstated by the vet.',
     date: '2026-07-25',
   },
   {
-    icon: '💉',
+    icon: 'ph:syringe',
     title: 'FVRCP booster',
     detail: 'Felocell 4 annual booster due.',
     date: '2027-06-22',
   },
   {
-    icon: '💉',
+    icon: 'ph:syringe',
     title: 'Rabies vaccine',
     detail: 'Required before any travel plans Her Fluffiness may approve.',
   },
   {
-    icon: '🧪',
+    icon: 'ph:test-tube',
     title: 'FeLV vaccine',
     detail: 'Optional — to discuss with whichever vet wins the job.',
   },
   {
-    icon: '🪪',
+    icon: 'ph:identification-card',
     title: 'Pet Passport + microchip registration',
     detail:
       'Government paperwork: register the microchip and confirm it points at current contact details.',
   },
   {
-    icon: '✂️',
+    icon: 'ph:scissors',
     title: 'Start the nail-trim routine',
     detail: 'First manicure pending. Front paws first, every 2–4 weeks after.',
   },
@@ -144,7 +144,7 @@ export const healthTimeline: TimelineEntry[] = [
 /** Ongoing daily treatment. Keep instructions exact — this one is medical. */
 export const treatment: CareItem[] = [
   {
-    icon: '👂',
+    icon: 'ph:ear',
     title: 'Morning ear care',
     cadence: 'Every morning',
     detail:
@@ -165,25 +165,25 @@ export const recovery = {
 
 export const food: CareItem[] = [
   {
-    icon: '🍽️',
+    icon: 'ph:fork-knife',
     title: 'Her palate',
     detail:
       'Wet and lickable food: five stars, licked clean. Kibble gets politely nibbled, rarely crunched — a lifestyle choice, the vet confirms, not a dental issue.',
   },
   {
-    icon: '⚖️',
+    icon: 'ph:bowl-food',
     title: 'Portion control',
     detail:
       'Measured meals only — the buffet is closed. Post-spay royalty gains weight easily, and the waistline is under active management.',
   },
   {
-    icon: '🍬',
+    icon: 'ph:cookie',
     title: 'Treats',
     detail:
       'Her love language and primary negotiation tool. Capped at ≤10% of daily food, no matter how convincing the eyes get.',
   },
   {
-    icon: '💧',
+    icon: 'ph:drop',
     title: 'The fountain',
     detail:
       'Fresh running water 24/7 from her personal drinking fountain. Still water is beneath her.',
@@ -192,41 +192,41 @@ export const food: CareItem[] = [
 
 export const grooming: CareItem[] = [
   {
-    icon: '🪮',
+    icon: 'ph:paint-brush',
     title: 'The daily combing',
     cadence: 'Daily',
     detail:
       'Stainless steel comb, once a day. She rotates herself like a rotisserie to present each side. Essential for the long coat — prevents mats, sustains the glamour.',
   },
   {
-    icon: '👁️',
+    icon: 'ph:sparkle',
     title: 'Face touch-ups',
     cadence: 'As needed',
     detail: 'Pet wipes for the eyes and face, whenever the look needs refreshing.',
   },
   {
-    icon: '✂️',
+    icon: 'ph:scissors',
     title: 'Nails',
     cadence: 'Every 2–4 weeks',
     detail:
       'The manicure programme has not started yet — front paws first, then every 2–4 weeks. Management has not yet been informed.',
   },
   {
-    icon: '🧴',
+    icon: 'ph:spray-bottle',
     title: 'Spot cleaning',
     cadence: 'As needed',
     detail:
       'YEGBONG Pet Dry Cleaning Mousse (waterless) — worked into the fur and brushed through, mainly under the chin and any spots that dared get dirty.',
   },
   {
-    icon: '🛁',
+    icon: 'ph:bathtub',
     title: 'Bathing',
     cadence: 'Rarely',
     detail:
       'Rarely required — the daily combing does the heavy lifting. An occasional bath or professional spa day once she is fully healed.',
   },
   {
-    icon: '🪥',
+    icon: 'ph:tooth',
     title: 'Teeth',
     cadence: 'In training',
     detail:
@@ -236,31 +236,30 @@ export const grooming: CareItem[] = [
 
 export const litter: CareItem[] = [
   {
-    icon: '🚽',
+    icon: 'ph:toilet',
     title: 'Current facilities',
     detail: 'A low, shallow open tray — easy access while she recovers from surgery.',
   },
   {
-    icon: '📦',
+    icon: 'ph:package',
     title: 'Planned upgrade',
     detail:
       'A large, high-sided open box once she is fully healed. Scooped daily; ideally two boxes. She has standards.',
   },
 ];
 
-/** Quick "get to know her" chips for the home page. */
+/**
+ * Quick "get to know her" chips. Deliberately no overlap with `personality`
+ * (hunting, affection, storms and sleep live there) — these are the extras.
+ */
 export const likes: string[] = [
-  'Wand-toy hunts',
-  'The daily combing',
   'Treats (obviously)',
   'Her bell ball — shoot, chase, repeat',
+  'The daily combing',
   'Snug hideouts',
-  'Chin scratches',
 ];
 
 export const dislikes: string[] = [
-  'Thunderstorms',
-  'Loud noises',
   'Being retrieved from a hideout',
   'Being held for too long',
   'Portion-control discussions',
@@ -268,25 +267,25 @@ export const dislikes: string[] = [
 
 export const personality: CareItem[] = [
   {
-    icon: '🪶',
+    icon: 'ph:feather',
     title: 'Professional huntress',
     detail:
       'Wand toys tremble at her name. Daily hunts are mandatory and non-negotiable — she does make the rules.',
   },
   {
-    icon: '💕',
+    icon: 'ph:heart',
     title: 'Affectionate (by appointment)',
     detail:
       'Cuddles are granted, never requested. Deeply bonded to her staff; profoundly independent the moment it suits her.',
   },
   {
-    icon: '🌩️',
+    icon: 'ph:cloud-lightning',
     title: 'Thunder critic',
     detail:
       'Storms receive zero stars and an immediate retreat to a secret bunker. Let her be — dark, quiet hideouts and calm energy fix everything. Never pull her out.',
   },
   {
-    icon: '😴',
+    icon: 'ph:moon-stars',
     title: 'Sleep athlete',
     detail:
       '16+ hours a day. It is not laziness — it is training, and completely normal for her age.',
@@ -295,19 +294,19 @@ export const personality: CareItem[] = [
 
 export const safety: CareItem[] = [
   {
-    icon: '🪟',
+    icon: 'ph:shield-warning',
     title: 'Windows & heights',
     detail:
       'A confident climber with zero fear and zero wings. Only mesh-protected windows open — unscreened windows and balconies are a hard no.',
   },
   {
-    icon: '🌩️',
+    icon: 'ph:cloud-lightning',
     title: 'Storm protocol',
     detail:
       'Thunder sends her to snug hiding spots. Let her retreat — dark, quiet places and calm energy help. Never pull her out.',
   },
   {
-    icon: '🆔',
+    icon: 'ph:identification-badge',
     title: 'ID & collar',
     detail:
       'Microchipped — public registration to current contact details still to be confirmed. A breakaway safety collar is recommended for climbing royalty.',

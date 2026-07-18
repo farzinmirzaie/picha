@@ -42,10 +42,10 @@ src/
     PageHeader.astro   # sub-page header (mini avatar, kicker, serif title, blurb)
     Footer.astro       # paw divider, "if found" contact, credits
   pages/
-    index.astro        # Home — hero, passport ticket, story, personality
+    index.astro        # Home — hero, passport dialog, story, get-to-know-her
     health.astro       # Health — status, treatment, timeline (done/next/to-book), emergency
-    care.astro         # Care — day rhythm, food menu, litter corner
-    safety.astro       # Safety — house rules, toxic chips, "if found" panel
+    care.astro         # Care — day rhythm, food menu, litter, house rules, "if found"
+    tools.astro        # Tools — future tools land here ("in the workshop" list)
   styles/global.css    # Tailwind @theme (paper/plum/ink/blush/amber) + animations
   assets/
     picha.jpg          # avatar photo (astro:assets; also the source for app icons)
@@ -175,6 +175,16 @@ installed clients pick them up.
   approved — legal full names and anyone else's details stay out.
 - **Voice**: playful staff-of-the-cat tone (see § Voice & tone) — but emergency
   and medical instructions stay plain.
+- **Icons, not emoji.** UI icons are Phosphor via `astro-icon` (build-time
+  inline SVG, zero JS): `<Icon name="ph:paw-print" />` from
+  'astro-icon/components'. Data `icon` fields hold the full name (`ph:x`).
+  Verify a name exists in `@iconify-json/ph/icons.json` before using it
+  (`comb` doesn't — we use `paint-brush`). Emoji only survive in <title> tags.
+- **Tabs**: Home / Health / Care / Tools. Safety was folded into Care
+  (house rules + toxic list + if-found); `/safety` redirects to `/care` via
+  astro.config `redirects` — note the destination must include the `/picha`
+  base. New tools: build the page, list it on tools.astro, or give it a TABS
+  entry (keep the mobile grid-cols in sync with the tab count).
 - **Accessibility**: images have real `alt` (decorative ones use `alt=""`);
   decorative emoji use `aria-hidden`. Keep it that way.
 - Run `pnpm build` before committing — it typechecks and must pass clean.

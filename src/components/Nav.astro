@@ -4,6 +4,8 @@
  * (app-like — matches the installed PWA feel). To add a future tool page,
  * append one entry to TABS and give the page `current={id}`.
  */
+import { Icon } from 'astro-icon/components';
+
 interface Props {
   current: string;
 }
@@ -11,10 +13,10 @@ const { current } = Astro.props;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const TABS = [
-  { id: 'home', href: `${base}/`, icon: '🏡', label: 'Home' },
-  { id: 'health', href: `${base}/health/`, icon: '🩺', label: 'Health' },
-  { id: 'care', href: `${base}/care/`, icon: '🧼', label: 'Care' },
-  { id: 'safety', href: `${base}/safety/`, icon: '🛟', label: 'Safety' },
+  { id: 'home', href: `${base}/`, icon: 'ph:house', label: 'Home' },
+  { id: 'health', href: `${base}/health/`, icon: 'ph:heartbeat', label: 'Health' },
+  { id: 'care', href: `${base}/care/`, icon: 'ph:hand-heart', label: 'Care' },
+  { id: 'tools', href: `${base}/tools/`, icon: 'ph:toolbox', label: 'Tools' },
 ];
 ---
 
@@ -35,7 +37,7 @@ const TABS = [
             : 'text-ink-600 hover:bg-blush-100 hover:text-blush-700 dark:text-ink-400 dark:hover:bg-plum-800 dark:hover:text-blush-300',
         ]}
       >
-        <span aria-hidden="true">{t.icon}</span>
+        <Icon name={t.icon} class="h-4 w-4" aria-hidden="true" />
         {t.label}
       </a>
     ))
@@ -62,12 +64,11 @@ const TABS = [
         >
           <span
             class:list={[
-              'flex h-8 w-14 items-center justify-center rounded-full text-lg transition-all duration-300',
+              'flex h-8 w-14 items-center justify-center rounded-full transition-all duration-300',
               current === t.id ? 'bg-blush-100 dark:bg-plum-800' : '',
             ]}
-            aria-hidden="true"
           >
-            {t.icon}
+            <Icon name={t.icon} class="h-5 w-5" aria-hidden="true" />
           </span>
           {t.label}
         </a>

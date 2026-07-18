@@ -1,0 +1,72 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Footer from '../components/Footer.astro';
+
+// Future tools land here: build the page, then add it to this list (or give it
+// its own nav tab if it earns one).
+const planned = [
+  {
+    icon: 'ph:chat-circle-dots',
+    title: 'Body-language decoder',
+    detail: 'What the tail, ears and slow blinks actually mean.',
+  },
+  {
+    icon: 'ph:calculator',
+    title: 'Food calculator',
+    detail: 'Portions by weight and age — no more guesswork at the bowl.',
+  },
+  {
+    icon: 'ph:chart-line-up',
+    title: 'Weight tracker',
+    detail: 'The royal waistline, charted over time.',
+  },
+  {
+    icon: 'ph:bell',
+    title: 'Care reminders',
+    detail: 'Boosters, ear drops and nail trims — nudges for the staff.',
+  },
+];
+---
+
+<Layout title="Tools · Picha 🐾" current="tools">
+  <PageHeader
+    kicker="Tools"
+    title="The workshop"
+    blurb="Gadgets for her staff. Nothing is finished yet — the supervisor keeps sitting on the blueprints."
+  />
+
+  <section class="mx-auto w-full max-w-2xl px-5 pt-6" aria-label="Planned tools">
+    <ul class="space-y-3">
+      {
+        planned.map((t, i) => (
+          <li
+            class="reveal flex items-start gap-4 rounded-3xl border border-dashed border-paper-300 bg-paper-50/60 p-5 dark:border-plum-700 dark:bg-plum-900/60"
+            style={`--reveal-delay: ${i * 80}ms`}
+          >
+            <span
+              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-paper-200 text-ink-600 dark:bg-plum-800 dark:text-ink-400"
+              aria-hidden="true"
+            >
+              <Icon name={t.icon} class="h-5.5 w-5.5" />
+            </span>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <h2 class="font-display text-lg font-semibold text-ink-600 dark:text-ink-400">
+                  {t.title}
+                </h2>
+                <span class="rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-400 dark:bg-plum-800">
+                  In the workshop
+                </span>
+              </div>
+              <p class="mt-0.5 text-sm leading-relaxed text-ink-400">{t.detail}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <Footer />
+</Layout>
