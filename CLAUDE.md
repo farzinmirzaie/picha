@@ -49,8 +49,7 @@ src/
   styles/global.css    # Tailwind @theme (paper/plum/ink/blush/amber) + animations
   assets/
     picha.jpg          # avatar photo (astro:assets; also the source for app icons)
-    icon-source.svg    # drawn cat (legacy icon source; favicon still uses this look)
-public/favicon.svg     # drawn-cat favicon (photo mush at 16px — keep drawn)
+public/favicon.svg     # Phosphor paw-print on a blush tile (photo is mush at 16px)
 public/icon-*.png      # PWA icons — cropped from her photo (see § icons)
 .github/workflows/deploy.yml  # build + deploy Pages + auto-release
 astro.config.mjs       # site + base (GitHub Pages project site)
@@ -195,8 +194,9 @@ The hero + footer avatar is `src/assets/picha.jpg`, rendered through
 `astro:assets` `<Image>` (optimized to WebP; needs the `sharp` dependency). It
 sits in a circular frame with `object-cover` + `object-position: 50% 22%` to
 focus her face. To change the photo, replace that file; adjust `object-position`
-if the framing needs it. The old drawn `CatAvatar` was removed once the real
-photo landed — the drawn look survives only in the app icon (`icon-source.svg`).
+if the framing needs it. The favicon is the Phosphor paw-print path inlined in
+`public/favicon.svg` on a blush tile — regenerate by pulling the path from
+`@iconify-json/ph/icons.json` if the brand icon ever changes.
 
 ## Roadmap (not built yet)
 

@@ -16,6 +16,12 @@ import {
 
 const age = ageLabel();
 
+// Highlight the household names in the story in the brand pink.
+const storyHtml = identity.story.replace(
+  /\b(Picha|Farah|Farzin)\b/g,
+  '<span class="font-semibold text-blush-600 dark:text-blush-300">$1</span>',
+);
+
 // Passport booklet fields — layout modelled on the official pet passport
 // (dotted fields, pen-blue values), labels in English.
 const particulars = [
@@ -58,6 +64,16 @@ const particulars = [
         class="float-slow absolute -left-7 bottom-10 h-5 w-5 -rotate-12 text-blush-400/50 [animation-delay:1.2s]"
         aria-hidden="true"
       />
+      <Icon
+        name="ph:cat"
+        class="float-slow absolute -left-9 top-10 h-6 w-6 -rotate-6 text-blush-400/60 [animation-delay:0.6s]"
+        aria-hidden="true"
+      />
+      <Icon
+        name="ph:cat"
+        class="float-slow absolute -right-7 bottom-6 h-5 w-5 rotate-6 text-blush-400/40 [animation-delay:1.8s]"
+        aria-hidden="true"
+      />
     </div>
 
     <h1
@@ -78,7 +94,7 @@ const particulars = [
       class="mt-6 inline-flex items-center gap-2 rounded-full border border-blush-300/70 bg-paper-50 px-5 py-2 text-sm font-bold text-blush-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-900 dark:text-blush-300"
     >
       <Icon name="ph:identification-card" class="h-4.5 w-4.5" aria-hidden="true" />
-      View her passport
+      Passport
     </button>
   </header>
 
@@ -86,9 +102,8 @@ const particulars = [
   <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="Her story">
     <p
       class="reveal font-display text-xl leading-relaxed font-medium text-ink-900 sm:text-2xl sm:leading-relaxed dark:text-paper-100"
-    >
-      {identity.story}
-    </p>
+      set:html={storyHtml}
+    />
     <p class="reveal mt-5 leading-relaxed text-ink-600 dark:text-ink-400">
       {identity.looks}
     </p>
