@@ -1,0 +1,269 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Footer from '../components/Footer.astro';
+import {
+  vet,
+  contact,
+  healthTimeline,
+  treatment,
+  recovery,
+  weight,
+  callVetIf,
+} from '../data/picha';
+
+// Split the timeline by date: past = done, future = coming up (soonest first,
+// the first one is "next"), undated = still to book. The split is computed at
+// build time; the visible countdown chips update client-side via [data-until].
+const today = new Date().toISOString().slice(0, 10);
+const dated = healthTimeline.filter((e) => e.date);
+const done = dated
+  .filter((e) => e.date! < today)
+  .sort((a, b) => b.date!.localeCompare(a.date!));
+const upcoming = dated
+  .filter((e) => e.date! >= today)
+  .sort((a, b) => a.date!.localeCompare(b.date!));
+const toBook = healthTimeline.filter((e) => !e.date);
+
+const fmt = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+const dateLabel = (iso: string) => fmt.format(new Date(iso));
+---
+
+<Layout title="Health · Picha 🐾" current="health">
+  <PageHeader
+    kicker="Vet & Health"
+    title="Her health file"
+    blurb={`Meticulous records, kept by the staff. ${vet.status} — recent care at ${vet.recentClinic}.`}
+  />
+
+  <!-- Current status -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-6" aria-label="Current status">
+    <div
+      class="reveal rounded-3xl border border-amber-300/60 bg-gradient-to-br from-amber-300/15 to-transparent p-6 dark:border-amber-700/40"
+    >
+      <div class="flex items-center gap-2.5">
+        <span class="relative inline-flex h-2.5 w-2.5">
+          <span class="pulse-dot relative inline-flex h-2.5 w-2.5 rounded-full bg-amber-500"></span>
+        </span>
+        <h2 class="font-display text-lg font-semibold text-amber-700 dark:text-amber-300">
+          {recovery.headline}
+        </h2>
+      </div>
+      <p class="mt-2 text-sm text-ink-600 dark:text-ink-400">
+        Take it easy until <strong class="text-ink-900 dark:text-paper-100"
+          >{recovery.clearedByLabel}</strong
+        ><span data-until={recovery.clearedByDate}></span> or until the vet clears her.
+      </p>
+      <ul class="mt-4 space-y-2 text-sm text-ink-600 dark:text-ink-400">
+        {
+          recovery.points.map((p) => (
+            <li class="flex gap-2.5">
+              <span class="mt-0.5 text-amber-500" aria-hidden="true">
+                ✓
+              </span>
+              {p}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <!-- daily treatment -->
+    {
+      treatment.map((t) => (
+        <div class="reveal mt-4 flex items-start gap-4 rounded-3xl border border-blush-200/70 bg-paper-50 p-6 dark:border-plum-700 dark:bg-plum-900">
+          <span
+            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-xl dark:bg-plum-800"
+            aria-hidden="true"
+          >
+            {t.icon}
+          </span>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h3 class="font-display text-lg font-semibold">{t.title}</h3>
+              {t.cadence && (
+                <span class="rounded-full bg-blush-100 px-2.5 py-0.5 text-[11px] font-bold text-blush-700 dark:bg-plum-800 dark:text-blush-300">
+                  {t.cadence}
+                </span>
+              )}
+            </div>
+            <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+              {t.detail}
+            </p>
+          </div>
+        </div>
+      ))
+    }
+  </section>
+
+  <!-- Coming up -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="Coming up">
+    <h2
+      class="reveal text-[11px] font-bold tracking-[0.24em] text-amber-700 uppercase dark:text-amber-300"
+    >
+      Coming up
+    </h2>
+    <ol class="mt-4 border-l-2 border-amber-300/60 pl-6 dark:border-amber-700/40">
+      {
+        upcoming.map((e, i) => (
+          <li
+            class="reveal relative pb-8 last:pb-2"
+            style={`--reveal-delay: ${i * 90}ms`}
+          >
+            <span
+              class:list={[
+                'absolute -left-[40px] flex h-8 w-8 items-center justify-center rounded-full text-sm ring-4 ring-paper-100 dark:ring-plum-950',
+                i === 0
+                  ? 'bg-amber-300/60 dark:bg-amber-700/50'
+                  : 'bg-paper-200 dark:bg-plum-800',
+              ]}
+              aria-hidden="true"
+            >
+              {e.icon}
+            </span>
+            <div class="flex flex-wrap items-center gap-2 pt-1">
+              <h3 class="font-display text-lg font-semibold">{e.title}</h3>
+              {i === 0 && (
+                <span class="rounded-full bg-amber-300/40 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:bg-amber-700/30 dark:text-amber-300">
+                  Next up
+                </span>
+              )}
+            </div>
+            <p class="text-xs font-bold text-amber-700/80 dark:text-amber-300/80">
+              {dateLabel(e.date!)}
+              <span data-until={e.date} />
+            </p>
+            <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+              {e.detail}
+            </p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <!-- to book -->
+    <h3
+      class="reveal mt-8 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
+    >
+      Still to book
+    </h3>
+    <ul class="mt-3 space-y-2.5">
+      {
+        toBook.map((e, i) => (
+          <li
+            class="reveal flex items-start gap-3 text-sm text-ink-600 dark:text-ink-400"
+            style={`--reveal-delay: ${i * 70}ms`}
+          >
+            <span
+              class="mt-0.5 inline-block h-4 w-4 shrink-0 rounded-full border-2 border-dashed border-blush-300 dark:border-plum-600"
+              aria-hidden="true"
+            />
+            <span>
+              <span class="mr-1.5" aria-hidden="true">
+                {e.icon}
+              </span>
+              <strong class="font-semibold text-ink-900 dark:text-paper-100">
+                {e.title}
+              </strong>{' '}
+              — {e.detail}
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- The record -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="Medical record">
+    <h2
+      class="reveal text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
+    >
+      The record so far
+    </h2>
+    <ol class="mt-4 border-l-2 border-blush-200 pl-6 dark:border-plum-700">
+      {
+        done.map((e, i) => (
+          <li
+            class="reveal relative pb-8 last:pb-2"
+            style={`--reveal-delay: ${i * 90}ms`}
+          >
+            <span
+              class="absolute -left-[40px] flex h-8 w-8 items-center justify-center rounded-full bg-blush-100 text-sm ring-4 ring-paper-100 dark:bg-plum-800 dark:ring-plum-950"
+              aria-hidden="true"
+            >
+              {e.icon}
+            </span>
+            <h3 class="font-display pt-1 text-lg font-semibold">{e.title}</h3>
+            <p class="text-xs font-bold text-blush-500/90 dark:text-blush-300/80">
+              {dateLabel(e.date!)}
+            </p>
+            <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+              {e.detail}
+            </p>
+          </li>
+        ))
+      }
+      <li class="reveal relative">
+        <span
+          class="absolute -left-[40px] flex h-8 w-8 items-center justify-center rounded-full border-2 border-dashed border-blush-300 bg-paper-100 text-sm dark:border-plum-700 dark:bg-plum-950"
+          aria-hidden="true">⚖️</span
+        >
+        <h3 class="font-display pt-1 text-lg font-semibold">Weight check</h3>
+        <p class="text-xs font-bold text-blush-500/90 dark:text-blush-300/80">
+          {weight.measuredOn}
+        </p>
+        <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+          {weight.current} — healthy adult target {weight.healthyTarget}.
+          {weight.note}
+        </p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Emergency: deliberately plain-spoken. -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="Emergency">
+    <div
+      class="reveal rounded-3xl bg-red-50 p-6 ring-1 ring-red-200 dark:bg-red-950/30 dark:ring-red-900/50"
+    >
+      <h2 class="font-display text-lg font-semibold text-red-600 dark:text-red-300">
+        ⚠️ Call the vet if…
+      </h2>
+      <ul class="mt-3 space-y-2 text-sm text-red-900/80 dark:text-red-100/80">
+        {
+          callVetIf.map((c) => (
+            <li class="flex gap-2.5">
+              <span class="text-red-400" aria-hidden="true">
+                •
+              </span>
+              {c}
+            </li>
+          ))
+        }
+      </ul>
+      <div class="mt-5 flex flex-wrap gap-2.5">
+        {
+          contact.owners.map((o) => (
+            <a
+              href={`tel:${o.phone.replace(/\s/g, '')}`}
+              class="rounded-full bg-red-600 px-4 py-2 text-sm font-bold text-white transition-transform duration-200 hover:scale-[1.03] active:scale-95"
+            >
+              📞 {o.name} · {o.phone}
+            </a>
+          ))
+        }
+        <a
+          href={`tel:${vet.recentPhone.replace(/[\s-]/g, '')}`}
+          class="rounded-full bg-white px-4 py-2 text-sm font-bold text-red-600 ring-1 ring-red-200 transition-transform duration-200 hover:scale-[1.03] active:scale-95 dark:bg-plum-900 dark:text-red-300 dark:ring-red-900/50"
+        >
+          🏥 Recent clinic · {vet.recentPhone}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

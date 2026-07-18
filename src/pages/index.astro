@@ -1,347 +1,141 @@
 ---
 import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
-import Section from '../components/Section.astro';
-import InfoCard from '../components/InfoCard.astro';
+import Footer from '../components/Footer.astro';
 import pichaPhoto from '../assets/picha.jpg';
 import {
   identity,
   weight,
-  quickFacts,
-  vet,
-  contact,
-  healthRecords,
-  toArrange,
-  treatment,
-  recovery,
-  food,
-  grooming,
-  litter,
+  microchip,
   personality,
-  safety,
-  callVetIf,
   ageLabel,
 } from '../data/picha';
 
 const age = ageLabel();
 
-const nav = [
-  { href: '#basics', label: 'Basics' },
-  { href: '#health', label: 'Vet & Health' },
-  { href: '#care', label: 'Daily Care' },
-  { href: '#personality', label: 'Personality' },
-  { href: '#safety', label: 'Safety' },
+const passport = [
+  { label: 'Born', value: identity.bornLabel },
+  { label: 'Age', value: age, dynamic: true },
+  { label: 'Weight', value: weight.current },
+  { label: 'Chip', value: microchip },
 ];
 ---
 
-<Layout title="Picha 🐾" description={`Picha — ${identity.breed}. ${identity.tagline}`}>
+<Layout title="Picha 🐾" description={`Picha — ${identity.breed}. ${identity.tagline}`} current="home">
   <!-- Hero -->
-  <header class="mx-auto w-full max-w-4xl px-5 pt-12 pb-4 text-center">
-    <div
-      class="mx-auto mb-4 h-40 w-40 overflow-hidden rounded-full bg-cream-50 shadow-lg ring-4 ring-white sm:h-48 sm:w-48 dark:ring-slate-800"
-    >
-      <Image
-        src={pichaPhoto}
-        alt="Picha, an all-white cat with amber eyes and a pink collar"
-        width={384}
-        densities={[1, 2]}
-        class="h-full w-full object-cover"
-        style="object-position: 50% 22%"
-        loading="eager"
-      />
+  <header class="mx-auto w-full max-w-2xl px-5 pt-10 text-center sm:pt-14">
+    <div class="hero-pop relative mx-auto w-52 sm:w-64">
+      <!-- arch-shaped portrait -->
+      <div
+        class="wiggle-hover relative aspect-[4/5] overflow-hidden rounded-t-full rounded-b-[2.5rem] shadow-xl ring-4 ring-white dark:ring-plum-800"
+      >
+        <Image
+          src={pichaPhoto}
+          alt="Picha, an all-white cat with amber eyes and a pink collar, mid-meow"
+          width={512}
+          densities={[1, 2]}
+          class="h-full w-full object-cover"
+          style="object-position: 50% 30%"
+          loading="eager"
+        />
+      </div>
+      <span
+        class="float-slow absolute -right-8 top-6 text-2xl opacity-60"
+        aria-hidden="true">🐾</span
+      >
+      <span
+        class="float-slow absolute -left-7 bottom-10 text-xl opacity-40 [animation-delay:1.2s]"
+        aria-hidden="true">🐾</span
+      >
     </div>
+
     <h1
-      class="text-4xl font-extrabold tracking-tight text-blush-600 sm:text-5xl dark:text-blush-300"
+      class="font-display mt-6 text-6xl font-semibold tracking-tight text-blush-600 sm:text-7xl dark:text-blush-300"
     >
-      {identity.name}
-      <span aria-hidden="true">🐾</span>
+      Picha
     </h1>
-    <p class="mt-2 text-base text-slate-500 sm:text-lg dark:text-slate-400">
+    <p class="font-display mt-2 text-lg italic text-ink-600 sm:text-xl dark:text-ink-400">
       {identity.tagline}
     </p>
-    <p class="mt-1 text-sm font-semibold text-amber-600 dark:text-amber-glow">
+    <p class="mt-2 text-sm font-bold text-amber-700 dark:text-amber-300">
       {identity.breed} · <span data-age>{age}</span>
     </p>
-
-    <!-- quick facts -->
-    <ul class="mt-6 flex flex-wrap justify-center gap-2.5">
-      {
-        quickFacts.map((f) => (
-          <li class="flex items-center gap-2 rounded-full border border-blush-100 bg-cream-50/80 px-3.5 py-1.5 text-sm font-semibold text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-300">
-            <span aria-hidden="true">{f.icon}</span>
-            <span class="text-slate-400 dark:text-slate-500">{f.label}:</span>
-            {f.value}
-          </li>
-        ))
-      }
-    </ul>
-
-    <!-- nav pills -->
-    <nav class="mt-8 flex flex-wrap justify-center gap-2">
-      {
-        nav.map((n) => (
-          <a
-            href={n.href}
-            class="rounded-full px-4 py-1.5 text-sm font-semibold text-blush-700 transition hover:bg-blush-100 dark:text-blush-200 dark:hover:bg-blush-700/30"
-          >
-            {n.label}
-          </a>
-        ))
-      }
-    </nav>
   </header>
 
-  <!-- Recovery banner (current status) -->
-  <div class="mx-auto w-full max-w-4xl px-5 py-4">
+  <!-- Passport ticket -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Passport">
     <div
-      class="rounded-2xl border border-amber-300/60 bg-amber-50 p-5 dark:border-amber-glow/30 dark:bg-amber-glow/10"
+      class="ticket reveal rounded-2xl border-2 border-dashed border-blush-300 bg-paper-50 px-2 py-4 [--ticket-hole:var(--color-paper-100)] sm:px-6 dark:border-plum-700 dark:bg-plum-900 dark:[--ticket-hole:var(--color-plum-950)]"
     >
-      <div class="flex items-center gap-2">
-        <span class="text-xl" aria-hidden="true">🩹</span>
-        <h2 class="font-extrabold text-amber-700 dark:text-amber-glow">
-          {recovery.headline}
-        </h2>
-      </div>
-      <p class="mt-1 text-sm text-amber-800/80 dark:text-amber-100/70">
-        Take it easy until <strong>{recovery.clearedByLabel}</strong><span
-          data-until={recovery.clearedByDate}></span> or until the vet clears her.
+      <p
+        class="mb-3 text-center text-[10px] font-bold tracking-[0.3em] text-blush-400 uppercase dark:text-blush-300/70"
+      >
+        · Pet Passport ·
       </p>
-      <ul class="mt-3 space-y-1.5 text-sm text-slate-600 dark:text-slate-300">
+      <dl class="grid grid-cols-2 gap-x-2 gap-y-4 text-center sm:grid-cols-4">
         {
-          recovery.points.map((p) => (
-            <li class="flex gap-2">
-              <span class="text-amber-500" aria-hidden="true">
-                ✓
-              </span>
-              {p}
-            </li>
+          passport.map((f) => (
+            <div>
+              <dt class="text-[10px] font-bold tracking-[0.18em] text-ink-400 uppercase">
+                {f.label}
+              </dt>
+              <dd
+                class="font-display mt-1 text-sm font-semibold text-ink-900 sm:text-base dark:text-paper-100"
+                {...(f.dynamic ? { 'data-age': true } : {})}
+              >
+                {f.value}
+              </dd>
+            </div>
           ))
         }
-      </ul>
+      </dl>
     </div>
-  </div>
+  </section>
 
-  <!-- Basics -->
-  <Section id="basics" icon="🏷️" title="The Basics" tone="blush">
-    <div class="grid gap-4 sm:grid-cols-2">
-      <InfoCard icon="🎨" title="Looks">{identity.looks}</InfoCard>
-      <InfoCard icon="🏠" title="Home">{identity.home}</InfoCard>
-      <InfoCard icon="🎂" title="Born">
-        {identity.bornLabel} — <span data-age>{age}</span>. Still growing until
-        ~1.5–2 years.
-      </InfoCard>
-      <InfoCard icon="⚖️" title="Weight">
-        {weight.current} (as of {weight.measuredOn}). Healthy adult target {
-          weight.healthyTarget
-        }.
-      </InfoCard>
-    </div>
-  </Section>
+  <!-- Story -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="Her story">
+    <p
+      class="reveal font-display text-xl leading-relaxed font-medium text-ink-900 sm:text-2xl sm:leading-relaxed dark:text-paper-100"
+    >
+      {identity.story}
+    </p>
+    <p class="reveal mt-5 leading-relaxed text-ink-600 dark:text-ink-400">
+      {identity.looks} Weighs {weight.current} (as of {weight.measuredOn}) — healthy
+      adult target {weight.healthyTarget} {weight.note.toLowerCase()}
+    </p>
+  </section>
 
-  <!-- Vet & Health -->
-  <Section
-    id="health"
-    icon="🩺"
-    title="Vet & Health"
-    lead={`Vet: ${vet.status}. Recent care at ${vet.recentClinic}.`}
-    tone="blush"
-  >
-    <div class="grid gap-4 sm:grid-cols-2">
+  <!-- Personality -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-14" aria-label="Personality">
+    <h2
+      class="reveal text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
+    >
+      What she's like
+    </h2>
+    <ul class="mt-2 divide-y divide-paper-300/70 dark:divide-plum-800">
       {
-        healthRecords.map((r) => (
-          <InfoCard icon={r.icon} title={r.title}>
-            {r.detail}
-          </InfoCard>
-        ))
-      }
-    </div>
-
-    <h3 class="mt-6 mb-3 text-sm font-bold tracking-wide text-slate-500 uppercase dark:text-slate-400">
-      Still to arrange
-    </h3>
-    <ul class="grid gap-2 sm:grid-cols-2">
-      {
-        toArrange.map((t) => (
-          <li class="flex items-start gap-2.5 rounded-xl border border-dashed border-blush-200 bg-cream-50/60 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
-            <span aria-hidden="true">{t.icon}</span>
-            {t.text}
+        personality.map((p, i) => (
+          <li
+            class="reveal flex items-start gap-4 py-5"
+            style={`--reveal-delay: ${i * 80}ms`}
+          >
+            <span
+              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-xl dark:bg-plum-800"
+              aria-hidden="true"
+            >
+              {p.icon}
+            </span>
+            <div>
+              <h3 class="font-display text-lg font-semibold">{p.title}</h3>
+              <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+                {p.detail}
+              </p>
+            </div>
           </li>
         ))
       }
     </ul>
-  </Section>
+  </section>
 
-  <!-- Daily Care -->
-  <Section
-    id="care"
-    icon="🧴"
-    title="Daily Care"
-    lead="Her everyday routine — treatment, food, grooming and litter."
-    tone="blush"
-  >
-    <h3 class="mb-3 font-bold text-slate-700 dark:text-slate-200">
-      💊 Current treatment
-    </h3>
-    <div class="grid gap-4">
-      {
-        treatment.map((t) => (
-          <InfoCard icon={t.icon} title={t.title} cadence={t.cadence}>
-            {t.detail}
-          </InfoCard>
-        ))
-      }
-    </div>
-
-    <h3 class="mt-8 mb-3 font-bold text-slate-700 dark:text-slate-200">🍽️ Food</h3>
-    <div class="grid gap-4 sm:grid-cols-2">
-      {
-        food.map((t) => (
-          <InfoCard icon={t.icon} title={t.title}>
-            {t.detail}
-          </InfoCard>
-        ))
-      }
-    </div>
-
-    <h3 class="mt-8 mb-3 font-bold text-slate-700 dark:text-slate-200">
-      🧼 Grooming
-    </h3>
-    <div class="grid gap-4 sm:grid-cols-2">
-      {
-        grooming.map((t) => (
-          <InfoCard icon={t.icon} title={t.title} cadence={t.cadence}>
-            {t.detail}
-          </InfoCard>
-        ))
-      }
-    </div>
-
-    <h3 class="mt-8 mb-3 font-bold text-slate-700 dark:text-slate-200">🚽 Litter</h3>
-    <div class="grid gap-4 sm:grid-cols-2">
-      {
-        litter.map((t) => (
-          <InfoCard icon={t.icon} title={t.title}>
-            {t.detail}
-          </InfoCard>
-        ))
-      }
-    </div>
-  </Section>
-
-  <!-- Personality -->
-  <Section
-    id="personality"
-    icon="🧠"
-    title="Personality & Needs"
-    tone="blush"
-  >
-    <div class="grid gap-4 sm:grid-cols-2">
-      {
-        personality.map((t) => (
-          <InfoCard icon={t.icon} title={t.title}>
-            {t.detail}
-          </InfoCard>
-        ))
-      }
-    </div>
-  </Section>
-
-  <!-- Safety -->
-  <Section id="safety" icon="🛟" title="Safety" tone="blush">
-    <div class="grid gap-4 sm:grid-cols-2">
-      {
-        safety.map((t) => (
-          <InfoCard icon={t.icon} title={t.title}>
-            {t.detail}
-          </InfoCard>
-        ))
-      }
-    </div>
-  </Section>
-
-  <!-- Call the vet if -->
-  <div class="mx-auto w-full max-w-4xl px-5 py-8">
-    <div
-      class="rounded-2xl border border-red-200 bg-red-50 p-6 dark:border-red-900/50 dark:bg-red-950/30"
-    >
-      <div class="flex items-center gap-2">
-        <span class="text-xl" aria-hidden="true">⚠️</span>
-        <h2 class="text-lg font-extrabold text-red-600 dark:text-red-300">
-          Call the vet if…
-        </h2>
-      </div>
-      <ul class="mt-3 space-y-2 text-sm text-red-900/80 dark:text-red-100/80">
-        {
-          callVetIf.map((c) => (
-            <li class="flex gap-2.5">
-              <span class="text-red-400" aria-hidden="true">
-                •
-              </span>
-              {c}
-            </li>
-          ))
-        }
-      </ul>
-      <p class="mt-4 text-xs text-red-500/80 dark:text-red-300/60">
-        Contact {contact.owners} · <a
-          href={`tel:${contact.phone.replace(/\s/g, '')}`}
-          class="underline">{contact.phone}</a>
-      </p>
-      <p class="mt-1 text-xs text-red-500/70 dark:text-red-300/50">
-        Recent care: {vet.recentClinic} · {vet.recentPhone}
-      </p>
-    </div>
-  </div>
-
-  <footer class="mx-auto w-full max-w-4xl px-5 pt-4 pb-12 text-center">
-    <div
-      class="mx-auto mb-3 h-12 w-12 overflow-hidden rounded-full ring-2 ring-white dark:ring-slate-800"
-    >
-      <Image
-        src={pichaPhoto}
-        alt=""
-        width={96}
-        densities={[1, 2]}
-        class="h-full w-full object-cover"
-        style="object-position: 50% 22%"
-      />
-    </div>
-    <p class="text-sm text-slate-500 dark:text-slate-400">
-      🏡 {identity.name} lives with {contact.owners}. If found, please call <a
-        href={`tel:${contact.phone.replace(/\s/g, '')}`}
-        class="font-semibold text-blush-600 underline dark:text-blush-300"
-        >{contact.phone}</a
-      >.
-    </p>
-    <p class="mt-2 text-sm text-slate-400 dark:text-slate-500">
-      Made with 💕 for {identity.name}. Coming soon: care tools — cat body
-      language, food calculator & more.
-    </p>
-  </footer>
-
-  <script>
-    import { ageLabel } from '../data/picha';
-
-    // The static build bakes in a build-time age as the no-JS fallback; here we
-    // recompute it against the *visitor's* current date so "~8 months old" stays
-    // correct between deploys.
-    const label = ageLabel();
-    document.querySelectorAll<HTMLElement>('[data-age]').forEach((el) => {
-      el.textContent = label;
-    });
-
-    // Relative day-count for date-anchored notes (e.g. the recovery target).
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    document.querySelectorAll<HTMLElement>('[data-until]').forEach((el) => {
-      const raw = el.getAttribute('data-until');
-      if (!raw) return;
-      const target = new Date(raw);
-      const days = Math.round((target.getTime() - today.getTime()) / 86_400_000);
-      if (days > 1) el.textContent = ` (in ${days} days)`;
-      else if (days === 1) el.textContent = ' (tomorrow)';
-      else if (days === 0) el.textContent = ' (today)';
-      else el.textContent = ' (past the estimate — confirm with the vet)';
-    });
-  </script>
+  <Footer />
 </Layout>

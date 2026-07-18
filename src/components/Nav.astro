@@ -1,0 +1,77 @@
+---
+/**
+ * App navigation: pill bar on desktop, fixed bottom tab bar on mobile
+ * (app-like — matches the installed PWA feel). To add a future tool page,
+ * append one entry to TABS and give the page `current={id}`.
+ */
+interface Props {
+  current: string;
+}
+const { current } = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const TABS = [
+  { id: 'home', href: `${base}/`, icon: '🏡', label: 'Home' },
+  { id: 'health', href: `${base}/health/`, icon: '🩺', label: 'Health' },
+  { id: 'care', href: `${base}/care/`, icon: '🧼', label: 'Care' },
+  { id: 'safety', href: `${base}/safety/`, icon: '🛟', label: 'Safety' },
+];
+---
+
+<!-- desktop: floating pill under the top edge -->
+<nav
+  class="sticky top-4 z-40 mx-auto mt-4 hidden w-fit items-center gap-1 rounded-full border border-paper-300/60 bg-paper-50/80 p-1.5 shadow-sm backdrop-blur-md md:flex dark:border-plum-700/60 dark:bg-plum-900/80"
+  aria-label="Main"
+>
+  {
+    TABS.map((t) => (
+      <a
+        href={t.href}
+        aria-current={current === t.id ? 'page' : undefined}
+        class:list={[
+          'flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-bold transition-colors duration-200',
+          current === t.id
+            ? 'bg-blush-600 text-white shadow-sm'
+            : 'text-ink-600 hover:bg-blush-100 hover:text-blush-700 dark:text-ink-400 dark:hover:bg-plum-800 dark:hover:text-blush-300',
+        ]}
+      >
+        <span aria-hidden="true">{t.icon}</span>
+        {t.label}
+      </a>
+    ))
+  }
+</nav>
+
+<!-- mobile: bottom tab bar -->
+<nav
+  class="fixed inset-x-0 bottom-0 z-40 border-t border-paper-300/60 bg-paper-50/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden dark:border-plum-700/60 dark:bg-plum-900/85"
+  aria-label="Main"
+>
+  <div class="mx-auto grid max-w-md grid-cols-4">
+    {
+      TABS.map((t) => (
+        <a
+          href={t.href}
+          aria-current={current === t.id ? 'page' : undefined}
+          class:list={[
+            'flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-bold transition-colors duration-200',
+            current === t.id
+              ? 'text-blush-600 dark:text-blush-300'
+              : 'text-ink-400 active:text-blush-500',
+          ]}
+        >
+          <span
+            class:list={[
+              'flex h-8 w-14 items-center justify-center rounded-full text-lg transition-all duration-300',
+              current === t.id ? 'bg-blush-100 dark:bg-plum-800' : '',
+            ]}
+            aria-hidden="true"
+          >
+            {t.icon}
+          </span>
+          {t.label}
+        </a>
+      ))
+    }
+  </div>
+</nav>

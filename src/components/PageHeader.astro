@@ -1,0 +1,48 @@
+---
+/** Compact header for sub-pages: small avatar, serif title, one-liner. */
+import { Image } from 'astro:assets';
+import pichaPhoto from '../assets/picha.jpg';
+
+interface Props {
+  title: string;
+  kicker: string;
+  blurb?: string;
+}
+const { title, kicker, blurb } = Astro.props;
+---
+
+<header class="mx-auto w-full max-w-2xl px-5 pt-10 pb-2 sm:pt-14">
+  <div class="hero-pop flex items-center gap-4">
+    <a
+      href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`}
+      class="wiggle-hover block h-14 w-14 shrink-0 overflow-hidden rounded-full ring-2 ring-blush-200 dark:ring-plum-700"
+      aria-label="Back to Picha's profile"
+    >
+      <Image
+        src={pichaPhoto}
+        alt=""
+        width={112}
+        densities={[1, 2]}
+        class="h-full w-full object-cover"
+        style="object-position: 50% 22%"
+      />
+    </a>
+    <div>
+      <p
+        class="text-[11px] font-bold tracking-[0.18em] text-blush-500 uppercase dark:text-blush-300"
+      >
+        {kicker}
+      </p>
+      <h1 class="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+        {title}
+      </h1>
+    </div>
+  </div>
+  {
+    blurb && (
+      <p class="reveal mt-4 max-w-xl leading-relaxed text-ink-600 dark:text-ink-400">
+        {blurb}
+      </p>
+    )
+  }
+</header>

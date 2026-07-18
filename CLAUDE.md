@@ -30,19 +30,28 @@ converting the whole site to an SPA. Keep the default static/zero-JS baseline.
 
 ## Project structure
 
+Multi-page app with tab navigation — each tab is an Astro page. Future tools
+get their own page + one new entry in the nav's `TABS` array.
+
 ```
 src/
-  data/picha.ts        # ⭐ SINGLE SOURCE OF TRUTH — all of Picha's info lives here
-  layouts/Layout.astro # <html> shell, <head>, background, dark mode, PWA
+  data/picha.ts        # ⭐ SINGLE SOURCE OF TRUTH — all of Picha's info + copy
+  layouts/Layout.astro # <html> shell, fonts, PWA, ClientRouter, shared scripts
   components/
-    Section.astro      # titled section wrapper
-    InfoCard.astro     # soft rounded card for one care/health item
-  pages/index.astro    # the profile page — renders entirely from data/picha.ts
-  styles/global.css    # Tailwind import + @theme palette (cream/blush/amber)
+    Nav.astro          # tab nav: desktop pill bar + mobile bottom tab bar (TABS array)
+    PageHeader.astro   # sub-page header (mini avatar, kicker, serif title, blurb)
+    Footer.astro       # paw divider, "if found" contact, credits
+  pages/
+    index.astro        # Home — hero, passport ticket, story, personality
+    health.astro       # Health — status, treatment, timeline (done/next/to-book), emergency
+    care.astro         # Care — day rhythm, food menu, litter corner
+    safety.astro       # Safety — house rules, toxic chips, "if found" panel
+  styles/global.css    # Tailwind @theme (paper/plum/ink/blush/amber) + animations
   assets/
-    picha.jpg          # hero/footer avatar photo (optimized via astro:assets)
-    icon-source.svg    # source for the drawn app icons (see PWA § below)
-public/favicon.svg     # cat-face favicon
+    picha.jpg          # avatar photo (astro:assets; also the source for app icons)
+    icon-source.svg    # drawn cat (legacy icon source; favicon still uses this look)
+public/favicon.svg     # drawn-cat favicon (photo mush at 16px — keep drawn)
+public/icon-*.png      # PWA icons — cropped from her photo (see § icons)
 .github/workflows/deploy.yml  # build + deploy Pages + auto-release
 astro.config.mjs       # site + base (GitHub Pages project site)
 ```
@@ -50,13 +59,26 @@ astro.config.mjs       # site + base (GitHub Pages project site)
 ### The golden rule: edit data, not markup
 
 **To update Picha's info, edit [`src/data/picha.ts`](src/data/picha.ts).** The
-page is data-driven — add/adjust fields there and the UI follows. Only touch
-`index.astro`/components when changing *layout or design*, not content.
+pages are data-driven — add/adjust fields there and the UI follows. Only touch
+pages/components when changing *layout or design*, not content.
 
 - Her **age is computed** from `BIRTH_DATE` (`ageLabel()`), so it never goes
   stale. Don't hardcode age anywhere.
-- Add new content types by extending the typed arrays (`healthRecords`,
-  `grooming`, etc.) — keep them typed.
+- **`healthTimeline`** is one dated list; `health.astro` splits it at render
+  time into *done* (past dates), *coming up* (future, soonest = "Next up"), and
+  *still to book* (no date). To record a completed visit or schedule something,
+  just add/date an entry — no markup changes.
+- `contact.owners` is an array of `{ name, phone }` — both owners are shown
+  everywhere contact appears (footer, emergency, if-found).
+
+### Voice & tone (copywriting)
+
+Playful, deadpan "Picha owns the place, the humans are staff" — she grants
+cuddles, employs the humans, files complaints about thunder. Keep it in that
+voice **everywhere**… except where safety demands clarity: `callVetIf`,
+`toxicItems`, `recovery.points` and treatment instructions stay plain and
+unambiguous (jokes end where the vet begins). Facts (dates, doses, products)
+must stay exact.
 
 ## Commands
 
@@ -91,15 +113,20 @@ continues from the highest existing tag.
 ## Dynamic dates (client-side)
 
 The site is statically built, so anything relative to "now" would otherwise
-freeze at build time. To keep it live, `src/pages/index.astro` has a client
-`<script>` that recomputes on the **visitor's** date:
+freeze at build time. To keep it live, `src/layouts/Layout.astro` runs a shared
+client script on every page (re-runs on `astro:page-load` after ClientRouter
+swaps):
 
 - `[data-age]` spans → refilled via `ageLabel()` from `src/data/picha.ts`.
 - `[data-until="YYYY-MM-DD"]` spans → filled with a relative day-count
   (e.g. " (in 7 days)", " (past the estimate — confirm with the vet)").
+- `.reveal` elements → scroll-reveal via IntersectionObserver (stagger with
+  inline `--reveal-delay`); skipped under `prefers-reduced-motion`.
 
 The server still renders a build-time value inside those spans as the no-JS
 fallback. **Add new relative dates by using these hooks**, not hardcoded text.
+(The health timeline's done/upcoming *split* is build-time — fine, since every
+push rebuilds — only the countdown chips are client-side.)
 
 ## PWA (installable)
 
@@ -114,17 +141,20 @@ The site installs as an app (Add to Home Screen / install icon):
 
 ### Regenerating icons
 
-Icons are rasterized from `src/assets/icon-source.svg` with macOS `sips`
-(no ImageMagick needed):
+App icons are her actual photo, square-cropped with macOS `sips`
+(no ImageMagick needed — `sips` also rasterizes SVG if ever needed):
 
 ```bash
-sips -s format png --resampleWidth 512 src/assets/icon-source.svg --out public/icon-512.png
-sips -s format png --resampleWidth 192 src/assets/icon-source.svg --out public/icon-192.png
-sips -s format png --resampleWidth 180 src/assets/icon-source.svg --out public/apple-touch-icon.png
+# square face crop (offset keeps ear tips + collar in frame), then sizes
+sips --cropOffset 40 0 -c 989 989 src/assets/picha.jpg --out /tmp/picha-square.jpg
+sips -s format png --resampleWidth 512 /tmp/picha-square.jpg --out public/icon-512.png
+sips -s format png --resampleWidth 192 /tmp/picha-square.jpg --out public/icon-192.png
+sips -s format png --resampleWidth 180 /tmp/picha-square.jpg --out public/apple-touch-icon.png
 ```
 
-`sips` can rasterize SVG → PNG directly. To base icons on a real photo instead,
-point the source at the cropped photo and re-run.
+The favicon stays the drawn cat (`public/favicon.svg`) — a photo of a white cat
+is unreadable at 16 px. After changing icons, bump the SW `CACHE` version so
+installed clients pick them up.
 
 ## Conventions
 
@@ -132,10 +162,12 @@ point the source at the cropped photo and re-run.
 - **Dark mode** is automatic via `prefers-color-scheme` (Tailwind `dark:`
   variants). Style both light and dark when adding UI.
 - **Comments**: keep them minimal and about *why*, not *what*.
-- **Contact info is public on purpose.** The owner chose to publish `contact`
-  (owners + phone) and the `microchip` number so the page doubles as an "if
-  found" tag. Only publish what the owner has approved — don't add other people's
-  names/numbers (e.g. the vet booklet's legal name / second phone stay out).
+- **Contact info is public on purpose.** The owners chose to publish `contact`
+  (Farzin's and Farah's first names + phones) and the `microchip` number so the
+  site doubles as an "if found" tag. Only publish what the owners have
+  approved — legal full names and anyone else's details stay out.
+- **Voice**: playful staff-of-the-cat tone (see § Voice & tone) — but emergency
+  and medical instructions stay plain.
 - **Accessibility**: images have real `alt` (decorative ones use `alt=""`);
   decorative emoji use `aria-hidden`. Keep it that way.
 - Run `pnpm build` before committing — it typechecks and must pass clean.

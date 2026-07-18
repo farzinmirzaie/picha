@@ -1,12 +1,15 @@
 /*
- * Minimal service worker for offline support + installability.
+ * Service worker for offline support + installability.
  * Scope is /picha/ (served from that path on GitHub Pages).
- * Bump CACHE when the precache list changes to evict the old cache.
+ * Bump CACHE when the precache list or site structure changes.
  */
-const CACHE = 'picha-v1';
+const CACHE = 'picha-v2';
 const BASE = '/picha/';
 const PRECACHE = [
   BASE,
+  `${BASE}health/`,
+  `${BASE}care/`,
+  `${BASE}safety/`,
   `${BASE}manifest.webmanifest`,
   `${BASE}icon-192.png`,
   `${BASE}icon-512.png`,
@@ -38,21 +41,24 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
 
-  // Network-first for page navigations (fresh content when online, cached shell offline).
+  // Network-first for page navigations; each page falls back to its own cached
+  // copy, then to the home shell.
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
         .then((res) => {
           const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(BASE, copy));
+          caches.open(CACHE).then((c) => c.put(request, copy));
           return res;
         })
-        .catch(() => caches.match(BASE)),
+        .catch(() =>
+          caches.match(request).then((cached) => cached || caches.match(BASE)),
+        ),
     );
     return;
   }
 
-  // Cache-first for same-origin assets (hashed CSS/JS, icons).
+  // Cache-first for same-origin assets (hashed CSS/JS/images/fonts).
   event.respondWith(
     caches.match(request).then(
       (cached) =>

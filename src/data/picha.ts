@@ -4,13 +4,11 @@
  * The whole site renders from this file, so updating her profile = editing data
  * here (no need to touch markup). Keep it typed and tidy; add new fields rather
  * than hardcoding values into components.
+ *
+ * Voice: playful — Picha owns the place, the humans are staff. Keep medical
+ * facts and emergency copy clear and unambiguous (jokes end where the vet
+ * begins).
  */
-
-export interface QuickFact {
-  icon: string;
-  label: string;
-  value: string;
-}
 
 export interface CareItem {
   icon: string;
@@ -20,19 +18,12 @@ export interface CareItem {
   cadence?: string;
 }
 
-export interface HealthRecord {
+export interface TimelineEntry {
   icon: string;
   title: string;
   detail: string;
-  /** ISO date (YYYY-MM-DD) when this happened, if applicable. */
+  /** ISO date (YYYY-MM-DD). Omit when it isn't scheduled yet ("to book"). */
   date?: string;
-}
-
-export interface Reminder {
-  icon: string;
-  text: string;
-  /** ISO date the reminder is due, if known. */
-  due?: string;
 }
 
 /** Picha's date of birth — age is computed from this so it never goes stale. */
@@ -45,8 +36,10 @@ export const identity = {
   sex: 'Female, spayed',
   bornLabel: '27 November 2025',
   looks:
-    'All-white long coat, pink ears & nose, amber eyes. Wears a pink collar with a bell.',
-  home: 'Apartment in Kuala Lumpur, with Farah × Farzin',
+    'All-white long coat, pink ears & nose, amber eyes. Wears a pink collar with a bell so the staff always know where management is.',
+  home: 'An apartment in Kuala Lumpur, staffed by Farah & Farzin',
+  story:
+    'Picha owns an apartment in Kuala Lumpur, where she keeps two humans — Farah & Farzin — as full-time staff. Their duties include wand-toy operation, chin scratches on demand, and opening treat packets at the precise frequency of her meow. She pays in purrs, head-boops, and the honour of her company. It is not a fair arrangement. Nobody is complaining.',
 };
 
 export const weight = {
@@ -56,71 +49,105 @@ export const weight = {
   note: 'Still growing until ~1.5–2 years old.',
 };
 
-export const quickFacts: QuickFact[] = [
-  { icon: '🐱', label: 'Breed', value: 'Persian × Angora' },
-  { icon: '♀️', label: 'Sex', value: 'Female · spayed' },
-  { icon: '⚖️', label: 'Weight', value: '2.85 kg' },
-  { icon: '🏠', label: 'Home', value: 'Kuala Lumpur' },
-];
-
 export const vet = {
-  // No regular vet chosen yet — still trying clinics to find the best fit.
-  status: 'Still choosing — trying vets to find the best fit',
+  // No regular vet chosen yet — the position remains open.
+  status: 'Auditioning vets — no permanent hire yet',
   recentClinic: 'HP Vet (Pusat Veterinar Healing Pets), Damansara Utama, PJ',
   recentPhone: '03-7732 8878',
 };
 
 /** Owner contact — shown publicly so the page doubles as a "if found" tag. */
 export const contact = {
-  owners: 'Farah × Farzin',
-  phone: '+60 14 238 1951',
+  ownersLabel: 'Farah & Farzin',
+  owners: [
+    { name: 'Farzin', phone: '+60 14 238 1951' },
+    { name: 'Farah', phone: '+60 17 331 2512' },
+  ],
 };
 
 /** Microchip ID (shown to help reunite her if lost). */
 export const microchip = '458098500319352';
 
-/** Completed / scheduled medical history. */
-export const healthRecords: HealthRecord[] = [
+/**
+ * Her health history and future in one list. Entries with a past date render
+ * as "done", future dates as "coming up" (the soonest is highlighted), and
+ * entries without a date land in "to book".
+ */
+export const healthTimeline: TimelineEntry[] = [
   {
     icon: '💉',
-    title: 'FVRCP vaccine',
-    detail:
-      'Complete — 2 doses (Felocell 4): 10 May & 22 June 2026. Next booster due 22 June 2027.',
+    title: 'FVRCP vaccine — dose 1',
+    detail: 'Felocell 4, first dose. Taken like a champ (allegedly).',
+    date: '2026-05-10',
+  },
+  {
+    icon: '💉',
+    title: 'FVRCP vaccine — dose 2',
+    detail: 'Felocell 4, second dose. Series complete.',
     date: '2026-06-22',
   },
   {
     icon: '🐛',
     title: 'Parasite control',
-    detail: 'Revolution Plus applied 24 June 2026 · dewormed 25 June 2026.',
+    detail: 'Revolution Plus applied — fleas, ticks and worms evicted.',
     date: '2026-06-24',
   },
   {
-    icon: '🔪',
+    icon: '💊',
+    title: 'Dewormed',
+    detail: 'Interior pest control, completed.',
+    date: '2026-06-25',
+  },
+  {
+    icon: '🏥',
     title: 'Spay + microchip',
-    detail: 'Both done 11 July 2026.',
+    detail: 'Both done in one visit. She billed the recovery time as spa leave.',
     date: '2026-07-11',
   },
-];
-
-/** Health tasks still to arrange. */
-export const toArrange: Reminder[] = [
-  { icon: '💉', text: 'Rabies vaccine' },
-  { icon: '🧪', text: 'FeLV vaccine (optional)' },
-  { icon: '🪪', text: 'Government Pet Passport + microchip registration' },
   {
-    icon: '📋',
-    text: 'Next visit: confirm microchip is registered to current contact details',
+    icon: '🩹',
+    title: 'Spay recovery check',
+    detail:
+      'Target date for the all-clear — jumping and climbing privileges to be reinstated by the vet.',
+    date: '2026-07-25',
+  },
+  {
+    icon: '💉',
+    title: 'FVRCP booster',
+    detail: 'Felocell 4 annual booster due.',
+    date: '2027-06-22',
+  },
+  {
+    icon: '💉',
+    title: 'Rabies vaccine',
+    detail: 'Required before any travel plans Her Fluffiness may approve.',
+  },
+  {
+    icon: '🧪',
+    title: 'FeLV vaccine',
+    detail: 'Optional — to discuss with whichever vet wins the job.',
+  },
+  {
+    icon: '🪪',
+    title: 'Pet Passport + microchip registration',
+    detail:
+      'Government paperwork: register the microchip and confirm it points at current contact details.',
+  },
+  {
+    icon: '✂️',
+    title: 'Start the nail-trim routine',
+    detail: 'First manicure pending. Front paws first, every 2–4 weeks after.',
   },
 ];
 
-/** Ongoing daily treatment. */
+/** Ongoing daily treatment. Keep instructions exact — this one is medical. */
 export const treatment: CareItem[] = [
   {
     icon: '👂',
     title: 'Morning ear care',
     cadence: 'Every morning',
     detail:
-      'Clean inside the ear with ORI-EAR cleaner on a cotton bud, apply Oridermyl ear ointment (Vetoquinol), then gently massage the base. Ongoing since 11 July — continue for the full course.',
+      'Clean inside the ear with ORI-EAR cleaner on a cotton bud, apply Oridermyl ear ointment (Vetoquinol), then gently massage the base. Ongoing since 11 July — continue for the full course. She tolerates this with visible disapproval.',
   },
 ];
 
@@ -138,106 +165,112 @@ export const recovery = {
 export const food: CareItem[] = [
   {
     icon: '🍽️',
-    title: 'What she eats',
+    title: 'Her palate',
     detail:
-      'Prefers wet / lickable food. Eats kibble but rarely "crunches" it — just her style, not a dental issue.',
+      'Wet and lickable food: five stars, licked clean. Kibble gets politely nibbled, rarely crunched — a lifestyle choice, the vet confirms, not a dental issue.',
   },
   {
     icon: '⚖️',
-    title: 'Measured meals',
+    title: 'Portion control',
     detail:
-      'Feed measured portions, not free-feeding — watch her weight now that she is spayed.',
+      'Measured meals only — the buffet is closed. Post-spay royalty gains weight easily, and the waistline is under active management.',
   },
   {
     icon: '🍬',
     title: 'Treats',
-    detail: 'A big favourite! Keep them to ≤10% of daily food.',
+    detail:
+      'Her love language and primary negotiation tool. Capped at ≤10% of daily food, no matter how convincing the eyes get.',
   },
   {
     icon: '💧',
-    title: 'Water',
-    detail: 'Fresh water always available — she has a water fountain.',
+    title: 'The fountain',
+    detail:
+      'Fresh running water 24/7 from her personal drinking fountain. Still water is beneath her.',
   },
 ];
 
 export const grooming: CareItem[] = [
   {
     icon: '🪮',
-    title: 'Daily combing',
+    title: 'The daily combing',
     cadence: 'Daily',
     detail:
-      'Comb with a stainless steel comb — she enjoys it and turns for both sides. Essential for her long coat; prevents mats.',
+      'Stainless steel comb, once a day. She rotates herself like a rotisserie to present each side. Essential for the long coat — prevents mats, sustains the glamour.',
   },
   {
     icon: '👁️',
-    title: 'Eyes & face',
+    title: 'Face touch-ups',
     cadence: 'As needed',
-    detail: 'Wipe with pet wipes as needed.',
+    detail: 'Pet wipes for the eyes and face, whenever the look needs refreshing.',
   },
   {
     icon: '✂️',
     title: 'Nails',
     cadence: 'Every 2–4 weeks',
-    detail: 'Not yet trimmed — needs starting. Front paws especially.',
+    detail:
+      'The manicure programme has not started yet — front paws first, then every 2–4 weeks. Management has not yet been informed.',
   },
   {
     icon: '🧴',
     title: 'Spot cleaning',
     cadence: 'As needed',
     detail:
-      'YEGBONG Pet Dry Cleaning Mousse (waterless) — worked into the fur and brushed through for under the chin and any dirty spots between baths.',
+      'YEGBONG Pet Dry Cleaning Mousse (waterless) — worked into the fur and brushed through, mainly under the chin and any spots that dared get dirty.',
   },
   {
     icon: '🛁',
     title: 'Bathing',
     cadence: 'Rarely',
     detail:
-      'Rarely needed thanks to daily combing. Occasional bath or professional groom once fully healed.',
+      'Rarely required — the daily combing does the heavy lifting. An occasional bath or professional spa day once she is fully healed.',
   },
   {
     icon: '🪥',
     title: 'Teeth',
-    cadence: 'Building the habit',
+    cadence: 'In training',
     detail:
-      'Toothbrushing habit being introduced with Histo Tree cat-safe dental gel (beef flavour) — bought, not started yet.',
+      'The toothbrushing era approaches: Histo Tree cat-safe dental gel (beef flavour) has been purchased and awaits her formal approval.',
   },
 ];
 
 export const litter: CareItem[] = [
   {
     icon: '🚽',
-    title: 'Current setup',
-    detail: 'A low, shallow open tray — easy access during recovery.',
+    title: 'Current facilities',
+    detail: 'A low, shallow open tray — easy access while she recovers from surgery.',
   },
   {
     icon: '📦',
-    title: 'The plan',
+    title: 'Planned upgrade',
     detail:
-      'Move to a large open high-sided box once fully healed. Scoop daily; ideally two boxes.',
+      'A large, high-sided open box once she is fully healed. Scooped daily; ideally two boxes. She has standards.',
   },
 ];
 
 export const personality: CareItem[] = [
   {
     icon: '🪶',
-    title: 'Playful & energetic',
-    detail: 'A young cat who loves wand toys and "hunting" play.',
+    title: 'Professional huntress',
+    detail:
+      'Wand toys tremble at her name. Daily hunts are mandatory and non-negotiable — she does make the rules.',
   },
   {
     icon: '💕',
-    title: 'Affectionate on her terms',
-    detail: 'Bonded to her people; independent when she wants space.',
+    title: 'Affectionate (by appointment)',
+    detail:
+      'Cuddles are granted, never requested. Deeply bonded to her staff; profoundly independent the moment it suits her.',
   },
   {
     icon: '🌩️',
-    title: 'Sensitive to loud noises',
+    title: 'Thunder critic',
     detail:
-      'Thunder & storms send her hiding in snug, enclosed spots. Let her retreat — don\'t pull her out. Dark, quiet hiding places + calm energy help.',
+      'Storms receive zero stars and an immediate retreat to a secret bunker. Let her be — dark, quiet hideouts and calm energy fix everything. Never pull her out.',
   },
   {
     icon: '😴',
-    title: 'Lots of rest',
-    detail: 'Needs daily play and rest; sleeps 16+ hours a day (normal for her age).',
+    title: 'Sleep athlete',
+    detail:
+      '16+ hours a day. It is not laziness — it is training, and completely normal for her age.',
   },
 ];
 
@@ -246,23 +279,33 @@ export const safety: CareItem[] = [
     icon: '🪟',
     title: 'Windows & heights',
     detail:
-      'Keep only mesh-protected windows open — she\'s a climber. Unscreened windows/balconies are an escape & fall risk.',
+      'A confident climber with zero fear and zero wings. Only mesh-protected windows open — unscreened windows and balconies are a hard no.',
   },
   {
-    icon: '🚫',
-    title: 'Keep away — toxic',
+    icon: '🌩️',
+    title: 'Storm protocol',
     detail:
-      'Lilies, onion/garlic, chocolate, grapes/raisins, paracetamol, essential oils.',
+      'Thunder sends her to snug hiding spots. Let her retreat — dark, quiet places and calm energy help. Never pull her out.',
   },
   {
     icon: '🆔',
-    title: 'ID',
+    title: 'ID & collar',
     detail:
-      'Microchipped — chip 458098500319352. Public registration to current contact details still to be confirmed. A breakaway safety collar is recommended.',
+      'Microchipped — public registration to current contact details still to be confirmed. A breakaway safety collar is recommended for climbing royalty.',
   },
 ];
 
-/** Red-flag symptoms — call the vet. */
+/** Household items that are toxic to her — no jokes here, keep it exact. */
+export const toxicItems: string[] = [
+  'Lilies',
+  'Onion & garlic',
+  'Chocolate',
+  'Grapes & raisins',
+  'Paracetamol',
+  'Essential oils',
+];
+
+/** Red-flag symptoms — call the vet. Serious copy on purpose. */
 export const callVetIf: string[] = [
   'Not eating for ~24h, or repeated vomiting.',
   'Straining in the litter box, or no urination in a day.',
@@ -272,8 +315,8 @@ export const callVetIf: string[] = [
 ];
 
 /**
- * Age in months, computed from BIRTH_DATE at build time so it stays current
- * every time the site is rebuilt.
+ * Age in months, computed from BIRTH_DATE at render time so it stays current
+ * on the visitor's device.
  */
 export function ageInMonths(from: Date = new Date()): number {
   const birth = new Date(BIRTH_DATE);
