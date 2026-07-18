@@ -34,6 +34,7 @@ export const identity = {
   tagline: 'All-white floof · amber eyes · pink-collar royalty',
   breed: 'Persian × Turkish Angora mix',
   sex: 'Female, spayed',
+  colour: 'White',
   bornLabel: '27 November 2025',
   looks:
     'All-white long coat, pink ears & nose, amber eyes. Wears a pink collar with a bell so the staff always know where management is.',
@@ -245,6 +246,24 @@ export const litter: CareItem[] = [
     detail:
       'A large, high-sided open box once she is fully healed. Scooped daily; ideally two boxes. She has standards.',
   },
+];
+
+/** Quick "get to know her" chips for the home page. */
+export const likes: string[] = [
+  'Wand-toy hunts',
+  'The daily combing',
+  'Treats (obviously)',
+  'Running water from her fountain',
+  'Snug hideouts',
+  'Chin scratches',
+];
+
+export const dislikes: string[] = [
+  'Thunderstorms',
+  'Loud noises',
+  'Being retrieved from a hideout',
+  'Still water',
+  'Portion-control discussions',
 ];
 
 export const personality: CareItem[] = [

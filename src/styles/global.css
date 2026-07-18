@@ -154,24 +154,59 @@ body {
   background-size: 100% 1.5px;
 }
 
-/* Ticket edge (passport strip): punched-hole sides */
-.ticket {
-  position: relative;
+/* ---------- passport dialog ---------- */
+
+/* The passport is a physical document — it stays cream even in dark mode. */
+dialog.passport {
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: min(92vw, 44rem);
+  width: 100%;
+  margin: auto;
+  max-height: calc(100dvh - 2.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
-.ticket::before,
-.ticket::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: 18px;
-  height: 18px;
-  border-radius: 9999px;
-  transform: translateY(-50%);
-  background: var(--ticket-hole, var(--color-paper-100));
+dialog.passport::backdrop {
+  background: rgb(23 16 20 / 0.55);
+  backdrop-filter: blur(4px);
 }
-.ticket::before {
-  left: -9px;
+@media (prefers-reduced-motion: no-preference) {
+  dialog.passport[open] {
+    animation: passport-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes passport-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
-.ticket::after {
-  right: -9px;
+
+/* Blue-pen handwriting for filled-in passport values */
+.pen {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #2b3f9e;
+  text-transform: uppercase;
+}
+
+/* Faux barcode for the microchip block */
+.barcode {
+  background-image: repeating-linear-gradient(
+    90deg,
+    #26211c 0 2px,
+    transparent 2px 3px,
+    #26211c 3px 7px,
+    transparent 7px 10px,
+    #26211c 10px 11px,
+    transparent 11px 14px
+  );
 }
