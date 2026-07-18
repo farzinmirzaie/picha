@@ -301,12 +301,13 @@ export const likes: string[] = [
   'Treats (obviously)',
   'Her bell ball — shoot, chase, repeat',
   'The daily combing',
-  'Snug hideouts',
+  'A freshly scooped litter box',
 ];
 
 export const dislikes: string[] = [
   'Being retrieved from a hideout',
   'Being held for too long',
+  'Closed doors',
   'Portion-control discussions',
 ];
 
@@ -334,6 +335,36 @@ export const personality: CareItem[] = [
     title: 'Sleep athlete',
     detail:
       '16+ hours a day. It is not laziness — it is training, and completely normal for her age.',
+  },
+  {
+    icon: 'ph:sparkle',
+    title: 'Impeccably groomed',
+    detail:
+      'Self-grooming is a round-the-clock operation. The white coat stays white through relentless personal effort — the staff merely assist.',
+  },
+  {
+    icon: 'ph:megaphone',
+    title: 'Chief demands officer',
+    detail:
+      'Attention is not requested, it is summoned. Ignoring her is technically possible — for about eleven seconds.',
+  },
+  {
+    icon: 'ph:map-pin',
+    title: 'Keeper of the spots',
+    detail:
+      'She maintains a rotation of official favourite spots. If she is "missing", she is at one of them, precisely where she intends to be.',
+  },
+  {
+    icon: 'ph:couch',
+    title: 'Professional proximity',
+    detail:
+      'Wants her people near, never on top of her. Sit or lie beside her, keep a respectful gap, and consider yourself honoured.',
+  },
+  {
+    icon: 'ph:magnifying-glass',
+    title: 'Chief inspector',
+    detail:
+      'Anything new is inspected on arrival. Groceries do not enter service until every single bag has passed her sniff audit.',
   },
 ];
 

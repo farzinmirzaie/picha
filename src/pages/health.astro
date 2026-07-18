@@ -59,7 +59,7 @@ const segments = [
   />
 
   <!-- Vitals strip: horizontally snap-scrolling stat tiles -->
-  <section aria-label="Vitals" class="mx-auto w-full max-w-2xl pt-4">
+  <section aria-label="Vitals" class="mx-auto w-full max-w-2xl pt-5">
     <div
       class="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-1"
     >
@@ -126,7 +126,7 @@ const segments = [
   </section>
 
   <!-- Current status: recovery progress -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-6" aria-label="Current status">
+  <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Current status">
     <div
       class="reveal rounded-3xl border border-amber-300/60 bg-gradient-to-br from-amber-300/15 to-transparent p-6 dark:border-amber-700/40"
     >
@@ -158,9 +158,9 @@ const segments = [
           >
           </div>
         </div>
-        <div class="mt-1.5 flex justify-between text-[11px] font-bold text-amber-700/80 dark:text-amber-300/80">
+        <div class="mt-1.5 flex justify-between gap-3 text-[10px] font-bold text-amber-700/80 sm:text-[11px] dark:text-amber-300/80">
           <span>{shortLabel(recovery.surgeryDate)} · surgery</span>
-          <span>{shortLabel(recovery.clearedByDate)} · all-clear<span data-until={recovery.clearedByDate}></span></span>
+          <span class="text-right">{shortLabel(recovery.clearedByDate)} · all-clear<span data-until={recovery.clearedByDate}></span></span>
         </div>
       </div>
 
@@ -244,13 +244,13 @@ const segments = [
 
     <!-- Coming up -->
     <div id="seg-panel-upcoming" role="tabpanel" aria-labelledby="seg-tab-upcoming" data-seg-panel="upcoming" class="pt-6">
-      <ol class="border-l-2 border-amber-300/60 pl-6 dark:border-amber-700/40">
+      <ol class="ml-3 border-l-2 border-amber-300/60 pl-7 dark:border-amber-700/40">
         {
           upcoming.map((e, i) => (
             <li class="relative pb-8 last:pb-2">
               <span
                 class:list={[
-                  'absolute -left-[40px] flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-paper-100 dark:ring-plum-950',
+                  'absolute -left-[42px] flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-paper-100 dark:ring-plum-950',
                   i === 0
                     ? 'bg-amber-300/60 text-amber-800 dark:bg-amber-700/50 dark:text-amber-200'
                     : 'bg-paper-200 text-ink-600 dark:bg-plum-800 dark:text-ink-400',
@@ -282,12 +282,12 @@ const segments = [
 
     <!-- The record -->
     <div id="seg-panel-done" role="tabpanel" aria-labelledby="seg-tab-done" data-seg-panel="done" class="hidden pt-6">
-      <ol class="border-l-2 border-blush-200 pl-6 dark:border-plum-700">
+      <ol class="ml-3 border-l-2 border-blush-200 pl-7 dark:border-plum-700">
         {
           done.map((e) => (
             <li class="relative pb-8 last:pb-2">
               <span
-                class="absolute -left-[40px] flex h-8 w-8 items-center justify-center rounded-full bg-blush-100 text-blush-600 ring-4 ring-paper-100 dark:bg-plum-800 dark:text-blush-300 dark:ring-plum-950"
+                class="absolute -left-[42px] flex h-8 w-8 items-center justify-center rounded-full bg-blush-100 text-blush-600 ring-4 ring-paper-100 dark:bg-plum-800 dark:text-blush-300 dark:ring-plum-950"
                 aria-hidden="true"
               >
                 <Icon name={e.icon} class="h-4 w-4" />
@@ -304,7 +304,7 @@ const segments = [
         }
         <li class="relative">
           <span
-            class="absolute -left-[40px] flex h-8 w-8 items-center justify-center rounded-full border-2 border-dashed border-blush-300 bg-paper-100 text-blush-600 dark:border-plum-700 dark:bg-plum-950 dark:text-blush-300"
+            class="absolute -left-[42px] flex h-8 w-8 items-center justify-center rounded-full border-2 border-dashed border-blush-300 bg-paper-100 text-blush-600 dark:border-plum-700 dark:bg-plum-950 dark:text-blush-300"
             aria-hidden="true"><Icon name="ph:scales" class="h-4 w-4" /></span
           >
           <h3 class="font-display pt-1 text-lg font-semibold">Weight check</h3>
