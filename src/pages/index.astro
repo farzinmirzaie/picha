@@ -1,0 +1,287 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Section from '../components/Section.astro';
+import InfoCard from '../components/InfoCard.astro';
+import CatAvatar from '../components/CatAvatar.astro';
+import {
+  identity,
+  weight,
+  quickFacts,
+  vet,
+  healthRecords,
+  toArrange,
+  treatment,
+  recovery,
+  food,
+  grooming,
+  litter,
+  personality,
+  safety,
+  callVetIf,
+  ageLabel,
+} from '../data/picha';
+
+const age = ageLabel();
+
+const nav = [
+  { href: '#basics', label: 'Basics' },
+  { href: '#health', label: 'Vet & Health' },
+  { href: '#care', label: 'Daily Care' },
+  { href: '#personality', label: 'Personality' },
+  { href: '#safety', label: 'Safety' },
+];
+---
+
+<Layout title="Picha 🐾" description={`Picha — ${identity.breed}. ${identity.tagline}`}>
+  <!-- Hero -->
+  <header class="mx-auto w-full max-w-4xl px-5 pt-12 pb-4 text-center">
+    <div class="mx-auto mb-4 w-40 sm:w-48">
+      <CatAvatar class="w-full drop-shadow-sm" />
+    </div>
+    <h1
+      class="text-4xl font-extrabold tracking-tight text-blush-600 sm:text-5xl dark:text-blush-300"
+    >
+      {identity.name}
+      <span aria-hidden="true">🐾</span>
+    </h1>
+    <p class="mt-2 text-base text-slate-500 sm:text-lg dark:text-slate-400">
+      {identity.tagline}
+    </p>
+    <p class="mt-1 text-sm font-semibold text-amber-600 dark:text-amber-glow">
+      {identity.breed} · {age}
+    </p>
+
+    <!-- quick facts -->
+    <ul class="mt-6 flex flex-wrap justify-center gap-2.5">
+      {
+        quickFacts.map((f) => (
+          <li class="flex items-center gap-2 rounded-full border border-blush-100 bg-cream-50/80 px-3.5 py-1.5 text-sm font-semibold text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-300">
+            <span aria-hidden="true">{f.icon}</span>
+            <span class="text-slate-400 dark:text-slate-500">{f.label}:</span>
+            {f.value}
+          </li>
+        ))
+      }
+    </ul>
+
+    <!-- nav pills -->
+    <nav class="mt-8 flex flex-wrap justify-center gap-2">
+      {
+        nav.map((n) => (
+          <a
+            href={n.href}
+            class="rounded-full px-4 py-1.5 text-sm font-semibold text-blush-700 transition hover:bg-blush-100 dark:text-blush-200 dark:hover:bg-blush-700/30"
+          >
+            {n.label}
+          </a>
+        ))
+      }
+    </nav>
+  </header>
+
+  <!-- Recovery banner (current status) -->
+  <div class="mx-auto w-full max-w-4xl px-5 py-4">
+    <div
+      class="rounded-2xl border border-amber-300/60 bg-amber-50 p-5 dark:border-amber-glow/30 dark:bg-amber-glow/10"
+    >
+      <div class="flex items-center gap-2">
+        <span class="text-xl" aria-hidden="true">🩹</span>
+        <h2 class="font-extrabold text-amber-700 dark:text-amber-glow">
+          {recovery.headline}
+        </h2>
+      </div>
+      <p class="mt-1 text-sm text-amber-800/80 dark:text-amber-100/70">
+        Take it easy until <strong>{recovery.clearedByLabel}</strong> or until the
+        vet clears her.
+      </p>
+      <ul class="mt-3 space-y-1.5 text-sm text-slate-600 dark:text-slate-300">
+        {
+          recovery.points.map((p) => (
+            <li class="flex gap-2">
+              <span class="text-amber-500" aria-hidden="true">
+                ✓
+              </span>
+              {p}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <!-- Basics -->
+  <Section id="basics" icon="🏷️" title="The Basics" tone="blush">
+    <div class="grid gap-4 sm:grid-cols-2">
+      <InfoCard icon="🎨" title="Looks">{identity.looks}</InfoCard>
+      <InfoCard icon="🏠" title="Home">{identity.home}</InfoCard>
+      <InfoCard icon="🎂" title="Born">
+        {identity.bornLabel} — {age}. Still growing until ~1.5–2 years.
+      </InfoCard>
+      <InfoCard icon="⚖️" title="Weight">
+        {weight.current} (as of {weight.measuredOn}). Healthy adult target {
+          weight.healthyTarget
+        }.
+      </InfoCard>
+    </div>
+  </Section>
+
+  <!-- Vet & Health -->
+  <Section
+    id="health"
+    icon="🩺"
+    title="Vet & Health"
+    lead={`Vet: ${vet.name} · ${vet.clinic}`}
+    tone="blush"
+  >
+    <div class="grid gap-4 sm:grid-cols-2">
+      {
+        healthRecords.map((r) => (
+          <InfoCard icon={r.icon} title={r.title}>
+            {r.detail}
+          </InfoCard>
+        ))
+      }
+    </div>
+
+    <h3 class="mt-6 mb-3 text-sm font-bold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+      Still to arrange
+    </h3>
+    <ul class="grid gap-2 sm:grid-cols-2">
+      {
+        toArrange.map((t) => (
+          <li class="flex items-start gap-2.5 rounded-xl border border-dashed border-blush-200 bg-cream-50/60 px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
+            <span aria-hidden="true">{t.icon}</span>
+            {t.text}
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <!-- Daily Care -->
+  <Section
+    id="care"
+    icon="🧴"
+    title="Daily Care"
+    lead="Her everyday routine — treatment, food, grooming and litter."
+    tone="blush"
+  >
+    <h3 class="mb-3 font-bold text-slate-700 dark:text-slate-200">
+      💊 Current treatment
+    </h3>
+    <div class="grid gap-4">
+      {
+        treatment.map((t) => (
+          <InfoCard icon={t.icon} title={t.title} cadence={t.cadence}>
+            {t.detail}
+          </InfoCard>
+        ))
+      }
+    </div>
+
+    <h3 class="mt-8 mb-3 font-bold text-slate-700 dark:text-slate-200">🍽️ Food</h3>
+    <div class="grid gap-4 sm:grid-cols-2">
+      {
+        food.map((t) => (
+          <InfoCard icon={t.icon} title={t.title}>
+            {t.detail}
+          </InfoCard>
+        ))
+      }
+    </div>
+
+    <h3 class="mt-8 mb-3 font-bold text-slate-700 dark:text-slate-200">
+      🧼 Grooming
+    </h3>
+    <div class="grid gap-4 sm:grid-cols-2">
+      {
+        grooming.map((t) => (
+          <InfoCard icon={t.icon} title={t.title} cadence={t.cadence}>
+            {t.detail}
+          </InfoCard>
+        ))
+      }
+    </div>
+
+    <h3 class="mt-8 mb-3 font-bold text-slate-700 dark:text-slate-200">🚽 Litter</h3>
+    <div class="grid gap-4 sm:grid-cols-2">
+      {
+        litter.map((t) => (
+          <InfoCard icon={t.icon} title={t.title}>
+            {t.detail}
+          </InfoCard>
+        ))
+      }
+    </div>
+  </Section>
+
+  <!-- Personality -->
+  <Section
+    id="personality"
+    icon="🧠"
+    title="Personality & Needs"
+    tone="blush"
+  >
+    <div class="grid gap-4 sm:grid-cols-2">
+      {
+        personality.map((t) => (
+          <InfoCard icon={t.icon} title={t.title}>
+            {t.detail}
+          </InfoCard>
+        ))
+      }
+    </div>
+  </Section>
+
+  <!-- Safety -->
+  <Section id="safety" icon="🛟" title="Safety" tone="blush">
+    <div class="grid gap-4 sm:grid-cols-2">
+      {
+        safety.map((t) => (
+          <InfoCard icon={t.icon} title={t.title}>
+            {t.detail}
+          </InfoCard>
+        ))
+      }
+    </div>
+  </Section>
+
+  <!-- Call the vet if -->
+  <div class="mx-auto w-full max-w-4xl px-5 py-8">
+    <div
+      class="rounded-2xl border border-red-200 bg-red-50 p-6 dark:border-red-900/50 dark:bg-red-950/30"
+    >
+      <div class="flex items-center gap-2">
+        <span class="text-xl" aria-hidden="true">⚠️</span>
+        <h2 class="text-lg font-extrabold text-red-600 dark:text-red-300">
+          Call the vet if…
+        </h2>
+      </div>
+      <ul class="mt-3 space-y-2 text-sm text-red-900/80 dark:text-red-100/80">
+        {
+          callVetIf.map((c) => (
+            <li class="flex gap-2.5">
+              <span class="text-red-400" aria-hidden="true">
+                •
+              </span>
+              {c}
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-4 text-xs text-red-500/80 dark:text-red-300/60">
+        {vet.name} · {vet.clinic}
+      </p>
+    </div>
+  </div>
+
+  <footer class="mx-auto w-full max-w-4xl px-5 pt-4 pb-12 text-center">
+    <div class="mx-auto mb-3 w-12 opacity-70">
+      <CatAvatar class="w-full" />
+    </div>
+    <p class="text-sm text-slate-400 dark:text-slate-500">
+      Made with 💕 for {identity.name}. Coming soon: care tools — cat body
+      language, food calculator & more.
+    </p>
+  </footer>
+</Layout>
