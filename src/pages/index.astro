@@ -7,6 +7,7 @@ import pichaPhoto from '../assets/picha.jpg';
 import {
   identity,
   microchip,
+  contact,
   personality,
   likes,
   dislikes,
@@ -124,37 +125,63 @@ const particulars = [
       }
     </ul>
 
-    <!-- quick intel: compact, inline — the traits above carry the depth -->
-    <div class="reveal mt-6 space-y-3 border-t border-paper-300/70 pt-6 dark:border-plum-800">
-      <div class="flex flex-wrap items-center gap-2">
-        <span
+    <!-- quick intel: two columns — the traits above carry the depth -->
+    <div
+      class="reveal mt-6 grid grid-cols-2 gap-6 border-t border-paper-300/70 pt-6 dark:border-plum-800"
+    >
+      <div>
+        <h3
           class="flex items-center gap-1.5 text-[11px] font-bold tracking-[0.18em] text-blush-500 uppercase dark:text-blush-300"
         >
           <Icon name="ph:heart" class="h-3.5 w-3.5" aria-hidden="true" /> Loves
-        </span>
-        {
-          likes.map((l) => (
-            <span class="rounded-full bg-blush-100 px-3 py-1 text-xs font-bold text-blush-700 dark:bg-plum-800 dark:text-blush-300">
-              {l}
-            </span>
-          ))
-        }
+        </h3>
+        <div class="mt-2.5 flex flex-wrap gap-2">
+          {
+            likes.map((l) => (
+              <span class="rounded-full bg-blush-100 px-3 py-1 text-xs font-bold text-blush-700 dark:bg-plum-800 dark:text-blush-300">
+                {l}
+              </span>
+            ))
+          }
+        </div>
       </div>
-      <div class="flex flex-wrap items-center gap-2">
-        <span
+      <div>
+        <h3
           class="flex items-center gap-1.5 text-[11px] font-bold tracking-[0.18em] text-ink-400 uppercase"
         >
           <Icon name="ph:prohibit" class="h-3.5 w-3.5" aria-hidden="true" /> Hard pass
-        </span>
-        {
-          dislikes.map((d) => (
-            <span class="rounded-full border border-paper-300 bg-paper-50 px-3 py-1 text-xs font-bold text-ink-600 dark:border-plum-700 dark:bg-plum-900 dark:text-ink-400">
-              {d}
-            </span>
-          ))
-        }
+        </h3>
+        <div class="mt-2.5 flex flex-wrap gap-2">
+          {
+            dislikes.map((d) => (
+              <span class="rounded-full border border-paper-300 bg-paper-50 px-3 py-1 text-xs font-bold text-ink-600 dark:border-plum-700 dark:bg-plum-900 dark:text-ink-400">
+                {d}
+              </span>
+            ))
+          }
+        </div>
       </div>
     </div>
+  </section>
+
+  <!-- If found (home only) -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-12 text-center" aria-label="Contact">
+    <p class="text-sm text-ink-600 dark:text-ink-400">
+      {identity.name} is staffed by {contact.ownersLabel}. If found, please call
+      her people:
+    </p>
+    <p class="mt-1.5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm">
+      {
+        contact.owners.map((o) => (
+          <a
+            href={`tel:${o.phone.replace(/\s/g, '')}`}
+            class="link-slide font-bold text-blush-600 dark:text-blush-300"
+          >
+            {o.name} · {o.phone}
+          </a>
+        ))
+      }
+    </p>
   </section>
 
   <Footer />

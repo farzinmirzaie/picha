@@ -61,8 +61,8 @@ export const vet = {
 export const contact = {
   ownersLabel: 'Farah & Farzin',
   owners: [
-    { name: 'Farzin', phone: '+60 14 238 1951' },
-    { name: 'Farah', phone: '+60 17 331 2512' },
+    { name: 'Daddy', phone: '+60 14 238 1951' },
+    { name: 'Mommy', phone: '+60 17 331 2512' },
   ],
 };
 
