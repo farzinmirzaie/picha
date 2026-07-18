@@ -46,7 +46,7 @@ export const identity = {
   bornLabel: '27 November 2025',
   looks:
     'All-white long coat, pink ears & nose, amber eyes. Wears a pink collar with a bell.',
-  home: 'Apartment in Kuala Lumpur, with Farah & family',
+  home: 'Apartment in Kuala Lumpur, with Farah × Farzin',
 };
 
 export const weight = {
@@ -64,8 +64,9 @@ export const quickFacts: QuickFact[] = [
 ];
 
 export const vet = {
-  name: 'Dr Thang',
-  clinic: 'HP Vet, Kuala Lumpur',
+  name: 'Dr Theng Yin Hong',
+  clinic: 'HP Vet (Pusat Veterinar Healing Pets), Damansara Utama, PJ',
+  phone: '03-7732 8878',
 };
 
 /** Completed / scheduled medical history. */
@@ -73,7 +74,8 @@ export const healthRecords: HealthRecord[] = [
   {
     icon: '💉',
     title: 'FVRCP vaccine',
-    detail: 'Complete — 2 doses (May & June 2026). Next booster due 22 June 2027.',
+    detail:
+      'Complete — 2 doses (Felocell 4): 10 May & 22 June 2026. Next booster due 22 June 2027.',
     date: '2026-06-22',
   },
   {
@@ -108,7 +110,7 @@ export const treatment: CareItem[] = [
     title: 'Morning ear care',
     cadence: 'Every morning',
     detail:
-      "Clean inside the ear with the vet's solution on a cotton bud, apply the prescribed ear medication, then gently massage the base. Ongoing since 11 July — continue for the full course.",
+      'Clean inside the ear with ORI-EAR cleaner on a cotton bud, apply Oridermyl ear ointment (Vetoquinol), then gently massage the base. Ongoing since 11 July — continue for the full course.',
   },
 ];
 
@@ -169,6 +171,13 @@ export const grooming: CareItem[] = [
     detail: 'Not yet trimmed — needs starting. Front paws especially.',
   },
   {
+    icon: '🧴',
+    title: 'Spot cleaning',
+    cadence: 'As needed',
+    detail:
+      'YEGBONG Pet Dry Cleaning Mousse (waterless) — worked into the fur and brushed through for under the chin and any dirty spots between baths.',
+  },
+  {
     icon: '🛁',
     title: 'Bathing',
     cadence: 'Rarely',
@@ -179,7 +188,8 @@ export const grooming: CareItem[] = [
     icon: '🪥',
     title: 'Teeth',
     cadence: 'Building the habit',
-    detail: 'Toothbrushing habit being introduced with cat-safe toothpaste.',
+    detail:
+      'Toothbrushing habit being introduced with Histo Tree cat-safe dental gel (beef flavour) — bought, not started yet.',
   },
 ];
 
@@ -238,7 +248,7 @@ export const safety: CareItem[] = [
     icon: '🆔',
     title: 'ID',
     detail:
-      'Microchipped (registration to be confirmed). A breakaway safety collar is recommended.',
+      'Microchipped — number is on file with the vet (kept off this page). Public registration to current contact details still to be confirmed. A breakaway safety collar is recommended.',
   },
 ];
 

@@ -271,7 +271,9 @@ const nav = [
         }
       </ul>
       <p class="mt-4 text-xs text-red-500/80 dark:text-red-300/60">
-        {vet.name} · {vet.clinic}
+        {vet.name} · {vet.clinic} · <a
+          href={`tel:${vet.phone.replace(/\s/g, '')}`}
+          class="underline">{vet.phone}</a>
       </p>
     </div>
   </div>
