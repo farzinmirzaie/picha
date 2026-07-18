@@ -26,6 +26,18 @@ export interface TimelineEntry {
   date?: string;
 }
 
+export interface RecurringItem {
+  icon: string;
+  title: string;
+  detail: string;
+  /** Human cadence label, e.g. "Every month". */
+  everyLabel: string;
+  /** Days between occurrences — used to compute the next due date. */
+  intervalDays: number;
+  /** ISO date it was last done. Omit if the routine hasn't started yet. */
+  lastDone?: string;
+}
+
 /** Picha's date of birth — age is computed from this so it never goes stale. */
 export const BIRTH_DATE = '2025-11-27';
 
@@ -106,6 +118,13 @@ export const healthTimeline: TimelineEntry[] = [
     date: '2026-07-11',
   },
   {
+    icon: 'ph:ear',
+    title: 'Ear treatment course started',
+    detail:
+      'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.',
+    date: '2026-07-12',
+  },
+  {
     icon: 'ph:bandaids',
     title: 'Spay recovery check',
     detail:
@@ -134,10 +153,47 @@ export const healthTimeline: TimelineEntry[] = [
     detail:
       'Government paperwork: register the microchip and confirm it points at current contact details.',
   },
+];
+
+/**
+ * Recurring health upkeep — merged into the Health "Coming up" list with a
+ * computed next-due date (lastDone + intervalDays). Cadences follow the
+ * product labels / common guidance and are to be confirmed with the vet.
+ * After doing one, just update its `lastDone`.
+ */
+export const recurringCare: RecurringItem[] = [
+  {
+    icon: 'ph:bug',
+    title: 'Parasite control',
+    detail: 'Revolution Plus spot-on — fleas, ticks and worms, evicted monthly.',
+    everyLabel: 'Every month',
+    intervalDays: 30,
+    lastDone: '2026-06-24',
+  },
+  {
+    icon: 'ph:scales',
+    title: 'Weigh-in',
+    detail:
+      'The royal waistline audit — measured meals only work if the staff keep score.',
+    everyLabel: 'Every month',
+    intervalDays: 30,
+    lastDone: '2026-07-18',
+  },
+  {
+    icon: 'ph:pill',
+    title: 'Deworming',
+    detail: 'Interior pest control, on the standard adult schedule.',
+    everyLabel: 'Every 3 months',
+    intervalDays: 90,
+    lastDone: '2026-06-25',
+  },
   {
     icon: 'ph:scissors',
-    title: 'Start the nail-trim routine',
-    detail: 'First manicure pending. Front paws first, every 2–4 weeks after.',
+    title: 'Nail trim',
+    detail:
+      'Front paws first. The programme has not started — management has not yet been informed.',
+    everyLabel: 'Every 2–4 weeks',
+    intervalDays: 21,
   },
 ];
 

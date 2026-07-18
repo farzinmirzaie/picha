@@ -66,9 +66,15 @@ pages/components when changing *layout or design*, not content.
 - Her **age is computed** from `BIRTH_DATE` (`ageLabel()`), so it never goes
   stale. Don't hardcode age anywhere.
 - **`healthTimeline`** is one dated list; `health.astro` splits it at render
-  time into *done* (past dates), *coming up* (future, soonest = "Next up"), and
-  *still to book* (no date). To record a completed visit or schedule something,
-  just add/date an entry — no markup changes.
+  time into *done* (past dates), *coming up* (future), and *still to book*
+  (no date). To record a completed visit or schedule something, just add/date
+  an entry — no markup changes.
+- **`recurringCare`** holds repeating upkeep (`intervalDays` + `lastDone` →
+  computed next-due). It merges into "Coming up" sorted by due date, with an
+  "every X" chip; entries without `lastDone` show "not started yet" at the end.
+  **After doing a recurring task, update its `lastDone`** — the next due date
+  and the "Next visit" vitals tile follow automatically. Weight history is NOT
+  in the record — current weight lives in the vitals tile + monthly weigh-in.
 - `contact.owners` is an array of `{ name, phone }` — both owners are shown
   everywhere contact appears (footer, emergency, if-found).
 
