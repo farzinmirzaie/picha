@@ -1,0 +1,139 @@
+---
+/**
+ * The pet-passport dialog. Include once per page; any element on that page
+ * with `data-passport-open` will open it (app bar icon, hero button, tools row).
+ */
+import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+import pichaPhoto from '../assets/picha.jpg';
+import { identity, microchip } from '../data/picha';
+
+// Layout modelled on the official pet passport: dotted fields, pen-blue values.
+const particulars = [
+  { label: "Pet's Name", value: identity.name },
+  { label: 'Species', value: 'Feline' },
+  { label: 'Breed', value: identity.breed },
+  { label: 'Sex', value: 'Female' },
+  { label: 'Neutered', value: 'Yes' },
+  { label: 'Colour', value: identity.colour },
+  { label: 'Date of Birth', value: identity.bornLabel },
+  { label: 'Passport No.', value: 'Pending — paperwork filed under her bed' },
+];
+---
+
+<!-- A physical document, so it stays cream in dark mode -->
+<dialog id="passport" class="passport" aria-labelledby="passport-title">
+  <div class="overflow-hidden rounded-2xl bg-[#fbf7ef] text-[#3a3a3a] shadow-2xl">
+    <!-- cover strip -->
+    <div class="flex items-center justify-between bg-blush-600 px-5 py-3">
+      <h2
+        id="passport-title"
+        class="text-[11px] font-bold tracking-[0.22em] text-white uppercase sm:text-xs"
+      >
+        Pet Passport
+      </h2>
+      <form method="dialog">
+        <button
+          class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/35"
+          aria-label="Close passport"
+        >
+          <Icon name="ph:x" class="h-4 w-4" aria-hidden="true" />
+        </button>
+      </form>
+    </div>
+
+    <div class="grid sm:grid-cols-2">
+      <!-- left page: particulars -->
+      <div class="border-b border-dashed border-[#d8cfc0] p-5 sm:border-r sm:border-b-0 sm:p-6">
+        <h3 class="text-[10px] font-bold tracking-[0.18em] uppercase">
+          Pet's Particulars
+        </h3>
+        <dl class="mt-4 space-y-3.5">
+          {
+            particulars.map((f) => (
+              <div class="grid grid-cols-[6.5rem_1fr] items-end gap-2 sm:grid-cols-[7.5rem_1fr]">
+                <dt class="text-[10px] leading-tight font-bold">{f.label}</dt>
+                <dd class="pen border-b border-dotted border-[#b9ad99] pb-0.5 text-xs sm:text-sm">
+                  {f.value}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+        <!-- registrar stamp -->
+        <div
+          class="mt-6 w-fit -rotate-3 rounded-lg border-2 border-blush-400/70 px-3 py-2 text-center text-[9px] font-bold tracking-[0.14em] text-blush-500/90 uppercase"
+          aria-hidden="true"
+        >
+          <span class="inline-flex items-center gap-1">
+            <Icon name="ph:paw-print" class="h-3 w-3" /> Royal Household of Picha
+          </span><br />
+          <span class="font-normal normal-case italic tracking-normal"
+            >Signature: paw on file</span
+          >
+        </div>
+      </div>
+
+      <!-- right page: identity -->
+      <div class="p-5 sm:p-6">
+        <h3 class="text-[10px] font-bold tracking-[0.18em] uppercase">
+          Pet Identity
+        </h3>
+
+        <div class="mt-4">
+          <p class="text-[10px] font-bold">Microchip No.</p>
+          <div class="mt-1.5 rounded-md border border-[#d8cfc0] bg-white px-3 py-2">
+            <div class="barcode h-9 w-full" aria-hidden="true"></div>
+            <p class="select-text mt-1 text-center font-mono text-xs tracking-[0.28em]">
+              {microchip}
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-[6.5rem_1fr] items-end gap-2 sm:grid-cols-[7.5rem_1fr]">
+          <p class="text-[10px] leading-tight font-bold">Site of Implant</p>
+          <p class="pen border-b border-dotted border-[#b9ad99] pb-0.5 text-xs sm:text-sm">
+            Between shoulders
+          </p>
+        </div>
+
+        <div class="mt-5">
+          <p class="text-center text-[10px] font-bold">Pet Photo</p>
+          <div
+            class="mx-auto mt-2 w-40 rotate-1 border-4 border-white shadow-md sm:w-44"
+          >
+            <Image
+              src={pichaPhoto}
+              alt="Passport photo of Picha"
+              width={352}
+              densities={[1, 2]}
+              class="aspect-square h-auto w-full object-cover"
+              style="object-position: 50% 20%"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  function setupPassport() {
+    const dialog = document.getElementById('passport') as HTMLDialogElement | null;
+    if (!dialog) return;
+    document.querySelectorAll<HTMLElement>('[data-passport-open]').forEach((btn) => {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', () => dialog.showModal());
+    });
+    if (!dialog.dataset.bound) {
+      dialog.dataset.bound = '1';
+      // click on the backdrop (the dialog element itself) closes it
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    }
+  }
+  setupPassport();
+  document.addEventListener('astro:page-load', setupPassport);
+</script>

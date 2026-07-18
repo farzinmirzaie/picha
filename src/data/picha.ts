@@ -366,6 +366,12 @@ export const personality: CareItem[] = [
     detail:
       'Anything new is inspected on arrival. Groceries do not enter service until every single bag has passed her sniff audit.',
   },
+  {
+    icon: 'ph:binoculars',
+    title: 'Hide-and-seek grandmaster',
+    detail:
+      'The staff run and hide; she finds them. Every time. No one has ever successfully hidden from her, and no one ever will.',
+  },
 ];
 
 export const safety: CareItem[] = [

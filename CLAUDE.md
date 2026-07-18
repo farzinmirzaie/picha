@@ -40,6 +40,8 @@ src/
   components/
     Nav.astro          # tab nav: desktop pill bar + mobile bottom tab bar (TABS array)
     PageHeader.astro   # sub-page header (kicker, serif title, blurb; avatar md+ only)
+    PassportDialog.astro # the pet-passport <dialog> + opener script — include once
+                       # per page; any [data-passport-open] element opens it
     Footer.astro       # paw divider + credits — desktop-only unless `showOnMobile`
   pages/
     index.astro        # Home — hero, passport dialog, story, get-to-know-her

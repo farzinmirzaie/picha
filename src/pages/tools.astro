@@ -3,6 +3,7 @@ import { Icon } from 'astro-icon/components';
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
+import PassportDialog from '../components/PassportDialog.astro';
 
 // Future tools land here: build the page, then move its entry from this queue
 // to a real link (or give it its own nav tab if it earns one).
@@ -41,7 +42,44 @@ const queue = [
     blurb="Gadgets for her staff. Nothing has shipped yet — the supervisor keeps sitting on the blueprints."
   />
 
-  <section class="mx-auto w-full max-w-2xl px-5 pt-6" aria-label="Build queue">
+  <!-- In service: tools that already shipped -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-4" aria-label="In service">
+    <h2
+      class="reveal text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
+    >
+      In service
+    </h2>
+    <button
+      type="button"
+      data-passport-open
+      class="reveal mt-3 flex w-full items-center gap-4 rounded-3xl border border-blush-200/70 bg-paper-50 p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-900"
+    >
+      <span
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
+        aria-hidden="true"
+      >
+        <Icon name="ph:identification-card" class="h-5.5 w-5.5" />
+      </span>
+      <span class="min-w-0 flex-1">
+        <span class="flex flex-wrap items-center gap-2">
+          <span class="font-display text-lg font-semibold">Pet Passport</span>
+          <span class="rounded-full bg-blush-600 px-2.5 py-0.5 text-[11px] font-bold text-white">
+            Shipped
+          </span>
+        </span>
+        <span class="mt-0.5 block text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+          Her official document — particulars, microchip and the registrar's paw.
+        </span>
+      </span>
+      <Icon
+        name="ph:caret-right"
+        class="h-4 w-4 shrink-0 text-ink-400"
+        aria-hidden="true"
+      />
+    </button>
+  </section>
+
+  <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Build queue">
     <h2
       class="reveal text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
     >
@@ -92,4 +130,5 @@ const queue = [
   </section>
 
   <Footer showOnMobile />
+  <PassportDialog />
 </Layout>
