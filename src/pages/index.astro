@@ -1,13 +1,15 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Section from '../components/Section.astro';
 import InfoCard from '../components/InfoCard.astro';
-import CatAvatar from '../components/CatAvatar.astro';
+import pichaPhoto from '../assets/picha.jpg';
 import {
   identity,
   weight,
   quickFacts,
   vet,
+  contact,
   healthRecords,
   toArrange,
   treatment,
@@ -35,8 +37,18 @@ const nav = [
 <Layout title="Picha 🐾" description={`Picha — ${identity.breed}. ${identity.tagline}`}>
   <!-- Hero -->
   <header class="mx-auto w-full max-w-4xl px-5 pt-12 pb-4 text-center">
-    <div class="mx-auto mb-4 w-40 sm:w-48">
-      <CatAvatar class="w-full drop-shadow-sm" />
+    <div
+      class="mx-auto mb-4 h-40 w-40 overflow-hidden rounded-full bg-cream-50 shadow-lg ring-4 ring-white sm:h-48 sm:w-48 dark:ring-slate-800"
+    >
+      <Image
+        src={pichaPhoto}
+        alt="Picha, an all-white cat with amber eyes and a pink collar"
+        width={384}
+        densities={[1, 2]}
+        class="h-full w-full object-cover"
+        style="object-position: 50% 22%"
+        loading="eager"
+      />
     </div>
     <h1
       class="text-4xl font-extrabold tracking-tight text-blush-600 sm:text-5xl dark:text-blush-300"
@@ -131,7 +143,7 @@ const nav = [
     id="health"
     icon="🩺"
     title="Vet & Health"
-    lead={`Vet: ${vet.name} · ${vet.clinic}`}
+    lead={`Vet: ${vet.status}. Recent care at ${vet.recentClinic}.`}
     tone="blush"
   >
     <div class="grid gap-4 sm:grid-cols-2">
@@ -271,18 +283,37 @@ const nav = [
         }
       </ul>
       <p class="mt-4 text-xs text-red-500/80 dark:text-red-300/60">
-        {vet.name} · {vet.clinic} · <a
-          href={`tel:${vet.phone.replace(/\s/g, '')}`}
-          class="underline">{vet.phone}</a>
+        Contact {contact.owners} · <a
+          href={`tel:${contact.phone.replace(/\s/g, '')}`}
+          class="underline">{contact.phone}</a>
+      </p>
+      <p class="mt-1 text-xs text-red-500/70 dark:text-red-300/50">
+        Recent care: {vet.recentClinic} · {vet.recentPhone}
       </p>
     </div>
   </div>
 
   <footer class="mx-auto w-full max-w-4xl px-5 pt-4 pb-12 text-center">
-    <div class="mx-auto mb-3 w-12 opacity-70">
-      <CatAvatar class="w-full" />
+    <div
+      class="mx-auto mb-3 h-12 w-12 overflow-hidden rounded-full ring-2 ring-white dark:ring-slate-800"
+    >
+      <Image
+        src={pichaPhoto}
+        alt=""
+        width={96}
+        densities={[1, 2]}
+        class="h-full w-full object-cover"
+        style="object-position: 50% 22%"
+      />
     </div>
-    <p class="text-sm text-slate-400 dark:text-slate-500">
+    <p class="text-sm text-slate-500 dark:text-slate-400">
+      🏡 {identity.name} lives with {contact.owners}. If found, please call <a
+        href={`tel:${contact.phone.replace(/\s/g, '')}`}
+        class="font-semibold text-blush-600 underline dark:text-blush-300"
+        >{contact.phone}</a
+      >.
+    </p>
+    <p class="mt-2 text-sm text-slate-400 dark:text-slate-500">
       Made with 💕 for {identity.name}. Coming soon: care tools — cat body
       language, food calculator & more.
     </p>

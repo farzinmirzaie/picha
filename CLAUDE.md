@@ -33,13 +33,15 @@ converting the whole site to an SPA. Keep the default static/zero-JS baseline.
 ```
 src/
   data/picha.ts        # ⭐ SINGLE SOURCE OF TRUTH — all of Picha's info lives here
-  layouts/Layout.astro # <html> shell, <head>, background, dark mode
+  layouts/Layout.astro # <html> shell, <head>, background, dark mode, PWA
   components/
-    CatAvatar.astro    # illustrated SVG stand-in (replace with a real photo later)
     Section.astro      # titled section wrapper
     InfoCard.astro     # soft rounded card for one care/health item
   pages/index.astro    # the profile page — renders entirely from data/picha.ts
   styles/global.css    # Tailwind import + @theme palette (cream/blush/amber)
+  assets/
+    picha.jpg          # hero/footer avatar photo (optimized via astro:assets)
+    icon-source.svg    # source for the drawn app icons (see PWA § below)
 public/favicon.svg     # cat-face favicon
 .github/workflows/deploy.yml  # build + deploy Pages + auto-release
 astro.config.mjs       # site + base (GitHub Pages project site)
@@ -129,17 +131,23 @@ point the source at the cropped photo and re-run.
 - **Content lives in data**, not JSX/markup (see golden rule above).
 - **Dark mode** is automatic via `prefers-color-scheme` (Tailwind `dark:`
   variants). Style both light and dark when adding UI.
-- **Comments**: keep them minimal and about *why*, not *what*. No PII beyond
-  what's already public about a house cat.
-- **Accessibility**: SVGs have `role="img"` + `aria-label`; decorative emoji use
-  `aria-hidden`. Keep it that way.
+- **Comments**: keep them minimal and about *why*, not *what*.
+- **Contact info is public on purpose.** The owner chose to publish `contact`
+  (owners + phone) and the `microchip` number so the page doubles as an "if
+  found" tag. Only publish what the owner has approved — don't add other people's
+  names/numbers (e.g. the vet booklet's legal name / second phone stay out).
+- **Accessibility**: images have real `alt` (decorative ones use `alt=""`);
+  decorative emoji use `aria-hidden`. Keep it that way.
 - Run `pnpm build` before committing — it typechecks and must pass clean.
 
-## Replacing the avatar with a real photo
+## Avatar photo
 
-`CatAvatar.astro` is a drawing. To use a photo: add the image to `public/` (or
-`src/assets/` + Astro `<Image>`), then swap the `<CatAvatar />` usages in
-`index.astro`. Keep the rounded/haloed hero framing for consistency.
+The hero + footer avatar is `src/assets/picha.jpg`, rendered through
+`astro:assets` `<Image>` (optimized to WebP; needs the `sharp` dependency). It
+sits in a circular frame with `object-cover` + `object-position: 50% 22%` to
+focus her face. To change the photo, replace that file; adjust `object-position`
+if the framing needs it. The old drawn `CatAvatar` was removed once the real
+photo landed — the drawn look survives only in the app icon (`icon-source.svg`).
 
 ## Roadmap (not built yet)
 

@@ -64,10 +64,20 @@ export const quickFacts: QuickFact[] = [
 ];
 
 export const vet = {
-  name: 'Dr Theng Yin Hong',
-  clinic: 'HP Vet (Pusat Veterinar Healing Pets), Damansara Utama, PJ',
-  phone: '03-7732 8878',
+  // No regular vet chosen yet — still trying clinics to find the best fit.
+  status: 'Still choosing — trying vets to find the best fit',
+  recentClinic: 'HP Vet (Pusat Veterinar Healing Pets), Damansara Utama, PJ',
+  recentPhone: '03-7732 8878',
 };
+
+/** Owner contact — shown publicly so the page doubles as a "if found" tag. */
+export const contact = {
+  owners: 'Farah × Farzin',
+  phone: '+60 14 238 1951',
+};
+
+/** Microchip ID (shown to help reunite her if lost). */
+export const microchip = '458098500319352';
 
 /** Completed / scheduled medical history. */
 export const healthRecords: HealthRecord[] = [
@@ -248,7 +258,7 @@ export const safety: CareItem[] = [
     icon: '🆔',
     title: 'ID',
     detail:
-      'Microchipped — number is on file with the vet (kept off this page). Public registration to current contact details still to be confirmed. A breakaway safety collar is recommended.',
+      'Microchipped — chip 458098500319352. Public registration to current contact details still to be confirmed. A breakaway safety collar is recommended.',
   },
 ];
 
