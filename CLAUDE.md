@@ -138,6 +138,13 @@ The site installs as an app (Add to Home Screen / install icon):
 - Registration + `<link rel="manifest">` + apple-touch meta live in
   `src/layouts/Layout.astro`. Use the `asset()` helper for base-prefixed URLs
   (BASE_URL already ends in `/` — don't double the slash).
+- **Native feel**: scrollbars are hidden under `@media (display-mode:
+  standalone)` (global.css), and `Layout.astro` fires `navigator.vibrate(8)` on
+  `pointerdown` of any link/button (Android haptics; iOS lacks the API — safe
+  no-op). Keep both when adding new interactive UI.
+- **Notifications**: local `showNotification()` works while the app is open;
+  background/scheduled reminders would need a Web Push backend (Notification
+  Triggers API is dead). Planned as a future tool, not built.
 
 ### Regenerating icons
 

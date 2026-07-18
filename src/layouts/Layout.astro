@@ -111,6 +111,17 @@ const ogImage = new URL(asset('icon-512.png'), Astro.site);
 
       hydrate();
       document.addEventListener('astro:page-load', hydrate);
+
+      // Haptic tick on interactive taps — native-app feel on Android
+      // (navigator.vibrate is a no-op / absent on iOS, so this degrades safely).
+      document.addEventListener(
+        'pointerdown',
+        (e) => {
+          const el = e.target as Element | null;
+          if (el?.closest('a, button')) navigator.vibrate?.(8);
+        },
+        { passive: true },
+      );
     </script>
 
     <script>

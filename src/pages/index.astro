@@ -14,17 +14,17 @@ import {
 
 const age = ageLabel();
 
-// Passport booklet fields — modelled on the Malaysian government pet passport
-// (Jabatan Perkhidmatan Veterinar layout): bilingual labels, pen-blue values.
+// Passport booklet fields — layout modelled on the official pet passport
+// (dotted fields, pen-blue values), labels in English.
 const particulars = [
-  { my: 'Nama Haiwan Kesayangan', en: "Pet's Name", value: identity.name },
-  { my: 'Spesis', en: 'Species', value: 'Feline' },
-  { my: 'Baka', en: 'Breed', value: identity.breed },
-  { my: 'Jantina', en: 'Sex', value: 'Betina (Female)' },
-  { my: 'Mandul', en: 'Neutered', value: 'Ya (Yes)' },
-  { my: 'Warna', en: 'Colour', value: identity.colour },
-  { my: 'Tarikh Lahir', en: 'Date of Birth', value: identity.bornLabel },
-  { my: 'No. Pasport', en: 'Passport No.', value: 'Pending — paperwork filed under her bed' },
+  { label: "Pet's Name", value: identity.name },
+  { label: 'Species', value: 'Feline' },
+  { label: 'Breed', value: identity.breed },
+  { label: 'Sex', value: 'Female' },
+  { label: 'Neutered', value: 'Yes' },
+  { label: 'Colour', value: identity.colour },
+  { label: 'Date of Birth', value: identity.bornLabel },
+  { label: 'Passport No.', value: 'Pending — paperwork filed under her bed' },
 ];
 ---
 
@@ -176,7 +176,7 @@ const particulars = [
           id="passport-title"
           class="text-[11px] font-bold tracking-[0.22em] text-white uppercase sm:text-xs"
         >
-          Pasport Haiwan · Pet Passport
+          Pet Passport
         </h2>
         <form method="dialog">
           <button
@@ -192,16 +192,13 @@ const particulars = [
         <!-- left page: particulars -->
         <div class="border-b border-dashed border-[#d8cfc0] p-5 sm:border-r sm:border-b-0 sm:p-6">
           <h3 class="text-[10px] font-bold tracking-[0.18em] uppercase">
-            Butiran Haiwan <span class="font-normal italic">/ Pet's Particulars</span>
+            Pet's Particulars
           </h3>
-          <dl class="mt-4 space-y-3">
+          <dl class="mt-4 space-y-3.5">
             {
               particulars.map((f) => (
-                <div class="grid grid-cols-[7.5rem_1fr] items-end gap-2 sm:grid-cols-[8.5rem_1fr]">
-                  <dt class="text-[10px] leading-tight font-bold">
-                    {f.my}
-                    <span class="block font-normal italic opacity-70">({f.en})</span>
-                  </dt>
+                <div class="grid grid-cols-[6.5rem_1fr] items-end gap-2 sm:grid-cols-[7.5rem_1fr]">
+                  <dt class="text-[10px] leading-tight font-bold">{f.label}</dt>
                   <dd class="pen border-b border-dotted border-[#b9ad99] pb-0.5 text-xs sm:text-sm">
                     {f.value}
                   </dd>
@@ -216,7 +213,7 @@ const particulars = [
           >
             🐾 Royal Household of Picha<br />
             <span class="font-normal normal-case italic tracking-normal"
-              >Tandatangan (Signature): paw on file</span
+              >Signature: paw on file</span
             >
           </div>
         </div>
@@ -224,13 +221,11 @@ const particulars = [
         <!-- right page: identity -->
         <div class="p-5 sm:p-6">
           <h3 class="text-[10px] font-bold tracking-[0.18em] uppercase">
-            Pengenalan Haiwan <span class="font-normal italic">/ Pet Identity</span>
+            Pet Identity
           </h3>
 
           <div class="mt-4">
-            <p class="text-[10px] font-bold">
-              No. Mikrocip <span class="font-normal italic opacity-70">(Microchip No.)</span>
-            </p>
+            <p class="text-[10px] font-bold">Microchip No.</p>
             <div class="mt-1.5 rounded-md border border-[#d8cfc0] bg-white px-3 py-2">
               <div class="barcode h-9 w-full" aria-hidden="true"></div>
               <p class="mt-1 text-center font-mono text-xs tracking-[0.28em]">
@@ -239,21 +234,15 @@ const particulars = [
             </div>
           </div>
 
-          <div class="mt-4 grid grid-cols-[7.5rem_1fr] items-end gap-2 sm:grid-cols-[8.5rem_1fr]">
-            <p class="text-[10px] leading-tight font-bold">
-              Lokasi Mikrocip Ditanam
-              <span class="block font-normal italic opacity-70">(Site of Implant)</span>
-            </p>
+          <div class="mt-4 grid grid-cols-[6.5rem_1fr] items-end gap-2 sm:grid-cols-[7.5rem_1fr]">
+            <p class="text-[10px] leading-tight font-bold">Site of Implant</p>
             <p class="pen border-b border-dotted border-[#b9ad99] pb-0.5 text-xs sm:text-sm">
               Between shoulders
             </p>
           </div>
 
           <div class="mt-5">
-            <p class="text-center text-[10px] font-bold">
-              Gambar Haiwan Kesayangan
-              <span class="font-normal italic opacity-70">(Pet photo)</span>
-            </p>
+            <p class="text-center text-[10px] font-bold">Pet Photo</p>
             <div
               class="mx-auto mt-2 w-40 rotate-1 border-4 border-white shadow-md sm:w-44"
             >

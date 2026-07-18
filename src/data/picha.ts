@@ -253,7 +253,7 @@ export const likes: string[] = [
   'Wand-toy hunts',
   'The daily combing',
   'Treats (obviously)',
-  'Running water from her fountain',
+  'Her bell ball — shoot, chase, repeat',
   'Snug hideouts',
   'Chin scratches',
 ];
@@ -262,7 +262,7 @@ export const dislikes: string[] = [
   'Thunderstorms',
   'Loud noises',
   'Being retrieved from a hideout',
-  'Still water',
+  'Being held for too long',
   'Portion-control discussions',
 ];
 

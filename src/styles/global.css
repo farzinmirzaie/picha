@@ -46,6 +46,18 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Installed as a PWA: hide scrollbars everywhere for a native-app feel
+   (content still scrolls — only the bars disappear). */
+@media (display-mode: standalone) {
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
