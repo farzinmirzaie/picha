@@ -22,6 +22,17 @@ const storyHtml = identity.story.replace(
   '<span class="font-semibold text-blush-600 dark:text-blush-300">$1</span>',
 );
 
+// Hero slideshow: every picha*.jpg in assets, picha.jpg first then numerically.
+// Drop a new photo in as picha-<n>.jpg and it joins the rotation automatically.
+const slideModules = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/picha*.jpg',
+  { eager: true },
+);
+const slideNo = (path: string) => parseInt(path.match(/picha-(\d+)/)?.[1] ?? '0', 10);
+const slides = Object.entries(slideModules)
+  .sort(([a], [b]) => slideNo(a) - slideNo(b))
+  .map(([, m]) => m.default);
+
 // Passport booklet fields — layout modelled on the official pet passport
 // (dotted fields, pen-blue values), labels in English.
 const particulars = [
@@ -40,19 +51,29 @@ const particulars = [
   <!-- Hero -->
   <header class="mx-auto w-full max-w-2xl px-5 pt-10 text-center sm:pt-14">
     <div class="hero-pop relative mx-auto w-52 sm:w-64">
-      <!-- arch-shaped portrait -->
+      <!-- arch-shaped portrait: crossfading slideshow of her photos -->
       <div
         class="wiggle-hover relative aspect-[4/5] overflow-hidden rounded-t-full rounded-b-[2.5rem] shadow-xl ring-4 ring-white dark:ring-plum-800"
+        role="img"
+        aria-label="Photos of Picha, an all-white cat with amber eyes and a pink collar"
       >
-        <Image
-          src={pichaPhoto}
-          alt="Picha, an all-white cat with amber eyes and a pink collar, mid-meow"
-          width={512}
-          densities={[1, 2]}
-          class="h-full w-full object-cover"
-          style="object-position: 50% 30%"
-          loading="eager"
-        />
+        {
+          slides.map((s, i) => (
+            <Image
+              src={s}
+              alt=""
+              width={512}
+              densities={[1, 2]}
+              class:list={[
+                'absolute inset-0 h-full w-full object-cover transition-opacity duration-1000',
+                i === 0 ? 'opacity-100' : 'opacity-0',
+              ]}
+              style="object-position: 50% 30%"
+              loading={i === 0 ? 'eager' : 'lazy'}
+              data-hero-slide
+            />
+          ))
+        }
       </div>
       <Icon
         name="ph:paw-print"
@@ -151,15 +172,19 @@ const particulars = [
         >
           <Icon name="ph:heart" class="h-3.5 w-3.5" aria-hidden="true" /> Loves
         </h3>
-        <div class="mt-2.5 flex flex-wrap gap-2">
+        <ul class="mt-2.5 space-y-2">
           {
             likes.map((l) => (
-              <span class="rounded-full bg-blush-100 px-3 py-1 text-xs font-bold text-blush-700 dark:bg-plum-800 dark:text-blush-300">
+              <li class="flex items-start gap-2.5 text-sm text-ink-600 dark:text-ink-400">
+                <span
+                  class="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-blush-400"
+                  aria-hidden="true"
+                />
                 {l}
-              </span>
+              </li>
             ))
           }
-        </div>
+        </ul>
       </div>
       <div>
         <h3
@@ -167,15 +192,19 @@ const particulars = [
         >
           <Icon name="ph:prohibit" class="h-3.5 w-3.5" aria-hidden="true" /> Hard pass
         </h3>
-        <div class="mt-2.5 flex flex-wrap gap-2">
+        <ul class="mt-2.5 space-y-2">
           {
             dislikes.map((d) => (
-              <span class="rounded-full border border-paper-300 bg-paper-50 px-3 py-1 text-xs font-bold text-ink-600 dark:border-plum-700 dark:bg-plum-900 dark:text-ink-400">
+              <li class="flex items-start gap-2.5 text-sm text-ink-600 dark:text-ink-400">
+                <span
+                  class="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-ink-400/60"
+                  aria-hidden="true"
+                />
                 {d}
-              </span>
+              </li>
             ))
           }
-        </div>
+        </ul>
       </div>
     </div>
   </section>
@@ -324,5 +353,28 @@ const particulars = [
     }
     setupPassport();
     document.addEventListener('astro:page-load', setupPassport);
+  </script>
+
+  <script>
+    // Hero slideshow: crossfade through her photos every few seconds.
+    let slideTimer: ReturnType<typeof setInterval> | undefined;
+
+    function setupSlideshow() {
+      clearInterval(slideTimer);
+      const slides = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-hero-slide]'),
+      );
+      if (slides.length < 2) return;
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      let current = 0;
+      slideTimer = setInterval(() => {
+        slides[current]?.classList.replace('opacity-100', 'opacity-0');
+        current = (current + 1) % slides.length;
+        slides[current]?.classList.replace('opacity-0', 'opacity-100');
+      }, 4000);
+    }
+
+    setupSlideshow();
+    document.addEventListener('astro:page-load', setupSlideshow);
   </script>
 </Layout>

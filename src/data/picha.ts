@@ -31,7 +31,7 @@ export const BIRTH_DATE = '2025-11-27';
 
 export const identity = {
   name: 'Picha',
-  tagline: 'All-white floof · amber eyes · pink-collar royalty',
+  tagline: 'All-white floof · amber eyes · pink-collar',
   breed: 'Persian × Turkish Angora mix',
   sex: 'Female, spayed',
   colour: 'White',
