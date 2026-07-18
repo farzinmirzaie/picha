@@ -1,0 +1,31 @@
+{
+  "name": "Picha 🐾",
+  "short_name": "Picha",
+  "description": "Picha the cat — profile & daily care guide.",
+  "start_url": "/picha/",
+  "scope": "/picha/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fce7ef",
+  "theme_color": "#ec7ba8",
+  "icons": [
+    {
+      "src": "/picha/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/picha/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/picha/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

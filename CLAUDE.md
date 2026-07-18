@@ -77,14 +77,52 @@ Note: `base` is `/picha`, so local URLs are under `/picha` (e.g.
 3. **release** — auto-increment the patch version (`vX.Y.Z`), tag it, and create
    a GitHub Release.
 
-First-time setup (one-off, in the GitHub repo): the workflow tries to
-auto-enable Pages (`configure-pages` with `enablement: true`). If the first run
-fails on that, enable manually: **Settings → Pages → Source: “GitHub Actions”**,
-then re-run the workflow.
+Pages is already enabled (**Settings → Pages → Source: "GitHub Actions"**). This
+was a required one-off: the default Actions token can't auto-enable Pages
+(`Resource not accessible by integration`), so `enablement: true` was removed
+from the workflow — don't add it back.
 
 Versioning is patch-only auto-bump. To cut a minor/major version, push a tag
 manually (e.g. `git tag v0.1.0 && git push origin v0.1.0`) — the next auto-bump
 continues from the highest existing tag.
+
+## Dynamic dates (client-side)
+
+The site is statically built, so anything relative to "now" would otherwise
+freeze at build time. To keep it live, `src/pages/index.astro` has a client
+`<script>` that recomputes on the **visitor's** date:
+
+- `[data-age]` spans → refilled via `ageLabel()` from `src/data/picha.ts`.
+- `[data-until="YYYY-MM-DD"]` spans → filled with a relative day-count
+  (e.g. " (in 7 days)", " (past the estimate — confirm with the vet)").
+
+The server still renders a build-time value inside those spans as the no-JS
+fallback. **Add new relative dates by using these hooks**, not hardcoded text.
+
+## PWA (installable)
+
+The site installs as an app (Add to Home Screen / install icon):
+
+- `public/manifest.webmanifest` — name, icons, `start_url`/`scope` = `/picha/`.
+- `public/sw.js` — service worker (network-first pages, cache-first assets).
+  Bump `CACHE` (`picha-vN`) when the precache list changes.
+- Registration + `<link rel="manifest">` + apple-touch meta live in
+  `src/layouts/Layout.astro`. Use the `asset()` helper for base-prefixed URLs
+  (BASE_URL already ends in `/` — don't double the slash).
+
+### Regenerating icons
+
+Icons are rasterized from `src/assets/icon-source.svg` with macOS `sips`
+(no ImageMagick needed):
+
+```bash
+sips -s format png --resampleWidth 512 src/assets/icon-source.svg --out public/icon-512.png
+sips -s format png --resampleWidth 192 src/assets/icon-source.svg --out public/icon-192.png
+sips -s format png --resampleWidth 180 src/assets/icon-source.svg --out public/apple-touch-icon.png
+```
+
+`sips` can rasterize SVG → PNG directly. To base icons on a real photo instead,
+point the source at the cropped photo and re-run.
 
 ## Conventions
 
