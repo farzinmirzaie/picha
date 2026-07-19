@@ -52,6 +52,9 @@ src/
     tools.astro        # Tools — in-service list (passport, weight) + build queue
     weight.astro       # Weight tracker — build-time SVG chart + stats + ledger,
                        # all rendered from weightHistory (current="tools")
+    cat-years.astro    # Cat-years converter — her age in human years + slider
+                       # converter + life stages; logic (catYears, humanAgeLine,
+                       # felineStages) lives in picha.ts (current="tools")
   styles/global.css    # Tailwind @theme (paper/plum/ink/blush/amber) + animations
   assets/
     picha.jpg          # avatar photo (astro:assets; also the source for app icons)

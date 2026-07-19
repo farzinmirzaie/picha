@@ -8,6 +8,8 @@ import {
   identity,
   BIRTH_DATE,
   ageLabel,
+  ageInMonths,
+  catYears,
   weight,
   weightHistory,
   weightTarget,
@@ -75,6 +77,7 @@ ${identity.looks} Home: ${identity.home}.
 - [Care](${SITE}/care/): daily checklist, care protocol, food, litter, house rules, toxic items, if-found info
 - [Tools](${SITE}/tools/): tools in service and the build queue
 - [Weight tracker](${SITE}/weight/): weight chart, stats and the weigh-in ledger
+- [Cat-years converter](${SITE}/cat-years/): her age in human years, feline life stages, converter for any cat
 
 ## Identity
 
@@ -82,7 +85,7 @@ ${identity.looks} Home: ${identity.home}.
 - Species: cat. Breed: ${identity.breed}
 - Sex: ${identity.sex}
 - Colour: ${identity.colour}
-- Born: ${BIRTH_DATE} (${ageLabel()})
+- Born: ${BIRTH_DATE} (${ageLabel()}, ~${Math.round(catYears(ageInMonths()))} in human years by the common veterinary conversion)
 - Microchip: ${microchip} (implanted between the shoulders)
 - Passport: pending
 

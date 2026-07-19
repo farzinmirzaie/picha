@@ -582,6 +582,97 @@ export function ageLabel(from: Date = new Date()): string {
     : `~${years}y ${rem}m old`;
 }
 
+/* ---------- cat-years converter (Tools) ---------- */
+
+/**
+ * Cat age → human-equivalent years, per the common veterinary rule of thumb:
+ * dense kitten months first (interpolated between chart anchors), ~15 at one
+ * year, 24 at two, then about four human years per cat year.
+ */
+const CAT_YEAR_ANCHORS: Array<[number, number]> = [
+  [0, 0],
+  [1, 1],
+  [2, 2],
+  [3, 4],
+  [4, 6],
+  [5, 8],
+  [6, 10],
+  [7, 12],
+  [12, 15],
+  [18, 21],
+  [24, 24],
+];
+
+export function catYears(months: number): number {
+  const m = Math.max(0, months);
+  if (m >= 24) return 24 + ((m - 24) / 12) * 4;
+  for (let i = 1; i < CAT_YEAR_ANCHORS.length; i++) {
+    const [m1, h1] = CAT_YEAR_ANCHORS[i - 1];
+    const [m2, h2] = CAT_YEAR_ANCHORS[i];
+    if (m <= m2) return h1 + ((m - m1) / (m2 - m1)) * (h2 - h1);
+  }
+  return 24;
+}
+
+/** What that human age amounts to, in the site's voice. */
+export function humanAgeLine(humanYears: number): string {
+  if (humanYears < 1) return 'a lap-sized infant';
+  if (humanYears < 5) return 'a toddler with claws';
+  if (humanYears < 10) return 'a primary schooler with a strict nap schedule';
+  if (humanYears < 13) return 'a middle schooler with strong opinions about bedtime';
+  if (humanYears < 18) return 'a teenager (this explains a great deal)';
+  if (humanYears < 26) return 'a young adult who leaves everyone on read';
+  if (humanYears < 40) return 'an adult with a five-year napping plan';
+  if (humanYears < 60) return 'comfortably middle-aged and done with nonsense';
+  return 'a distinguished senior who has seen everything';
+}
+
+/** Feline life stages (the classic six-stage scheme), in months, no gaps. */
+export const felineStages = [
+  {
+    name: 'Kitten',
+    range: '0 to 6 months',
+    minMonths: 0,
+    maxMonths: 6,
+    blurb: 'Chaos in its purest form. Everything is prey, including feet.',
+  },
+  {
+    name: 'Junior',
+    range: '6 months to 2 years',
+    minMonths: 6,
+    maxMonths: 24,
+    blurb: 'Full size, teenage judgement. Every house rule gets tested twice.',
+  },
+  {
+    name: 'Prime',
+    range: '2 to 6 years',
+    minMonths: 24,
+    maxMonths: 72,
+    blurb: 'Peak cat: maximum glamour, minimum tolerance.',
+  },
+  {
+    name: 'Mature',
+    range: '6 to 10 years',
+    minMonths: 72,
+    maxMonths: 120,
+    blurb: 'The executive years. Naps are meetings; meetings are naps.',
+  },
+  {
+    name: 'Senior',
+    range: '10 to 14 years',
+    minMonths: 120,
+    maxMonths: 168,
+    blurb: 'Gracefully unbothered. The staff remain on duty.',
+  },
+  {
+    name: 'Super senior',
+    range: '14 years and up',
+    minMonths: 168,
+    maxMonths: 9999,
+    blurb: 'Legendary status. Every sunbeam in the house is reserved.',
+  },
+];
+
 /**
  * Human label for a day count relative to today, kept readable at any size:
  * "today", "tomorrow", "in 12 days", "in 2 months and 4 days". Shared by the
