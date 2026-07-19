@@ -292,26 +292,28 @@ const segments = [
               >
                 <Icon name={e.icon} class="h-4 w-4" />
               </span>
-              <div class="flex flex-wrap items-center gap-2 pt-1">
-                <h3 class="font-display text-lg font-semibold">{e.title}</h3>
-                {i === 0 && (
-                  <span class="rounded-full bg-amber-300/40 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:bg-amber-700/30 dark:text-amber-300">
-                    Next up
-                  </span>
-                )}
-                {e.everyLabel && (
-                  <span class="inline-flex items-center gap-1 rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-600 dark:bg-plum-800 dark:text-ink-400">
-                    <Icon name="ph:arrow-clockwise" class="h-3 w-3" aria-hidden="true" />
-                    {e.everyLabel}
-                  </span>
-                )}
-                {e.where && (
-                  <span class="inline-flex items-center gap-1 rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-600 dark:bg-plum-800 dark:text-ink-400">
-                    <Icon name="ph:map-pin" class="h-3 w-3" aria-hidden="true" />
-                    {e.where}
-                  </span>
-                )}
-              </div>
+              <h3 class="font-display pt-1 text-lg font-semibold">{e.title}</h3>
+              {(i === 0 || e.everyLabel || e.where) && (
+                <div class="mt-1 mb-0.5 flex flex-wrap items-center gap-1.5">
+                  {i === 0 && (
+                    <span class="rounded-full bg-amber-300/40 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:bg-amber-700/30 dark:text-amber-300">
+                      Next up
+                    </span>
+                  )}
+                  {e.everyLabel && (
+                    <span class="inline-flex items-center gap-1 rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-600 dark:bg-plum-800 dark:text-ink-400">
+                      <Icon name="ph:arrow-clockwise" class="h-3 w-3" aria-hidden="true" />
+                      {e.everyLabel}
+                    </span>
+                  )}
+                  {e.where && (
+                    <span class="inline-flex items-center gap-1 rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-600 dark:bg-plum-800 dark:text-ink-400">
+                      <Icon name="ph:map-pin" class="h-3 w-3" aria-hidden="true" />
+                      {e.where}
+                    </span>
+                  )}
+                </div>
+              )}
               <p class="text-xs font-bold text-amber-700/80 dark:text-amber-300/80">
                 {e.date ? (
                   <>
