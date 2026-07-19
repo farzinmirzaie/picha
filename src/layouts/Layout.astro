@@ -126,7 +126,9 @@ const appTitle = { home: 'Picha', health: 'Health', care: 'Care', tools: 'Tools'
           el.textContent =
             days >= 0
               ? ` (${inDaysLabel(days)})`
-              : ' (past the estimate, confirm with the vet)';
+              : el.dataset.overdue
+                ? ` (${el.dataset.overdue})`
+                : ' (past the estimate, confirm with the vet)';
         });
 
         // Scroll-reveal: stagger via --reveal-delay set inline per element.

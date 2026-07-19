@@ -22,8 +22,10 @@ export interface TimelineEntry {
   icon: string;
   title: string;
   detail: string;
-  /** ISO date (YYYY-MM-DD). Omit when it isn't scheduled yet ("to book"). */
+  /** ISO date (YYYY-MM-DD). Omit when it isn't scheduled yet ("on the list"). */
   date?: string;
+  /** Where it happens, shown as a chip: "at home", "at the vet", "at the salon". */
+  where?: string;
 }
 
 export interface RecurringItem {
@@ -36,6 +38,13 @@ export interface RecurringItem {
   intervalDays: number;
   /** ISO date it was last done. Omit if the routine hasn't started yet. */
   lastDone?: string;
+  /**
+   * Explicit next due date (ISO). Overrides lastDone + intervalDays — use it
+   * to anchor a first appointment; after doing it, set lastDone and drop this.
+   */
+  nextDue?: string;
+  /** Where it happens, shown as a chip: "at home", "at the vet", "at the salon". */
+  where?: string;
 }
 
 /** Picha's date of birth — age is computed from this so it never goes stale. */
@@ -86,6 +95,9 @@ export const weight = {
   }).format(new Date(lastWeighIn.date)),
   healthyTarget: `~${weightTarget.min}–${weightTarget.max} kg`,
   note: 'Still growing until ~1.5–2 years old.',
+  /** Weigh-in cadence: the Weight tracker computes next-due from the last entry. */
+  auditEveryDays: 30,
+  auditEveryLabel: 'monthly audit',
 };
 
 export const vet = {
@@ -165,17 +177,11 @@ export const healthTimeline: TimelineEntry[] = [
     date: '2026-07-12',
   },
   {
-    icon: 'ph:bandaids',
-    title: 'Spay recovery check',
-    detail:
-      'Target date for the all-clear, when the vet reinstates jumping and climbing privileges.',
-    date: '2026-07-25',
-  },
-  {
     icon: 'ph:syringe',
     title: 'FVRCP booster',
     detail: 'Felocell 4 annual booster due.',
     date: '2027-06-22',
+    where: 'at the vet',
   },
   {
     icon: 'ph:syringe',
@@ -186,6 +192,12 @@ export const healthTimeline: TimelineEntry[] = [
     icon: 'ph:test-tube',
     title: 'FeLV vaccine',
     detail: 'Optional. To discuss with whichever vet wins the job.',
+  },
+  {
+    icon: 'ph:tooth',
+    title: 'Dental check',
+    detail:
+      'A first professional look at the royal teeth; the toothbrushing training programme deserves expert oversight.',
   },
   {
     icon: 'ph:identification-card',
@@ -205,27 +217,52 @@ export const recurringCare: RecurringItem[] = [
   {
     icon: 'ph:bug',
     title: 'Parasite control',
-    detail: 'Revolution Plus spot-on. Fleas, ticks and worms, evicted monthly.',
+    detail:
+      'Revolution Plus spot-on, applied by the staff at home. Fleas, ticks and worms, evicted monthly.',
     everyLabel: 'Every month',
     intervalDays: 30,
     lastDone: '2026-06-24',
-  },
-  {
-    icon: 'ph:scales',
-    title: 'Weigh-in',
-    detail:
-      'The royal waistline audit. Measured meals only work if the staff keep score.',
-    everyLabel: 'Every month',
-    intervalDays: 30,
-    lastDone: '2026-07-19',
+    where: 'at home',
   },
   {
     icon: 'ph:pill',
     title: 'Deworming',
-    detail: 'Interior pest control, on the standard adult schedule.',
+    detail:
+      'Interior pest control, on the standard adult schedule. Given at home, hidden in something delicious.',
     everyLabel: 'Every 3 months',
     intervalDays: 90,
     lastDone: '2026-06-25',
+    where: 'at home',
+  },
+  {
+    icon: 'ph:sparkle',
+    title: 'Grooming & spa day',
+    detail:
+      'The professional glow-up: bath, tidy-up and blow-dry for the resident cloud. First appointment once the vet clears her.',
+    everyLabel: 'Every 2 months',
+    intervalDays: 60,
+    nextDue: '2026-08-01',
+    where: 'at the salon',
+  },
+  {
+    icon: 'ph:broom',
+    title: 'Litter box deep clean',
+    detail:
+      'Full scrub and fresh litter; the royal facilities are restored to five stars. Clock started with the recovery tray.',
+    everyLabel: 'Every 3 months',
+    intervalDays: 90,
+    lastDone: '2026-07-11',
+    where: 'at home',
+  },
+  {
+    icon: 'ph:stethoscope',
+    title: 'Full annual checkup',
+    detail:
+      'The nose-to-tail service: full exam, weight and teeth review. Clock started at the spay visit.',
+    everyLabel: 'Every year',
+    intervalDays: 365,
+    lastDone: '2026-07-11',
+    where: 'at the vet',
   },
   {
     icon: 'ph:scissors',
@@ -234,6 +271,7 @@ export const recurringCare: RecurringItem[] = [
       'Front paws first. The programme has not started; management has not yet been informed.',
     everyLabel: 'Every 2–4 weeks',
     intervalDays: 21,
+    where: 'at home',
   },
 ];
 

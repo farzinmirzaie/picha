@@ -43,17 +43,19 @@ const done = healthTimeline
   .filter((e) => e.date && e.date < today)
   .sort((a, b) => b.date!.localeCompare(a.date!));
 const upcoming = [
-  ...healthTimeline.filter((e) => e.date && e.date >= today),
+  ...healthTimeline
+    .filter((e) => e.date && e.date >= today)
+    .map((e) => ({ ...e, title: e.where ? `${e.title} (${e.where})` : e.title })),
   ...recurringCare
-    .filter((r) => r.lastDone)
+    .filter((r) => r.lastDone || r.nextDue)
     .map((r) => ({
-      title: `${r.title} (${r.everyLabel.toLowerCase()})`,
+      title: `${r.title} (${r.everyLabel.toLowerCase()}${r.where ? `, ${r.where}` : ''})`,
       detail: r.detail,
-      date: addDays(r.lastDone!, r.intervalDays),
+      date: r.nextDue ?? addDays(r.lastDone!, r.intervalDays),
     })),
 ].sort((a, b) => a.date!.localeCompare(b.date!));
 const toBook = healthTimeline.filter((e) => !e.date);
-const notStarted = recurringCare.filter((r) => !r.lastDone);
+const notStarted = recurringCare.filter((r) => !r.lastDone && !r.nextDue);
 
 const item = (title: string, detail: string, date?: string) =>
   `- ${date ? `${date} (${inDaysLabel(daysFromToday(date))}): ` : ''}**${title}**: ${detail}`;
@@ -90,6 +92,7 @@ ${identity.looks} Home: ${identity.home}.
 - Healthy adult target: ${weight.healthyTarget}. ${weight.note}
 - History (oldest first): ${weightHistory.map((w) => `${w.date}: ${w.kg} kg`).join('; ')}
 - Target band: ${weightTarget.min}-${weightTarget.max} kg
+- Weigh-in cadence: every ${weight.auditEveryDays} days (tracked on the Weight page, not in the health record)
 
 ## Health record
 
@@ -112,7 +115,7 @@ ${done.map((e) => `- ${e.date}: **${e.title}**: ${e.detail}`).join('\n')}
 
 ${upcoming.map((e) => item(e.title, e.detail, e.date)).join('\n')}
 
-### Still to book
+### On the list (no date yet)
 
 ${toBook.map((e) => `- **${e.title}**: ${e.detail}`).join('\n')}
 ${notStarted.map((r) => `- **${r.title}** (${r.everyLabel.toLowerCase()}, not started yet): ${r.detail}`).join('\n')}

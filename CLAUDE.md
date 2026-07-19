@@ -84,19 +84,24 @@ pages/components when changing *layout or design*, not content.
 - Her **age is computed** from `BIRTH_DATE` (`ageLabel()`), so it never goes
   stale. Don't hardcode age anywhere.
 - **`healthTimeline`** is one dated list; `health.astro` splits it at render
-  time into *done* (past dates), *coming up* (future), and *still to book*
+  time into *done* (past dates), *coming up* (future), and *on the list*
   (no date). To record a completed visit or schedule something, just add/date
   an entry — no markup changes.
 - **`recurringCare`** holds repeating upkeep (`intervalDays` + `lastDone` →
-  computed next-due). It merges into "Coming up" sorted by due date, with an
-  "every X" chip; entries without `lastDone` show "not started yet" at the end.
-  **After doing a recurring task, update its `lastDone`** — the next due date
-  and the "Next visit" vitals tile follow automatically.
+  computed next-due; an explicit `nextDue` overrides the computation — use it
+  to anchor a first appointment, then set `lastDone` and drop it). It merges
+  into "Coming up" sorted by due date, with "every X" and `where` chips
+  (at home / at the vet / at the salon); entries without `lastDone`/`nextDue`
+  show "not started yet" at the end. If a due date passes before the next
+  rebuild, the client-side countdown chip shows "(overdue)". **After doing a
+  recurring task, update its `lastDone`** — the next due date and the
+  "Next due" vitals tile follow automatically.
 - **`weightHistory`** (oldest first) is the single source for all weight UI:
-  the Weight tracker page (chart/stats/ledger) and `weight.current` /
-  `measuredOn` (derived from its last entry). **To log a weigh-in, append an
-  entry there AND update the weigh-in's `lastDone`.** There is deliberately no
-  entry form; the data file is the ledger.
+  the Weight tracker page (chart/stats/ledger/next-audit tile) and
+  `weight.current` / `measuredOn` (derived from its last entry). **To log a
+  weigh-in, just append an entry there** — weigh-ins live on the Weight page,
+  not in the health record. There is deliberately no entry form; the data
+  file is the ledger.
 - `contact.owners` is an array of `{ name, phone }` — both owners are shown
   everywhere contact appears (footer, emergency, if-found).
 

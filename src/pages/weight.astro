@@ -93,6 +93,16 @@ const stats = [
     value: `${average.toFixed(2)} kg`,
     sub: `across ${entries.length} audit${entries.length === 1 ? '' : 's'}`,
   },
+  {
+    icon: 'ph:calendar-check',
+    label: 'Next audit',
+    value: shortLabel(
+      new Date(Date.parse(latest.date) + weight.auditEveryDays * 86_400_000)
+        .toISOString()
+        .slice(0, 10),
+    ),
+    sub: weight.auditEveryLabel,
+  },
 ];
 
 const ledger = [...points].reverse();

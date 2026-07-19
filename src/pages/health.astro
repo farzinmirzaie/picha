@@ -40,6 +40,7 @@ interface UpcomingEntry {
   detail: string;
   date?: string;
   everyLabel?: string;
+  where?: string;
 }
 
 const upcoming: UpcomingEntry[] = [
@@ -48,8 +49,9 @@ const upcoming: UpcomingEntry[] = [
     icon: r.icon,
     title: r.title,
     detail: r.detail,
-    date: r.lastDone ? addDays(r.lastDone, r.intervalDays) : undefined,
+    date: r.nextDue ?? (r.lastDone ? addDays(r.lastDone, r.intervalDays) : undefined),
     everyLabel: r.everyLabel,
+    where: r.where,
   })),
 ].sort((a, b) => (a.date ?? '9999').localeCompare(b.date ?? '9999'));
 
@@ -74,7 +76,7 @@ const progressPct = Math.max(0, Math.min(100, Math.round((elapsedDays / spanDays
 const segments = [
   { id: 'upcoming', label: 'Coming up' },
   { id: 'done', label: 'The record' },
-  { id: 'tobook', label: 'To book' },
+  { id: 'tobook', label: 'On the list' },
 ];
 ---
 
@@ -137,7 +139,7 @@ const segments = [
             <div class="flex items-center gap-1.5 text-blush-500 dark:text-blush-300">
               <Icon name="ph:calendar-check" class="h-4 w-4" aria-hidden="true" />
               <span class="text-[10px] font-bold tracking-[0.14em] uppercase">
-                Next visit
+                Next due
               </span>
             </div>
             <p class="font-display mt-1.5 text-xl font-semibold">
@@ -303,13 +305,19 @@ const segments = [
                     {e.everyLabel}
                   </span>
                 )}
+                {e.where && (
+                  <span class="inline-flex items-center gap-1 rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-600 dark:bg-plum-800 dark:text-ink-400">
+                    <Icon name="ph:map-pin" class="h-3 w-3" aria-hidden="true" />
+                    {e.where}
+                  </span>
+                )}
               </div>
               <p class="text-xs font-bold text-amber-700/80 dark:text-amber-300/80">
                 {e.date ? (
                   <>
                     {e.everyLabel && 'due ~'}
                     {dateLabel(e.date)}
-                    <span data-until={e.date} />
+                    <span data-until={e.date} data-overdue="overdue" />
                   </>
                 ) : (
                   'not started yet'
