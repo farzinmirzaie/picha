@@ -81,8 +81,8 @@ const segments = [
 <Layout title="Health · Picha 🐾" current="health">
   <PageHeader
     kicker="Vet & Health"
-    title="Her health file"
-    blurb={`Meticulous records, kept by the staff. ${vet.status}.`}
+    title="The royal health record"
+    blurb={`From birthday to boosters — meticulous records, kept by the staff. ${vet.status}.`}
   />
 
   <!-- Vitals strip: horizontally snap-scrolling stat tiles -->
@@ -271,10 +271,14 @@ const segments = [
 
     <!-- Coming up -->
     <div id="seg-panel-upcoming" role="tabpanel" aria-labelledby="seg-tab-upcoming" data-seg-panel="upcoming" class="pt-6">
-      <ol class="ml-3 border-l-2 border-amber-300/60 pl-7 dark:border-amber-700/40">
+      <ol class="ml-3 pl-7">
         {
           upcoming.map((e, i) => (
-            <li class="relative pb-8 last:pb-2">
+            <li class="group relative pb-8 last:pb-2">
+              <span
+                class="absolute -left-[27px] top-0 h-full w-0.5 bg-amber-300/60 group-last:h-4 dark:bg-amber-700/40"
+                aria-hidden="true"
+              />
               <span
                 class:list={[
                   'absolute -left-[42px] flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-paper-100 dark:ring-plum-950',
@@ -326,10 +330,14 @@ const segments = [
 
     <!-- The record -->
     <div id="seg-panel-done" role="tabpanel" aria-labelledby="seg-tab-done" data-seg-panel="done" class="hidden pt-6">
-      <ol class="ml-3 border-l-2 border-blush-200 pl-7 dark:border-plum-700">
+      <ol class="ml-3 pl-7">
         {
           done.map((e) => (
-            <li class="relative pb-8 last:pb-2">
+            <li class="group relative pb-8 last:pb-2">
+              <span
+                class="absolute -left-[27px] top-0 h-full w-0.5 bg-blush-200 group-last:h-4 dark:bg-plum-700"
+                aria-hidden="true"
+              />
               <span
                 class="absolute -left-[42px] flex h-8 w-8 items-center justify-center rounded-full bg-blush-100 text-blush-600 ring-4 ring-paper-100 dark:bg-plum-800 dark:text-blush-300 dark:ring-plum-950"
                 aria-hidden="true"

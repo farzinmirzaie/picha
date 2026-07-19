@@ -56,8 +56,8 @@ export const identity = {
 };
 
 export const weight = {
-  current: '2.85 kg',
-  measuredOn: '18 July 2026',
+  current: '2.7 kg',
+  measuredOn: '19 July 2026',
   healthyTarget: '~3–4.5 kg',
   note: 'Still growing until ~1.5–2 years old.',
 };
@@ -191,7 +191,7 @@ export const recurringCare: RecurringItem[] = [
       'The royal waistline audit — measured meals only work if the staff keep score.',
     everyLabel: 'Every month',
     intervalDays: 30,
-    lastDone: '2026-07-18',
+    lastDone: '2026-07-19',
   },
   {
     icon: 'ph:pill',

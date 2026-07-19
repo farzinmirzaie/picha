@@ -204,6 +204,10 @@ dialog.passport {
   border: none;
   padding: 0;
   background: transparent;
+  /* the dialog is the scroll container — round + clip it, or the card's
+     corners poke out while scrolling */
+  border-radius: 1rem;
+  overflow: hidden;
   max-width: min(92vw, 44rem);
   width: 100%;
   margin: auto;

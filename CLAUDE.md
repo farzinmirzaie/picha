@@ -185,6 +185,10 @@ installed clients pick them up.
 
 ## Conventions
 
+- **Git workflow**: always `git pull origin master` before starting, then
+  commit and **push directly to `master`** (owner's standing instruction —
+  every push deploys). Main development happens on Claude desktop; mobile
+  sessions make small tweaks, so syncing first avoids clobbering each other.
 - **Content lives in data**, not JSX/markup (see golden rule above).
 - **Dark mode** is automatic via `prefers-color-scheme` (Tailwind `dark:`
   variants). Style both light and dark when adding UI.
