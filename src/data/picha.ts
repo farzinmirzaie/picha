@@ -82,11 +82,18 @@ export const contact = {
 export const microchip = '458098500319352';
 
 /**
- * Her health history and future in one list. Entries with a past date render
- * as "done", future dates as "coming up" (the soonest is highlighted), and
- * entries without a date land in "to book".
+ * Her life milestones + health history and future in one list. Entries with a
+ * past date render as "done", future dates as "coming up" (the soonest is
+ * highlighted), and entries without a date land in "to book".
  */
 export const healthTimeline: TimelineEntry[] = [
+  {
+    icon: 'ph:cake',
+    title: 'A star is born',
+    detail:
+      'One tiny white cloud arrives, opens her amber eyes, and starts planning her staff structure.',
+    date: BIRTH_DATE,
+  },
   {
     icon: 'ph:syringe',
     title: 'FVRCP vaccine — dose 1',
@@ -98,6 +105,13 @@ export const healthTimeline: TimelineEntry[] = [
     title: 'FVRCP vaccine — dose 2',
     detail: 'Felocell 4, second dose. Series complete.',
     date: '2026-06-22',
+  },
+  {
+    icon: 'ph:house-line',
+    title: 'Gotcha day — Picha acquires her humans',
+    detail:
+      'Selected Farah & Farzin at the pet shop and moved them into her Kuala Lumpur headquarters. Onboarding was immediate.',
+    date: '2026-06-24',
   },
   {
     icon: 'ph:bug',
