@@ -6,6 +6,10 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+  schedule:
+    # Nightly rebuild (~05:00 MYT) so weigh-ins logged in Supabase show up
+    # without a push. Releases are only cut for pushes (see the release job).
+    - cron: '0 21 * * *'
 
 permissions:
   contents: write # create tags + releases
@@ -32,7 +36,12 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # Supabase secrets feed the build-time weight-ledger fetch
+      # (src/data/weights.ts); without them the build uses the seed ledger.
       - run: pnpm build
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
       # Requires Pages to be enabled once: Settings → Pages → Source: "GitHub Actions".
       # (Auto-enablement via the default token isn't permitted on this repo.)
@@ -54,6 +63,8 @@ jobs:
 
   release:
     needs: deploy
+    # Scheduled/manual rebuilds redeploy content but don't cut releases.
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -36,6 +36,8 @@ get their own page + one new entry in the nav's `TABS` array.
 ```
 src/
   data/picha.ts        # ⭐ SINGLE SOURCE OF TRUTH — all of Picha's info + copy
+  data/weights.ts      # build-time loader: weight ledger from Supabase
+                       # (picha_weights) with seed fallback — server-only import
   layouts/Layout.astro # <html> shell, fonts, PWA, ClientRouter, shared scripts
   components/
     Nav.astro          # tab nav: desktop pill bar + mobile bottom tab bar (TABS array)
@@ -65,9 +67,24 @@ public/icon-*.png      # PWA icons — cropped from her photo (see § icons)
   pages/llms.txt.ts    # /llms.txt — whole site as markdown for AI agents,
                        # generated from picha.ts at build (llmstxt.org)
 public/robots.txt      # points at sitemap-index.xml + llms.txt
-.github/workflows/deploy.yml  # build + deploy Pages + auto-release
+supabase/schema.sql    # picha_weights table + RLS + seed (run in SQL editor)
+.mcp.json              # Supabase MCP for Claude Code (authenticate via /mcp)
+.env.example           # SUPABASE_URL + SUPABASE_ANON_KEY for local live builds
+.github/workflows/deploy.yml  # build + deploy Pages + auto-release + nightly cron
 astro.config.mjs       # site + base (GitHub Pages project site) + sitemap
 ```
+
+### Supabase (cloud data)
+
+The weight ledger lives in Supabase (`picha_weights` table; schema + RLS +
+seed in `supabase/schema.sql`). `src/data/weights.ts` fetches it **at build
+time** over PostgREST using `SUPABASE_URL` + `SUPABASE_ANON_KEY` (GitHub
+Actions secrets; `.env` locally) and falls back to the seed list in picha.ts
+when they're missing or the fetch fails — builds never break. The anon key is
+read-only (RLS allows `select` only); writes go through the Supabase
+dashboard. Because the site is static, new rows appear on the next deploy:
+every push, the nightly scheduled rebuild (21:00 UTC), or a manual
+"Run workflow". Never import weights.ts from client scripts.
 
 ### AI-friendly surface
 
@@ -108,12 +125,12 @@ pages/components when changing *layout or design*, not content.
   "practiced today" tick on course pages is localStorage
   (`picha-training`, `{date, done[slug]}`, daily reset) — milestones are
   data, daily practice is on-device.
-- **`weightHistory`** (oldest first) is the single source for all weight UI:
-  the Weight tracker page (chart/stats/ledger) and
-  `weight.current` / `measuredOn` (derived from its last entry). **To log a
-  weigh-in, just append an entry there** — weigh-ins live on the Weight page,
-  not in the health record. There is deliberately no entry form; the data
-  file is the ledger.
+- **Weight ledger lives in Supabase** (`picha_weights`; see § Supabase). All
+  weight UI (Weight tracker chart/stats/ledger, Health vitals tile,
+  llms.txt) reads from `src/data/weights.ts` at build time. **To log a
+  weigh-in, insert a row in the Supabase Table Editor** (date + kg); it
+  deploys on the next push/nightly rebuild. `weightHistory` in picha.ts is
+  only the offline seed fallback — don't log real weigh-ins there.
 - `contact.owners` is an array of `{ name, phone }` — both owners are shown
   everywhere contact appears (footer, emergency, if-found).
 
@@ -140,12 +157,14 @@ Note: `base` is `/picha`, so local URLs are under `/picha` (e.g.
 
 ## Deployment & releases
 
-`.github/workflows/deploy.yml` runs on every push to `master`:
+`.github/workflows/deploy.yml` runs on every push to `master` (plus a nightly
+21:00 UTC rebuild and manual dispatch, which redeploy but skip the release):
 
-1. **build** — `pnpm build`, upload `dist/` as the Pages artifact.
+1. **build** — `pnpm build` (with `SUPABASE_URL`/`SUPABASE_ANON_KEY` secrets
+   for the weight-ledger fetch), upload `dist/` as the Pages artifact.
 2. **deploy** — publish to GitHub Pages.
 3. **release** — auto-increment the patch version (`vX.Y.Z`), tag it, and create
-   a GitHub Release.
+   a GitHub Release (push events only).
 
 Pages is already enabled (**Settings → Pages → Source: "GitHub Actions"**). This
 was a required one-off: the default Actions token can't auto-enable Pages

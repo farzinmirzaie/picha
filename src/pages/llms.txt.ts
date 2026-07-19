@@ -4,6 +4,7 @@
  * can never drift from the pages. Regenerates on every push, like the HTML.
  */
 import type { APIRoute } from 'astro';
+import { weightHistory, currentWeight } from '../data/weights';
 import {
   identity,
   BIRTH_DATE,
@@ -11,7 +12,6 @@ import {
   ageInMonths,
   catYears,
   weight,
-  weightHistory,
   weightTarget,
   vet,
   contact,
@@ -93,7 +93,7 @@ ${identity.looks} Home: ${identity.home}.
 
 ## Weight
 
-- Current: ${weight.current} (measured ${weight.measuredOn})
+- Current: ${currentWeight.label} (measured ${currentWeight.measuredOn})
 - Healthy adult target: ${weight.healthyTarget}. ${weight.note}
 - History (oldest first): ${weightHistory.map((w) => `${w.date}: ${w.kg} kg`).join('; ')}
 - Target band: ${weightTarget.min}-${weightTarget.max} kg

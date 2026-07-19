@@ -13,6 +13,7 @@ import {
   callVetIf,
   ageLabel,
 } from '../data/picha';
+import { currentWeight } from '../data/weights';
 
 // Split the timeline by date: past = done, future = coming up (soonest first,
 // the first one is "next"), undated = still to book. The split is computed at
@@ -91,7 +92,7 @@ const segments = [
           <Icon name="ph:scales" class="h-4 w-4" aria-hidden="true" />
           <span class="text-[10px] font-bold tracking-[0.14em] uppercase">Weight</span>
         </div>
-        <p class="font-display mt-1.5 text-xl font-semibold">{weight.current}</p>
+        <p class="font-display mt-1.5 text-xl font-semibold">{currentWeight.label}</p>
         <p class="mt-0.5 text-[11px] leading-tight text-ink-400">
           target {weight.healthyTarget}
         </p>

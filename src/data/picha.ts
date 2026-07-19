@@ -71,10 +71,11 @@ export interface WeightEntry {
 }
 
 /**
- * Every weigh-in on the books, oldest first. The Weight tracker page, the
- * Health vitals tile and `weight` below all derive from this list, so logging
- * a weigh-in = appending one entry here (and updating the recurring weigh-in's
- * `lastDone`). No entry UI yet; the staff edit this file.
+ * SEED weight ledger — the offline fallback only. The live ledger is the
+ * Supabase table `picha_weights` (supabase/schema.sql), fetched at build time
+ * by src/data/weights.ts; every page reads from there. This list is used when
+ * the Supabase env vars are missing (local dev) or the fetch fails. **To log a
+ * weigh-in, insert a row in Supabase** (Table Editor), not here.
  */
 export const weightHistory: WeightEntry[] = [
   { date: '2026-07-18', kg: 2.85 },
@@ -84,15 +85,8 @@ export const weightHistory: WeightEntry[] = [
 /** Healthy adult range in kg (the shaded band on the weight chart). */
 export const weightTarget = { min: 3, max: 4.5 };
 
-const lastWeighIn = weightHistory[weightHistory.length - 1];
-
+/** Static weight facts; the current weight itself comes from weights.ts. */
 export const weight = {
-  current: `${lastWeighIn.kg} kg`,
-  measuredOn: new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(new Date(lastWeighIn.date)),
   healthyTarget: `~${weightTarget.min}–${weightTarget.max} kg`,
   note: 'Still growing until ~1.5–2 years old.',
   /** Weigh-in cadence (informational; surfaced in llms.txt). */
