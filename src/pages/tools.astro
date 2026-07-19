@@ -7,8 +7,8 @@ import PassportDialog from '../components/PassportDialog.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-// Future tools land here: build the page, then move its entry from this queue
-// to `inService` (or give it its own nav tab if it earns one).
+// Future tools land here: build the page, then add its entry to `inService`
+// (or give it its own nav tab if it earns one).
 const inService = [
   {
     icon: 'ph:chart-line-up',
@@ -24,33 +24,13 @@ const inService = [
   },
 ];
 
-const queue = [
-  {
-    icon: 'ph:chat-circle-dots',
-    title: 'Body-language decoder',
-    detail: 'What the tail, ears and slow blinks actually mean.',
-    status: 'Sketching',
-  },
-  {
-    icon: 'ph:calculator',
-    title: 'Food calculator',
-    detail: 'Portions by weight and age. No more guesswork at the bowl.',
-    status: 'On the bench',
-  },
-  {
-    icon: 'ph:bell',
-    title: 'Care reminders',
-    detail: 'Boosters, ear drops and nail trims: nudges for the staff.',
-    status: 'Queued',
-  },
-];
 ---
 
 <Layout title="Tools · Picha 🐾" current="tools">
   <PageHeader
     kicker="Tools"
     title="The royal workshop"
-    blurb="Gadgets invented by the staff to serve Her Fluffiness better. Whatever earns her approval goes into service; the rest waits its turn in the queue."
+    blurb="Gadgets invented by the staff to serve Her Fluffiness better. Each one enters service only after passing her personal inspection."
   />
 
   <!-- In service: tools that already shipped -->
@@ -112,53 +92,13 @@ const queue = [
     }
   </section>
 
-  <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Build queue">
-    <h2
-      class="reveal text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
-    >
-      The build queue
-    </h2>
-    <ol class="mt-3 divide-y divide-paper-300/70 dark:divide-plum-800">
-      {
-        queue.map((t, i) => (
-          <li
-            class="reveal flex items-start gap-4 py-5"
-            style={`--reveal-delay: ${i * 80}ms`}
-          >
-            <span
-              class="pen mt-1 w-8 shrink-0 text-right text-sm"
-              aria-hidden="true"
-            >
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <span
-              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
-              aria-hidden="true"
-            >
-              <Icon name={t.icon} class="h-5.5 w-5.5" />
-            </span>
-            <div class="min-w-0">
-              <div class="flex flex-wrap items-center gap-2">
-                <h3 class="font-display text-lg font-semibold">{t.title}</h3>
-                <span class="rounded-full border border-dashed border-blush-300/80 px-2.5 py-0.5 text-[11px] font-bold text-blush-600 dark:border-plum-600 dark:text-blush-300">
-                  {t.status}
-                </span>
-              </div>
-              <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-                {t.detail}
-              </p>
-            </div>
-          </li>
-        ))
-      }
-    </ol>
-
+  <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Workshop note">
     <p
-      class="reveal mt-6 flex items-center gap-2 rounded-2xl border border-dashed border-paper-300 bg-paper-50/60 px-4 py-3 text-xs text-ink-400 dark:border-plum-700 dark:bg-plum-900/60"
+      class="reveal flex items-center gap-2 rounded-2xl border border-dashed border-paper-300 bg-paper-50/60 px-4 py-3 text-xs text-ink-400 dark:border-plum-700 dark:bg-plum-900/60"
     >
       <Icon name="ph:moon-stars" class="h-4 w-4 shrink-0" aria-hidden="true" />
-      The queue is reviewed nightly, during the 3 a.m. zoomies. Priorities are
-      subject to Her Fluffiness.
+      More gadgets are in the works. Ideas are reviewed nightly, during the
+      3 a.m. zoomies, and prioritised by Her Fluffiness.
     </p>
   </section>
 

@@ -49,7 +49,7 @@ src/
     index.astro        # Home — hero, share dialog (QR), story, get-to-know-her
     health.astro       # Health — vitals strip, recovery progress, segmented timeline, emergency
     care.astro         # Care — "Today's rounds" checklist, protocol, menu, litter, rules, "if found"
-    tools.astro        # Tools — in-service list (passport, weight) + build queue
+    tools.astro        # Tools — in-service list (passport, weight) + 3am note
     weight.astro       # Weight tracker — build-time SVG chart + stats + ledger,
                        # all rendered from weightHistory (current="tools")
     cat-years.astro    # Cat-years converter — her age in human years + slider
