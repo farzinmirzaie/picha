@@ -5,8 +5,19 @@ import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
 import PassportDialog from '../components/PassportDialog.astro';
 
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 // Future tools land here: build the page, then move its entry from this queue
-// to a real link (or give it its own nav tab if it earns one).
+// to `inService` (or give it its own nav tab if it earns one).
+const inService = [
+  {
+    icon: 'ph:chart-line-up',
+    title: 'Weight tracker',
+    detail: 'The royal waistline, charted over time.',
+    href: `${base}/weight/`,
+  },
+];
+
 const queue = [
   {
     icon: 'ph:chat-circle-dots',
@@ -17,19 +28,13 @@ const queue = [
   {
     icon: 'ph:calculator',
     title: 'Food calculator',
-    detail: 'Portions by weight and age — no more guesswork at the bowl.',
+    detail: 'Portions by weight and age. No more guesswork at the bowl.',
     status: 'On the bench',
-  },
-  {
-    icon: 'ph:chart-line-up',
-    title: 'Weight tracker',
-    detail: 'The royal waistline, charted over time.',
-    status: 'Waiting for parts',
   },
   {
     icon: 'ph:bell',
     title: 'Care reminders',
-    detail: 'Boosters, ear drops and nail trims — nudges for the staff.',
+    detail: 'Boosters, ear drops and nail trims: nudges for the staff.',
     status: 'Queued',
   },
 ];
@@ -38,8 +43,8 @@ const queue = [
 <Layout title="Tools · Picha 🐾" current="tools">
   <PageHeader
     kicker="Tools"
-    title="The workshop"
-    blurb="Gadgets for her staff. The passport is already in service — everything else awaits the supervisor's sign-off on the blueprints."
+    title="The royal workshop"
+    blurb="Gadgets invented by the staff to serve Her Fluffiness better. Whatever earns her approval goes into service; the rest waits its turn in the queue."
   />
 
   <!-- In service: tools that already shipped -->
@@ -63,7 +68,7 @@ const queue = [
       <span class="min-w-0 flex-1">
         <span class="font-display text-lg font-semibold">Pet Passport</span>
         <span class="mt-0.5 block text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-          Her official document — particulars, microchip and the registrar's paw.
+          Her official document: particulars, microchip and the registrar's paw.
         </span>
       </span>
       <Icon
@@ -72,6 +77,33 @@ const queue = [
         aria-hidden="true"
       />
     </button>
+    {
+      inService.map((t, i) => (
+        <a
+          href={t.href}
+          class="reveal mt-3 flex w-full items-center gap-4 rounded-3xl border border-blush-200/70 bg-paper-50 p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-900"
+          style={`--reveal-delay: ${(i + 1) * 80}ms`}
+        >
+          <span
+            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
+            aria-hidden="true"
+          >
+            <Icon name={t.icon} class="h-5.5 w-5.5" />
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="font-display text-lg font-semibold">{t.title}</span>
+            <span class="mt-0.5 block text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+              {t.detail}
+            </span>
+          </span>
+          <Icon
+            name="ph:caret-right"
+            class="h-4 w-4 shrink-0 text-ink-400"
+            aria-hidden="true"
+          />
+        </a>
+      ))
+    }
   </section>
 
   <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Build queue">

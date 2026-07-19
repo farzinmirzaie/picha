@@ -14,7 +14,7 @@ interface Props {
 }
 const {
   title,
-  description = 'Picha the cat — profile & daily care guide.',
+  description = 'Picha the cat: profile & daily care guide.',
   current,
 } = Astro.props;
 
@@ -118,7 +118,7 @@ const appTitle = { home: 'Picha', health: 'Health', care: 'Care', tools: 'Tools'
           if (days > 1) el.textContent = ` (in ${days} days)`;
           else if (days === 1) el.textContent = ' (tomorrow)';
           else if (days === 0) el.textContent = ' (today)';
-          else el.textContent = ' (past the estimate — confirm with the vet)';
+          else el.textContent = ' (past the estimate, confirm with the vet)';
         });
 
         // Scroll-reveal: stagger via --reveal-delay set inline per element.

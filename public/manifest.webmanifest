@@ -1,7 +1,7 @@
 {
   "name": "Picha 🐾",
   "short_name": "Picha",
-  "description": "Picha the cat — profile & daily care guide.",
+  "description": "Picha the cat: profile & daily care guide.",
   "start_url": "/picha/",
   "scope": "/picha/",
   "display": "standalone",

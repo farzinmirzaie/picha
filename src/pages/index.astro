@@ -34,7 +34,7 @@ const slides = Object.entries(slideModules)
 
 ---
 
-<Layout title="Picha 🐾" description={`Picha — ${identity.breed}. ${identity.tagline}`} current="home">
+<Layout title="Picha 🐾" description={`Picha: ${identity.breed}. ${identity.tagline}`} current="home">
   <!-- Hero -->
   <header class="mx-auto w-full max-w-2xl px-5 pt-10 text-center sm:pt-14">
     <div class="hero-pop relative mx-auto w-52 sm:w-64">
@@ -96,7 +96,7 @@ const slides = Object.entries(slideModules)
       {identity.breed} · <span data-age>{age}</span>
     </p>
 
-    <!-- desktop only — on mobile the app bar carries this action -->
+    <!-- desktop only; on mobile the app bar carries this action -->
     <button
       type="button"
       data-passport-open
@@ -149,7 +149,7 @@ const slides = Object.entries(slideModules)
       }
     </ul>
 
-    <!-- quick intel: two columns — the traits above carry the depth -->
+    <!-- quick intel: two columns; the traits above carry the depth -->
     <div
       class="reveal mt-6 grid grid-cols-2 gap-6 border-t border-paper-300/70 pt-6 dark:border-plum-800"
     >

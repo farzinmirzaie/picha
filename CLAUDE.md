@@ -47,7 +47,9 @@ src/
     index.astro        # Home — hero, passport dialog, story, get-to-know-her
     health.astro       # Health — vitals strip, recovery progress, segmented timeline, emergency
     care.astro         # Care — "Today's rounds" checklist, protocol, menu, litter, rules, "if found"
-    tools.astro        # Tools — future tools land here ("in the workshop" list)
+    tools.astro        # Tools — in-service list (passport, weight) + build queue
+    weight.astro       # Weight tracker — build-time SVG chart + stats + ledger,
+                       # all rendered from weightHistory (current="tools")
   styles/global.css    # Tailwind @theme (paper/plum/ink/blush/amber) + animations
   assets/
     picha.jpg          # avatar photo (astro:assets; also the source for app icons)
@@ -73,8 +75,12 @@ pages/components when changing *layout or design*, not content.
   computed next-due). It merges into "Coming up" sorted by due date, with an
   "every X" chip; entries without `lastDone` show "not started yet" at the end.
   **After doing a recurring task, update its `lastDone`** — the next due date
-  and the "Next visit" vitals tile follow automatically. Weight history is NOT
-  in the record — current weight lives in the vitals tile + monthly weigh-in.
+  and the "Next visit" vitals tile follow automatically.
+- **`weightHistory`** (oldest first) is the single source for all weight UI:
+  the Weight tracker page (chart/stats/ledger) and `weight.current` /
+  `measuredOn` (derived from its last entry). **To log a weigh-in, append an
+  entry there AND update the weigh-in's `lastDone`.** There is deliberately no
+  entry form; the data file is the ledger.
 - `contact.owners` is an array of `{ name, phone }` — both owners are shown
   everywhere contact appears (footer, emergency, if-found).
 
@@ -199,6 +205,10 @@ installed clients pick them up.
   approved — legal full names and anyone else's details stay out.
 - **Voice**: playful staff-of-the-cat tone (see § Voice & tone) — but emergency
   and medical instructions stay plain.
+- **No em dashes (—) in site copy** (owner's rule; they read as AI-written).
+  Use commas, semicolons, colons, periods or parentheses instead. En dashes in
+  numeric ranges (2–4 weeks, 3–4.5 kg) are fine. Applies to everything
+  rendered on the site, not to code comments or this file.
 - **Icons, not emoji.** UI icons are Phosphor via `astro-icon` (build-time
   inline SVG, zero JS): `<Icon name="ph:paw-print" />` from
   'astro-icon/components'. Data `icon` fields hold the full name (`ph:x`).

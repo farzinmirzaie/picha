@@ -52,19 +52,45 @@ export const identity = {
     'All-white long coat, pink ears & nose, amber eyes. Wears a pink collar with a bell so the staff always know where management is.',
   home: 'An apartment in Kuala Lumpur, staffed by Farah & Farzin',
   story:
-    'Picha owns an apartment in Kuala Lumpur, where she keeps two humans — Farah & Farzin — as full-time staff. Their duties include wand-toy operation, chin scratches on demand, and opening treat packets at the precise frequency of her meow. She pays in purrs, head-boops, and the honour of her company. It is not a fair arrangement. Nobody is complaining.',
+    'Picha owns an apartment in Kuala Lumpur, where she keeps two humans, Farah & Farzin, as full-time staff. Their duties include wand-toy operation, chin scratches on demand, and opening treat packets at the precise frequency of her meow. She pays in purrs, head-boops, and the honour of her company. It is not a fair arrangement. Nobody is complaining.',
 };
 
+export interface WeightEntry {
+  /** ISO date (YYYY-MM-DD). */
+  date: string;
+  kg: number;
+}
+
+/**
+ * Every weigh-in on the books, oldest first. The Weight tracker page, the
+ * Health vitals tile and `weight` below all derive from this list, so logging
+ * a weigh-in = appending one entry here (and updating the recurring weigh-in's
+ * `lastDone`). No entry UI yet; the staff edit this file.
+ */
+export const weightHistory: WeightEntry[] = [
+  { date: '2026-07-18', kg: 2.85 },
+  { date: '2026-07-19', kg: 2.7 },
+];
+
+/** Healthy adult range in kg (the shaded band on the weight chart). */
+export const weightTarget = { min: 3, max: 4.5 };
+
+const lastWeighIn = weightHistory[weightHistory.length - 1];
+
 export const weight = {
-  current: '2.7 kg',
-  measuredOn: '19 July 2026',
-  healthyTarget: '~3–4.5 kg',
+  current: `${lastWeighIn.kg} kg`,
+  measuredOn: new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(lastWeighIn.date)),
+  healthyTarget: `~${weightTarget.min}–${weightTarget.max} kg`,
   note: 'Still growing until ~1.5–2 years old.',
 };
 
 export const vet = {
   // No regular vet chosen yet — the position remains open.
-  status: 'Auditioning vets — no permanent hire yet',
+  status: 'Auditioning vets; no permanent hire yet',
   recentClinic: 'HP Vet (Pusat Veterinar Healing Pets), Damansara Utama, PJ',
   recentPhone: '03-7732 8878',
 };
@@ -96,13 +122,13 @@ export const healthTimeline: TimelineEntry[] = [
   },
   {
     icon: 'ph:syringe',
-    title: 'FVRCP vaccine — dose 1',
+    title: 'FVRCP vaccine, dose 1',
     detail: 'Felocell 4, first dose. Taken like a champ (allegedly).',
     date: '2026-05-10',
   },
   {
     icon: 'ph:syringe',
-    title: 'FVRCP vaccine — dose 2',
+    title: 'FVRCP vaccine, dose 2',
     detail: 'Felocell 4, second dose. Series complete.',
     date: '2026-06-22',
   },
@@ -110,13 +136,13 @@ export const healthTimeline: TimelineEntry[] = [
     icon: 'ph:house-line',
     title: 'The great staff hiring',
     detail:
-      'Interviewed Farah & Farzin at the pet shop and hired both on the spot. No probation period — she does not do trial runs.',
+      'Interviewed Farah & Farzin at the pet shop and hired both on the spot. No probation period; she does not do trial runs.',
     date: '2026-06-24',
   },
   {
     icon: 'ph:bug',
     title: 'Parasite control',
-    detail: 'Revolution Plus applied — fleas, ticks and worms evicted.',
+    detail: 'Revolution Plus applied. Fleas, ticks and worms: evicted.',
     date: '2026-06-24',
   },
   {
@@ -142,7 +168,7 @@ export const healthTimeline: TimelineEntry[] = [
     icon: 'ph:bandaids',
     title: 'Spay recovery check',
     detail:
-      'Target date for the all-clear — jumping and climbing privileges to be reinstated by the vet.',
+      'Target date for the all-clear, when the vet reinstates jumping and climbing privileges.',
     date: '2026-07-25',
   },
   {
@@ -159,7 +185,7 @@ export const healthTimeline: TimelineEntry[] = [
   {
     icon: 'ph:test-tube',
     title: 'FeLV vaccine',
-    detail: 'Optional — to discuss with whichever vet wins the job.',
+    detail: 'Optional. To discuss with whichever vet wins the job.',
   },
   {
     icon: 'ph:identification-card',
@@ -179,7 +205,7 @@ export const recurringCare: RecurringItem[] = [
   {
     icon: 'ph:bug',
     title: 'Parasite control',
-    detail: 'Revolution Plus spot-on — fleas, ticks and worms, evicted monthly.',
+    detail: 'Revolution Plus spot-on. Fleas, ticks and worms, evicted monthly.',
     everyLabel: 'Every month',
     intervalDays: 30,
     lastDone: '2026-06-24',
@@ -188,7 +214,7 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:scales',
     title: 'Weigh-in',
     detail:
-      'The royal waistline audit — measured meals only work if the staff keep score.',
+      'The royal waistline audit. Measured meals only work if the staff keep score.',
     everyLabel: 'Every month',
     intervalDays: 30,
     lastDone: '2026-07-19',
@@ -205,7 +231,7 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:scissors',
     title: 'Nail trim',
     detail:
-      'Front paws first. The programme has not started — management has not yet been informed.',
+      'Front paws first. The programme has not started; management has not yet been informed.',
     everyLabel: 'Every 2–4 weeks',
     intervalDays: 21,
   },
@@ -227,7 +253,7 @@ export const dailyChecklist = [
     id: 'combing',
     icon: 'ph:paint-brush',
     label: 'The daily combing',
-    hint: 'Both sides — she will rotate herself',
+    hint: 'Both sides; she will rotate herself',
   },
   {
     id: 'meals',
@@ -251,7 +277,7 @@ export const dailyChecklist = [
     id: 'litter',
     icon: 'ph:toilet',
     label: 'Scoop the litter',
-    hint: 'Daily — she has standards',
+    hint: 'Daily; she has standards',
   },
 ];
 
@@ -262,7 +288,7 @@ export const treatment: CareItem[] = [
     title: 'Morning ear care',
     cadence: 'Every morning',
     detail:
-      'Clean inside the ear with ORI-EAR cleaner on a cotton bud, apply Oridermyl ear ointment (Vetoquinol), then gently massage the base. Ongoing since 11 July — continue for the full course. She tolerates this with visible disapproval.',
+      'Clean inside the ear with ORI-EAR cleaner on a cotton bud, apply Oridermyl ear ointment (Vetoquinol), then gently massage the base. Ongoing since 11 July; continue for the full course. She tolerates this with visible disapproval.',
   },
 ];
 
@@ -274,7 +300,7 @@ export const recovery = {
   points: [
     'Keep the incision area protected.',
     'Limit jumping & climbing until cleared by the vet.',
-    'Glance at the incision daily — watch for redness, swelling, or discharge.',
+    'Glance at the incision daily; watch for redness, swelling, or discharge.',
   ],
 };
 
@@ -283,13 +309,13 @@ export const food: CareItem[] = [
     icon: 'ph:fork-knife',
     title: 'Her palate',
     detail:
-      'Wet and lickable food: five stars, licked clean. Kibble gets politely nibbled, rarely crunched — a lifestyle choice, the vet confirms, not a dental issue.',
+      'Wet and lickable food: five stars, licked clean. Kibble gets politely nibbled, rarely crunched. A lifestyle choice, the vet confirms, not a dental issue.',
   },
   {
     icon: 'ph:bowl-food',
     title: 'Portion control',
     detail:
-      'Measured meals only — the buffet is closed. Post-spay royalty gains weight easily, and the waistline is under active management.',
+      'Measured meals only; the buffet is closed. Post-spay royalty gains weight easily, and the waistline is under active management.',
   },
   {
     icon: 'ph:cookie',
@@ -311,7 +337,7 @@ export const grooming: CareItem[] = [
     title: 'The daily combing',
     cadence: 'Daily',
     detail:
-      'Stainless steel comb, once a day. She rotates herself like a rotisserie to present each side. Essential for the long coat — prevents mats, sustains the glamour.',
+      'Stainless steel comb, once a day. She rotates herself like a rotisserie to present each side. Essential for the long coat: prevents mats, sustains the glamour.',
   },
   {
     icon: 'ph:sparkle',
@@ -324,21 +350,21 @@ export const grooming: CareItem[] = [
     title: 'Nails',
     cadence: 'Every 2–4 weeks',
     detail:
-      'The manicure programme has not started yet — front paws first, then every 2–4 weeks. Management has not yet been informed.',
+      'The manicure programme has not started yet. Front paws first, then every 2–4 weeks. Management has not yet been informed.',
   },
   {
     icon: 'ph:spray-bottle',
     title: 'Spot cleaning',
     cadence: 'As needed',
     detail:
-      'YEGBONG Pet Dry Cleaning Mousse (waterless) — worked into the fur and brushed through, mainly under the chin and any spots that dared get dirty.',
+      'YEGBONG Pet Dry Cleaning Mousse (waterless), worked into the fur and brushed through, mainly under the chin and any spots that dared get dirty.',
   },
   {
     icon: 'ph:bathtub',
     title: 'Bathing',
     cadence: 'Rarely',
     detail:
-      'Rarely required — the daily combing does the heavy lifting. An occasional bath or professional spa day once she is fully healed.',
+      'Rarely required; the daily combing does the heavy lifting. An occasional bath or professional spa day once she is fully healed.',
   },
   {
     icon: 'ph:tooth',
@@ -353,7 +379,7 @@ export const litter: CareItem[] = [
   {
     icon: 'ph:toilet',
     title: 'Current facilities',
-    detail: 'A low, shallow open tray — easy access while she recovers from surgery.',
+    detail: 'A low, shallow open tray, for easy access while she recovers from surgery.',
   },
   {
     icon: 'ph:package',
@@ -369,7 +395,7 @@ export const litter: CareItem[] = [
  */
 export const likes: string[] = [
   'Treats (obviously)',
-  'Her bell ball — shoot, chase, repeat',
+  'Her bell ball: shoot, chase, repeat',
   'The daily combing',
   'A freshly scooped litter box',
 ];
@@ -386,7 +412,7 @@ export const personality: CareItem[] = [
     icon: 'ph:feather',
     title: 'Professional huntress',
     detail:
-      'Wand toys tremble at her name. Daily hunts are mandatory and non-negotiable — she does make the rules.',
+      'Wand toys tremble at her name. Daily hunts are mandatory and non-negotiable; she does make the rules.',
   },
   {
     icon: 'ph:heart',
@@ -398,25 +424,25 @@ export const personality: CareItem[] = [
     icon: 'ph:cloud-lightning',
     title: 'Thunder critic',
     detail:
-      'Storms receive zero stars and an immediate retreat to a secret bunker. Let her be — dark, quiet hideouts and calm energy fix everything. Never pull her out.',
+      'Storms receive zero stars and an immediate retreat to a secret bunker. Let her be: dark, quiet hideouts and calm energy fix everything. Never pull her out.',
   },
   {
     icon: 'ph:moon-stars',
     title: 'Sleep athlete',
     detail:
-      '16+ hours a day. It is not laziness — it is training, and completely normal for her age.',
+      '16+ hours a day. It is not laziness, it is training, and completely normal for her age.',
   },
   {
     icon: 'ph:sparkle',
     title: 'Impeccably groomed',
     detail:
-      'Self-grooming is a round-the-clock operation. The white coat stays white through relentless personal effort — the staff merely assist.',
+      'Self-grooming is a round-the-clock operation. The white coat stays white through relentless personal effort; the staff merely assist.',
   },
   {
     icon: 'ph:megaphone',
     title: 'Chief demands officer',
     detail:
-      'Attention is not requested, it is summoned. Ignoring her is technically possible — for about eleven seconds.',
+      'Attention is not requested, it is summoned. Ignoring her is technically possible, for about eleven seconds.',
   },
   {
     icon: 'ph:map-pin',
@@ -449,19 +475,19 @@ export const safety: CareItem[] = [
     icon: 'ph:shield-warning',
     title: 'Windows & heights',
     detail:
-      'A confident climber with zero fear and zero wings. Only mesh-protected windows open — unscreened windows and balconies are a hard no.',
+      'A confident climber with zero fear and zero wings. Only mesh-protected windows open; unscreened windows and balconies are a hard no.',
   },
   {
     icon: 'ph:cloud-lightning',
     title: 'Storm protocol',
     detail:
-      'Thunder sends her to snug hiding spots. Let her retreat — dark, quiet places and calm energy help. Never pull her out.',
+      'Thunder sends her to snug hiding spots. Let her retreat: dark, quiet places and calm energy help. Never pull her out.',
   },
   {
     icon: 'ph:identification-badge',
     title: 'ID & collar',
     detail:
-      'Microchipped — public registration to current contact details still to be confirmed. A breakaway safety collar is recommended for climbing royalty.',
+      'Microchipped; public registration to current contact details still to be confirmed. A breakaway safety collar is recommended for climbing royalty.',
   },
 ];
 
