@@ -3,20 +3,24 @@ import { Icon } from 'astro-icon/components';
 import Layout from '../../layouts/Layout.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import Footer from '../../components/Footer.astro';
-import { trainingCourses, trainingRules } from '../../data/picha';
+import { trainingRules } from '../../data/picha';
+import { trainingCourses } from '../../data/training';
+import { supabaseClient } from '../../data/supabase';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-// Status is derived from data: graduated when every step is passed, in
-// session once startedOn is set, otherwise it waits on the syllabus.
+// Status is derived from Supabase-merged data: graduated when every step is
+// passed, in session once startedOn is set, otherwise on the syllabus. The
+// client script re-fetches progress on load and regroups the cards, so the
+// hub is live without a rebuild.
 const status = (c: (typeof trainingCourses)[number]) =>
   c.stepsDone >= c.steps.length ? 'graduated' : c.startedOn ? 'active' : 'syllabus';
 
 const groups = [
-  { id: 'active', label: 'In session', courses: trainingCourses.filter((c) => status(c) === 'active') },
-  { id: 'syllabus', label: 'The syllabus', courses: trainingCourses.filter((c) => status(c) === 'syllabus') },
-  { id: 'graduated', label: 'Graduated', courses: trainingCourses.filter((c) => status(c) === 'graduated') },
-].filter((g) => g.courses.length > 0);
+  { id: 'active', label: 'In session' },
+  { id: 'syllabus', label: 'The syllabus' },
+  { id: 'graduated', label: 'Graduated' },
+].map((g) => ({ ...g, courses: trainingCourses.filter((c) => status(c) === g.id) }));
 ---
 
 <Layout title="Training · Picha 🐾" current="tools">
@@ -26,69 +30,86 @@ const groups = [
     blurb="Courses in advanced cat cooperation. Officially it is the staff being trained and certified; Her Fluffiness merely grades the coursework."
   />
 
-  {
-    groups.map((group) => (
-      <section class="mx-auto w-full max-w-2xl px-5 pt-6" aria-label={group.label}>
-        <h2 class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300">
-          {group.label}
-        </h2>
-        <div class="space-y-3">
-          {group.courses.map((c, i) => (
-            <a
-              href={`${base}/training/${c.slug}/`}
-              class="reveal flex w-full items-center gap-4 rounded-3xl border border-blush-200/70 bg-paper-50 p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-900"
-              style={`--reveal-delay: ${i * 60}ms`}
-            >
-              <span
-                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
-                aria-hidden="true"
+  <div
+    data-academy
+    data-supabase-url={supabaseClient?.url}
+    data-supabase-key={supabaseClient?.key}
+  >
+    {
+      groups.map((group) => (
+        <section
+          class:list={[
+            'mx-auto w-full max-w-2xl px-5 pt-6',
+            group.courses.length === 0 ? 'hidden' : '',
+          ]}
+          aria-label={group.label}
+          data-group={group.id}
+        >
+          <h2 class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300">
+            {group.label}
+          </h2>
+          <div class="space-y-3" data-group-list={group.id}>
+            {group.courses.map((c, i) => (
+              <a
+                href={`${base}/training/${c.slug}/`}
+                data-course-card={c.slug}
+                data-total={c.steps.length}
+                class="reveal flex w-full items-center gap-4 rounded-3xl border border-blush-200/70 bg-paper-50 p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-900"
+                style={`--reveal-delay: ${i * 60}ms`}
               >
-                <Icon name={c.icon} class="h-5.5 w-5.5" />
-              </span>
-              <span class="min-w-0 flex-1">
-                <span class="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <span class="font-display text-lg font-semibold">{c.title}</span>
-                  {status(c) === 'graduated' && (
+                <span
+                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
+                  aria-hidden="true"
+                >
+                  <Icon name={c.icon} class="h-5.5 w-5.5" />
+                </span>
+                <span class="min-w-0 flex-1">
+                  <span class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span class="font-display text-lg font-semibold">{c.title}</span>
                     <Icon
                       name="ph:medal"
-                      class="h-4 w-4 text-amber-500"
+                      data-course-medal
+                      class:list={[
+                        'h-4 w-4 text-amber-500',
+                        status(c) === 'graduated' ? '' : 'hidden',
+                      ]}
                       aria-label="Graduated"
                     />
-                  )}
-                </span>
-                <span class="mt-0.5 block text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-                  {c.tagline}
-                </span>
-                <span class="mt-1.5 flex flex-wrap items-center gap-2">
-                  <span class="text-[11px] font-bold text-ink-400">
-                    {status(c) === 'syllabus'
-                      ? `${c.steps.length} steps · not started`
-                      : status(c) === 'graduated'
-                        ? `all ${c.steps.length} steps passed`
-                        : `step ${c.stepsDone + 1} of ${c.steps.length}`}
                   </span>
-                  <span
-                    class="inline-flex items-center gap-0.5 text-blush-400 dark:text-blush-300/70"
-                    role="img"
-                    aria-label={`Management resistance level ${c.resistance} of 3`}
-                  >
-                    {Array.from({ length: c.resistance }).map(() => (
-                      <Icon name="ph:paw-print" class="h-3 w-3" aria-hidden="true" />
-                    ))}
+                  <span class="mt-0.5 block text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+                    {c.tagline}
+                  </span>
+                  <span class="mt-1.5 flex flex-wrap items-center gap-2">
+                    <span class="text-[11px] font-bold text-ink-400" data-course-steps>
+                      {status(c) === 'syllabus'
+                        ? `${c.steps.length} steps · not started`
+                        : status(c) === 'graduated'
+                          ? `all ${c.steps.length} steps passed`
+                          : `step ${c.stepsDone + 1} of ${c.steps.length}`}
+                    </span>
+                    <span
+                      class="inline-flex items-center gap-0.5 text-blush-400 dark:text-blush-300/70"
+                      role="img"
+                      aria-label={`Management resistance level ${c.resistance} of 3`}
+                    >
+                      {Array.from({ length: c.resistance }).map(() => (
+                        <Icon name="ph:paw-print" class="h-3 w-3" aria-hidden="true" />
+                      ))}
+                    </span>
                   </span>
                 </span>
-              </span>
-              <Icon
-                name="ph:caret-right"
-                class="h-4 w-4 shrink-0 text-ink-400"
-                aria-hidden="true"
-              />
-            </a>
-          ))}
-        </div>
-      </section>
-    ))
-  }
+                <Icon
+                  name="ph:caret-right"
+                  class="h-4 w-4 shrink-0 text-ink-400"
+                  aria-hidden="true"
+                />
+              </a>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </div>
 
   <!-- House rules for every session -->
   <section class="mx-auto w-full max-w-2xl px-5 pt-10 pb-8 md:pb-0" aria-label="Session rules">
@@ -116,10 +137,77 @@ const groups = [
       </ul>
     </div>
     <p class="mt-2 px-1 text-[11px] leading-relaxed text-ink-400">
-      Progress is recorded in her file when a step is truly passed; the
-      registrar (the staff) updates it after each milestone.
+      Milestones are recorded on each course page by PIN-carrying staff and
+      land straight in her cloud file.
     </p>
   </section>
 
   <Footer />
+
+  <script>
+    // Live progress: re-fetch on load, update step counts and regroup cards
+    // (in session / syllabus / graduated). Built HTML is the offline fallback.
+    function setupAcademy() {
+      const root = document.querySelector<HTMLElement>('[data-academy]');
+      if (!root || root.dataset.bound) return;
+      root.dataset.bound = '1';
+      const url = root.dataset.supabaseUrl;
+      const key = root.dataset.supabaseKey;
+      if (!url || !key) return;
+
+      (async () => {
+        try {
+          const res = await fetch(
+            `${url}/rest/v1/picha_training?select=slug,steps_done,started_on`,
+            { headers: { apikey: key, authorization: `Bearer ${key}` } },
+          );
+          if (!res.ok) return;
+          const rows = (await res.json()) as Array<{
+            slug: string;
+            steps_done: number;
+            started_on: string | null;
+          }>;
+          const bySlug = new Map(rows.map((r) => [r.slug, r]));
+
+          const cards = Array.from(
+            root.querySelectorAll<HTMLElement>('[data-course-card]'),
+          );
+          for (const card of cards) {
+            const total = Number(card.dataset.total);
+            const row = bySlug.get(card.dataset.courseCard!);
+            const stepsDone = row ? Math.min(Math.max(row.steps_done, 0), total) : 0;
+            const startedOn = row?.started_on ?? null;
+            const group =
+              stepsDone >= total ? 'graduated' : startedOn ? 'active' : 'syllabus';
+
+            const steps = card.querySelector<HTMLElement>('[data-course-steps]');
+            if (steps)
+              steps.textContent =
+                group === 'graduated'
+                  ? `all ${total} steps passed`
+                  : group === 'active'
+                    ? `step ${stepsDone + 1} of ${total}`
+                    : `${total} steps · not started`;
+            card
+              .querySelector('[data-course-medal]')
+              ?.classList.toggle('hidden', group !== 'graduated');
+
+            const list = root.querySelector<HTMLElement>(`[data-group-list="${group}"]`);
+            if (list && card.parentElement !== list) list.appendChild(card);
+          }
+
+          // show/hide groups by whether they hold cards now
+          root.querySelectorAll<HTMLElement>('[data-group]').forEach((section) => {
+            const list = section.querySelector('[data-group-list]');
+            section.classList.toggle('hidden', !list || list.children.length === 0);
+          });
+        } catch {
+          /* offline: built grouping stands */
+        }
+      })();
+    }
+
+    setupAcademy();
+    document.addEventListener('astro:page-load', setupAcademy);
+  </script>
 </Layout>

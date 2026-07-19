@@ -302,7 +302,8 @@ const ledger = [...entries].reverse();
     import { weightTarget, type WeightEntry } from '../data/picha';
     import { chartSvg, chartAriaLabel, weightStats, dateLabel, shortLabel } from '../lib/weight-viz';
 
-    const PIN_KEY = 'picha-weight-pin';
+    // Shared registrar PIN across tools (weight + training).
+    const PIN_KEY = 'picha-staff-pin';
 
     function render(entries: WeightEntry[]) {
       if (!entries.length) return;

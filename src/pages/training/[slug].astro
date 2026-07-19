@@ -3,7 +3,9 @@ import { Icon } from 'astro-icon/components';
 import Layout from '../../layouts/Layout.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import Footer from '../../components/Footer.astro';
-import { trainingCourses, trainingRules } from '../../data/picha';
+import { trainingRules } from '../../data/picha';
+import { trainingCourses } from '../../data/training';
+import { supabaseClient } from '../../data/supabase';
 
 export function getStaticPaths() {
   return trainingCourses.map((course) => ({
@@ -15,6 +17,8 @@ export function getStaticPaths() {
 const { course } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
+// Build-time state (Supabase-merged); the client script re-fetches on load
+// and re-renders, so milestones recorded elsewhere show up without a rebuild.
 const graduated = course.stepsDone >= course.steps.length;
 const active = !graduated && Boolean(course.startedOn);
 const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the syllabus';
@@ -34,9 +38,17 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
 
     <div
       class="reveal mt-4 rounded-3xl border border-blush-200/70 bg-paper-50 p-6 dark:border-plum-700 dark:bg-plum-900"
+      data-course
+      data-slug={course.slug}
+      data-total={course.steps.length}
+      data-steps-done={course.stepsDone}
+      data-started-on={course.startedOn ?? ''}
+      data-supabase-url={supabaseClient?.url}
+      data-supabase-key={supabaseClient?.key}
     >
       <div class="flex flex-wrap items-center gap-2">
         <span
+          data-status-chip
           class:list={[
             'rounded-full px-2.5 py-0.5 text-[11px] font-bold',
             graduated
@@ -48,7 +60,7 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
         >
           {statusLabel}
         </span>
-        <span class="text-[11px] font-bold text-ink-400">
+        <span class="text-[11px] font-bold text-ink-400" data-step-count>
           {
             graduated
               ? `all ${course.steps.length} steps passed`
@@ -74,7 +86,7 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
       </div>
 
       <!-- progress dots, one per step -->
-      <div class="mt-4 flex gap-1.5" aria-hidden="true">
+      <div class="mt-4 flex gap-1.5" aria-hidden="true" data-dots>
         {
           course.steps.map((_, i) => (
             <span
@@ -93,17 +105,60 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
         {course.why}
       </p>
 
+      <button
+        type="button"
+        data-practice-toggle={course.slug}
+        aria-pressed="false"
+        class:list={[
+          'mt-5 inline-flex items-center gap-2 rounded-full border border-blush-300/70 bg-paper-50 px-5 py-2 text-sm font-bold text-blush-700 shadow-sm transition-all duration-200 active:translate-y-0.5 dark:border-plum-700 dark:bg-plum-800 dark:text-blush-300',
+          active ? '' : 'hidden',
+        ]}
+      >
+        <Icon name="ph:seal-check" class="h-4.5 w-4.5" aria-hidden="true" />
+        <span data-practice-label>Mark today's session done</span>
+      </button>
+
       {
-        active && (
-          <button
-            type="button"
-            data-practice-toggle={course.slug}
-            aria-pressed="false"
-            class="mt-5 inline-flex items-center gap-2 rounded-full border border-blush-300/70 bg-paper-50 px-5 py-2 text-sm font-bold text-blush-700 shadow-sm transition-all duration-200 active:translate-y-0.5 dark:border-plum-700 dark:bg-plum-800 dark:text-blush-300"
-          >
-            <Icon name="ph:seal-check" class="h-4.5 w-4.5" aria-hidden="true" />
-            <span data-practice-label>Mark today's session done</span>
-          </button>
+        supabaseClient && (
+          <div class="mt-5 border-t border-paper-200 pt-5 dark:border-plum-800" data-registrar>
+            <p class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
+              Registrar controls
+            </p>
+            <div class="mt-2 grid grid-cols-2 gap-3">
+              <input
+                type="password"
+                data-train-pin
+                autocomplete="off"
+                placeholder="registrar PIN"
+                class="w-full rounded-xl border border-blush-200/70 bg-paper-100 px-3 py-2 text-sm font-bold outline-none focus:border-blush-400 dark:border-plum-700 dark:bg-plum-950"
+              />
+              <button
+                type="button"
+                data-train-action
+                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blush-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-blush-700 hover:shadow-md active:translate-y-0 disabled:opacity-50"
+              >
+                {graduated ? 'Graduated' : active ? `Mark step ${course.stepsDone + 1} passed` : 'Begin the course'}
+              </button>
+            </div>
+            <div class="mt-2 flex items-center justify-between gap-3">
+              <p class="min-h-4 text-xs font-bold text-ink-400" data-train-status aria-live="polite" />
+              <button
+                type="button"
+                data-train-undo
+                class:list={[
+                  'text-[11px] font-bold text-ink-400 underline decoration-dotted',
+                  active || graduated ? '' : 'hidden',
+                ]}
+              >
+                undo
+              </button>
+            </div>
+            <p class="mt-2 text-[11px] leading-relaxed text-ink-400">
+              Milestones are recorded to her cloud file (same PIN as the weight
+              ledger; remembered on this device). A step counts as passed when
+              she stays relaxed through it on several separate days.
+            </p>
+          </div>
         )
       }
     </div>
@@ -126,6 +181,7 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
             const current = !graduated && i === course.stepsDone;
             return (
               <li
+                data-step-row
                 class:list={[
                   'flex items-start gap-3.5 px-5 py-4',
                   current ? 'bg-blush-100/50 dark:bg-plum-800/50' : '',
@@ -133,6 +189,7 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
                 ]}
               >
                 <span
+                  data-step-circle
                   class:list={[
                     'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold',
                     done
@@ -143,16 +200,25 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
                   ]}
                   aria-hidden="true"
                 >
-                  {done ? <Icon name="ph:check" class="h-4 w-4" /> : i + 1}
+                  <Icon
+                    name="ph:check"
+                    data-step-check
+                    class:list={['h-4 w-4', done ? '' : 'hidden']}
+                  />
+                  <span data-step-num class:list={[done ? 'hidden' : '']}>{i + 1}</span>
                 </span>
                 <div class="min-w-0">
                   <div class="flex flex-wrap items-center gap-2">
                     <h3 class="font-display font-semibold">{s.title}</h3>
-                    {current && (
-                      <span class="rounded-full bg-amber-300/40 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:bg-amber-700/30 dark:text-amber-300">
-                        up next
-                      </span>
-                    )}
+                    <span
+                      data-step-next
+                      class:list={[
+                        'rounded-full bg-amber-300/40 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:bg-amber-700/30 dark:text-amber-300',
+                        current ? '' : 'hidden',
+                      ]}
+                    >
+                      up next
+                    </span>
                   </div>
                   <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
                     {s.detail}
@@ -164,10 +230,6 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
         }
       </ol>
     </div>
-    <p class="mt-2 px-1 text-[11px] leading-relaxed text-ink-400">
-      A step is passed when she stays relaxed through it on several separate
-      days. The registrar then records it in her file.
-    </p>
   </section>
 
   <!-- Session rules -->
@@ -200,52 +262,222 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
   <Footer />
 
   <script>
-    // "Practiced today" tick — per course, on-device, resets each calendar day
-    // (same pattern as the Care page rounds; milestones live in picha.ts).
-    const STORE_KEY = 'picha-training';
+    // Course state is live: fetched from Supabase on load, written through the
+    // PIN-checked log_training RPC, and re-rendered in place. The built HTML
+    // is the offline fallback. "Practiced today" stays on-device.
+    const PIN_KEY = 'picha-staff-pin';
+    const PRACTICE_KEY = 'picha-training';
 
-    type Store = { date: string; done: string[] };
+    type CourseState = { stepsDone: number; startedOn: string | null };
 
-    function loadStore(): Store {
-      const today = new Date().toDateString();
-      try {
-        const raw = JSON.parse(localStorage.getItem(STORE_KEY) ?? '');
-        if (raw && raw.date === today && Array.isArray(raw.done)) return raw;
-      } catch {
-        /* fresh start */
-      }
-      return { date: today, done: [] };
-    }
+    function setupCourse() {
+      const root = document.querySelector<HTMLElement>('[data-course]');
+      if (!root || root.dataset.bound) return;
+      root.dataset.bound = '1';
 
-    function setupPractice() {
-      const btn = document.querySelector<HTMLButtonElement>('[data-practice-toggle]');
-      if (!btn || btn.dataset.bound) return;
-      btn.dataset.bound = '1';
-      const slug = btn.dataset.practiceToggle!;
-      const label = btn.querySelector<HTMLElement>('[data-practice-label]')!;
-
-      const paint = (store: Store) => {
-        const done = store.done.includes(slug);
-        btn.setAttribute('aria-pressed', String(done));
-        btn.classList.toggle('bg-blush-600', done);
-        btn.classList.toggle('text-white', done);
-        btn.classList.toggle('dark:text-white', done);
-        label.textContent = done ? 'Session logged for today' : "Mark today's session done";
+      const slug = root.dataset.slug!;
+      const total = Number(root.dataset.total);
+      const url = root.dataset.supabaseUrl;
+      const key = root.dataset.supabaseKey;
+      let state: CourseState = {
+        stepsDone: Number(root.dataset.stepsDone),
+        startedOn: root.dataset.startedOn || null,
       };
 
-      btn.addEventListener('click', () => {
-        const store = loadStore();
-        store.done = store.done.includes(slug)
-          ? store.done.filter((s) => s !== slug)
-          : [...store.done, slug];
-        localStorage.setItem(STORE_KEY, JSON.stringify(store));
-        paint(store);
-      });
+      const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel);
+      const chipClasses = {
+        base: 'rounded-full px-2.5 py-0.5 text-[11px] font-bold',
+        graduated: 'bg-amber-300/40 text-amber-700 dark:bg-amber-700/30 dark:text-amber-300',
+        active: 'bg-blush-600 text-white',
+        syllabus: 'bg-paper-200 text-ink-600 dark:bg-plum-800 dark:text-ink-400',
+      };
+      const CIRCLE = {
+        all: ['bg-blush-600', 'text-white', 'bg-blush-100', 'text-blush-700', 'ring-2', 'ring-blush-400', 'dark:bg-plum-800', 'dark:text-blush-300', 'bg-paper-200', 'text-ink-400'],
+        done: ['bg-blush-600', 'text-white'],
+        current: ['bg-blush-100', 'text-blush-700', 'ring-2', 'ring-blush-400', 'dark:bg-plum-800', 'dark:text-blush-300'],
+        future: ['bg-paper-200', 'text-ink-400', 'dark:bg-plum-800'],
+      };
 
-      paint(loadStore());
+      const render = () => {
+        const graduated = state.stepsDone >= total;
+        const active = !graduated && Boolean(state.startedOn);
+
+        const chip = q('[data-status-chip]');
+        if (chip) {
+          chip.className = `${chipClasses.base} ${
+            graduated ? chipClasses.graduated : active ? chipClasses.active : chipClasses.syllabus
+          }`;
+          chip.textContent = graduated ? 'Graduated' : active ? 'In session' : 'On the syllabus';
+        }
+        const count = q('[data-step-count]');
+        if (count)
+          count.textContent = graduated
+            ? `all ${total} steps passed`
+            : `step ${state.stepsDone + 1} of ${total}`;
+
+        q('[data-dots]')
+          ?.querySelectorAll('span')
+          .forEach((dot, i) => {
+            dot.classList.toggle('bg-blush-600', i < state.stepsDone);
+            dot.classList.toggle('dark:bg-blush-400', i < state.stepsDone);
+            dot.classList.toggle('bg-paper-200', i >= state.stepsDone);
+            dot.classList.toggle('dark:bg-plum-800', i >= state.stepsDone);
+          });
+
+        q('[data-practice-toggle]')?.classList.toggle('hidden', !active);
+
+        document.querySelectorAll<HTMLElement>('[data-step-row]').forEach((row, i) => {
+          const done = i < state.stepsDone;
+          const current = !graduated && i === state.stepsDone;
+          row.classList.toggle('bg-blush-100/50', current);
+          row.classList.toggle('dark:bg-plum-800/50', current);
+          row.classList.toggle('opacity-60', !done && !current);
+          const circle = row.querySelector<HTMLElement>('[data-step-circle]');
+          if (circle) {
+            circle.classList.remove(...CIRCLE.all);
+            circle.classList.add(...(done ? CIRCLE.done : current ? CIRCLE.current : CIRCLE.future));
+          }
+          row.querySelector('[data-step-check]')?.classList.toggle('hidden', !done);
+          row.querySelector('[data-step-num]')?.classList.toggle('hidden', done);
+          row.querySelector('[data-step-next]')?.classList.toggle('hidden', !current);
+        });
+
+        const action = q<HTMLButtonElement>('[data-train-action]');
+        if (action) {
+          action.textContent = graduated
+            ? 'Graduated'
+            : active
+              ? `Mark step ${state.stepsDone + 1} passed`
+              : 'Begin the course';
+          action.disabled = graduated;
+        }
+        q('[data-train-undo]')?.classList.toggle(
+          'hidden',
+          state.stepsDone === 0 && !state.startedOn,
+        );
+      };
+
+      // ---- live refresh + writes (only when Supabase config is embedded) ----
+      if (url && key) {
+        const headers = { apikey: key, authorization: `Bearer ${key}` };
+        const refresh = async () => {
+          try {
+            const res = await fetch(
+              `${url}/rest/v1/picha_training?select=steps_done,started_on&slug=eq.${slug}`,
+              { headers },
+            );
+            if (!res.ok) return;
+            const [row] = (await res.json()) as Array<{
+              steps_done: number;
+              started_on: string | null;
+            }>;
+            if (row) {
+              state = {
+                stepsDone: Math.min(Math.max(row.steps_done, 0), total),
+                startedOn: row.started_on,
+              };
+              render();
+            }
+          } catch {
+            /* offline: built state stands */
+          }
+        };
+
+        const pinInput = q<HTMLInputElement>('[data-train-pin]')!;
+        pinInput.value = localStorage.getItem(PIN_KEY) ?? '';
+        const status = q('[data-train-status]')!;
+
+        const write = async (next: CourseState) => {
+          if (!pinInput.value) {
+            status.textContent = 'The registrar PIN is required.';
+            setTimeout(() => (status.textContent = ''), 3000);
+            return;
+          }
+          status.textContent = 'Filing the paperwork…';
+          try {
+            const res = await fetch(`${url}/rest/v1/rpc/log_training`, {
+              method: 'POST',
+              headers: { ...headers, 'content-type': 'application/json' },
+              body: JSON.stringify({
+                p_slug: slug,
+                p_steps_done: next.stepsDone,
+                p_started_on: next.startedOn,
+                p_pin: pinInput.value,
+              }),
+            });
+            if (!res.ok) {
+              const body = await res.json().catch(() => ({}));
+              throw new Error(body?.message ?? `HTTP ${res.status}`);
+            }
+            localStorage.setItem(PIN_KEY, pinInput.value);
+            state = next;
+            render();
+            status.textContent =
+              next.stepsDone >= total
+                ? 'Graduated. The academy is very proud.'
+                : 'Recorded in her file.';
+          } catch (err) {
+            status.textContent = String(err).includes('wrong pin')
+              ? 'Wrong PIN. The registrar is unimpressed.'
+              : 'Could not record it. Check the connection and try again.';
+          } finally {
+            setTimeout(() => (status.textContent = ''), 4000);
+          }
+        };
+
+        q('[data-train-action]')?.addEventListener('click', () => {
+          const graduated = state.stepsDone >= total;
+          if (graduated) return;
+          const today = new Date().toISOString().slice(0, 10);
+          if (!state.startedOn) write({ stepsDone: 0, startedOn: today });
+          else write({ stepsDone: state.stepsDone + 1, startedOn: state.startedOn });
+        });
+        q('[data-train-undo]')?.addEventListener('click', () => {
+          if (state.stepsDone > 0)
+            write({ stepsDone: state.stepsDone - 1, startedOn: state.startedOn });
+          else if (state.startedOn) write({ stepsDone: 0, startedOn: null });
+        });
+
+        refresh();
+      }
+
+      // ---- "practiced today" tick (on-device, daily reset) ----
+      const btn = q<HTMLButtonElement>('[data-practice-toggle]');
+      if (btn) {
+        const label = btn.querySelector<HTMLElement>('[data-practice-label]')!;
+        const loadStore = (): { date: string; done: string[] } => {
+          const today = new Date().toDateString();
+          try {
+            const raw = JSON.parse(localStorage.getItem(PRACTICE_KEY) ?? '');
+            if (raw && raw.date === today && Array.isArray(raw.done)) return raw;
+          } catch {
+            /* fresh start */
+          }
+          return { date: today, done: [] };
+        };
+        const paint = (store: { done: string[] }) => {
+          const done = store.done.includes(slug);
+          btn.setAttribute('aria-pressed', String(done));
+          btn.classList.toggle('bg-blush-600', done);
+          btn.classList.toggle('text-white', done);
+          btn.classList.toggle('dark:text-white', done);
+          label.textContent = done ? 'Session logged for today' : "Mark today's session done";
+        };
+        btn.addEventListener('click', () => {
+          const store = loadStore();
+          store.done = store.done.includes(slug)
+            ? store.done.filter((s) => s !== slug)
+            : [...store.done, slug];
+          localStorage.setItem(PRACTICE_KEY, JSON.stringify(store));
+          paint(store);
+        });
+        paint(loadStore());
+      }
+
+      render();
     }
 
-    setupPractice();
-    document.addEventListener('astro:page-load', setupPractice);
+    setupCourse();
+    document.addEventListener('astro:page-load', setupCourse);
   </script>
 </Layout>

@@ -350,8 +350,12 @@ export const trainingRules: string[] = [
 ];
 
 /**
- * The course catalogue. Progress is data: bump `stepsDone` when she passes a
- * step, set `startedOn` when a course begins. Everything else renders itself.
+ * The course catalogue — content only. PROGRESS (`stepsDone`, `startedOn`)
+ * lives in the Supabase table `picha_training` and is merged in at build time
+ * by src/data/training.ts; the values here are just the offline seed. Record
+ * milestones with the registrar controls on each course page (or the Supabase
+ * dashboard), not by editing this file. New courses: add them here with
+ * stepsDone 0; their progress rows appear on the first write.
  */
 export const trainingCourses: TrainingCourse[] = [
   {

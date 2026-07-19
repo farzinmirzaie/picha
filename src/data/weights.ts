@@ -9,44 +9,22 @@
  * "Run workflow" on the Deploy action).
  */
 import { weightHistory as seedHistory, type WeightEntry } from './picha';
+import { supabaseClient, fetchRest } from './supabase';
 
-// Accept the URL with or without a trailing /rest/v1/ — normalise to the bare
-// project URL so path-building below stays correct either way.
-const rawUrl = import.meta.env.SUPABASE_URL ?? process.env.SUPABASE_URL;
-const SUPABASE_URL = rawUrl?.replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '');
-const SUPABASE_ANON_KEY =
-  import.meta.env.SUPABASE_ANON_KEY ?? process.env.SUPABASE_ANON_KEY;
-
-/**
- * Config for the weight page's client script (live refresh + the entry form).
- * The anon key is public by design: RLS only allows reads, and writes go
- * through the PIN-checked log_weight RPC (see supabase/schema.sql).
- */
-export const supabaseClient =
-  SUPABASE_URL && SUPABASE_ANON_KEY
-    ? { url: SUPABASE_URL, key: SUPABASE_ANON_KEY }
-    : undefined;
+export { supabaseClient };
 
 async function load(): Promise<{
   history: WeightEntry[];
   source: 'supabase' | 'seed';
 }> {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  if (!supabaseClient) {
     console.warn('[weights] SUPABASE_URL/SUPABASE_ANON_KEY not set; using the seed ledger');
     return { history: seedHistory, source: 'seed' };
   }
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/picha_weights?select=date,kg&order=date.asc`,
-      {
-        headers: {
-          apikey: SUPABASE_ANON_KEY,
-          authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        },
-      },
+    const rows = await fetchRest<Array<{ date: string; kg: number | string }>>(
+      'picha_weights?select=date,kg&order=date.asc',
     );
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const rows = (await res.json()) as Array<{ date: string; kg: number | string }>;
     if (!Array.isArray(rows) || rows.length === 0) throw new Error('table is empty');
     const history = rows.map((r) => ({ date: r.date, kg: Number(r.kg) }));
     console.log(`[weights] loaded ${history.length} weigh-ins from Supabase`);

@@ -36,8 +36,11 @@ get their own page + one new entry in the nav's `TABS` array.
 ```
 src/
   data/picha.ts        # ⭐ SINGLE SOURCE OF TRUTH — all of Picha's info + copy
+  data/supabase.ts     # shared Supabase env/config + fetch helper — server-only
   data/weights.ts      # build-time loader: weight ledger from Supabase
                        # (picha_weights) with seed fallback — server-only import
+  data/training.ts     # build-time loader: training progress from Supabase
+                       # (picha_training) merged into the picha.ts catalogue
   layouts/Layout.astro # <html> shell, fonts, PWA, ClientRouter, shared scripts
   components/
     Nav.astro          # tab nav: desktop pill bar + mobile bottom tab bar (TABS array)
@@ -93,9 +96,18 @@ allows `select` only. **Writes** go through the entry form on the weight
 page, which calls the `log_weight` RPC — a SECURITY DEFINER function that
 checks a staff PIN stored in the `private` schema (set it once in SQL; see
 schema.sql). Same-date entries update the existing row. The PIN is remembered
-per device (localStorage `picha-weight-pin`). The Health vitals weight tile
-also refreshes client-side from the ledger. The nightly rebuild (21:00 UTC)
-keeps the static fallback + llms.txt current.
+per device (localStorage `picha-staff-pin`, shared with training). The Health
+vitals weight tile also refreshes client-side from the ledger. The nightly
+rebuild (21:00 UTC) keeps the static fallback + llms.txt current.
+
+**Training progress** works the same way: content (steps, copy) stays in
+`trainingCourses` in picha.ts; progress (`steps_done`, `started_on`) lives in
+the `picha_training` table keyed by slug, merged at build time by
+`src/data/training.ts` and re-fetched client-side on the hub + course pages.
+Writes go through the `log_training` RPC (same registrar PIN) via the
+"Registrar controls" on each course page: begin course, mark step passed,
+undo. Rows are created on first write, so new courses only need a picha.ts
+entry. The values in picha.ts are the offline seed only.
 
 ### AI-friendly surface
 
@@ -129,13 +141,14 @@ pages/components when changing *layout or design*, not content.
   rebuild, the client-side countdown chip shows "(overdue)". **After doing a
   recurring task, update its `lastDone`** — the next due date and the
   "Next due" vitals tile follow automatically.
-- **`trainingCourses`** drives the Royal Academy (/training). Status is
+- **`trainingCourses`** holds course CONTENT for the Royal Academy
+  (/training); PROGRESS lives in Supabase (see § Supabase). Status is
   derived: `startedOn` set → in session; `stepsDone >= steps.length` →
-  graduated; else on the syllabus. **When she starts a course set
-  `startedOn`; when she truly passes a step bump `stepsDone`.** The
-  "practiced today" tick on course pages is localStorage
-  (`picha-training`, `{date, done[slug]}`, daily reset) — milestones are
-  data, daily practice is on-device.
+  graduated; else on the syllabus. **Record milestones with the registrar
+  controls on the course page**, not by editing picha.ts. The "practiced
+  today" tick on course pages is localStorage (`picha-training`,
+  `{date, done[slug]}`, daily reset) — milestones are cloud data, daily
+  practice is on-device.
 - **Weight ledger lives in Supabase** (`picha_weights`; see § Supabase). All
   weight UI (Weight tracker chart/stats/ledger, Health vitals tile,
   llms.txt) reads from `src/data/weights.ts` at build time. **To log a

@@ -5,6 +5,7 @@
  */
 import type { APIRoute } from 'astro';
 import { weightHistory, currentWeight } from '../data/weights';
+import { trainingCourses } from '../data/training';
 import {
   identity,
   BIRTH_DATE,
@@ -20,7 +21,6 @@ import {
   recurringCare,
   dailyChecklist,
   treatment,
-  trainingCourses,
   trainingRules,
   food,
   grooming,

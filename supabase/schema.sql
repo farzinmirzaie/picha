@@ -66,3 +66,53 @@ $$;
 
 revoke all on function public.log_weight(date, numeric, text) from public;
 grant execute on function public.log_weight(date, numeric, text) to anon;
+
+-- ---------------------------------------------------------------------------
+-- Training progress (the Royal Academy). Course content lives in the repo
+-- (src/data/picha.ts); only PROGRESS lives here, keyed by course slug. Rows
+-- are created lazily on the first write, so future courses need no schema
+-- change. Same registrar PIN as log_weight.
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.picha_training (
+  slug       text primary key check (slug ~ '^[a-z0-9-]{1,40}$'),
+  steps_done int  not null default 0 check (steps_done between 0 and 50),
+  started_on date,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.picha_training enable row level security;
+
+drop policy if exists "anon read" on public.picha_training;
+create policy "anon read" on public.picha_training
+  for select to anon using (true);
+
+create or replace function public.log_training(
+  p_slug text,
+  p_steps_done int,
+  p_started_on date,
+  p_pin text
+)
+returns void
+language plpgsql
+security definer
+set search_path = public, private
+as $$
+begin
+  if not exists (
+    select 1 from private.staff_secrets
+    where name = 'weight_pin' and value = p_pin
+  ) then
+    raise exception 'wrong pin';
+  end if;
+  insert into public.picha_training (slug, steps_done, started_on, updated_at)
+  values (p_slug, p_steps_done, p_started_on, now())
+  on conflict (slug) do update
+    set steps_done = excluded.steps_done,
+        started_on = excluded.started_on,
+        updated_at = now();
+end;
+$$;
+
+revoke all on function public.log_training(text, int, date, text) from public;
+grant execute on function public.log_training(text, int, date, text) to anon;
