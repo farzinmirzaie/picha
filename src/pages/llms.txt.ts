@@ -20,7 +20,6 @@ import {
   recurringCare,
   dailyChecklist,
   treatment,
-  recovery,
   food,
   grooming,
   litter,
@@ -73,7 +72,7 @@ ${identity.looks} Home: ${identity.home}.
 ## Pages
 
 - [Home](${SITE}/): who she is, story, personality, likes and dislikes
-- [Health](${SITE}/health/): vitals, recovery status, full health record (done, coming up, to book), emergency contacts
+- [Health](${SITE}/health/): vitals, full health record (done, coming up, on the list), emergency contacts
 - [Care](${SITE}/care/): daily checklist, care protocol, food, litter, house rules, toxic items, if-found info
 - [Tools](${SITE}/tools/): tools in service and the build queue
 - [Weight tracker](${SITE}/weight/): weight chart, stats and the weigh-in ledger
@@ -100,11 +99,6 @@ ${identity.looks} Home: ${identity.home}.
 ## Health record
 
 Vet status: ${vet.status}. Most recent clinic: ${vet.recentClinic}, phone ${vet.recentPhone}.
-
-### Current: recovery
-
-${recovery.headline}. Expected all-clear: ${recovery.clearedByLabel} (${recovery.clearedByDate}).
-${recovery.points.map((p) => `- ${p}`).join('\n')}
 
 ### Ongoing treatment
 

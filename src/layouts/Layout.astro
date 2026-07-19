@@ -123,12 +123,15 @@ const appTitle = { home: 'Picha', health: 'Health', care: 'Care', tools: 'Tools'
           const days = Math.round(
             (new Date(raw).getTime() - today.getTime()) / 86_400_000,
           );
+          // Countdowns only for near events; far-off dates speak for themselves.
           el.textContent =
-            days >= 0
-              ? ` (${inDaysLabel(days)})`
-              : el.dataset.overdue
-                ? ` (${el.dataset.overdue})`
-                : ' (past the estimate, confirm with the vet)';
+            days > 60
+              ? ''
+              : days >= 0
+                ? ` (${inDaysLabel(days)})`
+                : el.dataset.overdue
+                  ? ` (${el.dataset.overdue})`
+                  : ' (past the estimate, confirm with the vet)';
         });
 
         // Scroll-reveal: stagger via --reveal-delay set inline per element.

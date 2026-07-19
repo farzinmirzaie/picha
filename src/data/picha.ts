@@ -238,7 +238,7 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:sparkle',
     title: 'Grooming & spa day',
     detail:
-      'The professional glow-up: bath, tidy-up and blow-dry for the resident cloud. First appointment once the vet clears her.',
+      'The professional glow-up: bath, tidy-up and blow-dry for the resident cloud.',
     everyLabel: 'Every 2 months',
     intervalDays: 60,
     nextDue: '2026-08-01',
@@ -248,7 +248,7 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:broom',
     title: 'Litter box deep clean',
     detail:
-      'Full scrub and fresh litter; the royal facilities are restored to five stars. Clock started with the recovery tray.',
+      'Full scrub and fresh litter; the royal facilities are restored to five stars.',
     everyLabel: 'Every 3 months',
     intervalDays: 90,
     lastDone: '2026-07-11',
@@ -330,18 +330,6 @@ export const treatment: CareItem[] = [
   },
 ];
 
-export const recovery = {
-  headline: 'Recovering from spay (surgery 11 July 2026)',
-  surgeryDate: '2026-07-11',
-  clearedByLabel: '~25 July 2026',
-  clearedByDate: '2026-07-25',
-  points: [
-    'Keep the incision area protected.',
-    'Limit jumping & climbing until cleared by the vet.',
-    'Glance at the incision daily; watch for redness, swelling, or discharge.',
-  ],
-};
-
 export const food: CareItem[] = [
   {
     icon: 'ph:fork-knife',
@@ -402,7 +390,7 @@ export const grooming: CareItem[] = [
     title: 'Bathing',
     cadence: 'Rarely',
     detail:
-      'Rarely required; the daily combing does the heavy lifting. An occasional bath or professional spa day once she is fully healed.',
+      'Rarely required; the daily combing does the heavy lifting. An occasional bath or a professional spa day, by appointment.',
   },
   {
     icon: 'ph:tooth',
@@ -417,13 +405,13 @@ export const litter: CareItem[] = [
   {
     icon: 'ph:toilet',
     title: 'Current facilities',
-    detail: 'A low, shallow open tray, for easy access while she recovers from surgery.',
+    detail: 'A low, shallow open tray. The starter facilities: easy in, easy out.',
   },
   {
     icon: 'ph:package',
     title: 'Planned upgrade',
     detail:
-      'A large, high-sided open box once she is fully healed. Scooped daily; ideally two boxes. She has standards.',
+      'A large, high-sided open box, next on the procurement list. Scooped daily; ideally two boxes. She has standards.',
   },
 ];
 
@@ -543,7 +531,6 @@ export const toxicItems: string[] = [
 export const callVetIf: string[] = [
   'Not eating for ~24h, or repeated vomiting.',
   'Straining in the litter box, or no urination in a day.',
-  'Incision looks red, swollen, open, or has discharge.',
   'Persistent hiding + hunched posture + off food (vs. her normal come-and-go).',
   'Laboured breathing or sudden lethargy.',
 ];

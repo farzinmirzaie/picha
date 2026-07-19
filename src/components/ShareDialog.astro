@@ -68,7 +68,18 @@ const qrSvg = await QRCode.toString(url, {
           data-share-copy
           class="inline-flex items-center gap-2 rounded-full border border-blush-300/70 bg-paper-50 px-5 py-2 text-sm font-bold text-blush-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-800 dark:text-blush-300"
         >
-          <Icon name="ph:copy" class="h-4.5 w-4.5" aria-hidden="true" />
+          <span class="relative h-4.5 w-4.5 shrink-0" aria-hidden="true">
+            <Icon
+              name="ph:copy"
+              data-copy-icon
+              class="absolute inset-0 h-full w-full transition-all duration-300 ease-out"
+            />
+            <Icon
+              name="ph:check"
+              data-copy-check
+              class="absolute inset-0 h-full w-full scale-0 opacity-0 transition-all duration-300 ease-out"
+            />
+          </span>
           <span data-share-copy-label>Copy link</span>
         </button>
       </div>
@@ -112,16 +123,25 @@ const qrSvg = await QRCode.toString(url, {
 
     const copy = dialog.querySelector<HTMLButtonElement>('[data-share-copy]');
     const copyLabel = dialog.querySelector<HTMLElement>('[data-share-copy-label]');
+    const iconCopy = dialog.querySelector<HTMLElement>('[data-copy-icon]');
+    const iconCheck = dialog.querySelector<HTMLElement>('[data-copy-check]');
+    let copyTimer: ReturnType<typeof setTimeout> | undefined;
+    const showCopied = (on: boolean) => {
+      iconCopy?.classList.toggle('scale-0', on);
+      iconCopy?.classList.toggle('opacity-0', on);
+      iconCheck?.classList.toggle('scale-0', !on);
+      iconCheck?.classList.toggle('opacity-0', !on);
+      if (copyLabel) copyLabel.textContent = on ? 'Copied' : 'Copy link';
+    };
     copy?.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(url);
       } catch {
         return;
       }
-      if (copyLabel) {
-        copyLabel.textContent = 'Copied';
-        setTimeout(() => (copyLabel.textContent = 'Copy link'), 1600);
-      }
+      showCopied(true);
+      clearTimeout(copyTimer);
+      copyTimer = setTimeout(() => showCopied(false), 1600);
     });
   }
 

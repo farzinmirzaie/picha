@@ -47,7 +47,7 @@ src/
     Footer.astro       # paw divider + credits — desktop-only unless `showOnMobile`
   pages/
     index.astro        # Home — hero, share dialog (QR), story, get-to-know-her
-    health.astro       # Health — vitals strip, recovery progress, segmented timeline, emergency
+    health.astro       # Health — vitals strip, segmented timeline, emergency
     care.astro         # Care — "Today's rounds" checklist, protocol, menu, litter, rules, "if found"
     tools.astro        # Tools — in-service list (passport, weight) + 3am note
     weight.astro       # Weight tracker — build-time SVG chart + stats + ledger,
@@ -158,8 +158,9 @@ swaps):
   (fractional months to one decimal, e.g. "~7.7 months old").
 - `[data-until="YYYY-MM-DD"]` spans → filled with `inDaysLabel()` (also in
   picha.ts): "today"/"tomorrow"/"in 12 days", and month+day phrasing past 30
-  days ("in 2 months and 4 days"). Past dates show the confirm-with-the-vet
-  note.
+  days ("in 2 months and 4 days"). Dates more than ~2 months out get no
+  countdown at all. Past dates show the `data-overdue` text if set, else the
+  confirm-with-the-vet note.
 - `.reveal` elements → scroll-reveal via IntersectionObserver (stagger with
   inline `--reveal-delay`); skipped under `prefers-reduced-motion`.
 
@@ -189,8 +190,7 @@ The site installs as an app (Add to Home Screen / install icon):
 - **Native UI patterns in use** (reuse these before inventing new ones):
   snap-scroll stat tiles (`.no-scrollbar` strip, Health vitals), segmented
   control with sliding thumb (`[data-seg]`, Health timeline), grouped inset
-  lists (rounded card + `divide-y` rows, Care/emergency), progress bar
-  (`[data-recovery-progress]`, recomputed client-side), and the "Today's
+  lists (rounded card + `divide-y` rows, Care/emergency), and the "Today's
   rounds" checklist (localStorage key `picha-rounds`, `{date, done[]}`, resets
   when the stored date ≠ today; item ids come from `dailyChecklist` in
   picha.ts — keep them stable). Content inside initially-hidden panels must

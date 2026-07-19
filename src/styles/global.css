@@ -149,26 +149,6 @@ body {
     }
   }
 
-  /* Soft pulse for "current status" dots */
-  .pulse-dot::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 9999px;
-    background: currentColor;
-    opacity: 0.4;
-    animation: pulse-dot 2s ease-out infinite;
-  }
-  @keyframes pulse-dot {
-    from {
-      transform: scale(1);
-      opacity: 0.4;
-    }
-    to {
-      transform: scale(2.4);
-      opacity: 0;
-    }
-  }
 }
 
 /* Horizontal scrollers (stat strips) hide their bar everywhere. */
@@ -178,11 +158,6 @@ body {
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
-}
-
-/* Recovery progress fill animates in once its width is set client-side. */
-.progress-fill {
-  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Underline slide for inline links */
