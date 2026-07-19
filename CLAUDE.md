@@ -55,9 +55,23 @@ src/
     picha.jpg          # avatar photo (astro:assets; also the source for app icons)
 public/favicon.svg     # Phosphor paw-print on a blush tile (photo is mush at 16px)
 public/icon-*.png      # PWA icons — cropped from her photo (see § icons)
+  pages/llms.txt.ts    # /llms.txt — whole site as markdown for AI agents,
+                       # generated from picha.ts at build (llmstxt.org)
+public/robots.txt      # points at sitemap-index.xml + llms.txt
 .github/workflows/deploy.yml  # build + deploy Pages + auto-release
-astro.config.mjs       # site + base (GitHub Pages project site)
+astro.config.mjs       # site + base (GitHub Pages project site) + sitemap
 ```
+
+### AI-friendly surface
+
+The site is meant to be readable by agents as well as humans:
+
+- **`/llms.txt`** (src/pages/llms.txt.ts) renders the entire profile as one
+  markdown document straight from `picha.ts` — same facts as the HTML, plain
+  voice. It's linked from every page's `<head>` (`rel="alternate"`) and from
+  robots.txt. New data added to picha.ts should be added there too.
+- **`@astrojs/sitemap`** emits `sitemap-index.xml` (linked in `<head>` via
+  `rel="sitemap"` and robots.txt).
 
 ### The golden rule: edit data, not markup
 
@@ -130,9 +144,12 @@ freeze at build time. To keep it live, `src/layouts/Layout.astro` runs a shared
 client script on every page (re-runs on `astro:page-load` after ClientRouter
 swaps):
 
-- `[data-age]` spans → refilled via `ageLabel()` from `src/data/picha.ts`.
-- `[data-until="YYYY-MM-DD"]` spans → filled with a relative day-count
-  (e.g. " (in 7 days)", " (past the estimate — confirm with the vet)").
+- `[data-age]` spans → refilled via `ageLabel()` from `src/data/picha.ts`
+  (fractional months to one decimal, e.g. "~7.7 months old").
+- `[data-until="YYYY-MM-DD"]` spans → filled with `inDaysLabel()` (also in
+  picha.ts): "today"/"tomorrow"/"in 12 days", and month+day phrasing past 30
+  days ("in 2 months and 4 days"). Past dates show the confirm-with-the-vet
+  note.
 - `.reveal` elements → scroll-reveal via IntersectionObserver (stagger with
   inline `--reveal-delay`); skipped under `prefers-reduced-motion`.
 

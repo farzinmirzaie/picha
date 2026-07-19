@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Machine-readable entry points
+Sitemap: https://farzinmirzaie.github.io/picha/sitemap-index.xml
+# Full site content as markdown for AI agents:
+# https://farzinmirzaie.github.io/picha/llms.txt

@@ -511,24 +511,56 @@ export const callVetIf: string[] = [
 ];
 
 /**
- * Age in months, computed from BIRTH_DATE at render time so it stays current
- * on the visitor's device.
+ * Age in months (fractional), computed from BIRTH_DATE at render time so it
+ * stays current on the visitor's device. The fraction is the progress through
+ * the current month-of-age (7.7 = seven months and ~three weeks).
  */
 export function ageInMonths(from: Date = new Date()): number {
   const birth = new Date(BIRTH_DATE);
-  let months =
+  let whole =
     (from.getFullYear() - birth.getFullYear()) * 12 +
     (from.getMonth() - birth.getMonth());
-  if (from.getDate() < birth.getDate()) months -= 1;
-  return Math.max(0, months);
+  if (from.getDate() < birth.getDate()) whole -= 1;
+  if (whole < 0) return 0;
+  const anchor = new Date(birth);
+  anchor.setMonth(anchor.getMonth() + whole);
+  const next = new Date(birth);
+  next.setMonth(next.getMonth() + whole + 1);
+  const frac =
+    (from.getTime() - anchor.getTime()) / (next.getTime() - anchor.getTime());
+  return whole + Math.min(Math.max(frac, 0), 0.99);
 }
 
 export function ageLabel(from: Date = new Date()): string {
-  const months = ageInMonths(from);
-  if (months < 12) return `~${months} months old`;
+  const months = Math.round(ageInMonths(from) * 10) / 10;
+  if (months < 12) {
+    const label = Number.isInteger(months) ? String(months) : months.toFixed(1);
+    return `~${label} months old`;
+  }
   const years = Math.floor(months / 12);
-  const rem = months % 12;
+  const rem = Math.floor(months % 12);
   return rem === 0
     ? `~${years} year${years > 1 ? 's' : ''} old`
     : `~${years}y ${rem}m old`;
+}
+
+/**
+ * Human label for a day count relative to today, kept readable at any size:
+ * "today", "tomorrow", "in 12 days", "in 2 months and 4 days". Shared by the
+ * [data-until] client script and any build-time countdown copy.
+ */
+export function inDaysLabel(days: number): string {
+  if (days === 0) return 'today';
+  if (days === 1) return 'tomorrow';
+  if (days === -1) return 'yesterday';
+  const abs = Math.abs(days);
+  const months = Math.floor(abs / 30);
+  const rem = abs % 30;
+  const span =
+    months >= 1
+      ? `${months} month${months > 1 ? 's' : ''}${
+          rem ? ` and ${rem} day${rem > 1 ? 's' : ''}` : ''
+        }`
+      : `${abs} days`;
+  return days > 0 ? `in ${span}` : `${span} ago`;
 }
