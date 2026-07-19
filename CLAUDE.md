@@ -41,10 +41,12 @@ src/
     Nav.astro          # tab nav: desktop pill bar + mobile bottom tab bar (TABS array)
     PageHeader.astro   # sub-page header (kicker, serif title, blurb; avatar md+ only)
     PassportDialog.astro # the pet-passport <dialog> + opener script — include once
-                       # per page; any [data-passport-open] element opens it
+                       # per page; any [data-passport-open] element opens it (Tools)
+    ShareDialog.astro  # share sheet: build-time QR (qrcode pkg) + Web Share /
+                       # copy-link; any [data-share-open] element opens it (Home)
     Footer.astro       # paw divider + credits — desktop-only unless `showOnMobile`
   pages/
-    index.astro        # Home — hero, passport dialog, story, get-to-know-her
+    index.astro        # Home — hero, share dialog (QR), story, get-to-know-her
     health.astro       # Health — vitals strip, recovery progress, segmented timeline, emergency
     care.astro         # Care — "Today's rounds" checklist, protocol, menu, litter, rules, "if found"
     tools.astro        # Tools — in-service list (passport, weight) + build queue

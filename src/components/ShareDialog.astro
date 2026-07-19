@@ -1,0 +1,130 @@
+---
+/**
+ * The share sheet: QR code to the site + native share / copy-link buttons.
+ * Include once per page; any element with `data-share-open` opens it.
+ * The QR is rendered at build time (qrcode pkg), so the dialog ships no JS
+ * beyond the open/share/copy handlers. Generic on purpose: it hands the whole
+ * app to a vet, a day care, or family in one scan.
+ */
+import { Icon } from 'astro-icon/components';
+import QRCode from 'qrcode';
+
+const url = new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`, Astro.site)
+  .href;
+// Ink on a white tile scans reliably in both themes.
+const qrSvg = await QRCode.toString(url, {
+  type: 'svg',
+  margin: 0,
+  errorCorrectionLevel: 'M',
+  color: { dark: '#38262e', light: '#ffffff00' },
+});
+---
+
+<dialog id="share" class="share" aria-labelledby="share-title" data-url={url}>
+  <div class="rounded-2xl bg-paper-50 shadow-2xl dark:bg-plum-900">
+    <div class="flex items-center justify-between bg-blush-600 px-5 py-3">
+      <h2
+        id="share-title"
+        class="text-[11px] font-bold tracking-[0.22em] text-white uppercase sm:text-xs"
+      >
+        Share her profile
+      </h2>
+      <form method="dialog">
+        <button
+          class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/35"
+          aria-label="Close share sheet"
+        >
+          <Icon name="ph:x" class="h-4 w-4" aria-hidden="true" />
+        </button>
+      </form>
+    </div>
+
+    <div class="p-6 text-center">
+      <p class="mx-auto max-w-xs text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+        For the vet, the day care, the family: scan the code or send the link.
+        Everything about Picha, one page.
+      </p>
+
+      <div
+        class="mx-auto mt-5 w-44 rounded-2xl border border-paper-300/70 bg-white p-3.5 shadow-sm dark:border-plum-700"
+        role="img"
+        aria-label={`QR code linking to ${url}`}
+      >
+        <div class="[&>svg]:h-auto [&>svg]:w-full" set:html={qrSvg} aria-hidden="true" />
+      </div>
+      <p class="select-text mt-3 font-mono text-[11px] break-all text-ink-400">{url}</p>
+
+      <div class="mt-5 flex flex-wrap justify-center gap-2.5">
+        <button
+          type="button"
+          data-share-native
+          class="inline-flex items-center gap-2 rounded-full bg-blush-600 px-5 py-2 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-blush-700 hover:shadow-md active:translate-y-0"
+        >
+          <Icon name="ph:share-network" class="h-4.5 w-4.5" aria-hidden="true" />
+          Share
+        </button>
+        <button
+          type="button"
+          data-share-copy
+          class="inline-flex items-center gap-2 rounded-full border border-blush-300/70 bg-paper-50 px-5 py-2 text-sm font-bold text-blush-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-800 dark:text-blush-300"
+        >
+          <Icon name="ph:copy" class="h-4.5 w-4.5" aria-hidden="true" />
+          <span data-share-copy-label>Copy link</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  function setupShare() {
+    const dialog = document.getElementById('share') as HTMLDialogElement | null;
+    if (!dialog) return;
+    const url = dialog.dataset.url!;
+
+    document.querySelectorAll<HTMLElement>('[data-share-open]').forEach((btn) => {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', () => dialog.showModal());
+    });
+
+    if (dialog.dataset.bound) return;
+    dialog.dataset.bound = '1';
+    // click on the backdrop (the dialog element itself) closes it
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+
+    const native = dialog.querySelector<HTMLButtonElement>('[data-share-native]');
+    // No Web Share API (mostly desktop browsers): the copy button carries it.
+    if (!navigator.share) native?.classList.add('hidden');
+    native?.addEventListener('click', async () => {
+      try {
+        await navigator.share({
+          title: 'Picha 🐾',
+          text: 'Picha the cat: profile, health record and care guide.',
+          url,
+        });
+      } catch {
+        /* user dismissed the share sheet */
+      }
+    });
+
+    const copy = dialog.querySelector<HTMLButtonElement>('[data-share-copy]');
+    const copyLabel = dialog.querySelector<HTMLElement>('[data-share-copy-label]');
+    copy?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch {
+        return;
+      }
+      if (copyLabel) {
+        copyLabel.textContent = 'Copied';
+        setTimeout(() => (copyLabel.textContent = 'Copy link'), 1600);
+      }
+    });
+  }
+
+  setupShare();
+  document.addEventListener('astro:page-load', setupShare);
+</script>

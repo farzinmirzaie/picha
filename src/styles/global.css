@@ -197,9 +197,10 @@ body {
   background-size: 100% 1.5px;
 }
 
-/* ---------- passport dialog ---------- */
+/* ---------- modal dialogs (passport, share sheet) ---------- */
 
 /* The passport is a physical document — it stays cream even in dark mode. */
+dialog.share,
 dialog.passport {
   border: none;
   padding: 0;
@@ -215,11 +216,13 @@ dialog.passport {
   overflow-y: auto;
   overscroll-behavior: contain;
 }
+dialog.share::backdrop,
 dialog.passport::backdrop {
   background: rgb(23 16 20 / 0.55);
   backdrop-filter: blur(4px);
 }
 @media (prefers-reduced-motion: no-preference) {
+  dialog.share[open],
   dialog.passport[open] {
     animation: passport-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
