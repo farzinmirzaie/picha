@@ -108,9 +108,9 @@ export const healthTimeline: TimelineEntry[] = [
   },
   {
     icon: 'ph:house-line',
-    title: 'Gotcha day — Picha acquires her humans',
+    title: 'The great staff hiring',
     detail:
-      'Selected Farah & Farzin at the pet shop and moved them into her Kuala Lumpur headquarters. Onboarding was immediate.',
+      'Interviewed Farah & Farzin at the pet shop and hired both on the spot. No probation period — she does not do trial runs.',
     date: '2026-06-24',
   },
   {
