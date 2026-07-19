@@ -147,7 +147,10 @@ const presets = [
   </section>
 
   <!-- Life stages -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Life stages">
+  <section
+    class="mx-auto w-full max-w-2xl px-5 pt-10 pb-8 md:pb-0"
+    aria-label="Life stages"
+  >
     <h2
       class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
     >
@@ -168,7 +171,10 @@ const presets = [
               data-min={s.minMonths}
               data-max={s.maxMonths}
             >
-              <span class="pen mt-0.5 w-7 shrink-0 text-right text-sm" aria-hidden="true">
+              <span
+                class="font-display mt-0.5 w-7 shrink-0 text-right text-sm font-semibold tracking-[0.04em] text-blush-600 italic dark:text-blush-300"
+                aria-hidden="true"
+              >
                 {String(i + 1).padStart(2, '0')}
               </span>
               <div class="min-w-0">
@@ -195,6 +201,9 @@ const presets = [
         }
       </ol>
     </div>
+    <p class="mt-2 px-1 text-[11px] leading-relaxed text-ink-400">
+      Six stages per life. Lives two through nine follow the same programme.
+    </p>
   </section>
 
   <Footer />
