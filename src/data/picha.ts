@@ -95,9 +95,8 @@ export const weight = {
   }).format(new Date(lastWeighIn.date)),
   healthyTarget: `~${weightTarget.min}–${weightTarget.max} kg`,
   note: 'Still growing until ~1.5–2 years old.',
-  /** Weigh-in cadence: the Weight tracker computes next-due from the last entry. */
+  /** Weigh-in cadence (informational; surfaced in llms.txt). */
   auditEveryDays: 30,
-  auditEveryLabel: 'monthly audit',
 };
 
 export const vet = {

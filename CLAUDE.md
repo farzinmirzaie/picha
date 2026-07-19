@@ -100,7 +100,7 @@ pages/components when changing *layout or design*, not content.
   recurring task, update its `lastDone`** — the next due date and the
   "Next due" vitals tile follow automatically.
 - **`weightHistory`** (oldest first) is the single source for all weight UI:
-  the Weight tracker page (chart/stats/ledger/next-audit tile) and
+  the Weight tracker page (chart/stats/ledger) and
   `weight.current` / `measuredOn` (derived from its last entry). **To log a
   weigh-in, just append an entry there** — weigh-ins live on the Weight page,
   not in the health record. There is deliberately no entry form; the data
