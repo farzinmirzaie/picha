@@ -1,0 +1,251 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '../../layouts/Layout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Footer from '../../components/Footer.astro';
+import { trainingCourses, trainingRules } from '../../data/picha';
+
+export function getStaticPaths() {
+  return trainingCourses.map((course) => ({
+    params: { slug: course.slug },
+    props: { course },
+  }));
+}
+
+const { course } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const graduated = course.stepsDone >= course.steps.length;
+const active = !graduated && Boolean(course.startedOn);
+const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the syllabus';
+---
+
+<Layout title={`${course.title} · Picha 🐾`} current="tools">
+  <PageHeader kicker="The Royal Academy" title={course.title} blurb={course.tagline} />
+
+  <section class="mx-auto w-full max-w-2xl px-5" aria-label="Course status">
+    <a
+      href={`${base}/training/`}
+      class="reveal inline-flex items-center gap-1.5 text-xs font-bold text-blush-600 dark:text-blush-300"
+    >
+      <Icon name="ph:arrow-left" class="h-3.5 w-3.5" aria-hidden="true" />
+      All courses
+    </a>
+
+    <div
+      class="reveal mt-4 rounded-3xl border border-blush-200/70 bg-paper-50 p-6 dark:border-plum-700 dark:bg-plum-900"
+    >
+      <div class="flex flex-wrap items-center gap-2">
+        <span
+          class:list={[
+            'rounded-full px-2.5 py-0.5 text-[11px] font-bold',
+            graduated
+              ? 'bg-amber-300/40 text-amber-700 dark:bg-amber-700/30 dark:text-amber-300'
+              : active
+                ? 'bg-blush-600 text-white'
+                : 'bg-paper-200 text-ink-600 dark:bg-plum-800 dark:text-ink-400',
+          ]}
+        >
+          {statusLabel}
+        </span>
+        <span class="text-[11px] font-bold text-ink-400">
+          {
+            graduated
+              ? `all ${course.steps.length} steps passed`
+              : `step ${course.stepsDone + 1} of ${course.steps.length}`
+          }
+        </span>
+        <span
+          class="ml-auto inline-flex items-center gap-1 text-[11px] font-bold text-ink-400"
+        >
+          resistance
+          <span
+            class="inline-flex items-center gap-0.5 text-blush-400 dark:text-blush-300/70"
+            role="img"
+            aria-label={`Management resistance level ${course.resistance} of 3`}
+          >
+            {
+              Array.from({ length: course.resistance }).map(() => (
+                <Icon name="ph:paw-print" class="h-3 w-3" aria-hidden="true" />
+              ))
+            }
+          </span>
+        </span>
+      </div>
+
+      <!-- progress dots, one per step -->
+      <div class="mt-4 flex gap-1.5" aria-hidden="true">
+        {
+          course.steps.map((_, i) => (
+            <span
+              class:list={[
+                'h-1.5 flex-1 rounded-full',
+                i < course.stepsDone
+                  ? 'bg-blush-600 dark:bg-blush-400'
+                  : 'bg-paper-200 dark:bg-plum-800',
+              ]}
+            />
+          ))
+        }
+      </div>
+
+      <p class="mt-4 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+        {course.why}
+      </p>
+
+      {
+        active && (
+          <button
+            type="button"
+            data-practice-toggle={course.slug}
+            aria-pressed="false"
+            class="mt-5 inline-flex items-center gap-2 rounded-full border border-blush-300/70 bg-paper-50 px-5 py-2 text-sm font-bold text-blush-700 shadow-sm transition-all duration-200 active:translate-y-0.5 dark:border-plum-700 dark:bg-plum-800 dark:text-blush-300"
+          >
+            <Icon name="ph:seal-check" class="h-4.5 w-4.5" aria-hidden="true" />
+            <span data-practice-label>Mark today's session done</span>
+          </button>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- The step ladder -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Steps">
+    <h2
+      class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
+    >
+      The curriculum
+    </h2>
+    <div
+      class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
+    >
+      <ol class="divide-y divide-paper-200 dark:divide-plum-800">
+        {
+          course.steps.map((s, i) => {
+            const done = i < course.stepsDone;
+            const current = !graduated && i === course.stepsDone;
+            return (
+              <li
+                class:list={[
+                  'flex items-start gap-3.5 px-5 py-4',
+                  current ? 'bg-blush-100/50 dark:bg-plum-800/50' : '',
+                  !done && !current ? 'opacity-60' : '',
+                ]}
+              >
+                <span
+                  class:list={[
+                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold',
+                    done
+                      ? 'bg-blush-600 text-white'
+                      : current
+                        ? 'bg-blush-100 text-blush-700 ring-2 ring-blush-400 dark:bg-plum-800 dark:text-blush-300'
+                        : 'bg-paper-200 text-ink-400 dark:bg-plum-800',
+                  ]}
+                  aria-hidden="true"
+                >
+                  {done ? <Icon name="ph:check" class="h-4 w-4" /> : i + 1}
+                </span>
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <h3 class="font-display font-semibold">{s.title}</h3>
+                    {current && (
+                      <span class="rounded-full bg-amber-300/40 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:bg-amber-700/30 dark:text-amber-300">
+                        up next
+                      </span>
+                    )}
+                  </div>
+                  <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+                    {s.detail}
+                  </p>
+                </div>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </div>
+    <p class="mt-2 px-1 text-[11px] leading-relaxed text-ink-400">
+      A step is passed when she stays relaxed through it on several separate
+      days. The registrar then records it in her file.
+    </p>
+  </section>
+
+  <!-- Session rules -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-8 pb-8 md:pb-0" aria-label="Session rules">
+    <h2
+      class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
+    >
+      Session rules
+    </h2>
+    <div
+      class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
+    >
+      <ul class="divide-y divide-paper-200 dark:divide-plum-800">
+        {
+          trainingRules.map((r) => (
+            <li class="flex items-start gap-3 px-5 py-3.5 text-sm text-ink-600 dark:text-ink-400">
+              <Icon
+                name="ph:seal-check"
+                class="mt-0.5 h-4 w-4 shrink-0 text-blush-500 dark:text-blush-300"
+                aria-hidden="true"
+              />
+              {r}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Footer />
+
+  <script>
+    // "Practiced today" tick — per course, on-device, resets each calendar day
+    // (same pattern as the Care page rounds; milestones live in picha.ts).
+    const STORE_KEY = 'picha-training';
+
+    type Store = { date: string; done: string[] };
+
+    function loadStore(): Store {
+      const today = new Date().toDateString();
+      try {
+        const raw = JSON.parse(localStorage.getItem(STORE_KEY) ?? '');
+        if (raw && raw.date === today && Array.isArray(raw.done)) return raw;
+      } catch {
+        /* fresh start */
+      }
+      return { date: today, done: [] };
+    }
+
+    function setupPractice() {
+      const btn = document.querySelector<HTMLButtonElement>('[data-practice-toggle]');
+      if (!btn || btn.dataset.bound) return;
+      btn.dataset.bound = '1';
+      const slug = btn.dataset.practiceToggle!;
+      const label = btn.querySelector<HTMLElement>('[data-practice-label]')!;
+
+      const paint = (store: Store) => {
+        const done = store.done.includes(slug);
+        btn.setAttribute('aria-pressed', String(done));
+        btn.classList.toggle('bg-blush-600', done);
+        btn.classList.toggle('text-white', done);
+        btn.classList.toggle('dark:text-white', done);
+        label.textContent = done ? 'Session logged for today' : "Mark today's session done";
+      };
+
+      btn.addEventListener('click', () => {
+        const store = loadStore();
+        store.done = store.done.includes(slug)
+          ? store.done.filter((s) => s !== slug)
+          : [...store.done, slug];
+        localStorage.setItem(STORE_KEY, JSON.stringify(store));
+        paint(store);
+      });
+
+      paint(loadStore());
+    }
+
+    setupPractice();
+    document.addEventListener('astro:page-load', setupPractice);
+  </script>
+</Layout>

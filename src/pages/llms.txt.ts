@@ -20,6 +20,8 @@ import {
   recurringCare,
   dailyChecklist,
   treatment,
+  trainingCourses,
+  trainingRules,
   food,
   grooming,
   litter,
@@ -77,6 +79,7 @@ ${identity.looks} Home: ${identity.home}.
 - [Tools](${SITE}/tools/): tools in service and the build queue
 - [Weight tracker](${SITE}/weight/): weight chart, stats and the weigh-in ledger
 - [Cat-years converter](${SITE}/cat-years/): her age in human years, feline life stages, converter for any cat
+- [The Royal Academy](${SITE}/training/): training courses with step-by-step curricula and live progress (per-course pages under /training/<slug>/)
 
 ## Identity
 
@@ -116,6 +119,24 @@ ${upcoming.map((e) => item(e.title, e.detail, e.date)).join('\n')}
 
 ${toBook.map((e) => `- **${e.title}**: ${e.detail}`).join('\n')}
 ${notStarted.map((r) => `- **${r.title}** (${r.everyLabel.toLowerCase()}, not started yet): ${r.detail}`).join('\n')}
+
+## Training (the Royal Academy)
+
+Progressive desensitisation courses, run by the staff in short daily sessions. A step is passed when she stays relaxed through it on several separate days.
+
+${trainingCourses
+  .map((c) => {
+    const state =
+      c.stepsDone >= c.steps.length
+        ? 'graduated'
+        : c.startedOn
+          ? `in session, step ${c.stepsDone + 1} of ${c.steps.length} ("${c.steps[c.stepsDone].title}")`
+          : `not started (${c.steps.length} steps planned)`;
+    return `- **${c.title}**: ${state}. ${c.why}`;
+  })
+  .join('\n')}
+
+Session rules: ${trainingRules.join(' ')}
 
 ## Daily care
 

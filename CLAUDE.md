@@ -55,6 +55,8 @@ src/
     cat-years.astro    # Cat-years converter — her age in human years + slider
                        # converter + life stages; logic (catYears, humanAgeLine,
                        # felineStages) lives in picha.ts (current="tools")
+    training/index.astro   # Royal Academy hub — courses grouped by status
+    training/[slug].astro  # one page per course: step ladder, rules, practice tick
   styles/global.css    # Tailwind @theme (paper/plum/ink/blush/amber) + animations
   assets/
     picha.jpg          # avatar photo (astro:assets; also the source for app icons)
@@ -99,6 +101,13 @@ pages/components when changing *layout or design*, not content.
   rebuild, the client-side countdown chip shows "(overdue)". **After doing a
   recurring task, update its `lastDone`** — the next due date and the
   "Next due" vitals tile follow automatically.
+- **`trainingCourses`** drives the Royal Academy (/training). Status is
+  derived: `startedOn` set → in session; `stepsDone >= steps.length` →
+  graduated; else on the syllabus. **When she starts a course set
+  `startedOn`; when she truly passes a step bump `stepsDone`.** The
+  "practiced today" tick on course pages is localStorage
+  (`picha-training`, `{date, done[slug]}`, daily reset) — milestones are
+  data, daily practice is on-device.
 - **`weightHistory`** (oldest first) is the single source for all weight UI:
   the Weight tracker page (chart/stats/ledger) and
   `weight.current` / `measuredOn` (derived from its last entry). **To log a

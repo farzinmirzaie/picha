@@ -318,6 +318,236 @@ export const dailyChecklist = [
   },
 ];
 
+/* ---------- the Royal Academy (training tool) ---------- */
+
+export interface TrainingStep {
+  title: string;
+  detail: string;
+}
+
+export interface TrainingCourse {
+  /** URL slug — /training/<slug>/. Keep stable once published. */
+  slug: string;
+  icon: string;
+  title: string;
+  /** One-liner for the hub card. */
+  tagline: string;
+  /** Why the course exists — plainer voice, the practical reason. */
+  why: string;
+  /** Management resistance level, 1–3 (rendered as paw icons). */
+  resistance: 1 | 2 | 3;
+  steps: TrainingStep[];
+  /**
+   * Milestones passed — the first `stepsDone` steps are complete and the next
+   * one is the current step. **Advance this after she truly passes a step.**
+   */
+  stepsDone: number;
+  /** ISO date the course started. Set it to move from syllabus to in session. */
+  startedOn?: string;
+}
+
+/** Session rules — shown with every course. Keep these plain and exact. */
+export const trainingRules: string[] = [
+  'Short sessions: 2–5 minutes, once or twice a day.',
+  'Always end on a success, even a tiny one.',
+  'Treats are the salary; keep them within the daily 10% budget.',
+  'Never force it. If she leaves, class is dismissed.',
+  'One step at a time; repeat a step for days before moving on.',
+];
+
+/**
+ * The course catalogue. Progress is data: bump `stepsDone` when she passes a
+ * step, set `startedOn` when a course begins. Everything else renders itself.
+ */
+export const trainingCourses: TrainingCourse[] = [
+  {
+    slug: 'toothbrushing',
+    icon: 'ph:tooth',
+    title: 'Toothbrushing 101',
+    tagline: 'The toothbrushing era begins, pending her formal approval.',
+    why: 'Cats hide dental disease until it hurts. A daily brush is the single best prevention, and the beef-flavour Histo Tree gel has already been purchased.',
+    resistance: 3,
+    stepsDone: 0,
+    steps: [
+      {
+        title: 'The taste test',
+        detail: 'A dab of dental gel on a finger, offered as a treat. Repeat for a few days until she considers it food.',
+      },
+      {
+        title: 'Chin and cheek',
+        detail: 'While she licks the gel, touch her lips and cheeks. Seconds only, then release and praise.',
+      },
+      {
+        title: 'Finger on gums',
+        detail: 'Gel on a finger, gently rubbed along the front teeth and gumline. Stop before she objects.',
+      },
+      {
+        title: 'Enter the brush',
+        detail: 'The cat toothbrush appears. She sniffs it and licks gel off it. No brushing yet.',
+      },
+      {
+        title: 'First strokes',
+        detail: 'A few seconds of actual brushing on the front teeth, one side. End on a treat.',
+      },
+      {
+        title: 'The full routine',
+        detail: 'Both sides and the back teeth, under a minute, daily. Graduation.',
+      },
+    ],
+  },
+  {
+    slug: 'manicure',
+    icon: 'ph:scissors',
+    title: 'The Manicure Programme',
+    tagline: 'Front paws first. Management has now been informed.',
+    why: 'Indoor claws overgrow and snag. Regular trims protect her paws, the furniture and the staff.',
+    resistance: 2,
+    stepsDone: 0,
+    steps: [
+      {
+        title: 'Paw diplomacy',
+        detail: 'During relaxed cuddles, hold a paw for one second, release, treat. Work up to a gentle squeeze.',
+      },
+      {
+        title: 'The press',
+        detail: 'Softly press a toe pad so one claw extends, admire it, release, treat.',
+      },
+      {
+        title: 'Meet the clippers',
+        detail: 'Clippers sit nearby during cuddles and click in the air. Nothing happens to her. Treats rain.',
+      },
+      {
+        title: 'One single claw',
+        detail: 'Clip the tip of one front claw while she is calm. Stop immediately and celebrate.',
+      },
+      {
+        title: 'A paw per sitting',
+        detail: 'A few claws per session, front paws first, every 2–4 weeks. Graduation.',
+      },
+    ],
+  },
+  {
+    slug: 'carrier',
+    icon: 'ph:suitcase',
+    title: 'Carrier Diplomacy',
+    tagline: 'From portable dungeon to first-class cabin.',
+    why: 'Every vet visit starts with the carrier. A cat who enters it voluntarily makes every trip calmer and faster.',
+    resistance: 3,
+    stepsDone: 0,
+    steps: [
+      {
+        title: 'Furniture status',
+        detail: 'The carrier lives open in the living room with a soft blanket inside, like it has always been there.',
+      },
+      {
+        title: 'Snack venue',
+        detail: 'Treats and the occasional meal appear near the carrier, then just inside the door, then at the back.',
+      },
+      {
+        title: 'Door games',
+        detail: 'The door closes for a few seconds while she snacks inside, and opens before she cares.',
+      },
+      {
+        title: 'The short haul',
+        detail: 'A brief carry around the apartment, then release and a jackpot of treats.',
+      },
+      {
+        title: 'The dry run',
+        detail: 'Down to the lobby or a short drive and straight home. No vet at the end. Graduation.',
+      },
+    ],
+  },
+  {
+    slug: 'holding',
+    icon: 'ph:hand-palm',
+    title: 'Advanced Holding Tolerance',
+    tagline: 'Ten calm seconds in staff arms counts as a diplomatic breakthrough.',
+    why: 'Vet exams, grooming and the occasional shelf rescue all go better for a cat who tolerates being held.',
+    resistance: 3,
+    stepsDone: 0,
+    steps: [
+      {
+        title: 'Hands, no lift',
+        detail: 'Both hands rest on her sides for a moment during cuddles, then release, then treat.',
+      },
+      {
+        title: 'The ten-second lift',
+        detail: 'A brief, low lift. Feet back on the ground before she thinks about wriggling.',
+      },
+      {
+        title: 'Lap landing',
+        detail: 'Lift and place her on a lap; freedom granted immediately. The lap becomes a fine destination.',
+      },
+      {
+        title: 'The half-minute',
+        detail: 'A relaxed 30-second hold with slow strokes, ending before she asks.',
+      },
+      {
+        title: 'Clinic style',
+        detail: 'A gentle vet-style hold for up to a minute, calm throughout. Graduation.',
+      },
+    ],
+  },
+  {
+    slug: 'recall',
+    icon: 'ph:megaphone',
+    title: 'Recall, By Appointment',
+    tagline: 'She comes when called. When she agrees with the premise.',
+    why: 'A reliable name response finds a hidden cat fast, which matters with a hide-and-seek grandmaster in the house.',
+    resistance: 1,
+    stepsDone: 0,
+    steps: [
+      {
+        title: 'Name equals treats',
+        detail: 'Say "Picha", a treat lands. Repeat over days until her head whips around on the word.',
+      },
+      {
+        title: 'Cross-room recall',
+        detail: 'Call her from across the room and reward the arrival, every single time.',
+      },
+      {
+        title: 'Out-of-sight recall',
+        detail: 'Call from another room. Arrival earns a jackpot.',
+      },
+      {
+        title: 'Random drills',
+        detail: 'Recall at random moments daily; rewards vary between food, play and affection. Graduation.',
+      },
+    ],
+  },
+  {
+    slug: 'harness',
+    icon: 'ph:person-simple-walk',
+    title: 'Harness & Leash (Elective)',
+    tagline: 'For hypothetical future expeditions Her Fluffiness may commission.',
+    why: 'Elective. Useful only if travel or supervised outdoor time is ever on the agenda, so it waits at the back of the syllabus.',
+    resistance: 3,
+    stepsDone: 0,
+    steps: [
+      {
+        title: 'The harness exists',
+        detail: 'It lies on the floor being sniffed. Treats happen near it.',
+      },
+      {
+        title: 'Worn, unfastened',
+        detail: 'Draped over her shoulders for seconds at a time, followed by treats.',
+      },
+      {
+        title: 'Fastened indoors',
+        detail: 'Clipped on for a few minutes while play distracts her from the outfit.',
+      },
+      {
+        title: 'Leash shadowing',
+        detail: 'Leash attached, she wanders the apartment, the staff follow like courtiers.',
+      },
+      {
+        title: 'Corridor expedition',
+        detail: 'A short, escorted walk outside the front door. Graduation.',
+      },
+    ],
+  },
+];
+
 /** Ongoing daily treatment. Keep instructions exact — this one is medical. */
 export const treatment: CareItem[] = [
   {
