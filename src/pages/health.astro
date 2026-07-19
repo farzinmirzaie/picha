@@ -13,7 +13,7 @@ import {
   callVetIf,
   ageLabel,
 } from '../data/picha';
-import { currentWeight } from '../data/weights';
+import { currentWeight, supabaseClient } from '../data/weights';
 
 // Split the timeline by date: past = done, future = coming up (soonest first,
 // the first one is "next"), undated = still to book. The split is computed at
@@ -92,7 +92,14 @@ const segments = [
           <Icon name="ph:scales" class="h-4 w-4" aria-hidden="true" />
           <span class="text-[10px] font-bold tracking-[0.14em] uppercase">Weight</span>
         </div>
-        <p class="font-display mt-1.5 text-xl font-semibold">{currentWeight.label}</p>
+        <p
+          class="font-display mt-1.5 text-xl font-semibold"
+          data-weight-live
+          data-supabase-url={supabaseClient?.url}
+          data-supabase-key={supabaseClient?.key}
+        >
+          {currentWeight.label}
+        </p>
         <p class="mt-0.5 text-[11px] leading-tight text-ink-400">
           target {weight.healthyTarget}
         </p>
@@ -396,7 +403,36 @@ const segments = [
       });
     }
 
+    // Weight tile: refresh from the live Supabase ledger (same data the
+    // Weight tracker shows); the built value stands when offline.
+    async function refreshWeightTile() {
+      const el = document.querySelector<HTMLElement>('[data-weight-live]');
+      if (!el?.dataset.supabaseUrl || !el.dataset.supabaseKey) return;
+      try {
+        const res = await fetch(
+          `${el.dataset.supabaseUrl}/rest/v1/picha_weights?select=date,kg`,
+          {
+            headers: {
+              apikey: el.dataset.supabaseKey,
+              authorization: `Bearer ${el.dataset.supabaseKey}`,
+            },
+          },
+        );
+        if (!res.ok) return;
+        const rows = (await res.json()) as Array<{ date: string; kg: number | string }>;
+        if (!Array.isArray(rows) || !rows.length) return;
+        const latest = rows.reduce((a, b) => (b.date > a.date ? b : a));
+        el.textContent = `${Number(latest.kg)} kg`;
+      } catch {
+        /* offline: the built value stands */
+      }
+    }
+
     setupSegments();
-    document.addEventListener('astro:page-load', setupSegments);
+    refreshWeightTile();
+    document.addEventListener('astro:page-load', () => {
+      setupSegments();
+      refreshWeightTile();
+    });
   </script>
 </Layout>

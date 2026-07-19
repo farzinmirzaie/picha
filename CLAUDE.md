@@ -93,7 +93,8 @@ allows `select` only. **Writes** go through the entry form on the weight
 page, which calls the `log_weight` RPC — a SECURITY DEFINER function that
 checks a staff PIN stored in the `private` schema (set it once in SQL; see
 schema.sql). Same-date entries update the existing row. The PIN is remembered
-per device (localStorage `picha-weight-pin`). The nightly rebuild (21:00 UTC)
+per device (localStorage `picha-weight-pin`). The Health vitals weight tile
+also refreshes client-side from the ledger. The nightly rebuild (21:00 UTC)
 keeps the static fallback + llms.txt current.
 
 ### AI-friendly surface
