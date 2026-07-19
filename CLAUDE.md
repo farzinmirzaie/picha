@@ -77,14 +77,24 @@ astro.config.mjs       # site + base (GitHub Pages project site) + sitemap
 ### Supabase (cloud data)
 
 The weight ledger lives in Supabase (`picha_weights` table; schema + RLS +
-seed in `supabase/schema.sql`). `src/data/weights.ts` fetches it **at build
-time** over PostgREST using `SUPABASE_URL` + `SUPABASE_ANON_KEY` (GitHub
-Actions secrets; `.env` locally) and falls back to the seed list in picha.ts
-when they're missing or the fetch fails — builds never break. The anon key is
-read-only (RLS allows `select` only); writes go through the Supabase
-dashboard. Because the site is static, new rows appear on the next deploy:
-every push, the nightly scheduled rebuild (21:00 UTC), or a manual
-"Run workflow". Never import weights.ts from client scripts.
+seed + the `log_weight` RPC in `supabase/schema.sql`). `src/data/weights.ts`
+fetches it **at build time** over PostgREST using `SUPABASE_URL` +
+`SUPABASE_ANON_KEY` (GitHub Actions secrets; `.env` locally — accepts the URL
+with or without a `/rest/v1/` suffix) and falls back to the seed list in
+picha.ts when they're missing or the fetch fails — builds never break. Never
+import weights.ts from client scripts.
+
+On top of the build-time render, the weight page is **live**: its client
+script re-fetches the ledger on every visit and re-renders chart + stats +
+ledger via the shared `src/lib/weight-viz.ts` module (pure string/DOM
+renderers used by both build and client — keep them in sync by construction,
+don't fork the markup). The anon key is embedded in the page on purpose: RLS
+allows `select` only. **Writes** go through the entry form on the weight
+page, which calls the `log_weight` RPC — a SECURITY DEFINER function that
+checks a staff PIN stored in the `private` schema (set it once in SQL; see
+schema.sql). Same-date entries update the existing row. The PIN is remembered
+per device (localStorage `picha-weight-pin`). The nightly rebuild (21:00 UTC)
+keeps the static fallback + llms.txt current.
 
 ### AI-friendly surface
 

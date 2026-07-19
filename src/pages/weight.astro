@@ -4,91 +4,47 @@ import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
 import { weightTarget, weight } from '../data/picha';
-import { weightHistory, currentWeight } from '../data/weights';
+import { weightHistory, currentWeight, supabaseClient } from '../data/weights';
+import {
+  CHART,
+  chartSvg,
+  chartAriaLabel,
+  weightStats,
+  dateLabel,
+  shortLabel,
+} from '../lib/weight-viz';
 
-// Everything renders at build time from the Supabase ledger (data/weights.ts,
-// with a seed fallback): a static SVG chart keeps the zero-JS baseline. New
-// weigh-ins are rows in Supabase and appear on the next deploy.
-const entries = [...weightHistory].sort((a, b) => a.date.localeCompare(b.date));
-const kgs = entries.map((e) => e.kg);
-const heaviest = entries.reduce((a, b) => (b.kg >= a.kg ? b : a));
-const lightest = entries.reduce((a, b) => (b.kg <= a.kg ? b : a));
-const average = kgs.reduce((sum, k) => sum + k, 0) / kgs.length;
-const latest = entries[entries.length - 1];
-const previous = entries.length > 1 ? entries[entries.length - 2] : undefined;
-const deltaG = previous ? Math.round((latest.kg - previous.kg) * 1000) : 0;
-
-const fmt = new Intl.DateTimeFormat('en-GB', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-});
-const fmtShort = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' });
-const dateLabel = (iso: string) => fmt.format(new Date(iso));
-const shortLabel = (iso: string) => fmtShort.format(new Date(iso));
-
-// ---- chart geometry (viewBox units) ----
-const W = 640;
-const H = 320;
-const PAD = { top: 26, right: 18, bottom: 40, left: 46 };
-const innerW = W - PAD.left - PAD.right;
-const innerH = H - PAD.top - PAD.bottom;
-
-// y-domain follows the data but always peeks into the adult band, so the
-// chart tells the growth story without squashing the actual line.
-const yLo = Math.floor((Math.min(...kgs) - 0.15) * 2) / 2;
-const yHi = Math.ceil(Math.max(Math.max(...kgs) + 0.15, weightTarget.min + 0.25) * 2) / 2;
-const tickStep = yHi - yLo <= 1.5 ? 0.25 : 0.5;
-const ticks: number[] = [];
-for (let t = yLo; t <= yHi + 1e-9; t += tickStep) ticks.push(+t.toFixed(2));
-
-const t0 = Date.parse(entries[0].date);
-const t1 = Date.parse(entries[entries.length - 1].date);
-const x = (iso: string) =>
-  t1 === t0
-    ? PAD.left + innerW / 2
-    : PAD.left + ((Date.parse(iso) - t0) / (t1 - t0)) * innerW;
-const y = (kg: number) => PAD.top + (1 - (kg - yLo) / (yHi - yLo)) * innerH;
-
-const points = entries.map((e, idx) => ({ ...e, idx, px: x(e.date), py: y(e.kg) }));
-const linePath = points
-  .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.px.toFixed(1)} ${p.py.toFixed(1)}`)
-  .join(' ');
-const areaPath =
-  points.length > 1
-    ? `${linePath} L${points[points.length - 1].px.toFixed(1)} ${H - PAD.bottom} L${points[0].px.toFixed(1)} ${H - PAD.bottom} Z`
-    : '';
-
-// The slice of the healthy adult band visible in the current domain.
-const bandVisible = weightTarget.min < yHi;
-const bandTopY = Math.max(y(Math.min(weightTarget.max, yHi)), PAD.top);
-const bandBottomY = y(weightTarget.min);
-
-// Direct labels stay selective: highest, lowest and the latest audit only.
-const labelled = new Set([heaviest.date, lightest.date, latest.date]);
-// Date labels under every point while the record is short; ends only once it grows.
-const xLabelled = entries.length <= 8 ? points : [points[0], points[points.length - 1]];
+// Build-time render from the Supabase ledger (seed fallback) via the shared
+// weight-viz module; the client script re-fetches on load and re-renders with
+// the SAME module, so the page is live without a rebuild. New entries go
+// through the PIN-checked log_weight RPC (see supabase/schema.sql).
+const { entries, heaviest, lightest, average, latest, previous, deltaG } =
+  weightStats(weightHistory);
 
 const stats = [
   {
+    id: 'current',
     icon: 'ph:scales',
     label: 'Current',
     value: currentWeight.label,
     sub: `weighed ${shortLabel(latest.date)}`,
   },
   {
+    id: 'heaviest',
     icon: 'ph:trend-up',
     label: 'Heaviest',
     value: `${heaviest.kg} kg`,
     sub: `peak floof, ${shortLabel(heaviest.date)}`,
   },
   {
+    id: 'lightest',
     icon: 'ph:feather',
     label: 'Lightest',
     value: `${lightest.kg} kg`,
     sub: `featherweight, ${shortLabel(lightest.date)}`,
   },
   {
+    id: 'average',
     icon: 'ph:equals',
     label: 'Average',
     value: `${average.toFixed(2)} kg`,
@@ -96,7 +52,7 @@ const stats = [
   },
 ];
 
-const ledger = [...points].reverse();
+const ledger = [...entries].reverse();
 ---
 
 <Layout title="Weight · Picha 🐾" current="tools">
@@ -123,8 +79,12 @@ const ledger = [...points].reverse();
                 {s.label}
               </span>
             </div>
-            <p class="font-display mt-1.5 text-xl font-semibold">{s.value}</p>
-            <p class="mt-0.5 text-[11px] leading-tight text-ink-400">{s.sub}</p>
+            <p class="font-display mt-1.5 text-xl font-semibold" data-stat={s.id}>
+              {s.value}
+            </p>
+            <p class="mt-0.5 text-[11px] leading-tight text-ink-400" data-stat-sub={s.id}>
+              {s.sub}
+            </p>
           </div>
         ))
       }
@@ -138,146 +98,39 @@ const ledger = [...points].reverse();
     >
       <div class="flex flex-wrap items-center justify-between gap-2">
         <h2 class="font-display text-lg font-semibold">The trend</h2>
-        {
-          previous && (
-            <span class="inline-flex items-center gap-1 rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-600 dark:bg-plum-800 dark:text-ink-400">
-              <Icon
-                name={deltaG >= 0 ? 'ph:trend-up' : 'ph:trend-down'}
-                class="h-3.5 w-3.5"
-                aria-hidden="true"
-              />
-              {Math.abs(deltaG)} g {deltaG >= 0 ? 'up' : 'down'} since the last audit
-            </span>
-          )
-        }
+        <span
+          class:list={[
+            'inline-flex items-center gap-1 rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-600 dark:bg-plum-800 dark:text-ink-400',
+            previous ? '' : 'hidden',
+          ]}
+          data-delta-chip
+        >
+          <Icon
+            name="ph:trend-up"
+            class:list={['h-3.5 w-3.5', deltaG >= 0 ? '' : 'hidden']}
+            data-delta-up
+            aria-hidden="true"
+          />
+          <Icon
+            name="ph:trend-down"
+            class:list={['h-3.5 w-3.5', deltaG < 0 ? '' : 'hidden']}
+            data-delta-down
+            aria-hidden="true"
+          />
+          <span data-delta-text>
+            {Math.abs(deltaG)} g {deltaG >= 0 ? 'up' : 'down'} since the last audit
+          </span>
+        </span>
       </div>
 
       <svg
-        viewBox={`0 0 ${W} ${H}`}
+        viewBox={`0 0 ${CHART.W} ${CHART.H}`}
         class="mt-3 h-auto w-full"
         role="img"
-        aria-label={`Line chart of Picha's weight: ${entries.length} weigh-ins from ${dateLabel(entries[0].date)} to ${dateLabel(latest.date)}, currently ${currentWeight.label}. Full figures are in the ledger below.`}
-      >
-        <!-- healthy adult band (the part visible in this domain) -->
-        {
-          bandVisible && (
-            <>
-              <rect
-                x={PAD.left}
-                y={bandTopY}
-                width={innerW}
-                height={bandBottomY - bandTopY}
-                class="fill-amber-300/15 dark:fill-amber-700/15"
-              />
-              <line
-                x1={PAD.left}
-                x2={PAD.left + innerW}
-                y1={bandBottomY}
-                y2={bandBottomY}
-                stroke-dasharray="5 5"
-                stroke-width="1.5"
-                class="stroke-amber-500/70"
-              />
-              <text
-                x={PAD.left + innerW - 6}
-                y={bandBottomY - 7}
-                text-anchor="end"
-                class="fill-amber-700 text-[10px] font-bold tracking-[0.08em] uppercase dark:fill-amber-300"
-              >
-                healthy adult range
-              </text>
-            </>
-          )
-        }
-
-        <!-- gridlines + y ticks -->
-        {
-          ticks.map((t) => (
-            <>
-              <line
-                x1={PAD.left}
-                x2={PAD.left + innerW}
-                y1={y(t)}
-                y2={y(t)}
-                stroke-width="1"
-                class="stroke-paper-300/80 dark:stroke-plum-700/80"
-              />
-              <text
-                x={PAD.left - 8}
-                y={y(t) + 3.5}
-                text-anchor="end"
-                class="fill-ink-400 text-[10px] font-bold"
-              >
-                {String(t)}
-              </text>
-            </>
-          ))
-        }
-        <text
-          x={PAD.left - 8}
-          y={PAD.top - 10}
-          text-anchor="end"
-          class="fill-ink-400 text-[10px] font-bold"
-        >
-          kg
-        </text>
-
-        <!-- the waistline itself -->
-        {areaPath && <path d={areaPath} class="fill-blush-600/10 dark:fill-blush-500/15" />}
-        <path
-          d={linePath}
-          fill="none"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="stroke-blush-600 dark:stroke-blush-500"
-        />
-        {
-          points.map((p) => (
-            <>
-              <circle
-                cx={p.px}
-                cy={p.py}
-                r="5"
-                stroke-width="2.5"
-                class="fill-blush-600 stroke-paper-50 dark:fill-blush-500 dark:stroke-plum-900"
-              />
-              {labelled.has(p.date) && (
-                <text
-                  x={p.px}
-                  y={p.py - 12}
-                  text-anchor="middle"
-                  class="fill-ink-900 text-[11px] font-bold dark:fill-paper-100"
-                >
-                  {p.kg}
-                </text>
-              )}
-            </>
-          ))
-        }
-
-        <!-- x axis -->
-        <line
-          x1={PAD.left}
-          x2={PAD.left + innerW}
-          y1={H - PAD.bottom}
-          y2={H - PAD.bottom}
-          stroke-width="1"
-          class="stroke-paper-300 dark:stroke-plum-700"
-        />
-        {
-          xLabelled.map((p) => (
-            <text
-              x={p.px}
-              y={H - PAD.bottom + 18}
-              text-anchor="middle"
-              class="fill-ink-400 text-[10px] font-bold"
-            >
-              {shortLabel(p.date)}
-            </text>
-          ))
-        }
-      </svg>
+        aria-label={chartAriaLabel(entries)}
+        data-weight-chart
+        set:html={chartSvg(entries, weightTarget)}
+      />
 
       <p class="mt-3 text-[11px] leading-relaxed text-ink-400">
         The amber band is the healthy adult range ({weight.healthyTarget}).
@@ -285,6 +138,81 @@ const ledger = [...points].reverse();
       </p>
     </div>
   </section>
+
+  <!-- Log a weigh-in: PIN-gated write through the log_weight RPC -->
+  {
+    supabaseClient && (
+      <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Log a weigh-in">
+        <h2 class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300">
+          Log a weigh-in
+        </h2>
+        <form
+          data-weight-form
+          data-supabase-url={supabaseClient.url}
+          data-supabase-key={supabaseClient.key}
+          class="reveal rounded-3xl border border-blush-200/70 bg-paper-50 p-5 sm:p-6 dark:border-plum-700 dark:bg-plum-900"
+        >
+          <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <label class="block">
+              <span class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
+                Date
+              </span>
+              <input
+                type="date"
+                name="date"
+                required
+                class="mt-1 w-full rounded-xl border border-blush-200/70 bg-paper-100 px-3 py-2 text-sm font-bold outline-none focus:border-blush-400 dark:border-plum-700 dark:bg-plum-950"
+              />
+            </label>
+            <label class="block">
+              <span class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
+                Weight (kg)
+              </span>
+              <input
+                type="number"
+                name="kg"
+                required
+                step="0.01"
+                min="0.5"
+                max="15"
+                inputmode="decimal"
+                placeholder="2.75"
+                class="mt-1 w-full rounded-xl border border-blush-200/70 bg-paper-100 px-3 py-2 text-sm font-bold outline-none focus:border-blush-400 dark:border-plum-700 dark:bg-plum-950"
+              />
+            </label>
+            <label class="col-span-2 block sm:col-span-1">
+              <span class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
+                Registrar PIN
+              </span>
+              <input
+                type="password"
+                name="pin"
+                required
+                autocomplete="off"
+                placeholder="staff only"
+                class="mt-1 w-full rounded-xl border border-blush-200/70 bg-paper-100 px-3 py-2 text-sm font-bold outline-none focus:border-blush-400 dark:border-plum-700 dark:bg-plum-950"
+              />
+            </label>
+          </div>
+          <div class="mt-4 flex flex-wrap items-center gap-3">
+            <button
+              type="submit"
+              class="inline-flex items-center gap-2 rounded-full bg-blush-600 px-5 py-2 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-blush-700 hover:shadow-md active:translate-y-0 disabled:opacity-50"
+            >
+              <Icon name="ph:scales" class="h-4.5 w-4.5" aria-hidden="true" />
+              Record the audit
+            </button>
+            <p class="text-xs font-bold text-ink-400" data-form-status aria-live="polite" />
+          </div>
+          <p class="mt-3 text-[11px] leading-relaxed text-ink-400">
+            Staff only: entries need the registrar's PIN (it is remembered on
+            this device after the first successful audit). Same-date entries
+            update the existing row.
+          </p>
+        </form>
+      </section>
+    )
+  }
 
   <!-- The ledger: every audit, newest first (doubles as the accessible table) -->
   <section
@@ -299,10 +227,11 @@ const ledger = [...points].reverse();
     <div
       class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
     >
-      <ul class="divide-y divide-paper-200 dark:divide-plum-800">
+      <ul class="divide-y divide-paper-200 dark:divide-plum-800" data-ledger>
         {
           ledger.map((p, i) => {
-            const prev = p.idx > 0 ? entries[p.idx - 1] : undefined;
+            const idx = entries.length - 1 - i;
+            const prev = idx > 0 ? entries[idx - 1] : undefined;
             const rowDelta = prev ? Math.round((p.kg - prev.kg) * 1000) : undefined;
             return (
               <li class="flex items-center gap-3.5 px-5 py-4">
@@ -313,27 +242,40 @@ const ledger = [...points].reverse();
                   <Icon name="ph:scales" class="h-5 w-5" />
                 </span>
                 <div class="min-w-0 flex-1">
-                  <p class="font-display font-semibold">{dateLabel(p.date)}</p>
-                  <p class="text-xs text-ink-400">
-                    audit no. {String(p.idx + 1).padStart(2, '0')}
+                  <p class="font-display font-semibold" data-row-date>
+                    {dateLabel(p.date)}
+                  </p>
+                  <p class="text-xs text-ink-400" data-row-sub>
+                    audit no. {String(idx + 1).padStart(2, '0')}
                     {i === 0 && ' · latest'}
                   </p>
                 </div>
                 <div class="text-right">
-                  <p class="font-display text-lg font-semibold">{p.kg} kg</p>
+                  <p class="font-display text-lg font-semibold" data-row-kg>
+                    {p.kg} kg
+                  </p>
                   <p class="flex items-center justify-end gap-1 text-[11px] font-bold text-ink-400">
-                    {rowDelta === undefined ? (
-                      'opening entry'
-                    ) : (
-                      <>
-                        <Icon
-                          name={rowDelta >= 0 ? 'ph:trend-up' : 'ph:trend-down'}
-                          class="h-3 w-3"
-                          aria-hidden="true"
-                        />
-                        {Math.abs(rowDelta)} g
-                      </>
-                    )}
+                    <Icon
+                      name="ph:trend-up"
+                      class:list={[
+                        'h-3 w-3',
+                        rowDelta !== undefined && rowDelta >= 0 ? '' : 'hidden',
+                      ]}
+                      data-row-up
+                      aria-hidden="true"
+                    />
+                    <Icon
+                      name="ph:trend-down"
+                      class:list={[
+                        'h-3 w-3',
+                        rowDelta !== undefined && rowDelta < 0 ? '' : 'hidden',
+                      ]}
+                      data-row-down
+                      aria-hidden="true"
+                    />
+                    <span data-row-delta>
+                      {rowDelta === undefined ? 'opening entry' : `${Math.abs(rowDelta)} g`}
+                    </span>
                   </p>
                 </div>
               </li>
@@ -343,10 +285,154 @@ const ledger = [...points].reverse();
       </ul>
     </div>
     <p class="mt-2 px-1 text-[11px] text-ink-400">
-      New audits are added to the record after each monthly weigh-in. A proper
-      entry form is pending management approval; the paperwork is under her bed.
+      The ledger lives in the cloud and refreshes on every visit. Audits are
+      recorded above by PIN-carrying staff, or in the Supabase dashboard.
     </p>
   </section>
 
   <Footer />
+
+  <script>
+    import { weightTarget, type WeightEntry } from '../data/picha';
+    import { chartSvg, chartAriaLabel, weightStats, dateLabel, shortLabel } from '../lib/weight-viz';
+
+    const PIN_KEY = 'picha-weight-pin';
+
+    function render(entries: WeightEntry[]) {
+      if (!entries.length) return;
+      const { heaviest, lightest, average, latest, previous, deltaG } =
+        weightStats(entries);
+
+      // chart
+      const svg = document.querySelector<SVGElement>('[data-weight-chart]');
+      if (svg) {
+        svg.innerHTML = chartSvg(entries, weightTarget);
+        svg.setAttribute('aria-label', chartAriaLabel(entries));
+      }
+
+      // stat tiles
+      const set = (sel: string, text: string) => {
+        const el = document.querySelector<HTMLElement>(sel);
+        if (el) el.textContent = text;
+      };
+      set('[data-stat=current]', `${latest.kg} kg`);
+      set('[data-stat-sub=current]', `weighed ${shortLabel(latest.date)}`);
+      set('[data-stat=heaviest]', `${heaviest.kg} kg`);
+      set('[data-stat-sub=heaviest]', `peak floof, ${shortLabel(heaviest.date)}`);
+      set('[data-stat=lightest]', `${lightest.kg} kg`);
+      set('[data-stat-sub=lightest]', `featherweight, ${shortLabel(lightest.date)}`);
+      set('[data-stat=average]', `${average.toFixed(2)} kg`);
+      set('[data-stat-sub=average]', `across ${entries.length} audit${entries.length === 1 ? '' : 's'}`);
+
+      // delta chip
+      const chip = document.querySelector<HTMLElement>('[data-delta-chip]');
+      if (chip) {
+        chip.classList.toggle('hidden', !previous);
+        chip.querySelector('[data-delta-up]')?.classList.toggle('hidden', deltaG < 0);
+        chip.querySelector('[data-delta-down]')?.classList.toggle('hidden', deltaG >= 0);
+        const text = chip.querySelector('[data-delta-text]');
+        if (text)
+          text.textContent = ` ${Math.abs(deltaG)} g ${deltaG >= 0 ? 'up' : 'down'} since the last audit`;
+      }
+
+      // ledger: clone the first row as a template, then rebuild
+      const list = document.querySelector<HTMLElement>('[data-ledger]');
+      const proto = list?.querySelector('li');
+      if (!list || !proto) return;
+      const rows = [...entries].reverse().map((p, i) => {
+        const idx = entries.length - 1 - i;
+        const prev = idx > 0 ? entries[idx - 1] : undefined;
+        const rowDelta = prev ? Math.round((p.kg - prev.kg) * 1000) : undefined;
+        const li = proto.cloneNode(true) as HTMLElement;
+        const q = (sel: string) => li.querySelector<HTMLElement>(sel);
+        q('[data-row-date]')!.textContent = dateLabel(p.date);
+        q('[data-row-sub]')!.textContent =
+          `audit no. ${String(idx + 1).padStart(2, '0')}${i === 0 ? ' · latest' : ''}`;
+        q('[data-row-kg]')!.textContent = `${p.kg} kg`;
+        q('[data-row-up]')?.classList.toggle(
+          'hidden',
+          rowDelta === undefined || rowDelta < 0,
+        );
+        q('[data-row-down]')?.classList.toggle(
+          'hidden',
+          rowDelta === undefined || rowDelta >= 0,
+        );
+        q('[data-row-delta]')!.textContent =
+          rowDelta === undefined ? 'opening entry' : `${Math.abs(rowDelta)} g`;
+        return li;
+      });
+      list.replaceChildren(...rows);
+    }
+
+    function setupWeightLive() {
+      const form = document.querySelector<HTMLFormElement>('[data-weight-form]');
+      if (!form || form.dataset.bound) return;
+      form.dataset.bound = '1';
+      const url = form.dataset.supabaseUrl!;
+      const key = form.dataset.supabaseKey!;
+      const headers = { apikey: key, authorization: `Bearer ${key}` };
+
+      const refresh = async () => {
+        try {
+          const res = await fetch(
+            `${url}/rest/v1/picha_weights?select=date,kg&order=date.asc`,
+            { headers },
+          );
+          if (!res.ok) return;
+          const rows = (await res.json()) as Array<{ date: string; kg: number | string }>;
+          if (Array.isArray(rows) && rows.length) {
+            render(rows.map((r) => ({ date: r.date, kg: Number(r.kg) })));
+          }
+        } catch {
+          /* offline or blocked: the built-in data stands */
+        }
+      };
+
+      // defaults + remembered PIN
+      const dateInput = form.elements.namedItem('date') as HTMLInputElement;
+      const pinInput = form.elements.namedItem('pin') as HTMLInputElement;
+      dateInput.value = new Date().toISOString().slice(0, 10);
+      pinInput.value = localStorage.getItem(PIN_KEY) ?? '';
+
+      const status = form.querySelector<HTMLElement>('[data-form-status]')!;
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const kgInput = form.elements.namedItem('kg') as HTMLInputElement;
+        const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+        button.disabled = true;
+        status.textContent = 'Filing the paperwork…';
+        try {
+          const res = await fetch(`${url}/rest/v1/rpc/log_weight`, {
+            method: 'POST',
+            headers: { ...headers, 'content-type': 'application/json' },
+            body: JSON.stringify({
+              p_date: dateInput.value,
+              p_kg: Number(kgInput.value),
+              p_pin: pinInput.value,
+            }),
+          });
+          if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            throw new Error(body?.message ?? `HTTP ${res.status}`);
+          }
+          localStorage.setItem(PIN_KEY, pinInput.value);
+          kgInput.value = '';
+          status.textContent = 'Recorded. Management has been weighed.';
+          await refresh();
+        } catch (err) {
+          status.textContent = String(err).includes('wrong pin')
+            ? 'Wrong PIN. The registrar is unimpressed.'
+            : 'Could not record it. Check the connection and try again.';
+        } finally {
+          button.disabled = false;
+          setTimeout(() => (status.textContent = ''), 4000);
+        }
+      });
+
+      refresh();
+    }
+
+    setupWeightLive();
+    document.addEventListener('astro:page-load', setupWeightLive);
+  </script>
 </Layout>

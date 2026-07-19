@@ -23,3 +23,46 @@ insert into public.picha_weights (date, kg) values
   ('2026-07-18', 2.85),
   ('2026-07-19', 2.70)
 on conflict (date) do nothing;
+
+-- ---------------------------------------------------------------------------
+-- Writes from the site: the anon key stays read-only; the weight page's entry
+-- form calls this SECURITY DEFINER function instead, which checks a staff PIN
+-- stored in a private schema (not exposed over the API). Same-date entries
+-- update the existing row so a mistyped audit can be corrected.
+--
+-- AFTER running this file, set the PIN once (pick your own):
+--   insert into private.staff_secrets (name, value) values ('weight_pin', '1234')
+--   on conflict (name) do update set value = excluded.value;
+-- ---------------------------------------------------------------------------
+
+create schema if not exists private;
+
+create table if not exists private.staff_secrets (
+  name  text primary key,
+  value text not null
+);
+
+create or replace function public.log_weight(p_date date, p_kg numeric, p_pin text)
+returns void
+language plpgsql
+security definer
+set search_path = public, private
+as $$
+begin
+  if not exists (
+    select 1 from private.staff_secrets
+    where name = 'weight_pin' and value = p_pin
+  ) then
+    raise exception 'wrong pin';
+  end if;
+  if p_kg <= 0 or p_kg >= 20 then
+    raise exception 'implausible weight';
+  end if;
+  insert into public.picha_weights (date, kg)
+  values (p_date, p_kg)
+  on conflict (date) do update set kg = excluded.kg;
+end;
+$$;
+
+revoke all on function public.log_weight(date, numeric, text) from public;
+grant execute on function public.log_weight(date, numeric, text) to anon;

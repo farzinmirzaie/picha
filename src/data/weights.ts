@@ -10,9 +10,22 @@
  */
 import { weightHistory as seedHistory, type WeightEntry } from './picha';
 
-const SUPABASE_URL = import.meta.env.SUPABASE_URL ?? process.env.SUPABASE_URL;
+// Accept the URL with or without a trailing /rest/v1/ — normalise to the bare
+// project URL so path-building below stays correct either way.
+const rawUrl = import.meta.env.SUPABASE_URL ?? process.env.SUPABASE_URL;
+const SUPABASE_URL = rawUrl?.replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '');
 const SUPABASE_ANON_KEY =
   import.meta.env.SUPABASE_ANON_KEY ?? process.env.SUPABASE_ANON_KEY;
+
+/**
+ * Config for the weight page's client script (live refresh + the entry form).
+ * The anon key is public by design: RLS only allows reads, and writes go
+ * through the PIN-checked log_weight RPC (see supabase/schema.sql).
+ */
+export const supabaseClient =
+  SUPABASE_URL && SUPABASE_ANON_KEY
+    ? { url: SUPABASE_URL, key: SUPABASE_ANON_KEY }
+    : undefined;
 
 async function load(): Promise<{
   history: WeightEntry[];
