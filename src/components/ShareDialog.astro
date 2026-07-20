@@ -107,6 +107,8 @@ const qrSvg = await QRCode.toString(url, {
 
     const native = dialog.querySelector<HTMLButtonElement>('[data-share-native]');
     // No Web Share API (mostly desktop browsers): the copy button carries it.
+    // Remove inline-flex too, or it would beat the `hidden` display utility.
+    if (!navigator.share) native?.classList.remove('inline-flex');
     if (!navigator.share) native?.classList.add('hidden');
     native?.addEventListener('click', async () => {
       try {

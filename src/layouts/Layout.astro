@@ -41,8 +41,11 @@ const appTitle = appTitleProp ?? tabTitles[current] ?? 'Picha';
 <html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
-    <!-- allow pinch-zoom (WCAG 1.4.4); viewport-fit=cover for the notch -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- zoom intentionally disabled for a native PWA feel; viewport-fit=cover for the notch -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#faf3ec" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#171014" media="(prefers-color-scheme: dark)" />

@@ -6,6 +6,7 @@ import Footer from '../../components/Footer.astro';
 import TrainingRules from '../../components/TrainingRules.astro';
 import { trainingCourses } from '../../data/training';
 import { supabaseClient } from '../../data/supabase';
+import { dateLabel } from '../../lib/dates';
 
 export function getStaticPaths() {
   return trainingCourses.map((course) => ({
@@ -22,6 +23,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const graduated = course.stepsDone >= course.steps.length;
 const active = !graduated && Boolean(course.startedOn);
 const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the syllabus';
+const sinceLabel =
+  active && course.startedOn ? `In session since ${dateLabel(course.startedOn)}` : '';
 ---
 
 <Layout
@@ -96,7 +99,7 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
           course.steps.map((_, i) => (
             <span
               class:list={[
-                'h-1.5 flex-1 rounded-full',
+                'h-1.5 flex-1 rounded-full transition-colors duration-500',
                 i < course.stepsDone
                   ? 'bg-blush-600 dark:bg-blush-400'
                   : 'bg-paper-200 dark:bg-plum-800',
@@ -104,6 +107,25 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
             />
           ))
         }
+      </div>
+
+      <p
+        class:list={['mt-3 text-[11px] font-bold text-ink-400', sinceLabel ? '' : 'hidden']}
+        data-since
+      >
+        {sinceLabel}
+      </p>
+
+      <!-- graduation celebration -->
+      <div
+        class:list={[
+          'mt-4 items-center gap-2.5 rounded-2xl bg-amber-300/20 px-4 py-3 text-sm font-bold text-amber-700 dark:bg-amber-700/20 dark:text-amber-300',
+          graduated ? 'flex' : 'hidden',
+        ]}
+        data-grad-banner
+      >
+        <Icon name="ph:medal" class="h-5 w-5 shrink-0" aria-hidden="true" />
+        Graduated with honours. The staff are officially certified.
       </div>
 
       <p class="mt-4 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
@@ -115,8 +137,8 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
         data-practice-toggle={course.slug}
         aria-pressed="false"
         class:list={[
-          'mt-5 inline-flex items-center gap-2 rounded-full border border-blush-300/70 bg-paper-50 px-5 py-2 text-sm font-bold text-blush-700 shadow-sm transition-all duration-200 active:translate-y-0.5 dark:border-plum-700 dark:bg-plum-800 dark:text-blush-300',
-          active ? '' : 'hidden',
+          'mt-5 items-center gap-2 rounded-full border border-blush-300/70 bg-paper-50 px-5 py-2 text-sm font-bold text-blush-700 shadow-sm transition-all duration-200 active:translate-y-0.5 dark:border-plum-700 dark:bg-plum-800 dark:text-blush-300',
+          active || graduated ? 'inline-flex' : 'hidden',
         ]}
       >
         <Icon name="ph:seal-check" class="h-4.5 w-4.5" aria-hidden="true" />
@@ -206,7 +228,7 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
                 <span
                   data-step-circle
                   class:list={[
-                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold',
+                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors duration-300',
                     done
                       ? 'bg-blush-600 text-white'
                       : current
@@ -288,6 +310,8 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
         future: ['bg-paper-200', 'text-ink-400', 'dark:bg-plum-800'],
       };
 
+      let wasGraduated = state.stepsDone >= total;
+
       const render = () => {
         const graduated = state.stepsDone >= total;
         const active = !graduated && Boolean(state.startedOn);
@@ -305,6 +329,33 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
             ? `all ${total} steps passed`
             : `step ${state.stepsDone + 1} of ${total}`;
 
+        // "in session since" line + graduation banner
+        const since = q('[data-since]');
+        if (since) {
+          const show = active && state.startedOn;
+          since.classList.toggle('hidden', !show);
+          if (show) {
+            const d = new Date(state.startedOn!).toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            });
+            since.textContent = `In session since ${d}`;
+          }
+        }
+        const banner = q('[data-grad-banner]');
+        if (banner) {
+          banner.classList.toggle('hidden', !graduated);
+          banner.classList.toggle('flex', graduated);
+          // celebrate only on the transition into graduation
+          if (graduated && !wasGraduated) {
+            banner.classList.remove('praise-pop');
+            void banner.offsetWidth;
+            banner.classList.add('praise-pop');
+          }
+        }
+        wasGraduated = graduated;
+
         q('[data-dots]')
           ?.querySelectorAll('span')
           .forEach((dot, i) => {
@@ -314,7 +365,13 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
             dot.classList.toggle('dark:bg-plum-800', i >= state.stepsDone);
           });
 
-        q('[data-practice-toggle]')?.classList.toggle('hidden', !active);
+        // practice stays available once begun (active or graduated — mastered
+        // skills still need maintenance); hidden only on the syllabus. Toggle
+        // display exclusively: a persistent inline-flex would beat `hidden`.
+        const showPractice = active || graduated;
+        const practice = q('[data-practice-toggle]');
+        practice?.classList.toggle('hidden', !showPractice);
+        practice?.classList.toggle('inline-flex', showPractice);
 
         document.querySelectorAll<HTMLElement>('[data-step-row]').forEach((row, i) => {
           const done = i < state.stepsDone;

@@ -121,8 +121,8 @@ const bandNote =
         <h2 class="font-display text-lg font-semibold">The trend</h2>
         <span
           class:list={[
-            'inline-flex items-center gap-1 rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-600 dark:bg-plum-800 dark:text-ink-400',
-            previous ? '' : 'hidden',
+            'items-center gap-1 rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-600 dark:bg-plum-800 dark:text-ink-400',
+            previous ? 'inline-flex' : 'hidden',
           ]}
           data-delta-chip
         >
@@ -325,6 +325,7 @@ const bandNote =
       const chip = document.querySelector<HTMLElement>('[data-delta-chip]');
       if (chip) {
         chip.classList.toggle('hidden', !previous);
+        chip.classList.toggle('inline-flex', Boolean(previous));
         chip.querySelector('[data-delta-up]')?.classList.toggle('hidden', deltaG < 0);
         chip.querySelector('[data-delta-down]')?.classList.toggle('hidden', deltaG >= 0);
         const text = chip.querySelector('[data-delta-text]');
