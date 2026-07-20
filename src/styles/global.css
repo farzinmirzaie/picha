@@ -70,6 +70,23 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Honour reduced-motion globally: kill smooth scroll and neutralise every
+   transition/animation (hover lifts, the segmented thumb, caret nudges, etc.).
+   The .reveal/keyframe blocks are already gated behind no-preference; this
+   catches the inline-utility transitions they don't cover. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Keyboard focus gets a brand-colored ring (mouse/touch stay clean). */
 :focus-visible {
   outline: 2px solid var(--color-blush-500);

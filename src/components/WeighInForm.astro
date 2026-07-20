@@ -17,6 +17,7 @@ const { flush = false } = Astro.props;
 
 <form
   data-weight-form
+  autocomplete="off"
   data-supabase-url={supabaseClient?.url}
   data-supabase-key={supabaseClient?.key}
   class:list={[
@@ -62,6 +63,8 @@ const { flush = false } = Astro.props;
         name="pin"
         required
         autocomplete="off"
+        inputmode="numeric"
+        enterkeyhint="done"
         placeholder="staff only"
         class="mt-1 w-full rounded-xl border border-blush-200/70 bg-paper-100 px-3 py-2 text-sm font-bold outline-none focus:border-blush-400 dark:border-plum-700 dark:bg-plum-950"
       />

@@ -50,6 +50,7 @@ const slides = Object.entries(slideModules)
               ]}
               style="object-position: 50% 30%"
               loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : undefined}
               data-hero-slide
             />
           ))

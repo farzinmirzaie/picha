@@ -74,9 +74,10 @@ const inService = [
       />
     </button>
     {
-      inService.map((t, i) => (
+      inService.map((t) => (
         <a
           href={t.href}
+          data-astro-prefetch
           class="reveal group mt-3 flex w-full items-center gap-4 rounded-3xl border border-blush-200/70 bg-paper-50 p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-900"
         >
           <span

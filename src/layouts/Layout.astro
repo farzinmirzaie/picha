@@ -10,8 +10,8 @@ import { supabaseClient } from '../data/supabase';
 interface Props {
   title: string;
   description?: string;
-  /** Active tab id for the nav. */
-  current: 'home' | 'health' | 'care' | 'tools';
+  /** Active tab id for the nav ('none' highlights nothing, e.g. the 404). */
+  current: 'home' | 'health' | 'care' | 'tools' | 'none';
   /** Mobile app-bar label override (sub-pages of a tab, e.g. "Weight"). */
   appTitle?: string;
 }
@@ -28,19 +28,21 @@ const ogImage = new URL(asset('icon-512.png'), Astro.site);
 const ogUrl = new URL(Astro.url.pathname, Astro.site);
 
 // Mobile app-bar label: the tab name, unless the page names itself.
-const appTitle =
-  appTitleProp ??
-  { home: 'Picha', health: 'Health', care: 'Care', tools: 'Tools' }[current];
+const tabTitles: Record<string, string> = {
+  home: 'Picha',
+  health: 'Health',
+  care: 'Care',
+  tools: 'Tools',
+};
+const appTitle = appTitleProp ?? tabTitles[current] ?? 'Picha';
 ---
 
 <!doctype html>
 <html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
-    />
+    <!-- allow pinch-zoom (WCAG 1.4.4); viewport-fit=cover for the notch -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#faf3ec" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#171014" media="(prefers-color-scheme: dark)" />
