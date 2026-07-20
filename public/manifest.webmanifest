@@ -22,10 +22,27 @@
       "purpose": "any"
     },
     {
-      "src": "/picha/icon-512.png",
+      "src": "/picha/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Health",
+      "url": "/picha/health/",
+      "icons": [{ "src": "/picha/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Care",
+      "url": "/picha/care/",
+      "icons": [{ "src": "/picha/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Weight",
+      "url": "/picha/weight/",
+      "icons": [{ "src": "/picha/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

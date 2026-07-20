@@ -370,14 +370,19 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
         // known staff device: keep the controls ready to use
         if (pinInput.value) q('[data-registrar]')?.setAttribute('open', '');
         const status = q('[data-train-status]')!;
+        const setStatus = (text: string, isError = false) => {
+          status.textContent = text;
+          status.classList.toggle('text-red-500', isError);
+          status.classList.toggle('text-ink-400', !isError);
+        };
 
         const write = async (next: CourseState) => {
           if (!pinInput.value) {
-            status.textContent = 'The registrar PIN is required.';
-            setTimeout(() => (status.textContent = ''), 3000);
+            setStatus('The registrar PIN is required.', true);
+            setTimeout(() => setStatus(''), 3000);
             return;
           }
-          status.textContent = 'Filing the paperwork…';
+          setStatus('Filing the paperwork…');
           try {
             const { sbRpc } = await import('../../lib/sb');
             await sbRpc(url, key, 'log_training', {
@@ -389,16 +394,20 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
             localStorage.setItem(PIN_KEY, pinInput.value);
             state = next;
             render();
-            status.textContent =
+            setStatus(
               next.stepsDone >= total
                 ? 'Graduated. The academy is very proud.'
-                : 'Recorded in her file.';
+                : 'Recorded in her file.',
+            );
           } catch (err) {
-            status.textContent = String(err).includes('wrong pin')
-              ? 'Wrong PIN. The registrar is unimpressed.'
-              : 'Could not record it. Check the connection and try again.';
+            setStatus(
+              String(err).includes('wrong pin')
+                ? 'Wrong PIN. The registrar is unimpressed.'
+                : 'Could not record it. Check the connection and try again.',
+              true,
+            );
           } finally {
-            setTimeout(() => (status.textContent = ''), 4000);
+            setTimeout(() => setStatus(''), 4000);
           }
         };
 

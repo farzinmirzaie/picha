@@ -252,20 +252,32 @@ const presets = [
       });
 
       // The converter.
+      const presets = Array.from(
+        document.querySelectorAll<HTMLButtonElement>('[data-cy-preset]'),
+      );
+      const pichaMonths = () => String(Math.max(1, Math.floor(ageInMonths())));
       const update = () => {
         const m = Number(slider.value);
         const h = Math.round(catYears(m));
+        slider.setAttribute('aria-valuetext', `${fmtCatAge(m)} in cat time`);
         set('[data-cy-conv-cat]', fmtCatAge(m));
         set('[data-cy-conv-human]', String(h));
         set('[data-cy-conv-line]', humanAgeLine(h));
+        // light up the preset that matches the current position
+        presets.forEach((p) => {
+          const val = p.dataset.cyPreset === 'picha' ? pichaMonths() : p.dataset.cyPreset;
+          const active = val === slider.value;
+          p.setAttribute('aria-pressed', String(active));
+          p.classList.toggle('bg-blush-600', active);
+          p.classList.toggle('text-white', active);
+          p.classList.toggle('dark:text-white', active);
+        });
       };
       slider.addEventListener('input', update);
-      document.querySelectorAll<HTMLButtonElement>('[data-cy-preset]').forEach((btn) => {
+      presets.forEach((btn) => {
         btn.addEventListener('click', () => {
           slider.value =
-            btn.dataset.cyPreset === 'picha'
-              ? String(Math.max(1, Math.floor(ageInMonths())))
-              : btn.dataset.cyPreset!;
+            btn.dataset.cyPreset === 'picha' ? pichaMonths() : btn.dataset.cyPreset!;
           update();
         });
       });

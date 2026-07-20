@@ -44,6 +44,13 @@
 
 html {
   scroll-behavior: smooth;
+  /* anchor/skip-link jumps clear the sticky mobile app bar */
+  scroll-padding-top: 4.5rem;
+}
+@media (min-width: 768px) {
+  html {
+    scroll-padding-top: 1rem;
+  }
 }
 
 /* No blue tap flash anywhere — buttons/links have their own pressed states. */

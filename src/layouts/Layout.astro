@@ -180,7 +180,7 @@ const appTitle =
         'pointerdown',
         (e) => {
           const el = e.target as Element | null;
-          if (el?.closest('a, button')) navigator.vibrate?.(8);
+          if (el?.closest('a, button, summary')) navigator.vibrate?.(8);
         },
         { passive: true },
       );

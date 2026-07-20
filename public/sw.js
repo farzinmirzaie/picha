@@ -3,7 +3,7 @@
  * Scope is /picha/ (served from that path on GitHub Pages).
  * Bump CACHE when the precache list or site structure changes.
  */
-const CACHE = 'picha-v7';
+const CACHE = 'picha-v8';
 const BASE = '/picha/';
 const PRECACHE = [
   BASE,
@@ -16,6 +16,7 @@ const PRECACHE = [
   `${BASE}manifest.webmanifest`,
   `${BASE}icon-192.png`,
   `${BASE}icon-512.png`,
+  `${BASE}icon-maskable-512.png`,
   `${BASE}apple-touch-icon.png`,
   `${BASE}favicon.svg`,
 ];

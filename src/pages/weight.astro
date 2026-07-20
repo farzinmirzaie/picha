@@ -426,12 +426,17 @@ const bandNote =
       if (pinInput.value) form.closest('details')?.setAttribute('open', '');
 
       const status = form.querySelector<HTMLElement>('[data-form-status]')!;
+      const setStatus = (text: string, isError = false) => {
+        status.textContent = text;
+        status.classList.toggle('text-red-500', isError);
+        status.classList.toggle('text-ink-400', !isError);
+      };
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const kgInput = form.elements.namedItem('kg') as HTMLInputElement;
         const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
         button.disabled = true;
-        status.textContent = 'Filing the paperwork…';
+        setStatus('Filing the paperwork…');
         try {
           await sbRpc(url, key, 'log_weight', {
             p_date: dateInput.value,
@@ -440,15 +445,18 @@ const bandNote =
           });
           localStorage.setItem(PIN_KEY, pinInput.value);
           kgInput.value = '';
-          status.textContent = 'Recorded. Management has been weighed.';
+          setStatus('Recorded. Management has been weighed.');
           await refresh();
         } catch (err) {
-          status.textContent = String(err).includes('wrong pin')
-            ? 'Wrong PIN. The registrar is unimpressed.'
-            : 'Could not record it. Check the connection and try again.';
+          setStatus(
+            String(err).includes('wrong pin')
+              ? 'Wrong PIN. The registrar is unimpressed.'
+              : 'Could not record it. Check the connection and try again.',
+            true,
+          );
         } finally {
           button.disabled = false;
-          setTimeout(() => (status.textContent = ''), 4000);
+          setTimeout(() => setStatus(''), 4000);
         }
       });
 

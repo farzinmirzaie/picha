@@ -9,11 +9,22 @@ const headers = (key: string) => ({
   authorization: `Bearer ${key}`,
 });
 
-/** GET a PostgREST path (e.g. `picha_weights?select=date,kg`). Throws on failure. */
+/**
+ * GET a PostgREST path (e.g. `picha_weights?select=date,kg`). One quiet retry
+ * after 1.5s smooths over flaky mobile connections; throws if both fail.
+ */
 export async function sbSelect<T>(url: string, key: string, path: string): Promise<T> {
-  const res = await fetch(`${url}/rest/v1/${path}`, { headers: headers(key) });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return (await res.json()) as T;
+  const attempt = async () => {
+    const res = await fetch(`${url}/rest/v1/${path}`, { headers: headers(key) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return (await res.json()) as T;
+  };
+  try {
+    return await attempt();
+  } catch {
+    await new Promise((r) => setTimeout(r, 1500));
+    return attempt();
+  }
 }
 
 /** Call an RPC; throws an Error carrying the server's message (e.g. "wrong pin"). */
