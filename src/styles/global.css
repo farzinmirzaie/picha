@@ -160,18 +160,6 @@ body {
   display: none;
 }
 
-/* Underline slide for inline links */
-.link-slide {
-  background-image: linear-gradient(currentColor, currentColor);
-  background-size: 0% 1.5px;
-  background-repeat: no-repeat;
-  background-position: 0 100%;
-  transition: background-size 0.3s ease;
-}
-.link-slide:hover {
-  background-size: 100% 1.5px;
-}
-
 /* ---------- modal dialogs (passport, share sheet) ---------- */
 
 /* The passport is a physical document — it stays cream even in dark mode. */

@@ -6,18 +6,10 @@
  * in the browser bundle too.
  */
 import type { WeightEntry } from '../data/picha';
+import { dateLabel, shortLabel } from './dates';
 
 export const CHART = { W: 640, H: 320 };
 const PAD = { top: 26, right: 18, bottom: 40, left: 46 };
-
-const fmtLong = new Intl.DateTimeFormat('en-GB', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-});
-const fmtShort = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' });
-export const dateLabel = (iso: string) => fmtLong.format(new Date(iso));
-export const shortLabel = (iso: string) => fmtShort.format(new Date(iso));
 
 export function weightStats(history: WeightEntry[]) {
   const entries = [...history].sort((a, b) => a.date.localeCompare(b.date));

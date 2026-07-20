@@ -3,7 +3,7 @@ import { Icon } from 'astro-icon/components';
 import Layout from '../../layouts/Layout.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import Footer from '../../components/Footer.astro';
-import { trainingRules } from '../../data/picha';
+import TrainingRules from '../../components/TrainingRules.astro';
 import { trainingCourses } from '../../data/training';
 import { supabaseClient } from '../../data/supabase';
 
@@ -232,32 +232,7 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
     </div>
   </section>
 
-  <!-- Session rules -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-8 pb-8 md:pb-0" aria-label="Session rules">
-    <h2
-      class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
-    >
-      Session rules
-    </h2>
-    <div
-      class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
-    >
-      <ul class="divide-y divide-paper-200 dark:divide-plum-800">
-        {
-          trainingRules.map((r) => (
-            <li class="flex items-start gap-3 px-5 py-3.5 text-sm text-ink-600 dark:text-ink-400">
-              <Icon
-                name="ph:seal-check"
-                class="mt-0.5 h-4 w-4 shrink-0 text-blush-500 dark:text-blush-300"
-                aria-hidden="true"
-              />
-              {r}
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
+  <TrainingRules />
 
   <Footer />
 
@@ -359,18 +334,12 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
 
       // ---- live refresh + writes (only when Supabase config is embedded) ----
       if (url && key) {
-        const headers = { apikey: key, authorization: `Bearer ${key}` };
         const refresh = async () => {
           try {
-            const res = await fetch(
-              `${url}/rest/v1/picha_training?select=steps_done,started_on&slug=eq.${slug}`,
-              { headers },
-            );
-            if (!res.ok) return;
-            const [row] = (await res.json()) as Array<{
-              steps_done: number;
-              started_on: string | null;
-            }>;
+            const { sbSelect } = await import('../../lib/sb');
+            const [row] = await sbSelect<
+              Array<{ steps_done: number; started_on: string | null }>
+            >(url, key, `picha_training?select=steps_done,started_on&slug=eq.${slug}`);
             if (row) {
               state = {
                 stepsDone: Math.min(Math.max(row.steps_done, 0), total),
@@ -395,20 +364,13 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
           }
           status.textContent = 'Filing the paperwork…';
           try {
-            const res = await fetch(`${url}/rest/v1/rpc/log_training`, {
-              method: 'POST',
-              headers: { ...headers, 'content-type': 'application/json' },
-              body: JSON.stringify({
-                p_slug: slug,
-                p_steps_done: next.stepsDone,
-                p_started_on: next.startedOn,
-                p_pin: pinInput.value,
-              }),
+            const { sbRpc } = await import('../../lib/sb');
+            await sbRpc(url, key, 'log_training', {
+              p_slug: slug,
+              p_steps_done: next.stepsDone,
+              p_started_on: next.startedOn,
+              p_pin: pinInput.value,
             });
-            if (!res.ok) {
-              const body = await res.json().catch(() => ({}));
-              throw new Error(body?.message ?? `HTTP ${res.status}`);
-            }
             localStorage.setItem(PIN_KEY, pinInput.value);
             state = next;
             render();

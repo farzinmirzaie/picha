@@ -49,8 +49,5 @@ async function load(): Promise<{
 
 const data = await load();
 
-/** The catalogue with live progress merged in (oldest declaration order kept). */
+/** The catalogue with live progress merged in (declaration order kept). */
 export const trainingCourses = data.courses;
-
-/** Where this build's progress came from — 'seed' means the fallback. */
-export const trainingSource = data.source;

@@ -34,11 +34,11 @@ import {
   inDaysLabel,
 } from '../data/picha';
 
+import { addDays } from '../lib/dates';
+
 const SITE = 'https://farzinmirzaie.github.io/picha';
 const today = new Date().toISOString().slice(0, 10);
 
-const addDays = (iso: string, days: number) =>
-  new Date(Date.parse(iso) + days * 86_400_000).toISOString().slice(0, 10);
 const daysFromToday = (iso: string) =>
   Math.round((Date.parse(iso) - Date.parse(today)) / 86_400_000);
 

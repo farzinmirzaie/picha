@@ -41,6 +41,9 @@ src/
                        # (picha_weights) with seed fallback — server-only import
   data/training.ts     # build-time loader: training progress from Supabase
                        # (picha_training) merged into the picha.ts catalogue
+  lib/dates.ts         # shared date helpers (dateLabel/shortLabel/addDays)
+  lib/weight-viz.ts    # weight chart/stats renderers (build + client, no drift)
+  lib/sb.ts            # Supabase REST/RPC helpers for client scripts
   layouts/Layout.astro # <html> shell, fonts, PWA, ClientRouter, shared scripts
   components/
     Nav.astro          # tab nav: desktop pill bar + mobile bottom tab bar (TABS array)
@@ -49,6 +52,7 @@ src/
                        # per page; any [data-passport-open] element opens it (Tools)
     ShareDialog.astro  # share sheet: build-time QR (qrcode pkg) + Web Share /
                        # copy-link; any [data-share-open] element opens it (Home)
+    TrainingRules.astro # the Academy's session-rules card (hub + course pages)
     Footer.astro       # paw divider + credits — desktop-only unless `showOnMobile`
   pages/
     index.astro        # Home — hero, share dialog (QR), story, get-to-know-her

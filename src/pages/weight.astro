@@ -4,15 +4,10 @@ import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
 import { weightTarget, weight } from '../data/picha';
-import { weightHistory, currentWeight, supabaseClient } from '../data/weights';
-import {
-  CHART,
-  chartSvg,
-  chartAriaLabel,
-  weightStats,
-  dateLabel,
-  shortLabel,
-} from '../lib/weight-viz';
+import { weightHistory, currentWeight } from '../data/weights';
+import { supabaseClient } from '../data/supabase';
+import { CHART, chartSvg, chartAriaLabel, weightStats } from '../lib/weight-viz';
+import { dateLabel, shortLabel } from '../lib/dates';
 
 // Build-time render from the Supabase ledger (seed fallback) via the shared
 // weight-viz module; the client script re-fetches on load and re-renders with
@@ -300,7 +295,9 @@ const ledger = [...entries].reverse();
 
   <script>
     import { weightTarget, type WeightEntry } from '../data/picha';
-    import { chartSvg, chartAriaLabel, weightStats, dateLabel, shortLabel } from '../lib/weight-viz';
+    import { chartSvg, chartAriaLabel, weightStats } from '../lib/weight-viz';
+    import { dateLabel, shortLabel } from '../lib/dates';
+    import { sbSelect, sbRpc } from '../lib/sb';
 
     // Shared registrar PIN across tools (weight + training).
     const PIN_KEY = 'picha-staff-pin';
@@ -377,16 +374,14 @@ const ledger = [...entries].reverse();
       form.dataset.bound = '1';
       const url = form.dataset.supabaseUrl!;
       const key = form.dataset.supabaseKey!;
-      const headers = { apikey: key, authorization: `Bearer ${key}` };
 
       const refresh = async () => {
         try {
-          const res = await fetch(
-            `${url}/rest/v1/picha_weights?select=date,kg&order=date.asc`,
-            { headers },
+          const rows = await sbSelect<Array<{ date: string; kg: number | string }>>(
+            url,
+            key,
+            'picha_weights?select=date,kg&order=date.asc',
           );
-          if (!res.ok) return;
-          const rows = (await res.json()) as Array<{ date: string; kg: number | string }>;
           if (Array.isArray(rows) && rows.length) {
             render(rows.map((r) => ({ date: r.date, kg: Number(r.kg) })));
           }
@@ -409,19 +404,11 @@ const ledger = [...entries].reverse();
         button.disabled = true;
         status.textContent = 'Filing the paperwork…';
         try {
-          const res = await fetch(`${url}/rest/v1/rpc/log_weight`, {
-            method: 'POST',
-            headers: { ...headers, 'content-type': 'application/json' },
-            body: JSON.stringify({
-              p_date: dateInput.value,
-              p_kg: Number(kgInput.value),
-              p_pin: pinInput.value,
-            }),
+          await sbRpc(url, key, 'log_weight', {
+            p_date: dateInput.value,
+            p_kg: Number(kgInput.value),
+            p_pin: pinInput.value,
           });
-          if (!res.ok) {
-            const body = await res.json().catch(() => ({}));
-            throw new Error(body?.message ?? `HTTP ${res.status}`);
-          }
           localStorage.setItem(PIN_KEY, pinInput.value);
           kgInput.value = '';
           status.textContent = 'Recorded. Management has been weighed.';

@@ -13,7 +13,9 @@ import {
   callVetIf,
   ageLabel,
 } from '../data/picha';
-import { currentWeight, supabaseClient } from '../data/weights';
+import { currentWeight } from '../data/weights';
+import { supabaseClient } from '../data/supabase';
+import { dateLabel, shortLabel, addDays } from '../lib/dates';
 
 // Split the timeline by date: past = done, future = coming up (soonest first,
 // the first one is "next"), undated = still to book. The split is computed at
@@ -31,9 +33,6 @@ const toBook = healthTimeline.filter((e) => !e.date);
 // Recurring upkeep: compute the next due date from lastDone + interval, then
 // merge with the one-time items into a single due-date-sorted list. Items
 // whose routine hasn't started (no lastDone) sink to the end.
-const addDays = (iso: string, days: number) =>
-  new Date(Date.parse(iso) + days * 86_400_000).toISOString().slice(0, 10);
-
 interface UpcomingEntry {
   icon: string;
   title: string;
@@ -56,15 +55,6 @@ const upcoming: UpcomingEntry[] = [
 ].sort((a, b) => (a.date ?? '9999').localeCompare(b.date ?? '9999'));
 
 const next = upcoming.find((e) => e.date);
-
-const fmt = new Intl.DateTimeFormat('en-GB', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-});
-const fmtShort = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' });
-const dateLabel = (iso: string) => fmt.format(new Date(iso));
-const shortLabel = (iso: string) => fmtShort.format(new Date(iso));
 
 const segments = [
   { id: 'upcoming', label: 'Coming up' },
@@ -409,17 +399,12 @@ const segments = [
       const el = document.querySelector<HTMLElement>('[data-weight-live]');
       if (!el?.dataset.supabaseUrl || !el.dataset.supabaseKey) return;
       try {
-        const res = await fetch(
-          `${el.dataset.supabaseUrl}/rest/v1/picha_weights?select=date,kg`,
-          {
-            headers: {
-              apikey: el.dataset.supabaseKey,
-              authorization: `Bearer ${el.dataset.supabaseKey}`,
-            },
-          },
+        const { sbSelect } = await import('../lib/sb');
+        const rows = await sbSelect<Array<{ date: string; kg: number | string }>>(
+          el.dataset.supabaseUrl,
+          el.dataset.supabaseKey,
+          'picha_weights?select=date,kg',
         );
-        if (!res.ok) return;
-        const rows = (await res.json()) as Array<{ date: string; kg: number | string }>;
         if (!Array.isArray(rows) || !rows.length) return;
         const latest = rows.reduce((a, b) => (b.date > a.date ? b : a));
         el.textContent = `${Number(latest.kg)} kg`;

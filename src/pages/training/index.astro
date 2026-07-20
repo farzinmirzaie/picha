@@ -3,7 +3,7 @@ import { Icon } from 'astro-icon/components';
 import Layout from '../../layouts/Layout.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import Footer from '../../components/Footer.astro';
-import { trainingRules } from '../../data/picha';
+import TrainingRules from '../../components/TrainingRules.astro';
 import { trainingCourses } from '../../data/training';
 import { supabaseClient } from '../../data/supabase';
 
@@ -111,36 +111,12 @@ const groups = [
     }
   </div>
 
-  <!-- House rules for every session -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-10 pb-8 md:pb-0" aria-label="Session rules">
-    <h2
-      class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
-    >
-      Session rules
-    </h2>
-    <div
-      class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
-    >
-      <ul class="divide-y divide-paper-200 dark:divide-plum-800">
-        {
-          trainingRules.map((r) => (
-            <li class="flex items-start gap-3 px-5 py-3.5 text-sm text-ink-600 dark:text-ink-400">
-              <Icon
-                name="ph:seal-check"
-                class="mt-0.5 h-4 w-4 shrink-0 text-blush-500 dark:text-blush-300"
-                aria-hidden="true"
-              />
-              {r}
-            </li>
-          ))
-        }
-      </ul>
-    </div>
+  <TrainingRules padTop="pt-10">
     <p class="mt-2 px-1 text-[11px] leading-relaxed text-ink-400">
       Milestones are recorded on each course page by PIN-carrying staff and
       land straight in her cloud file.
     </p>
-  </section>
+  </TrainingRules>
 
   <Footer />
 
@@ -157,16 +133,10 @@ const groups = [
 
       (async () => {
         try {
-          const res = await fetch(
-            `${url}/rest/v1/picha_training?select=slug,steps_done,started_on`,
-            { headers: { apikey: key, authorization: `Bearer ${key}` } },
-          );
-          if (!res.ok) return;
-          const rows = (await res.json()) as Array<{
-            slug: string;
-            steps_done: number;
-            started_on: string | null;
-          }>;
+          const { sbSelect } = await import('../../lib/sb');
+          const rows = await sbSelect<
+            Array<{ slug: string; steps_done: number; started_on: string | null }>
+          >(url, key, 'picha_training?select=slug,steps_done,started_on');
           const bySlug = new Map(rows.map((r) => [r.slug, r]));
 
           const cards = Array.from(

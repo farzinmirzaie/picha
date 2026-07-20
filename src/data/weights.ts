@@ -10,8 +10,7 @@
  */
 import { weightHistory as seedHistory, type WeightEntry } from './picha';
 import { supabaseClient, fetchRest } from './supabase';
-
-export { supabaseClient };
+import { dateLabel } from '../lib/dates';
 
 async function load(): Promise<{
   history: WeightEntry[];
@@ -40,17 +39,10 @@ const data = await load();
 /** Every weigh-in on the books, oldest first. */
 export const weightHistory = data.history;
 
-/** Where this build's ledger came from — 'seed' means the fallback was used. */
-export const weightSource = data.source;
-
 const last = weightHistory[weightHistory.length - 1];
 
-/** Derived from the last ledger entry, like weight.current used to be. */
+/** Derived from the last ledger entry. */
 export const currentWeight = {
   label: `${last.kg} kg`,
-  measuredOn: new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(new Date(last.date)),
+  measuredOn: dateLabel(last.date),
 };
