@@ -4,14 +4,7 @@ import { Icon } from 'astro-icon/components';
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import ShareDialog from '../components/ShareDialog.astro';
-import {
-  identity,
-  contact,
-  personality,
-  likes,
-  dislikes,
-  ageLabel,
-} from '../data/picha';
+import { identity, contact, personality, ageLabel } from '../data/picha';
 
 const age = ageLabel();
 
@@ -125,13 +118,12 @@ const slides = Object.entries(slideModules)
     >
       Get to know her
     </h2>
-    <ul class="mt-2 divide-y divide-paper-300/70 dark:divide-plum-800">
+    <ul
+      class="mt-2 divide-y divide-paper-300/70 md:grid md:grid-cols-2 md:gap-x-10 md:divide-y-0 dark:divide-plum-800"
+    >
       {
-        personality.map((p, i) => (
-          <li
-            class="reveal flex items-start gap-4 py-5"
-            style={`--reveal-delay: ${i * 80}ms`}
-          >
+        personality.map((p) => (
+          <li class="reveal flex items-start gap-4 py-5">
             <span
               class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
               aria-hidden="true"
@@ -148,52 +140,6 @@ const slides = Object.entries(slideModules)
         ))
       }
     </ul>
-
-    <!-- quick intel: two columns; the traits above carry the depth -->
-    <div
-      class="reveal mt-6 grid grid-cols-2 gap-6 border-t border-paper-300/70 pt-6 dark:border-plum-800"
-    >
-      <div>
-        <h3
-          class="flex items-center gap-1.5 text-[11px] font-bold tracking-[0.18em] text-blush-500 uppercase dark:text-blush-300"
-        >
-          <Icon name="ph:heart" class="h-3.5 w-3.5" aria-hidden="true" /> Loves
-        </h3>
-        <ul class="mt-2.5 space-y-2">
-          {
-            likes.map((l) => (
-              <li class="flex items-start gap-2.5 text-sm text-ink-600 dark:text-ink-400">
-                <span
-                  class="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-blush-400"
-                  aria-hidden="true"
-                />
-                {l}
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-      <div>
-        <h3
-          class="flex items-center gap-1.5 text-[11px] font-bold tracking-[0.18em] text-ink-400 uppercase"
-        >
-          <Icon name="ph:prohibit" class="h-3.5 w-3.5" aria-hidden="true" /> Hard pass
-        </h3>
-        <ul class="mt-2.5 space-y-2">
-          {
-            dislikes.map((d) => (
-              <li class="flex items-start gap-2.5 text-sm text-ink-600 dark:text-ink-400">
-                <span
-                  class="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-ink-400/60"
-                  aria-hidden="true"
-                />
-                {d}
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-    </div>
   </section>
 
   <!-- If found (home only) -->
@@ -202,8 +148,8 @@ const slides = Object.entries(slideModules)
     aria-label="Contact"
   >
     <p class="text-sm text-ink-600 dark:text-ink-400">
-      {identity.name} is staffed by {contact.ownersLabel}. If found, please call
-      her people:
+      Spotted her on an unauthorised solo adventure? Her staff would like a
+      word:
     </p>
     <div class="mt-4 flex flex-wrap items-center justify-center gap-2.5">
       {
@@ -213,7 +159,7 @@ const slides = Object.entries(slideModules)
             class="inline-flex items-center gap-2 rounded-full border border-blush-300/70 bg-paper-50 px-5 py-2 text-sm font-bold text-blush-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-900 dark:text-blush-300"
           >
             <Icon name="ph:phone" class="h-4 w-4" aria-hidden="true" />
-            {o.name} · {o.phone}
+            Call {o.name}
           </a>
         ))
       }

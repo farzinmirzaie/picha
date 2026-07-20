@@ -107,7 +107,7 @@ const appTitle =
                 type="button"
                 data-share-open
                 aria-label="Share her profile"
-                class="flex h-10 w-10 items-center justify-center rounded-full text-blush-600 transition-colors duration-200 active:bg-blush-100 dark:text-blush-300 dark:active:bg-plum-800"
+                class="flex h-10 w-10 items-center justify-center rounded-full text-blush-600 transition-colors duration-200 hover:bg-blush-100 active:bg-blush-100 dark:text-blush-300 dark:hover:bg-plum-800 dark:active:bg-plum-800"
               >
                 <Icon name="ph:share-network" class="h-6 w-6" aria-hidden="true" />
               </button>
@@ -154,7 +154,9 @@ const appTitle =
                   : ' (past the estimate, confirm with the vet)';
         });
 
-        // Scroll-reveal: stagger via --reveal-delay set inline per element.
+        // Scroll-reveal: elements arriving in the same intersection batch get
+        // a short relative stagger (capped), so fast scrolling never waits on
+        // long fixed per-item delays.
         const revealables = document.querySelectorAll<HTMLElement>('.reveal:not(.in)');
         if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
           revealables.forEach((el) => el.classList.add('in'));
@@ -162,12 +164,14 @@ const appTitle =
         }
         const io = new IntersectionObserver(
           (entries) => {
-            entries.forEach((e) => {
-              if (e.isIntersecting) {
-                (e.target as HTMLElement).classList.add('in');
-                io.unobserve(e.target);
-              }
-            });
+            entries
+              .filter((e) => e.isIntersecting)
+              .forEach((e, i) => {
+                const el = e.target as HTMLElement;
+                el.style.transitionDelay = `${Math.min(i * 60, 240)}ms`;
+                el.classList.add('in');
+                io.unobserve(el);
+              });
           },
           { threshold: 0.15 },
         );

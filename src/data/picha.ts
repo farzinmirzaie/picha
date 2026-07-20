@@ -643,8 +643,8 @@ export const litter: CareItem[] = [
 ];
 
 /**
- * Quick "get to know her" chips. Deliberately no overlap with `personality`
- * (hunting, affection, storms and sleep live there) — these are the extras.
+ * Quick likes/dislikes — no longer rendered on the site (the personality
+ * list carries the depth) but still published for agents via llms.txt.
  */
 export const likes: string[] = [
   'Treats (obviously)',

@@ -220,8 +220,9 @@ swaps):
   days ("in 2 months and 4 days"). Dates more than ~2 months out get no
   countdown at all. Past dates show the `data-overdue` text if set, else the
   confirm-with-the-vet note.
-- `.reveal` elements → scroll-reveal via IntersectionObserver (stagger with
-  inline `--reveal-delay`); skipped under `prefers-reduced-motion`.
+- `.reveal` elements → scroll-reveal via IntersectionObserver (elements in
+  the same intersection batch get a short capped stagger, assigned by the
+  script); skipped under `prefers-reduced-motion`.
 
 The server still renders a build-time value inside those spans as the no-JS
 fallback. **Add new relative dates by using these hooks**, not hardcoded text.
