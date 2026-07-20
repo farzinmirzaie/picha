@@ -103,10 +103,14 @@ ${identity.looks} Home: ${identity.home}.
 
 Vet status: ${vet.status}. Most recent clinic: ${vet.recentClinic}, phone ${vet.recentPhone}.
 
-### Ongoing treatment
+${
+  treatment.length
+    ? `### Doctor's orders (current)
 
 ${treatment.map((t) => `- **${t.title}** (${t.cadence ?? 'ongoing'}): ${t.detail}`).join('\n')}
-
+`
+    : ''
+}
 ### Done
 
 ${done.map((e) => `- ${e.date}: **${e.title}**: ${e.detail}`).join('\n')}

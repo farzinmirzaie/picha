@@ -546,7 +546,14 @@ export const trainingCourses: TrainingCourse[] = [
   },
 ];
 
-/** Ongoing daily treatment. Keep instructions exact — this one is medical. */
+/**
+ * Doctor's orders — the standing slot on the Health page for anything the vet
+ * prescribes: medication courses, post-op instructions, special routines.
+ * Add an entry when the vet orders it; DELETE it when the course ends — the
+ * section (and its llms.txt block) hides itself when this list is empty.
+ * Entries also merge into the Care page's protocol list. Keep instructions
+ * exact — this one is medical.
+ */
 export const treatment: CareItem[] = [
   {
     icon: 'ph:ear',

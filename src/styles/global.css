@@ -146,6 +146,17 @@ body {
     }
   }
 
+  /* Slide-fade for segmented-control panels as they switch in */
+  .seg-in {
+    animation: seg-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes seg-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
   /* Pop-in for the checklist's all-done praise line */
   .praise-pop {
     animation: praise-pop 0.45s cubic-bezier(0.16, 1, 0.3, 1);

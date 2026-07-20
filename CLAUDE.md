@@ -139,6 +139,10 @@ pages/components when changing *layout or design*, not content.
   time into *done* (past dates), *coming up* (future), and *on the list*
   (no date). To record a completed visit or schedule something, just add/date
   an entry — no markup changes.
+- **`treatment`** is the standing "Doctor's orders" slot on Health: add an
+  entry whenever the vet prescribes a medication or routine, delete it when
+  the course ends. The section (and its llms.txt block) hides when the list
+  is empty. Entries also merge into the Care protocol list.
 - **`recurringCare`** holds repeating upkeep (`intervalDays` + `lastDone` →
   computed next-due; an explicit `nextDue` overrides the computation — use it
   to anchor a first appointment, then set `lastDone` and drop it). It merges

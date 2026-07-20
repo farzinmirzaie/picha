@@ -143,34 +143,43 @@ const segments = [
     </div>
   </section>
 
-  <!-- Ongoing daily treatment -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Current treatment">
-    {
-      treatment.map((t) => (
-        <div class="reveal flex items-start gap-4 rounded-3xl border border-blush-200/70 bg-paper-50 p-6 dark:border-plum-700 dark:bg-plum-900">
-          <span
-            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
-            aria-hidden="true"
-          >
-            <Icon name={t.icon} class="h-5.5 w-5.5" />
-          </span>
-          <div>
-            <div class="flex flex-wrap items-center gap-2">
-              <h3 class="font-display text-lg font-semibold">{t.title}</h3>
-              {t.cadence && (
-                <span class="rounded-full bg-blush-100 px-2.5 py-0.5 text-[11px] font-bold text-blush-700 dark:bg-plum-800 dark:text-blush-300">
-                  {t.cadence}
-                </span>
-              )}
+  <!-- Doctor's orders: the standing slot for anything the vet prescribes.
+       Data-driven from `treatment` in picha.ts; hides itself when empty. -->
+  {
+    treatment.length > 0 && (
+      <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Doctor's orders">
+        <h2 class="reveal mb-2 flex items-center gap-1.5 text-[11px] font-bold tracking-[0.24em] text-amber-700 uppercase dark:text-amber-300">
+          <Icon name="ph:stethoscope" class="h-3.5 w-3.5" aria-hidden="true" />
+          Doctor's orders
+        </h2>
+        <div class="space-y-3">
+          {treatment.map((t) => (
+            <div class="reveal flex items-start gap-4 rounded-3xl border border-amber-300/60 bg-paper-50 p-6 dark:border-amber-700/40 dark:bg-plum-900">
+              <span
+                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-300/30 text-amber-700 dark:bg-amber-700/30 dark:text-amber-300"
+                aria-hidden="true"
+              >
+                <Icon name={t.icon} class="h-5.5 w-5.5" />
+              </span>
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="font-display text-lg font-semibold">{t.title}</h3>
+                  {t.cadence && (
+                    <span class="rounded-full bg-amber-300/30 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:bg-amber-700/30 dark:text-amber-300">
+                      {t.cadence}
+                    </span>
+                  )}
+                </div>
+                <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+                  {t.detail}
+                </p>
+              </div>
             </div>
-            <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-              {t.detail}
-            </p>
-          </div>
+          ))}
         </div>
-      ))
-    }
-  </section>
+      </section>
+    )
+  }
 
   <!-- Timeline with segmented control -->
   <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Timeline">
@@ -402,9 +411,17 @@ const segments = [
           t.classList.toggle('dark:text-blush-300', active);
           t.classList.toggle('text-ink-400', !active);
         });
-        panels.forEach((p) =>
-          p.classList.toggle('hidden', p.dataset.segPanel !== tab.dataset.segTab),
-        );
+        panels.forEach((p) => {
+          const show = p.dataset.segPanel === tab.dataset.segTab;
+          const wasHidden = p.classList.contains('hidden');
+          p.classList.toggle('hidden', !show);
+          // slide-fade the incoming panel (restart the animation each switch)
+          if (show && wasHidden) {
+            p.classList.remove('seg-in');
+            void p.offsetWidth;
+            p.classList.add('seg-in');
+          }
+        });
       };
       tabs.forEach((tab, i) => tab.addEventListener('click', () => select(i)));
       // arrow keys move between segments, per the tabs pattern
