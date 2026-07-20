@@ -254,8 +254,11 @@ The site installs as an app (Add to Home Screen / install icon):
 - **Native UI patterns in use** (reuse these before inventing new ones):
   snap-scroll stat tiles (`.no-scrollbar` strip, Health vitals), segmented
   control with sliding thumb (`[data-seg]`, Health timeline), grouped inset
-  lists (rounded card + `divide-y` rows, Care/emergency), and the "Today's
-  rounds" checklist (localStorage key `picha-rounds`, `{date, done[]}`, resets
+  lists (rounded card + `divide-y` rows, Care/emergency), modal dialogs
+  (`dialog.sheet` + `bindDialog()` from lib/dialog.ts: centred card on
+  desktop, slide-up bottom sheet with grab handle on mobile — give new
+  dialogs `class="sheet"` and `max-md:rounded-b-none` on the inner card),
+  and the "Today's rounds" checklist (localStorage key `picha-rounds`, `{date, done[]}`, resets
   when the stored date ≠ today; item ids come from `dailyChecklist` in
   picha.ts — keep them stable). Content inside initially-hidden panels must
   NOT use `.reveal` (the observer never fires for them).

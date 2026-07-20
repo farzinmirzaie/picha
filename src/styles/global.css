@@ -217,11 +217,12 @@ body {
   display: none;
 }
 
-/* ---------- modal dialogs (passport, share sheet) ---------- */
-
-/* The passport is a physical document — it stays cream even in dark mode. */
-dialog.share,
-dialog.passport {
+/* ---------- modal dialogs (`dialog.sheet` + lib/dialog.ts) ----------
+   One reusable presentation for every dialog: a centred card on desktop and
+   a native-feeling bottom sheet on mobile. Give new dialogs class="sheet",
+   round only the top of the inner card on mobile (max-md:rounded-b-none),
+   and wire them with bindDialog(). */
+dialog.sheet {
   border: none;
   padding: 0;
   background: transparent;
@@ -236,22 +237,28 @@ dialog.passport {
   overflow-y: auto;
   overscroll-behavior: contain;
 }
-dialog.share::backdrop,
-dialog.passport::backdrop {
+@media (max-width: 767px) {
+  dialog.sheet {
+    margin: auto 0 0;
+    width: 100vw;
+    max-width: 100vw;
+    border-radius: 1.25rem 1.25rem 0 0;
+    max-height: calc(100dvh - 3rem);
+  }
+}
+dialog.sheet::backdrop {
   background: rgb(23 16 20 / 0.55);
   backdrop-filter: blur(4px);
 }
 @media (prefers-reduced-motion: no-preference) {
-  dialog.share[open],
-  dialog.passport[open] {
-    animation: passport-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  dialog.sheet[open] {
+    animation: dialog-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
   /* exit: lib/dialog.ts adds .closing, waits for animationend, then closes */
-  dialog.share[open].closing,
-  dialog.passport[open].closing {
+  dialog.sheet[open].closing {
     animation: dialog-out 0.2s ease-in forwards;
   }
-  @keyframes passport-in {
+  @keyframes dialog-in {
     from {
       opacity: 0;
       transform: translateY(14px) scale(0.97);
@@ -265,6 +272,25 @@ dialog.passport::backdrop {
     to {
       opacity: 0;
       transform: translateY(10px) scale(0.97);
+    }
+  }
+  /* mobile: slide up from the bottom edge instead */
+  @media (max-width: 767px) {
+    dialog.sheet[open] {
+      animation: sheet-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    dialog.sheet[open].closing {
+      animation: sheet-out 0.25s ease-in forwards;
+    }
+    @keyframes sheet-in {
+      from {
+        transform: translateY(100%);
+      }
+    }
+    @keyframes sheet-out {
+      to {
+        transform: translateY(100%);
+      }
     }
   }
 }
