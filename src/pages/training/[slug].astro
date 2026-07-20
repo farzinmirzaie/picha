@@ -28,6 +28,7 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
   title={`${course.title} · Picha 🐾`}
   description={`${course.title} at the Royal Academy: ${course.tagline}`}
   current="tools"
+  appTitle={course.title}
 >
   <PageHeader kicker="The Royal Academy" title={course.title} blurb={course.tagline} />
 
@@ -124,10 +125,18 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
 
       {
         supabaseClient && (
-          <div class="mt-5 border-t border-paper-200 pt-5 dark:border-plum-800" data-registrar>
-            <p class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
+          <details
+            class="group mt-5 border-t border-paper-200 pt-5 print:hidden dark:border-plum-800"
+            data-registrar
+          >
+            <summary class="flex cursor-pointer list-none items-center gap-1.5 text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase [&::-webkit-details-marker]:hidden">
+              <Icon
+                name="ph:caret-right"
+                class="h-3 w-3 transition-transform duration-200 group-open:rotate-90"
+                aria-hidden="true"
+              />
               Registrar controls
-            </p>
+            </summary>
             <div class="mt-2 grid grid-cols-2 gap-3">
               <input
                 type="password"
@@ -162,7 +171,7 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
               ledger; remembered on this device). A step counts as passed when
               she stays relaxed through it on several separate days.
             </p>
-          </div>
+          </details>
         )
       }
     </div>
@@ -358,6 +367,8 @@ const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the sy
 
         const pinInput = q<HTMLInputElement>('[data-train-pin]')!;
         pinInput.value = localStorage.getItem(PIN_KEY) ?? '';
+        // known staff device: keep the controls ready to use
+        if (pinInput.value) q('[data-registrar]')?.setAttribute('open', '');
         const status = q('[data-train-status]')!;
 
         const write = async (next: CourseState) => {

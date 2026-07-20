@@ -355,12 +355,11 @@ const rhythm = [...treatment, ...grooming];
         });
         const count = document.querySelector('[data-check-count]');
         if (count) count.textContent = `${store.done.length}/${items.length}`;
-        document
-          .querySelector('[data-check-praise]')
-          ?.classList.toggle('hidden', store.done.length !== items.length);
-        document
-          .querySelector('[data-check-praise]')
-          ?.classList.toggle('flex', store.done.length === items.length);
+        const complete = store.done.length === items.length;
+        const praise = document.querySelector('[data-check-praise]');
+        praise?.classList.toggle('hidden', !complete);
+        praise?.classList.toggle('flex', complete);
+        praise?.classList.toggle('praise-pop', complete);
       };
 
       items.forEach((btn) => {

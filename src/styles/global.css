@@ -138,6 +138,17 @@ body {
     }
   }
 
+  /* Pop-in for the checklist's all-done praise line */
+  .praise-pop {
+    animation: praise-pop 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes praise-pop {
+    from {
+      opacity: 0;
+      transform: translateY(4px) scale(0.98);
+    }
+  }
+
   /* Ear-wiggle on hover for the avatar frame */
   .wiggle-hover:hover {
     animation: wiggle 0.5s ease-in-out;
@@ -195,6 +206,11 @@ dialog.passport::backdrop {
   dialog.passport[open] {
     animation: passport-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
+  /* exit: lib/dialog.ts adds .closing, waits for animationend, then closes */
+  dialog.share[open].closing,
+  dialog.passport[open].closing {
+    animation: dialog-out 0.2s ease-in forwards;
+  }
   @keyframes passport-in {
     from {
       opacity: 0;
@@ -204,6 +220,27 @@ dialog.passport::backdrop {
       opacity: 1;
       transform: none;
     }
+  }
+  @keyframes dialog-out {
+    to {
+      opacity: 0;
+      transform: translateY(10px) scale(0.97);
+    }
+  }
+}
+
+/* ---------- print ---------- */
+
+/* Printed pages (e.g. Care as a sitter handout) drop the app chrome and show
+   everything, regardless of scroll-reveal state. Interactive-only bits carry
+   Tailwind's `print:hidden` in their markup. */
+@media print {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  body {
+    padding-bottom: 0 !important;
   }
 }
 

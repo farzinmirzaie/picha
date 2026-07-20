@@ -22,7 +22,7 @@ const TABS = [
 
 <!-- desktop: floating pill under the top edge -->
 <nav
-  class="sticky top-4 z-40 mx-auto mt-4 hidden w-fit items-center gap-1 rounded-full border border-paper-300/60 bg-paper-50/80 p-1.5 shadow-sm backdrop-blur-md md:flex dark:border-plum-700/60 dark:bg-plum-900/80"
+  class="sticky top-4 z-40 mx-auto mt-4 hidden w-fit items-center gap-1 rounded-full border border-paper-300/60 bg-paper-50/80 p-1.5 shadow-sm backdrop-blur-md md:flex print:hidden dark:border-plum-700/60 dark:bg-plum-900/80"
   aria-label="Main"
 >
   {
@@ -46,7 +46,7 @@ const TABS = [
 
 <!-- mobile: bottom tab bar -->
 <nav
-  class="fixed inset-x-0 bottom-0 z-40 border-t border-paper-300/60 bg-paper-50/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden dark:border-plum-700/60 dark:bg-plum-900/85"
+  class="fixed inset-x-0 bottom-0 z-40 border-t border-paper-300/60 bg-paper-50/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden print:hidden dark:border-plum-700/60 dark:bg-plum-900/85"
   aria-label="Main"
 >
   <div class="mx-auto grid max-w-md grid-cols-4">

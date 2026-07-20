@@ -13,7 +13,7 @@ const { showOnMobile = false } = Astro.props;
 
 <footer
   class:list={[
-    'mx-auto w-full max-w-2xl px-5 pt-6 pb-8 text-center md:pb-14',
+    'mx-auto w-full max-w-2xl px-5 pt-6 pb-8 text-center md:pb-14 print:hidden',
     showOnMobile ? '' : 'hidden md:block',
   ]}
 >

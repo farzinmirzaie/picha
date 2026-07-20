@@ -29,14 +29,14 @@ const qrSvg = await QRCode.toString(url, {
       >
         Share her profile
       </h2>
-      <form method="dialog">
-        <button
-          class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/35"
-          aria-label="Close share sheet"
-        >
-          <Icon name="ph:x" class="h-4 w-4" aria-hidden="true" />
-        </button>
-      </form>
+      <button
+        type="button"
+        data-dialog-close
+        class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/35"
+        aria-label="Close share sheet"
+      >
+        <Icon name="ph:x" class="h-4 w-4" aria-hidden="true" />
+      </button>
     </div>
 
     <div class="p-6 text-center">
@@ -88,6 +88,8 @@ const qrSvg = await QRCode.toString(url, {
 </dialog>
 
 <script>
+  import { bindDialog } from '../lib/dialog';
+
   function setupShare() {
     const dialog = document.getElementById('share') as HTMLDialogElement | null;
     if (!dialog) return;
@@ -99,12 +101,9 @@ const qrSvg = await QRCode.toString(url, {
       btn.addEventListener('click', () => dialog.showModal());
     });
 
-    if (dialog.dataset.bound) return;
-    dialog.dataset.bound = '1';
-    // click on the backdrop (the dialog element itself) closes it
-    dialog.addEventListener('click', (e) => {
-      if (e.target === dialog) dialog.close();
-    });
+    if (dialog.dataset.wired) return;
+    dialog.dataset.wired = '1';
+    bindDialog(dialog);
 
     const native = dialog.querySelector<HTMLButtonElement>('[data-share-native]');
     // No Web Share API (mostly desktop browsers): the copy button carries it.

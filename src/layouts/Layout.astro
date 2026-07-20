@@ -5,27 +5,32 @@ import '../styles/global.css';
 import { Icon } from 'astro-icon/components';
 import { ClientRouter } from 'astro:transitions';
 import Nav from '../components/Nav.astro';
+import { supabaseClient } from '../data/supabase';
 
 interface Props {
   title: string;
   description?: string;
   /** Active tab id for the nav. */
   current: 'home' | 'health' | 'care' | 'tools';
+  /** Mobile app-bar label override (sub-pages of a tab, e.g. "Weight"). */
+  appTitle?: string;
 }
 const {
   title,
   description = 'Picha the cat: profile & daily care guide.',
   current,
+  appTitle: appTitleProp,
 } = Astro.props;
 
 // BASE_URL is "/picha/" in production; join without doubling the slash.
 const asset = (p: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${p}`;
 const ogImage = new URL(asset('icon-512.png'), Astro.site);
+const ogUrl = new URL(Astro.url.pathname, Astro.site);
 
-// Mobile app-bar label per tab.
-const appTitle = { home: 'Picha', health: 'Health', care: 'Care', tools: 'Tools' }[
-  current
-];
+// Mobile app-bar label: the tab name, unless the page names itself.
+const appTitle =
+  appTitleProp ??
+  { home: 'Picha', health: 'Health', care: 'Care', tools: 'Tools' }[current];
 ---
 
 <!doctype html>
@@ -54,6 +59,12 @@ const appTitle = { home: 'Picha', health: 'Health', care: 'Care', tools: 'Tools'
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={ogUrl} />
+    <meta property="og:site_name" content="Picha" />
+    <meta name="twitter:card" content="summary" />
+
+    <!-- warm up the TLS handshake for the live-data fetches -->
+    {supabaseClient && <link rel="preconnect" href={supabaseClient.url} crossorigin />}
 
     <!-- PWA: installable on phone/desktop -->
     <link rel="manifest" href={asset('manifest.webmanifest')} />
@@ -68,6 +79,12 @@ const appTitle = { home: 'Picha', health: 'Health', care: 'Care', tools: 'Tools'
   <body
     class="min-h-screen bg-paper-100 pb-20 font-sans text-ink-900 md:pb-0 dark:bg-plum-950 dark:text-paper-100"
   >
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-blush-600 focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white"
+    >
+      Skip to content
+    </a>
     <!-- ambient blush glow -->
     <div
       class="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(70%_45%_at_50%_-5%,var(--color-blush-100),transparent)] dark:bg-[radial-gradient(70%_45%_at_50%_-5%,#3b1d2e,transparent)]"
@@ -76,10 +93,10 @@ const appTitle = { home: 'Picha', health: 'Health', care: 'Care', tools: 'Tools'
 
     <!-- mobile: app bar -->
     <header
-      class="sticky top-0 z-40 border-b border-paper-300/50 bg-paper-100/85 pt-[env(safe-area-inset-top)] backdrop-blur-md md:hidden dark:border-plum-800/60 dark:bg-plum-950/85"
+      class="sticky top-0 z-40 border-b border-paper-300/50 bg-paper-100/85 pt-[env(safe-area-inset-top)] backdrop-blur-md md:hidden print:hidden dark:border-plum-800/60 dark:bg-plum-950/85"
     >
       <div class="flex h-14 items-center px-5">
-        <span class="font-display text-lg font-semibold tracking-tight">
+        <span class="font-display truncate text-lg font-semibold tracking-tight">
           {appTitle}
         </span>
         {
@@ -99,7 +116,7 @@ const appTitle = { home: 'Picha', health: 'Health', care: 'Care', tools: 'Tools'
 
     <Nav current={current} />
 
-    <main>
+    <main id="main">
       <slot />
     </main>
 
