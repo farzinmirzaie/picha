@@ -401,6 +401,17 @@ const segments = [
       const panels = Array.from(
         document.querySelectorAll<HTMLElement>('[data-seg-panel]'),
       );
+      // Stagger the panel's rows in (used on page load and on tab switch).
+      // Rows are visible without JS; the animation only decorates.
+      const animatePanel = (panel: HTMLElement) => {
+        panel.querySelectorAll<HTMLElement>('li').forEach((li, i) => {
+          li.classList.remove('seg-in');
+          void li.offsetWidth;
+          li.style.animationDelay = `${Math.min(i * 50, 350)}ms`;
+          li.classList.add('seg-in');
+        });
+      };
+
       const select = (i: number) => {
         const tab = tabs[i];
         thumb.style.transform = `translateX(${i * 100}%)`;
@@ -415,15 +426,14 @@ const segments = [
           const show = p.dataset.segPanel === tab.dataset.segTab;
           const wasHidden = p.classList.contains('hidden');
           p.classList.toggle('hidden', !show);
-          // slide-fade the incoming panel (restart the animation each switch)
-          if (show && wasHidden) {
-            p.classList.remove('seg-in');
-            void p.offsetWidth;
-            p.classList.add('seg-in');
-          }
+          if (show && wasHidden) animatePanel(p);
         });
       };
       tabs.forEach((tab, i) => tab.addEventListener('click', () => select(i)));
+
+      // fade-stagger the initially visible panel on page load too
+      const visible = panels.find((p) => !p.classList.contains('hidden'));
+      if (visible) animatePanel(visible);
       // arrow keys move between segments, per the tabs pattern
       seg.addEventListener('keydown', (e) => {
         if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;

@@ -146,9 +146,11 @@ body {
     }
   }
 
-  /* Slide-fade for segmented-control panels as they switch in */
+  /* Fade-stagger for segmented-panel rows (page load + tab switch). The JS
+     sets a per-row animation-delay; `backwards` keeps rows hidden while they
+     wait their turn. */
   .seg-in {
-    animation: seg-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: seg-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
   }
   @keyframes seg-in {
     from {
