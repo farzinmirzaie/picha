@@ -791,9 +791,10 @@ export function ageLabel(from: Date = new Date()): string {
   }
   const years = Math.floor(months / 12);
   const rem = Math.floor(months % 12);
+  const yearsLabel = `${years} year${years > 1 ? 's' : ''}`;
   return rem === 0
-    ? `~${years} year${years > 1 ? 's' : ''} old`
-    : `~${years}y ${rem}m old`;
+    ? `~${yearsLabel} old`
+    : `~${yearsLabel} ${rem} month${rem > 1 ? 's' : ''} old`;
 }
 
 /* ---------- cat-years converter (Tools) ---------- */

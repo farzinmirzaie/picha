@@ -6,8 +6,8 @@
   "scope": "/picha/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#fce7ef",
-  "theme_color": "#ec7ba8",
+  "background_color": "#faf3ec",
+  "theme_color": "#faf3ec",
   "icons": [
     {
       "src": "/picha/icon-192.png",

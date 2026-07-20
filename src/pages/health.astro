@@ -12,6 +12,7 @@ import {
   treatment,
   callVetIf,
   ageLabel,
+  inDaysLabel,
 } from '../data/picha';
 import { currentWeight } from '../data/weights';
 import { supabaseClient } from '../data/supabase';
@@ -56,6 +57,15 @@ const upcoming: UpcomingEntry[] = [
 
 const next = upcoming.find((e) => e.date);
 
+// Build-time countdown text: the no-JS fallback inside [data-until] spans
+// (the client script recomputes it against the visitor's clock).
+const untilLabel = (iso: string) => {
+  const days = Math.round((Date.parse(iso) - Date.parse(today)) / 86_400_000);
+  if (days > 60) return '';
+  if (days < 0) return ' (overdue)';
+  return ` (${inDaysLabel(days)})`;
+};
+
 const segments = [
   { id: 'upcoming', label: 'Coming up' },
   { id: 'done', label: 'The record' },
@@ -63,7 +73,11 @@ const segments = [
 ];
 ---
 
-<Layout title="Health · Picha 🐾" current="health">
+<Layout
+  title="Health · Picha 🐾"
+  description="Picha's health record: vitals, vaccinations, vet visits and what is coming up."
+  current="health"
+>
   <PageHeader
     kicker="Vet & Health"
     title="The royal health record"
@@ -242,7 +256,9 @@ const segments = [
                   <>
                     {e.everyLabel && 'due ~'}
                     {dateLabel(e.date)}
-                    <span data-until={e.date} data-overdue="overdue" />
+                    <span data-until={e.date} data-overdue="overdue">
+                      {untilLabel(e.date)}
+                    </span>
                   </>
                 ) : (
                   'not started yet'
@@ -376,20 +392,30 @@ const segments = [
       const panels = Array.from(
         document.querySelectorAll<HTMLElement>('[data-seg-panel]'),
       );
-      tabs.forEach((tab, i) => {
-        tab.addEventListener('click', () => {
-          thumb.style.transform = `translateX(${i * 100}%)`;
-          tabs.forEach((t) => {
-            const active = t === tab;
-            t.setAttribute('aria-selected', String(active));
-            t.classList.toggle('text-blush-700', active);
-            t.classList.toggle('dark:text-blush-300', active);
-            t.classList.toggle('text-ink-400', !active);
-          });
-          panels.forEach((p) =>
-            p.classList.toggle('hidden', p.dataset.segPanel !== tab.dataset.segTab),
-          );
+      const select = (i: number) => {
+        const tab = tabs[i];
+        thumb.style.transform = `translateX(${i * 100}%)`;
+        tabs.forEach((t) => {
+          const active = t === tab;
+          t.setAttribute('aria-selected', String(active));
+          t.classList.toggle('text-blush-700', active);
+          t.classList.toggle('dark:text-blush-300', active);
+          t.classList.toggle('text-ink-400', !active);
         });
+        panels.forEach((p) =>
+          p.classList.toggle('hidden', p.dataset.segPanel !== tab.dataset.segTab),
+        );
+      };
+      tabs.forEach((tab, i) => tab.addEventListener('click', () => select(i)));
+      // arrow keys move between segments, per the tabs pattern
+      seg.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+        const current = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+        const nextIdx =
+          (current + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+        select(nextIdx);
+        tabs[nextIdx].focus();
+        e.preventDefault();
       });
     }
 

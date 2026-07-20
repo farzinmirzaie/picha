@@ -24,7 +24,11 @@ const active = !graduated && Boolean(course.startedOn);
 const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the syllabus';
 ---
 
-<Layout title={`${course.title} · Picha 🐾`} current="tools">
+<Layout
+  title={`${course.title} · Picha 🐾`}
+  description={`${course.title} at the Royal Academy: ${course.tagline}`}
+  current="tools"
+>
   <PageHeader kicker="The Royal Academy" title={course.title} blurb={course.tagline} />
 
   <section class="mx-auto w-full max-w-2xl px-5" aria-label="Course status">

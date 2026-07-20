@@ -20,7 +20,9 @@ const stageIndex = felineStages.findIndex(
   (s) => months >= s.minMonths && months < s.maxMonths,
 );
 
-const sliderStart = Math.max(1, Math.round(months));
+// Floor, don't round: keeps the converter's default answer in agreement with
+// the fractional hero conversion above it (7.8 months reads as ~12 either way).
+const sliderStart = Math.max(1, Math.floor(months));
 const presets = [
   { label: '2 m', months: 2 },
   { label: '6 m', months: 6 },
@@ -31,7 +33,11 @@ const presets = [
 ];
 ---
 
-<Layout title="Cat years · Picha 🐾" current="tools">
+<Layout
+  title="Cat years · Picha 🐾"
+  description="How old is Picha in human years? Live conversion, feline life stages and a converter for any cat."
+  current="tools"
+>
   <PageHeader
     kicker="Tools · In service"
     title="The cat-years converter"
@@ -257,7 +263,7 @@ const presets = [
         btn.addEventListener('click', () => {
           slider.value =
             btn.dataset.cyPreset === 'picha'
-              ? String(Math.max(1, Math.round(ageInMonths())))
+              ? String(Math.max(1, Math.floor(ageInMonths())))
               : btn.dataset.cyPreset!;
           update();
         });

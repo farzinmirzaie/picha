@@ -23,7 +23,11 @@ const groups = [
 ].map((g) => ({ ...g, courses: trainingCourses.filter((c) => status(c) === g.id) }));
 ---
 
-<Layout title="Training · Picha 🐾" current="tools">
+<Layout
+  title="Training · Picha 🐾"
+  description="The Royal Academy: Picha's training courses with step-by-step curricula and live progress."
+  current="tools"
+>
   <PageHeader
     kicker="Tools · In service"
     title="The Royal Academy"

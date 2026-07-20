@@ -246,5 +246,10 @@ const slides = Object.entries(slideModules)
 
     setupSlideshow();
     document.addEventListener('astro:page-load', setupSlideshow);
+    // no crossfading in background tabs; resume where she left off
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) clearInterval(slideTimer);
+      else setupSlideshow();
+    });
   </script>
 </Layout>

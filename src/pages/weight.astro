@@ -48,9 +48,21 @@ const stats = [
 ];
 
 const ledger = [...entries].reverse();
+
+// The band footnote follows where she actually is relative to the range.
+const bandNote =
+  latest.kg < weightTarget.min
+    ? 'Sitting under it, for now, is entirely by design.'
+    : latest.kg <= weightTarget.max
+      ? 'She has arrived. The waistline committee is satisfied.'
+      : 'She is above it; the portion policy is under formal review.';
 ---
 
-<Layout title="Weight · Picha 🐾" current="tools">
+<Layout
+  title="Weight · Picha 🐾"
+  description="Picha's weight tracker: every weigh-in charted, with stats and the full ledger."
+  current="tools"
+>
   <PageHeader
     kicker="Tools · In service"
     title="The royal waistline"
@@ -129,7 +141,7 @@ const ledger = [...entries].reverse();
 
       <p class="mt-3 text-[11px] leading-relaxed text-ink-400">
         The amber band is the healthy adult range ({weight.healthyTarget}).
-        {weight.note} Sitting under it, for now, is entirely by design.
+        {weight.note} {bandNote}
       </p>
     </div>
   </section>
@@ -394,6 +406,7 @@ const ledger = [...entries].reverse();
       const dateInput = form.elements.namedItem('date') as HTMLInputElement;
       const pinInput = form.elements.namedItem('pin') as HTMLInputElement;
       dateInput.value = new Date().toISOString().slice(0, 10);
+      dateInput.max = dateInput.value; // audits are recorded, not scheduled
       pinInput.value = localStorage.getItem(PIN_KEY) ?? '';
 
       const status = form.querySelector<HTMLElement>('[data-form-status]')!;

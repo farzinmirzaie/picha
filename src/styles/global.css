@@ -51,6 +51,12 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Keyboard focus gets a brand-colored ring (mouse/touch stay clean). */
+:focus-visible {
+  outline: 2px solid var(--color-blush-500);
+  outline-offset: 2px;
+}
+
 /* Installed as a PWA: native-app feel — no scrollbars, no text selection,
    no long-press callout, no pinch/double-tap zoom. Content still scrolls. */
 @media (display-mode: standalone) {
