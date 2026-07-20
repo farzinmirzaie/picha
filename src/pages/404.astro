@@ -1,14 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
 import Layout from '../layouts/Layout.astro';
-
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const places = [
-  { href: `${base}/`, icon: 'ph:paw-print', label: 'Home' },
-  { href: `${base}/health/`, icon: 'ph:heartbeat', label: 'Health' },
-  { href: `${base}/care/`, icon: 'ph:hand-heart', label: 'Care' },
-  { href: `${base}/tools/`, icon: 'ph:toolbox', label: 'Tools' },
-];
 ---
 
 <Layout
@@ -32,20 +24,7 @@ const places = [
     </h1>
     <p class="mx-auto mt-4 max-w-md leading-relaxed text-ink-600 dark:text-ink-400">
       Even the hide-and-seek grandmaster cannot find it. It may have been
-      moved, renamed, or batted off a shelf. Try one of her official spots:
+      moved, renamed, or batted off a shelf.
     </p>
-    <div class="mt-8 flex flex-wrap items-center justify-center gap-2.5">
-      {
-        places.map((p) => (
-          <a
-            href={p.href}
-            class="inline-flex items-center gap-2 rounded-full border border-blush-300/70 bg-paper-50 px-5 py-2 text-sm font-bold text-blush-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-900 dark:text-blush-300"
-          >
-            <Icon name={p.icon} class="h-4 w-4" aria-hidden="true" />
-            {p.label}
-          </a>
-        ))
-      }
-    </div>
   </section>
 </Layout>

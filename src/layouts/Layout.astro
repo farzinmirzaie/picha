@@ -99,18 +99,21 @@ const appTitle =
         <span class="font-display truncate text-lg font-semibold tracking-tight">
           {appTitle}
         </span>
-        {
-          current === 'home' && (
-            <button
-              type="button"
-              data-share-open
-              aria-label="Share her profile"
-              class="-mr-2 ml-auto flex h-10 w-10 items-center justify-center rounded-full text-blush-600 transition-colors duration-200 active:bg-blush-100 dark:text-blush-300 dark:active:bg-plum-800"
-            >
-              <Icon name="ph:share-network" class="h-6 w-6" aria-hidden="true" />
-            </button>
-          )
-        }
+        <div class="-mr-2 ml-auto flex items-center">
+          <slot name="app-action" />
+          {
+            current === 'home' && (
+              <button
+                type="button"
+                data-share-open
+                aria-label="Share her profile"
+                class="flex h-10 w-10 items-center justify-center rounded-full text-blush-600 transition-colors duration-200 active:bg-blush-100 dark:text-blush-300 dark:active:bg-plum-800"
+              >
+                <Icon name="ph:share-network" class="h-6 w-6" aria-hidden="true" />
+              </button>
+            )
+          }
+        </div>
       </div>
     </header>
 

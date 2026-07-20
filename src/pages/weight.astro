@@ -3,6 +3,7 @@ import { Icon } from 'astro-icon/components';
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
+import WeighInForm from '../components/WeighInForm.astro';
 import { weightTarget, weight } from '../data/picha';
 import { weightHistory, currentWeight } from '../data/weights';
 import { supabaseClient } from '../data/supabase';
@@ -64,6 +65,19 @@ const bandNote =
   current="tools"
   appTitle="Weight"
 >
+  {
+    supabaseClient && (
+      <button
+        slot="app-action"
+        type="button"
+        data-weigh-open
+        aria-label="Log a weigh-in"
+        class="flex h-10 w-10 items-center justify-center rounded-full text-blush-600 transition-colors duration-200 active:bg-blush-100 dark:text-blush-300 dark:active:bg-plum-800"
+      >
+        <Icon name="ph:plus-circle" class="h-6 w-6" aria-hidden="true" />
+      </button>
+    )
+  }
   <PageHeader
     kicker="Tools · In service"
     title="The royal waistline"
@@ -147,100 +161,6 @@ const bandNote =
     </div>
   </section>
 
-  <!-- Log a weigh-in: PIN-gated write through the log_weight RPC -->
-  {
-    supabaseClient && (
-      <section
-        class="mx-auto w-full max-w-2xl px-5 pt-10 print:hidden"
-        aria-label="Log a weigh-in"
-      >
-        <details class="reveal group">
-          <summary class="mb-2 flex cursor-pointer list-none items-center gap-1.5 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300 [&::-webkit-details-marker]:hidden">
-            <Icon
-              name="ph:caret-right"
-              class="h-3.5 w-3.5 transition-transform duration-200 group-open:rotate-90"
-              aria-hidden="true"
-            />
-            Log a weigh-in
-            <span class="font-bold tracking-normal normal-case text-ink-400">
-              · staff only
-            </span>
-          </summary>
-          <form
-          data-weight-form
-          data-supabase-url={supabaseClient.url}
-          data-supabase-key={supabaseClient.key}
-          class="reveal rounded-3xl border border-blush-200/70 bg-paper-50 p-5 sm:p-6 dark:border-plum-700 dark:bg-plum-900"
-        >
-          <!-- 2×2 on every screen: date | weight, then PIN | submit -->
-          <div class="grid grid-cols-2 gap-3">
-            <label class="block">
-              <span class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
-                Date
-              </span>
-              <input
-                type="date"
-                name="date"
-                required
-                class="mt-1 w-full rounded-xl border border-blush-200/70 bg-paper-100 px-3 py-2 text-sm font-bold outline-none focus:border-blush-400 dark:border-plum-700 dark:bg-plum-950"
-              />
-            </label>
-            <label class="block">
-              <span class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
-                Weight (kg)
-              </span>
-              <input
-                type="number"
-                name="kg"
-                required
-                step="0.01"
-                min="0.5"
-                max="15"
-                inputmode="decimal"
-                placeholder="2.75"
-                class="mt-1 w-full rounded-xl border border-blush-200/70 bg-paper-100 px-3 py-2 text-sm font-bold outline-none focus:border-blush-400 dark:border-plum-700 dark:bg-plum-950"
-              />
-            </label>
-            <label class="block">
-              <span class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
-                Registrar PIN
-              </span>
-              <input
-                type="password"
-                name="pin"
-                required
-                autocomplete="off"
-                placeholder="staff only"
-                class="mt-1 w-full rounded-xl border border-blush-200/70 bg-paper-100 px-3 py-2 text-sm font-bold outline-none focus:border-blush-400 dark:border-plum-700 dark:bg-plum-950"
-              />
-            </label>
-            <div class="flex items-end">
-              <button
-                type="submit"
-                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blush-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-blush-700 hover:shadow-md active:translate-y-0 disabled:opacity-50"
-              >
-                <Icon name="ph:scales" class="h-4.5 w-4.5" aria-hidden="true" />
-                Record the audit
-              </button>
-            </div>
-          </div>
-          <p
-            class="mt-3 min-h-4 text-xs font-bold text-ink-400"
-            data-form-status
-            aria-live="polite"
-          >
-          </p>
-          <p class="mt-3 text-[11px] leading-relaxed text-ink-400">
-            Staff only: entries need the registrar's PIN (it is remembered on
-            this device after the first successful audit). Same-date entries
-            update the existing row.
-          </p>
-          </form>
-        </details>
-      </section>
-    )
-  }
-
   <!-- The ledger: every audit, newest first (doubles as the accessible table) -->
   <section
     class="mx-auto w-full max-w-2xl px-5 pt-10 pb-8 md:pb-0"
@@ -311,11 +231,59 @@ const bandNote =
         }
       </ul>
     </div>
-    <p class="mt-2 px-1 text-[11px] text-ink-400">
-      The ledger lives in the cloud and refreshes on every visit. Audits are
-      recorded above by PIN-carrying staff, or in the Supabase dashboard.
-    </p>
   </section>
+
+  {
+    supabaseClient && (
+      <>
+        {/* desktop: accordion after the ledger */}
+        <section
+          class="mx-auto hidden w-full max-w-2xl px-5 pt-10 md:block print:hidden"
+          aria-label="Log a weigh-in"
+        >
+          <details class="reveal group" data-acc data-weigh-details>
+            <summary class="mb-2 flex cursor-pointer list-none items-center gap-1.5 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300 [&::-webkit-details-marker]:hidden">
+              <Icon
+                name="ph:caret-right"
+                class="h-3.5 w-3.5 transition-transform duration-200 group-open:rotate-90"
+                aria-hidden="true"
+              />
+              Log a weigh-in
+              <span class="font-bold tracking-normal normal-case text-ink-400">
+                · staff only
+              </span>
+            </summary>
+            <WeighInForm />
+          </details>
+        </section>
+
+        {/* mobile: dialog, opened from the app-bar action */}
+        <dialog id="weigh" class="share md:hidden" aria-labelledby="weigh-title">
+          <div class="rounded-2xl bg-paper-50 shadow-2xl dark:bg-plum-900">
+            <div class="flex items-center justify-between bg-blush-600 px-5 py-3">
+              <h2
+                id="weigh-title"
+                class="text-[11px] font-bold tracking-[0.22em] text-white uppercase"
+              >
+                Log a weigh-in
+              </h2>
+              <button
+                type="button"
+                data-dialog-close
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/35"
+                aria-label="Close"
+              >
+                <Icon name="ph:x" class="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+            <div class="p-4">
+              <WeighInForm />
+            </div>
+          </div>
+        </dialog>
+      </>
+    )
+  }
 
   <Footer />
 
@@ -394,27 +362,9 @@ const bandNote =
       list.replaceChildren(...rows);
     }
 
-    function setupWeightLive() {
-      const form = document.querySelector<HTMLFormElement>('[data-weight-form]');
-      if (!form || form.dataset.bound) return;
-      form.dataset.bound = '1';
+    function bindForm(form: HTMLFormElement, refresh: () => Promise<void>) {
       const url = form.dataset.supabaseUrl!;
       const key = form.dataset.supabaseKey!;
-
-      const refresh = async () => {
-        try {
-          const rows = await sbSelect<Array<{ date: string; kg: number | string }>>(
-            url,
-            key,
-            'picha_weights?select=date,kg&order=date.asc',
-          );
-          if (Array.isArray(rows) && rows.length) {
-            render(rows.map((r) => ({ date: r.date, kg: Number(r.kg) })));
-          }
-        } catch {
-          /* offline or blocked: the built-in data stands */
-        }
-      };
 
       // defaults + remembered PIN
       const dateInput = form.elements.namedItem('date') as HTMLInputElement;
@@ -422,7 +372,7 @@ const bandNote =
       dateInput.value = new Date().toISOString().slice(0, 10);
       dateInput.max = dateInput.value; // audits are recorded, not scheduled
       pinInput.value = localStorage.getItem(PIN_KEY) ?? '';
-      // known staff device: keep the form ready to use
+      // known staff device: keep the desktop accordion ready to use
       if (pinInput.value) form.closest('details')?.setAttribute('open', '');
 
       const status = form.querySelector<HTMLElement>('[data-form-status]')!;
@@ -447,6 +397,12 @@ const bandNote =
           kgInput.value = '';
           setStatus('Recorded. Management has been weighed.');
           await refresh();
+          // when logged from the mobile dialog, show the result behind it
+          const dialog = form.closest('dialog');
+          if (dialog?.open) {
+            const { animatedClose } = await import('../lib/dialog');
+            setTimeout(() => animatedClose(dialog), 900);
+          }
         } catch (err) {
           setStatus(
             String(err).includes('wrong pin')
@@ -459,6 +415,49 @@ const bandNote =
           setTimeout(() => setStatus(''), 4000);
         }
       });
+    }
+
+    async function setupWeightLive() {
+      const forms = Array.from(
+        document.querySelectorAll<HTMLFormElement>('[data-weight-form]:not([data-bound])'),
+      );
+      if (!forms.length) return;
+      const { supabaseUrl: url, supabaseKey: key } = forms[0].dataset as {
+        supabaseUrl: string;
+        supabaseKey: string;
+      };
+
+      const refresh = async () => {
+        try {
+          const rows = await sbSelect<Array<{ date: string; kg: number | string }>>(
+            url,
+            key,
+            'picha_weights?select=date,kg&order=date.asc',
+          );
+          if (Array.isArray(rows) && rows.length) {
+            render(rows.map((r) => ({ date: r.date, kg: Number(r.kg) })));
+          }
+        } catch {
+          /* offline or blocked: the built-in data stands */
+        }
+      };
+
+      forms.forEach((form) => {
+        form.dataset.bound = '1';
+        bindForm(form, refresh);
+      });
+
+      // the mobile dialog + its app-bar opener
+      const dialog = document.getElementById('weigh') as HTMLDialogElement | null;
+      if (dialog) {
+        const { bindDialog } = await import('../lib/dialog');
+        bindDialog(dialog);
+        document.querySelectorAll<HTMLElement>('[data-weigh-open]').forEach((btn) => {
+          if (btn.dataset.bound) return;
+          btn.dataset.bound = '1';
+          btn.addEventListener('click', () => dialog.showModal());
+        });
+      }
 
       refresh();
     }

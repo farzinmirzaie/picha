@@ -175,6 +175,27 @@ body {
 
 }
 
+/* Smooth open/close for [data-acc] accordions via ::details-content.
+   Progressive: browsers without support (or reduced-motion users) just snap. */
+@media (prefers-reduced-motion: no-preference) {
+  details[data-acc] {
+    interpolate-size: allow-keywords;
+  }
+  details[data-acc]::details-content {
+    opacity: 0;
+    block-size: 0;
+    overflow-y: clip;
+    transition:
+      content-visibility 0.3s allow-discrete,
+      opacity 0.3s ease,
+      block-size 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  details[data-acc][open]::details-content {
+    opacity: 1;
+    block-size: auto;
+  }
+}
+
 /* Horizontal scrollers (stat strips) hide their bar everywhere. */
 .no-scrollbar {
   scrollbar-width: none;

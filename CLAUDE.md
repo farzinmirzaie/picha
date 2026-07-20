@@ -53,6 +53,9 @@ src/
     ShareDialog.astro  # share sheet: build-time QR (qrcode pkg) + Web Share /
                        # copy-link; any [data-share-open] element opens it (Home)
     TrainingRules.astro # the Academy's session-rules card (hub + course pages)
+    WeighInForm.astro  # the weigh-in entry form — rendered twice on /weight
+                       # (desktop accordion after the ledger + mobile dialog
+                       # opened from the app-bar action)
     Footer.astro       # paw divider + credits — desktop-only unless `showOnMobile`
   pages/
     index.astro        # Home — hero, share dialog (QR), story, get-to-know-her
