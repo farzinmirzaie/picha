@@ -205,7 +205,7 @@ const segments = [
             aria-selected={i === 0 ? 'true' : 'false'}
             data-seg-tab={s.id}
             class:list={[
-              'relative z-10 rounded-full py-1.5 text-xs font-bold transition-colors duration-200',
+              'relative z-10 rounded-full py-1.5 text-xs font-bold transition-colors duration-200 hover:text-blush-600 dark:hover:text-blush-300',
               i === 0
                 ? 'text-blush-700 dark:text-blush-300'
                 : 'text-ink-400',
@@ -361,7 +361,7 @@ const segments = [
           contact.owners.map((o) => (
             <a
               href={`tel:${o.phone.replace(/\s/g, '')}`}
-              class="flex items-center gap-3 px-6 py-3.5 text-sm font-bold text-red-700 transition-colors active:bg-red-100/60 dark:text-red-300 dark:active:bg-red-900/30"
+              class="flex items-center gap-3 px-6 py-3.5 text-sm font-bold text-red-700 transition-colors hover:bg-red-100/60 active:bg-red-100/60 dark:text-red-300 dark:hover:bg-red-900/30 dark:active:bg-red-900/30"
             >
               <Icon name="ph:phone" class="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
               <span class="flex-1">
@@ -373,7 +373,7 @@ const segments = [
         }
         <a
           href={`tel:${vet.recentPhone.replace(/[\s-]/g, '')}`}
-          class="flex items-center gap-3 px-6 py-3.5 text-sm font-bold text-red-700 transition-colors active:bg-red-100/60 dark:text-red-300 dark:active:bg-red-900/30"
+          class="flex items-center gap-3 px-6 py-3.5 text-sm font-bold text-red-700 transition-colors hover:bg-red-100/60 active:bg-red-100/60 dark:text-red-300 dark:hover:bg-red-900/30 dark:active:bg-red-900/30"
         >
           <Icon name="ph:buildings" class="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
           <span class="flex-1">
