@@ -47,6 +47,18 @@ html {
   /* anchor/skip-link jumps clear the sticky mobile app bar */
   scroll-padding-top: 4.5rem;
 }
+
+/* Tell the browser to theme native controls (date/number inputs, spinners,
+   scrollbars) with the page — without this their text renders in light theme
+   on our dark surfaces and reads as blank. */
+:root {
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
 @media (min-width: 768px) {
   html {
     scroll-padding-top: 1rem;

@@ -22,11 +22,7 @@ const qrSvg = await QRCode.toString(url, {
 
 <dialog id="share" class="sheet" aria-labelledby="share-title" data-url={url}>
   <div class="rounded-2xl bg-paper-50 shadow-2xl max-md:rounded-b-none max-md:pb-[env(safe-area-inset-bottom)] dark:bg-plum-900">
-    <div class="relative flex items-center justify-between bg-blush-600 px-5 py-3 max-md:pt-4">
-      <span
-        class="absolute top-1.5 left-1/2 h-1 w-9 -translate-x-1/2 rounded-full bg-white/30 md:hidden"
-        aria-hidden="true"
-      />
+    <div class="sticky top-0 z-10 flex items-center justify-between bg-blush-600 px-5 py-3">
       <h2
         id="share-title"
         class="text-[11px] font-bold tracking-[0.22em] text-white uppercase sm:text-xs"

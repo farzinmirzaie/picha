@@ -3,16 +3,26 @@
  * The weigh-in entry form (PIN-gated via the log_weight RPC). Rendered twice
  * on the weight page — desktop accordion + mobile dialog — so it carries no
  * ids; the page script binds every [data-weight-form] instance.
+ * `flush`: drop the card chrome (border/bg/padding) when a container already
+ * provides it, e.g. inside the mobile bottom sheet.
  */
 import { Icon } from 'astro-icon/components';
 import { supabaseClient } from '../data/supabase';
+
+interface Props {
+  flush?: boolean;
+}
+const { flush = false } = Astro.props;
 ---
 
 <form
   data-weight-form
   data-supabase-url={supabaseClient?.url}
   data-supabase-key={supabaseClient?.key}
-  class="rounded-3xl border border-blush-200/70 bg-paper-50 p-5 sm:p-6 dark:border-plum-700 dark:bg-plum-900"
+  class:list={[
+    flush ||
+      'rounded-3xl border border-blush-200/70 bg-paper-50 p-5 sm:p-6 dark:border-plum-700 dark:bg-plum-900',
+  ]}
 >
   <!-- 2×2 on every screen: date | weight, then PIN | submit -->
   <div class="grid grid-cols-2 gap-3">
