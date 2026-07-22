@@ -170,6 +170,13 @@ export const healthTimeline: TimelineEntry[] = [
     date: '2026-07-12',
   },
   {
+    icon: 'ph:ear',
+    title: 'Ear treatment course completed',
+    detail:
+      'Full ORI-EAR + Oridermyl course done; ears cleared. Daily disapproval may now cease.',
+    date: '2026-07-21',
+  },
+  {
     icon: 'ph:syringe',
     title: 'FVRCP booster',
     detail: 'Felocell 4 annual booster due.',
@@ -274,12 +281,6 @@ export const recurringCare: RecurringItem[] = [
  * stable: they're the storage keys.
  */
 export const dailyChecklist = [
-  {
-    id: 'ear-care',
-    icon: 'ph:ear',
-    label: 'Morning ear care',
-    hint: 'ORI-EAR clean, Oridermyl ointment, massage the base',
-  },
   {
     id: 'combing',
     icon: 'ph:paint-brush',
@@ -554,15 +555,7 @@ export const trainingCourses: TrainingCourse[] = [
  * Entries also merge into the Care page's protocol list. Keep instructions
  * exact — this one is medical.
  */
-export const treatment: CareItem[] = [
-  {
-    icon: 'ph:ear',
-    title: 'Morning ear care',
-    cadence: 'Every morning',
-    detail:
-      'Clean inside the ear with ORI-EAR cleaner on a cotton bud, apply Oridermyl ear ointment (Vetoquinol), then gently massage the base. Ongoing since 11 July; continue for the full course. She tolerates this with visible disapproval.',
-  },
-];
+export const treatment: CareItem[] = [];
 
 export const food: CareItem[] = [
   {
