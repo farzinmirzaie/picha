@@ -116,3 +116,62 @@ $$;
 
 revoke all on function public.log_training(text, int, date, text) from public;
 grant execute on function public.log_training(text, int, date, text) to anon;
+
+-- ---------------------------------------------------------------------------
+-- Daily rounds (the Care checklist), shared across the staff's devices. One
+-- row per day holding just the completed item ids; the item definitions live
+-- in the repo (dailyChecklist in src/data/picha.ts), so adding/removing a
+-- checklist item never touches the DB. Same registrar PIN as the others.
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.picha_rounds (
+  date       date primary key,
+  done       text[] not null default '{}',
+  updated_at timestamptz not null default now()
+);
+
+alter table public.picha_rounds enable row level security;
+
+drop policy if exists "anon read" on public.picha_rounds;
+create policy "anon read" on public.picha_rounds
+  for select to anon using (true);
+
+-- Toggle a single item for a day (atomic per item, so two devices don't clash).
+-- Returns the resulting done[] so the caller can sync exactly.
+create or replace function public.set_round(
+  p_date date,
+  p_item text,
+  p_done boolean,
+  p_pin text
+)
+returns text[]
+language plpgsql
+security definer
+set search_path = public, private
+as $$
+declare
+  result text[];
+begin
+  if not exists (
+    select 1 from private.staff_secrets
+    where name = 'weight_pin' and value = p_pin
+  ) then
+    raise exception 'wrong pin';
+  end if;
+  insert into public.picha_rounds (date, done, updated_at)
+    values (p_date, case when p_done then array[p_item] else '{}' end, now())
+  on conflict (date) do update set
+    done = case
+      when p_done and not (public.picha_rounds.done @> array[p_item])
+        then public.picha_rounds.done || p_item
+      when p_done then public.picha_rounds.done
+      else array_remove(public.picha_rounds.done, p_item)
+    end,
+    updated_at = now()
+  returning done into result;
+  return result;
+end;
+$$;
+
+revoke all on function public.set_round(date, text, boolean, text) from public;
+grant execute on function public.set_round(date, text, boolean, text) to anon;

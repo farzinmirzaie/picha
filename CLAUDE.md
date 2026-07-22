@@ -118,6 +118,14 @@ Writes go through the `log_training` RPC (same registrar PIN) via the
 undo. Rows are created on first write, so new courses only need a picha.ts
 entry. The values in picha.ts are the offline seed only.
 
+**Daily rounds** (the Care checklist) are shared across the staff's devices:
+the `picha_rounds` table holds one row per day of completed item ids, read
+client-side on load + refocus, toggled through the `set_round` RPC (same
+registrar PIN). Item definitions live in `dailyChecklist` in picha.ts — the
+store only tracks ids, so add/remove items freely without touching the DB. A
+localStorage cache (`picha-rounds`) backs it for offline/optimistic use and a
+device without the PIN just stays local. Resets daily (date-keyed).
+
 ### AI-friendly surface
 
 The site is meant to be readable by agents as well as humans:
@@ -258,12 +266,12 @@ The site installs as an app (Add to Home Screen / install icon):
   control with sliding thumb (`[data-seg]`, Health timeline), grouped inset
   lists (rounded card + `divide-y` rows, Care/emergency), modal dialogs
   (`dialog.sheet` + `bindDialog()` from lib/dialog.ts: centred card on
-  desktop, slide-up bottom sheet with grab handle on mobile — give new
-  dialogs `class="sheet"` and `max-md:rounded-b-none` on the inner card),
-  and the "Today's rounds" checklist (localStorage key `picha-rounds`, `{date, done[]}`, resets
-  when the stored date ≠ today; item ids come from `dailyChecklist` in
-  picha.ts — keep them stable). Content inside initially-hidden panels must
-  NOT use `.reveal` (the observer never fires for them).
+  desktop, slide-up bottom sheet on mobile — give new dialogs `class="sheet"`
+  and `max-md:rounded-b-none` on the inner card), and the "Today's rounds"
+  checklist (Supabase `picha_rounds` shared across devices + `picha-rounds`
+  localStorage cache; item ids come from `dailyChecklist` in picha.ts — keep
+  them stable). Content inside initially-hidden panels must NOT use `.reveal`
+  (the observer never fires for them).
 - **Notifications**: local `showNotification()` works while the app is open;
   background/scheduled reminders would need a Web Push backend (Notification
   Triggers API is dead). Planned as a future tool, not built.

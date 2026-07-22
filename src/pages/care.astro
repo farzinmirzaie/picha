@@ -4,6 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
 import { dailyChecklist, food, grooming, litter, safety, toxicItems } from '../data/picha';
+import { supabaseClient } from '../data/supabase';
 ---
 
 <Layout
@@ -33,6 +34,9 @@ import { dailyChecklist, food, grooming, litter, safety, toxicItems } from '../d
     </div>
     <div
       class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
+      data-rounds
+      data-supabase-url={supabaseClient?.url}
+      data-supabase-key={supabaseClient?.key}
     >
       <ul class="divide-y divide-paper-200 dark:divide-plum-800">
         {
@@ -79,9 +83,6 @@ import { dailyChecklist, food, grooming, litter, safety, toxicItems } from '../d
         All rounds complete. Management is pleased and will nap accordingly.
       </p>
     </div>
-    <p class="mt-2 px-1 text-[11px] text-ink-400">
-      Resets every morning. Ticks live only on this device.
-    </p>
   </section>
 
   <!-- Zone 2: the care manual (everything a stand-in needs) -->
@@ -265,10 +266,18 @@ import { dailyChecklist, food, grooming, litter, safety, toxicItems } from '../d
   <Footer />
 
   <script>
-    // "Today's rounds" checklist — checked state per calendar day, on-device.
+    // "Today's rounds" checklist. Completion is shared across the staff's
+    // devices via Supabase (picha_rounds, one row per day of done ids) with a
+    // localStorage cache for offline/optimistic use; both reset each day. Item
+    // ids come from dailyChecklist in picha.ts — the store only tracks ids, so
+    // adding/removing items never touches the DB. Writes are PIN-gated (the
+    // shared registrar PIN); a device without the PIN just stays local.
     const STORE_KEY = 'picha-rounds';
+    const PIN_KEY = 'picha-staff-pin';
 
     type Store = { date: string; done: string[] };
+
+    const todayIso = () => new Date().toISOString().slice(0, 10);
 
     function loadStore(): Store {
       const today = new Date().toDateString();
@@ -279,6 +288,35 @@ import { dailyChecklist, food, grooming, litter, safety, toxicItems } from '../d
         /* fresh start */
       }
       return { date: today, done: [] };
+    }
+
+    function saveStore(done: string[]) {
+      localStorage.setItem(
+        STORE_KEY,
+        JSON.stringify({ date: new Date().toDateString(), done }),
+      );
+    }
+
+    // Pull today's shared state from Supabase (server is the source of truth
+    // for the shared list); falls back to the local cache when offline.
+    async function pullRounds() {
+      const root = document.querySelector<HTMLElement>('[data-rounds]');
+      const url = root?.dataset.supabaseUrl;
+      const key = root?.dataset.supabaseKey;
+      if (url && key) {
+        try {
+          const { sbSelect } = await import('../lib/sb');
+          const rows = await sbSelect<Array<{ done: string[] }>>(
+            url,
+            key,
+            `picha_rounds?select=done&date=eq.${todayIso()}`,
+          );
+          saveStore(Array.isArray(rows) && rows[0]?.done ? rows[0].done : []);
+        } catch {
+          /* offline: the local cache stands */
+        }
+      }
+      paint();
     }
 
     // Stateless: every paint reads the store fresh, so a day rollover always
@@ -311,32 +349,52 @@ import { dailyChecklist, food, grooming, litter, safety, toxicItems } from '../d
     }
 
     function setupChecklist() {
+      const root = document.querySelector<HTMLElement>('[data-rounds]');
       const items = Array.from(
         document.querySelectorAll<HTMLButtonElement>('[data-check-item]'),
       );
       if (!items.length) return;
+      const url = root?.dataset.supabaseUrl;
+      const key = root?.dataset.supabaseKey;
+
       items.forEach((btn) => {
         if (btn.dataset.bound) return;
         btn.dataset.bound = '1';
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
           const store = loadStore(); // re-check the date on every tap
           const id = btn.dataset.checkItem!;
-          store.done = store.done.includes(id)
-            ? store.done.filter((d) => d !== id)
-            : [...store.done, id];
-          localStorage.setItem(STORE_KEY, JSON.stringify(store));
+          const nowDone = !store.done.includes(id);
+          store.done = nowDone
+            ? [...store.done, id]
+            : store.done.filter((d) => d !== id);
+          saveStore(store.done); // optimistic
           paint();
+          // sync to the shared store; silent local-only fallback without a PIN
+          const pin = localStorage.getItem(PIN_KEY);
+          if (!url || !key || !pin) return;
+          try {
+            const { sbRpc } = await import('../lib/sb');
+            await sbRpc(url, key, 'set_round', {
+              p_date: todayIso(),
+              p_item: id,
+              p_done: nowDone,
+              p_pin: pin,
+            });
+          } catch {
+            /* keep the optimistic local state */
+          }
         });
       });
-      paint();
+
+      pullRounds();
     }
 
     setupChecklist();
     document.addEventListener('astro:page-load', setupChecklist);
-    // Left open past midnight? Repaint on refocus so the list resets for the
-    // new day. Bound once; paint() is idempotent and reads the store fresh.
+    // Refocus (incl. a rollover past midnight, or a sibling device's change):
+    // re-pull the shared state and repaint.
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') paint();
+      if (document.visibilityState === 'visible') pullRounds();
     });
   </script>
 </Layout>

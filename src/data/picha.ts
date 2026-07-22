@@ -277,8 +277,10 @@ export const recurringCare: RecurringItem[] = [
 
 /**
  * The staff's daily to-dos — rendered as an interactive checklist on the Care
- * page (checked state lives in localStorage and resets each day). Keep ids
- * stable: they're the storage keys.
+ * page. Completion is shared across the staff's devices via Supabase
+ * (`picha_rounds`, keyed by date), with a localStorage fallback; both reset
+ * each day. Items are defined here only — add/remove freely, the store just
+ * tracks ids. Keep ids stable: they're the storage keys.
  */
 export const dailyChecklist = [
   {
@@ -286,6 +288,12 @@ export const dailyChecklist = [
     icon: 'ph:paint-brush',
     label: 'The daily combing',
     hint: 'Both sides; she will rotate herself',
+  },
+  {
+    id: 'eyes',
+    icon: 'ph:sparkle',
+    label: 'Eye & face wipe',
+    hint: 'Pet wipe around the eyes and chin',
   },
   {
     id: 'meals',
