@@ -3,10 +3,7 @@ import { Icon } from 'astro-icon/components';
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
-import { dailyChecklist, treatment, food, grooming, litter, safety, toxicItems } from '../data/picha';
-
-// The full protocol, grouped-list style: treatment first, then grooming.
-const rhythm = [...treatment, ...grooming];
+import { dailyChecklist, food, grooming, litter, safety, toxicItems } from '../data/picha';
 ---
 
 <Layout
@@ -87,19 +84,37 @@ const rhythm = [...treatment, ...grooming];
     </p>
   </section>
 
-  <!-- The full protocol -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Routine">
+  <!-- Zone 2: the care manual (everything a stand-in needs) -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="The care manual">
+    <div class="reveal border-t border-paper-300/70 pt-8 dark:border-plum-800">
+      <p
+        class="text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
+      >
+        Reference
+      </p>
+      <h2 class="font-display mt-1 text-2xl font-semibold tracking-tight">
+        The care manual
+      </h2>
+      <p class="mt-1.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+        Everything a stand-in needs while the regular staff are off duty:
+        grooming, meals, the litter corner and the house rules.
+      </p>
+    </div>
+  </section>
+
+  <!-- Grooming -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-6" aria-label="Grooming">
     <h2
       class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
     >
-      The full protocol
+      Grooming
     </h2>
     <div
       class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
     >
       <ul class="divide-y divide-paper-200 dark:divide-plum-800">
         {
-          rhythm.map((item) => (
+          grooming.map((item) => (
             <li class="flex items-start gap-3.5 px-5 py-4">
               <span
                 class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
@@ -128,7 +143,7 @@ const rhythm = [...treatment, ...grooming];
   </section>
 
   <!-- On the menu -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Food">
+  <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Food">
     <div
       class="reveal rounded-3xl border border-blush-200/70 bg-paper-50 p-6 sm:p-8 dark:border-plum-700 dark:bg-plum-900"
     >
@@ -164,7 +179,7 @@ const rhythm = [...treatment, ...grooming];
   </section>
 
   <!-- Litter corner + house rules, one grouped card each -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Litter">
+  <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Litter">
     <h2
       class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
     >
@@ -196,7 +211,7 @@ const rhythm = [...treatment, ...grooming];
     </div>
   </section>
 
-  <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="House rules">
+  <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="House rules">
     <h2
       class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
     >

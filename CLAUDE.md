@@ -60,7 +60,9 @@ src/
   pages/
     index.astro        # Home — hero, share dialog (QR), story, get-to-know-her
     health.astro       # Health — vitals strip, segmented timeline, emergency
-    care.astro         # Care — "Today's rounds" checklist, protocol, menu, litter, rules, "if found"
+    care.astro         # Care — two zones: "Today's rounds" checklist (the daily
+                       # tool) + "The care manual" (grooming, menu, litter, house
+                       # rules, toxic list). If-found/contact lives on Home + Health.
     tools.astro        # Tools — in-service list (passport, weight) + 3am note
     weight.astro       # Weight tracker — build-time SVG chart + stats + ledger,
                        # all rendered from weightHistory (current="tools")
@@ -142,7 +144,7 @@ pages/components when changing *layout or design*, not content.
 - **`treatment`** is the standing "Doctor's orders" slot on Health: add an
   entry whenever the vet prescribes a medication or routine, delete it when
   the course ends. The section (and its llms.txt block) hides when the list
-  is empty. Entries also merge into the Care protocol list.
+  is empty. Doctor's orders lives on Health only (not duplicated on Care).
 - **`recurringCare`** holds repeating upkeep (`intervalDays` + `lastDone` →
   computed next-due; an explicit `nextDue` overrides the computation — use it
   to anchor a first appointment, then set `lastDone` and drop it). It merges
