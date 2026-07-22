@@ -1,22 +1,9 @@
 ---
-import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
-import pichaPhoto from '../assets/picha.jpg';
-import {
-  identity,
-  dailyChecklist,
-  treatment,
-  food,
-  grooming,
-  litter,
-  safety,
-  toxicItems,
-  microchip,
-  contact,
-} from '../data/picha';
+import { dailyChecklist, treatment, food, grooming, litter, safety, toxicItems } from '../data/picha';
 
 // The full protocol, grouped-list style: treatment first, then grooming.
 const rhythm = [...treatment, ...grooming];
@@ -24,7 +11,7 @@ const rhythm = [...treatment, ...grooming];
 
 <Layout
   title="Care · Picha 🐾"
-  description="Picha's daily care guide: routine, food, grooming, litter, house rules and if-found info."
+  description="Picha's daily care guide: routine, food, grooming, litter and house rules."
   current="care"
 >
   <PageHeader
@@ -258,61 +245,6 @@ const rhythm = [...treatment, ...grooming];
         ))
       }
     </ul>
-  </section>
-
-  <!-- If found -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="If found">
-    <div
-      class="reveal overflow-hidden rounded-3xl border-2 border-dashed border-blush-300 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
-    >
-      <div class="flex items-center gap-4 p-6 sm:p-7">
-        <div
-          class="h-20 w-20 shrink-0 overflow-hidden rounded-2xl ring-2 ring-blush-200 dark:ring-plum-700"
-        >
-          <Image
-            src={pichaPhoto}
-            alt=""
-            width={160}
-            densities={[1, 2]}
-            loading="lazy"
-            decoding="async"
-            class="h-full w-full object-cover"
-            style="object-position: 50% 22%"
-          />
-        </div>
-        <div class="min-w-0">
-          <p
-            class="text-[10px] font-bold tracking-[0.24em] text-blush-400 uppercase dark:text-blush-300/70"
-          >
-            If found
-          </p>
-          <h2 class="font-display flex items-center gap-1.5 text-xl font-semibold">
-            This is {identity.name}
-            <Icon
-              name="ph:paw-print"
-              class="h-4.5 w-4.5 text-blush-500 dark:text-blush-300"
-              aria-hidden="true"
-            />
-          </h2>
-          <p class="select-text mt-0.5 truncate text-xs text-ink-600 dark:text-ink-400">
-            Microchip {microchip}
-          </p>
-        </div>
-      </div>
-      <div class="grid sm:grid-cols-2">
-        {
-          contact.owners.map((o) => (
-            <a
-              href={`tel:${o.phone.replace(/\s/g, '')}`}
-              class="flex items-center justify-center gap-2 bg-blush-600 py-3.5 text-center text-sm font-bold text-white transition-colors duration-200 first:border-b first:border-blush-500/50 hover:bg-blush-700 sm:first:border-r sm:first:border-b-0"
-            >
-              <Icon name="ph:phone" class="h-4 w-4" aria-hidden="true" />
-              {o.name} · {o.phone}
-            </a>
-          ))
-        }
-      </div>
-    </div>
   </section>
 
   <Footer />
