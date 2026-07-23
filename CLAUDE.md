@@ -42,6 +42,9 @@ src/
   data/training.ts     # build-time loader: training progress from Supabase
                        # (picha_training) merged into the picha.ts catalogue
   lib/dates.ts         # shared date helpers (dateLabel/shortLabel/addDays/inDaysLabel)
+  lib/health.ts        # health-timeline derivations (upcoming / next / isDueSoon)
+                       # — one source for the Health page, the Nav "due soon"
+                       # tab badge, and the PWA app-icon badge
   lib/weight-viz.ts    # weight chart/stats renderers (build + client, no drift)
   lib/sb.ts            # Supabase REST/RPC helpers for client scripts
   layouts/Layout.astro # <html> shell, fonts, PWA, ClientRouter, shared scripts

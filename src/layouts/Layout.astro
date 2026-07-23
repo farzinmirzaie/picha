@@ -6,6 +6,10 @@ import { ClientRouter } from 'astro:transitions';
 import Nav from '../components/Nav.astro';
 import IconButton from '../components/ui/IconButton.astro';
 import { supabaseClient } from '../data/supabase';
+import { isHealthDueSoon } from '../lib/health';
+
+// Build-time flag for the PWA app-icon badge (applied client-side below).
+const healthDueSoon = isHealthDueSoon();
 
 interface Props {
   title: string;
@@ -83,6 +87,7 @@ const appTitle = appTitleProp ?? tabTitles[current] ?? 'Picha';
   </head>
   <body
     class="min-h-screen bg-paper-100 pb-20 font-sans text-ink-900 md:pb-0 dark:bg-plum-950 dark:text-paper-100"
+    data-due-soon={healthDueSoon ? '1' : undefined}
   >
     <a
       href="#main"
@@ -186,8 +191,26 @@ const appTitle = appTitleProp ?? tabTitles[current] ?? 'Picha';
         revealables.forEach((el) => io.observe(el));
       }
 
+      // PWA app-icon badge: flag the icon when a health item is due soon
+      // (Badging API — installed apps on supporting platforms; a no-op
+      // everywhere else). The value is the build-time signal carried on
+      // <body data-due-soon>, refreshed by the nightly rebuild.
+      function updateAppBadge() {
+        const nav = navigator as Navigator & {
+          setAppBadge?: (n?: number) => Promise<void>;
+          clearAppBadge?: () => Promise<void>;
+        };
+        if (!nav.setAppBadge) return;
+        if (document.body.dataset.dueSoon === '1') nav.setAppBadge().catch(() => {});
+        else nav.clearAppBadge?.().catch(() => {});
+      }
+
       hydrate();
-      document.addEventListener('astro:page-load', hydrate);
+      updateAppBadge();
+      document.addEventListener('astro:page-load', () => {
+        hydrate();
+        updateAppBadge();
+      });
 
       // Haptic tick on a completed tap — fires on touch RELEASE (not press),
       // touch pointers only, and only when the finger barely moved (so

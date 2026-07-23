@@ -13,7 +13,6 @@ import {
   contact,
   weight,
   healthTimeline,
-  recurringCare,
   treatment,
   callVetIf,
   clinicalStatus,
@@ -21,54 +20,26 @@ import {
 } from '../data/picha';
 import { currentWeight } from '../data/weights';
 import { supabaseClient } from '../data/supabase';
-import { dateLabel, shortLabel, addDays, inDaysLabel } from '../lib/dates';
+import { dateLabel, shortLabel, inDaysLabel } from '../lib/dates';
+import { upcomingHealth, nextDueHealth, isHealthDueSoon } from '../lib/health';
 
-// Split the timeline by date: past = done, future = coming up (soonest first,
-// the first one is "next"), undated = still to book. The split is computed at
-// build time; countdown chips and the progress bar update client-side.
+// Split the timeline by date: past = done, undated = still to book. The
+// "coming up" list (one-time + recurring, merged) comes from lib/health so the
+// page, the Nav badge and the app badge all agree. Build-time; countdown chips
+// and the progress bar update client-side.
 const today = new Date().toISOString().slice(0, 10);
-const dated = healthTimeline.filter((e) => e.date);
-const done = dated
-  .filter((e) => e.date! < today)
+const done = healthTimeline
+  .filter((e) => e.date && e.date < today)
   .sort((a, b) => b.date!.localeCompare(a.date!));
-const onceUpcoming = dated
-  .filter((e) => e.date! >= today)
-  .sort((a, b) => a.date!.localeCompare(b.date!));
 const toBook = healthTimeline.filter((e) => !e.date);
 
-// Recurring upkeep: compute the next due date from lastDone + interval, then
-// merge with the one-time items into a single due-date-sorted list. Items
-// whose routine hasn't started (no lastDone) sink to the end.
-interface UpcomingEntry {
-  icon: string;
-  title: string;
-  detail: string;
-  date?: string;
-  everyLabel?: string;
-  where?: string;
-}
-
-const upcoming: UpcomingEntry[] = [
-  ...onceUpcoming,
-  ...recurringCare.map((r) => ({
-    icon: r.icon,
-    title: r.title,
-    detail: r.detail,
-    date: r.nextDue ?? (r.lastDone ? addDays(r.lastDone, r.intervalDays) : undefined),
-    everyLabel: r.everyLabel,
-    where: r.where,
-  })),
-].sort((a, b) => (a.date ?? '9999').localeCompare(b.date ?? '9999'));
-
-const next = upcoming.find((e) => e.date);
+const upcoming = upcomingHealth(today);
+const next = nextDueHealth(today)?.item;
 
 // Near-term alert: surface the single next item only when it's due within 2
-// days, or already overdue (days < 0). Build-time gate, kept fresh by the
-// nightly rebuild; the countdown text itself updates live via [data-until].
-const nextDays = next?.date
-  ? Math.round((Date.parse(next.date) - Date.parse(today)) / 86_400_000)
-  : null;
-const showDueSoon = nextDays !== null && nextDays <= 2;
+// days, or already overdue. Build-time gate, kept fresh by the nightly rebuild;
+// the countdown text itself updates live via [data-until].
+const showDueSoon = isHealthDueSoon(today);
 
 // Build-time countdown text: the no-JS fallback inside [data-until] spans
 // (the client script recomputes it against the visitor's clock).
