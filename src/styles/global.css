@@ -277,6 +277,12 @@ dialog.sheet {
     max-height: calc(100dvh - 3rem);
   }
 }
+/* narrower desktop card for small sheets (e.g. a single-field form) */
+@media (min-width: 768px) {
+  dialog.sheet.sheet-sm {
+    max-width: 26rem;
+  }
+}
 dialog.sheet::backdrop {
   background: rgb(23 16 20 / 0.55);
   backdrop-filter: blur(4px);

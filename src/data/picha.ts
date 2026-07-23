@@ -676,6 +676,12 @@ export const personality: CareItem[] = [
       'Wand toys tremble at her name. Daily hunts are mandatory and non-negotiable; she does make the rules.',
   },
   {
+    icon: 'ph:tennis-ball',
+    title: 'Fetch, on her terms',
+    detail:
+      'Her bell ball is the crown jewel: she shoots it, chases it down and catches it, then carries it back to a staff hand and waits for the throw. Return it and she returns it right back. Championship matches are staged in the bedroom at lights-out, at full volume, and no one asked for them.',
+  },
+  {
     icon: 'ph:heart',
     title: 'Affectionate (by appointment)',
     detail:
