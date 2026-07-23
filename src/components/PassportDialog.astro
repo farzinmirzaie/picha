@@ -5,6 +5,7 @@
  */
 import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
+import SheetHeader from './ui/SheetHeader.astro';
 import pichaPhoto from '../assets/picha.jpg';
 import { identity, microchip } from '../data/picha';
 
@@ -25,22 +26,7 @@ const particulars = [
 <dialog id="passport" class="sheet" aria-labelledby="passport-title">
   <div class="rounded-2xl bg-[#fbf7ef] text-[#3a3a3a] shadow-2xl max-md:rounded-b-none max-md:pb-[env(safe-area-inset-bottom)]">
     <!-- cover strip (stays fixed while the document scrolls) -->
-    <div class="sticky top-0 z-10 flex items-center justify-between bg-blush-600 px-5 py-3">
-      <h2
-        id="passport-title"
-        class="text-[11px] font-bold tracking-[0.22em] text-white uppercase sm:text-xs"
-      >
-        Pet Passport
-      </h2>
-      <button
-        type="button"
-        data-dialog-close
-        class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/35"
-        aria-label="Close passport"
-      >
-        <Icon name="ph:x" class="h-4 w-4" aria-hidden="true" />
-      </button>
-    </div>
+    <SheetHeader title="Pet Passport" titleId="passport-title" closeLabel="Close passport" />
 
     <div class="grid sm:grid-cols-2">
       <!-- left page: particulars -->

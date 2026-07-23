@@ -58,6 +58,11 @@ src/
                        # opened from the app-bar action)
     Footer.astro       # paw divider + credits — desktop-only unless `showOnMobile`
     ui/                # reusable design primitives — reach for these first
+      Button.astro     # the pill / form button. variant solid|outline, `block`
+                       # for a full-width form button, optional icon, href → <a>
+                       # else <button>; extra attrs (data-*, type) pass through.
+      IconButton.astro # round icon-only action (app-bar). icon + label (a11y);
+                       # href → <a> else <button>; extra attrs pass through.
       SectionLabel.astro # the uppercase "eyebrow" heading above nearly every
                        # section. Slot = text; tone blush|red|amber; optional
                        # icon; tag h2|h3|p|span; spacing/reveal via `class`.
@@ -66,6 +71,8 @@ src/
       Chip.astro       # small pill/badge (status or meta tag). tone
                        # neutral|amber|blushSolid, optional leading icon.
                        # (JS-toggled chips stay inline — see the component.)
+      SheetHeader.astro # the sticky blush title bar + close button inside a
+                       # dialog.sheet (Share/Passport/weigh-in dialogs).
       StatStrip.astro  # snap-scroll stat-tile carousel (Health vitals + Weight
                        # stats): edge fade gradients that show only when there's
                        # more to scroll, and reveals as one unit so every tile
@@ -109,6 +116,11 @@ UI is built from a small set of primitives, and consistency depends on reusing
 them. If you find yourself repeating a class string across pages, that's the
 signal to extract a new component (and document it here), not copy-paste.
 
+- **`Button`** — every pill / form button (share, call, lullaby CTA, form
+  submits, registrar actions). `variant` solid|outline, `block` for full-width
+  forms, optional `icon`, `href` for links. Don't re-type the button classes.
+- **`IconButton`** — the round icon-only app-bar action (share, weigh-in).
+- **`SheetHeader`** — the title bar + close button inside a `dialog.sheet`.
 - **`SectionLabel`** — every uppercase eyebrow heading ("Grooming", "The
   ledger", "House rules"). Never hand-write the `text-[11px] … tracking-[0.24em]
   … uppercase` string again.

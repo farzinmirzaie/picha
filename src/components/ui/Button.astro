@@ -1,0 +1,58 @@
+---
+/**
+ * The site's pill / form button, in one place so every call reads and behaves
+ * the same. Renders an <a> when `href` is set, otherwise a <button>. Any extra
+ * attributes (data-*, type, disabled, aria-*, target/rel) pass straight
+ * through, so JS hooks like `data-share-open` keep working.
+ *
+ *   <Button href={url} icon="ph:play">Play her lullaby</Button>
+ *   <Button variant="outline" icon="ph:phone" href={tel}>Call Daddy</Button>
+ *   <Button block type="submit" icon="ph:scales">Record audit</Button>
+ *
+ * `block` = full-width rounded form button; default is an inline pill.
+ */
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  variant?: 'solid' | 'outline';
+  /** Full-width rounded-xl form button (vs the default inline pill). */
+  block?: boolean;
+  /** Optional leading icon (name); omit and use the default slot for custom. */
+  icon?: string;
+  href?: string;
+  type?: 'button' | 'submit';
+  class?: string;
+  [key: string]: unknown;
+}
+const {
+  variant = 'solid',
+  block = false,
+  icon,
+  href,
+  type = 'button',
+  class: cls = '',
+  ...rest
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+const base =
+  'inline-flex items-center justify-center gap-2 font-bold shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:opacity-50';
+const shape = block
+  ? 'w-full rounded-xl px-4 py-2.5 text-sm'
+  : 'rounded-full px-5 py-2 text-sm';
+const variants = {
+  solid: 'bg-blush-600 text-white hover:bg-blush-700',
+  outline:
+    'border border-blush-300/70 bg-paper-50 text-blush-700 dark:border-plum-700 dark:bg-plum-900 dark:text-blush-300',
+};
+---
+
+<Tag
+  class:list={[base, shape, variants[variant], cls]}
+  href={href}
+  type={href ? undefined : type}
+  {...rest}
+>
+  {icon && <Icon name={icon} class="h-4.5 w-4.5" aria-hidden="true" />}
+  <slot />
+</Tag>

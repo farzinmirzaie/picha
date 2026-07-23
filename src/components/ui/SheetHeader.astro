@@ -1,0 +1,36 @@
+---
+/**
+ * The sticky title bar at the top of a `dialog.sheet` — brand-blush strip with
+ * the title and a close button. The close button carries `data-dialog-close`,
+ * which `bindDialog()` (lib/dialog.ts) already wires up.
+ *
+ *   <SheetHeader title="Share her profile" titleId="share-title" />
+ */
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  title: string;
+  /** id for the <h2>, referenced by the dialog's aria-labelledby. */
+  titleId?: string;
+  /** Accessible name for the close button. */
+  closeLabel?: string;
+}
+const { title, titleId, closeLabel = 'Close' } = Astro.props;
+---
+
+<div class="sticky top-0 z-10 flex items-center justify-between bg-blush-600 px-5 py-3">
+  <h2
+    id={titleId}
+    class="text-[11px] font-bold tracking-[0.22em] text-white uppercase sm:text-xs"
+  >
+    {title}
+  </h2>
+  <button
+    type="button"
+    data-dialog-close
+    aria-label={closeLabel}
+    class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/35"
+  >
+    <Icon name="ph:x" class="h-4 w-4" aria-hidden="true" />
+  </button>
+</div>

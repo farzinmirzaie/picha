@@ -702,22 +702,16 @@ export const personality: CareItem[] = [
       'Wand toys tremble at her name. Daily hunts are mandatory and non-negotiable; she does make the rules.',
   },
   {
-    icon: 'ph:heart',
-    title: 'Affectionate (by appointment)',
+    icon: 'ph:moon-stars',
+    title: 'Sleep athlete',
     detail:
-      'Cuddles are granted, never requested. Deeply bonded to her staff; profoundly independent the moment it suits her.',
+      '16+ hours a day. It is not laziness, it is training, and completely normal for her age.',
   },
   {
     icon: 'ph:cloud-lightning',
     title: 'Thunder critic',
     detail:
       'Storms receive zero stars and an immediate retreat to a secret bunker. Let her be: dark, quiet hideouts and calm energy fix everything. Never pull her out.',
-  },
-  {
-    icon: 'ph:moon-stars',
-    title: 'Sleep athlete',
-    detail:
-      '16+ hours a day. It is not laziness, it is training, and completely normal for her age.',
   },
   {
     icon: 'ph:sparkle',
@@ -748,6 +742,12 @@ export const personality: CareItem[] = [
     title: 'Chief inspector',
     detail:
       'Anything new is inspected on arrival. Groceries do not enter service until every single bag has passed her sniff audit.',
+  },
+  {
+    icon: 'ph:heart',
+    title: 'Affectionate (by appointment)',
+    detail:
+      'Cuddles are granted, never requested. Deeply bonded to her staff; profoundly independent the moment it suits her.',
   },
   {
     icon: 'ph:binoculars',

@@ -4,6 +4,8 @@ import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
 import WeighInForm from '../components/WeighInForm.astro';
+import IconButton from '../components/ui/IconButton.astro';
+import SheetHeader from '../components/ui/SheetHeader.astro';
 import StatStrip from '../components/ui/StatStrip.astro';
 import StatTile from '../components/ui/StatTile.astro';
 import SectionLabel from '../components/ui/SectionLabel.astro';
@@ -71,17 +73,14 @@ const bandNote =
 >
   {
     supabaseClient && (
-      <button
+      <IconButton
         slot="app-action"
-        type="button"
+        icon="ph:plus-circle"
+        label="Log a weigh-in"
         data-weigh-open
         data-staff-only
         style="display:none"
-        aria-label="Log a weigh-in"
-        class="flex h-10 w-10 items-center justify-center rounded-full text-blush-600 transition-colors duration-200 hover:bg-blush-100 active:bg-blush-100 dark:text-blush-300 dark:hover:bg-plum-800 dark:active:bg-plum-800"
-      >
-        <Icon name="ph:plus-circle" class="h-6 w-6" aria-hidden="true" />
-      </button>
+      />
     )
   }
   <PageHeader
@@ -246,22 +245,7 @@ const bandNote =
         {/* mobile: dialog, opened from the app-bar action */}
         <dialog id="weigh" class="sheet md:hidden" aria-labelledby="weigh-title">
           <div class="rounded-2xl bg-paper-50 shadow-2xl max-md:rounded-b-none max-md:pb-[env(safe-area-inset-bottom)] dark:bg-plum-900">
-            <div class="sticky top-0 z-10 flex items-center justify-between bg-blush-600 px-5 py-3">
-              <h2
-                id="weigh-title"
-                class="text-[11px] font-bold tracking-[0.22em] text-white uppercase"
-              >
-                Log a weigh-in
-              </h2>
-              <button
-                type="button"
-                data-dialog-close
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/35"
-                aria-label="Close"
-              >
-                <Icon name="ph:x" class="h-4 w-4" aria-hidden="true" />
-              </button>
-            </div>
+            <SheetHeader title="Log a weigh-in" titleId="weigh-title" />
             <div class="p-4">
               <WeighInForm flush />
             </div>

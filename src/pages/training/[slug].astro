@@ -5,6 +5,7 @@ import PageHeader from '../../components/PageHeader.astro';
 import Footer from '../../components/Footer.astro';
 import TrainingRules from '../../components/TrainingRules.astro';
 import SectionLabel from '../../components/ui/SectionLabel.astro';
+import Button from '../../components/ui/Button.astro';
 import { trainingCourses } from '../../data/training';
 import { supabaseClient } from '../../data/supabase';
 import { dateLabel } from '../../lib/dates';
@@ -163,13 +164,9 @@ const sinceLabel =
               />
               Registrar controls
             </summary>
-            <button
-              type="button"
-              data-train-action
-              class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blush-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-blush-700 hover:shadow-md active:translate-y-0 disabled:opacity-50"
-            >
+            <Button block data-train-action class="mt-2">
               {graduated ? 'Graduated' : active ? `Mark step ${course.stepsDone + 1} passed` : 'Begin the course'}
-            </button>
+            </Button>
             <div class="mt-2 flex items-center justify-between gap-3">
               <p class="min-h-4 text-xs font-bold text-ink-400" data-train-status aria-live="polite" />
               <button

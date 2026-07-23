@@ -2,9 +2,9 @@
 import '@fontsource-variable/fraunces';
 import '@fontsource-variable/nunito';
 import '../styles/global.css';
-import { Icon } from 'astro-icon/components';
 import { ClientRouter } from 'astro:transitions';
 import Nav from '../components/Nav.astro';
+import IconButton from '../components/ui/IconButton.astro';
 import { supabaseClient } from '../data/supabase';
 
 interface Props {
@@ -110,14 +110,7 @@ const appTitle = appTitleProp ?? tabTitles[current] ?? 'Picha';
           <slot name="app-action" />
           {
             current === 'home' && (
-              <button
-                type="button"
-                data-share-open
-                aria-label="Share her profile"
-                class="flex h-10 w-10 items-center justify-center rounded-full text-blush-600 transition-colors duration-200 hover:bg-blush-100 active:bg-blush-100 dark:text-blush-300 dark:hover:bg-plum-800 dark:active:bg-plum-800"
-              >
-                <Icon name="ph:share-network" class="h-6 w-6" aria-hidden="true" />
-              </button>
+              <IconButton icon="ph:share-network" label="Share her profile" data-share-open />
             )
           }
         </div>

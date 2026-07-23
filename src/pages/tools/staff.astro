@@ -5,6 +5,7 @@ import PageHeader from '../../components/PageHeader.astro';
 import Footer from '../../components/Footer.astro';
 import SectionLabel from '../../components/ui/SectionLabel.astro';
 import IconBadge from '../../components/ui/IconBadge.astro';
+import Button from '../../components/ui/Button.astro';
 import { supabaseClient } from '../../data/supabase';
 ---
 
@@ -61,13 +62,9 @@ import { supabaseClient } from '../../data/supabase';
           aria-live="polite"
         >
         </p>
-        <button
-          type="submit"
-          class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blush-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:bg-blush-700 active:translate-y-0.5"
-        >
-          <Icon name="ph:lock-key-open" class="h-4.5 w-4.5" aria-hidden="true" />
+        <Button block type="submit" icon="ph:lock-key-open" class="mt-4">
           <span data-staff-submit-label>Unlock</span>
-        </button>
+        </Button>
       </form>
     </div>
 

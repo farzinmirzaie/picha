@@ -8,6 +8,8 @@
  */
 import { Icon } from 'astro-icon/components';
 import QRCode from 'qrcode';
+import SheetHeader from './ui/SheetHeader.astro';
+import Button from './ui/Button.astro';
 
 const url = new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`, Astro.site)
   .href;
@@ -22,22 +24,7 @@ const qrSvg = await QRCode.toString(url, {
 
 <dialog id="share" class="sheet" aria-labelledby="share-title" data-url={url}>
   <div class="rounded-2xl bg-paper-50 shadow-2xl max-md:rounded-b-none max-md:pb-[env(safe-area-inset-bottom)] dark:bg-plum-900">
-    <div class="sticky top-0 z-10 flex items-center justify-between bg-blush-600 px-5 py-3">
-      <h2
-        id="share-title"
-        class="text-[11px] font-bold tracking-[0.22em] text-white uppercase sm:text-xs"
-      >
-        Share her profile
-      </h2>
-      <button
-        type="button"
-        data-dialog-close
-        class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/35"
-        aria-label="Close share sheet"
-      >
-        <Icon name="ph:x" class="h-4 w-4" aria-hidden="true" />
-      </button>
-    </div>
+    <SheetHeader title="Share her profile" titleId="share-title" closeLabel="Close share sheet" />
 
     <div class="p-6 text-center">
       <p class="mx-auto max-w-xs text-sm leading-relaxed text-ink-600 dark:text-ink-400">
@@ -55,19 +42,8 @@ const qrSvg = await QRCode.toString(url, {
       <p class="select-text mt-3 font-mono text-[11px] break-all text-ink-400">{url}</p>
 
       <div class="mt-5 flex flex-wrap justify-center gap-2.5">
-        <button
-          type="button"
-          data-share-native
-          class="inline-flex items-center gap-2 rounded-full bg-blush-600 px-5 py-2 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-blush-700 hover:shadow-md active:translate-y-0"
-        >
-          <Icon name="ph:share-network" class="h-4.5 w-4.5" aria-hidden="true" />
-          Share
-        </button>
-        <button
-          type="button"
-          data-share-copy
-          class="inline-flex items-center gap-2 rounded-full border border-blush-300/70 bg-paper-50 px-5 py-2 text-sm font-bold text-blush-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-800 dark:text-blush-300"
-        >
+        <Button data-share-native icon="ph:share-network">Share</Button>
+        <Button variant="outline" data-share-copy>
           <span class="relative h-4.5 w-4.5 shrink-0" aria-hidden="true">
             <Icon
               name="ph:copy"
@@ -81,7 +57,7 @@ const qrSvg = await QRCode.toString(url, {
             />
           </span>
           <span data-share-copy-label>Copy link</span>
-        </button>
+        </Button>
       </div>
     </div>
   </div>

@@ -1,0 +1,34 @@
+---
+/**
+ * A round, icon-only action button — the app-bar actions (share, log a
+ * weigh-in). `label` becomes the accessible name. Renders an <a> when `href`
+ * is set, otherwise a <button>; extra attributes (data-*, slot) pass through.
+ *
+ *   <IconButton icon="ph:share-network" label="Share her profile" data-share-open />
+ */
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  icon: string;
+  /** Accessible name (there's no visible text). */
+  label: string;
+  href?: string;
+  class?: string;
+  [key: string]: unknown;
+}
+const { icon, label, href, class: cls = '', ...rest } = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  class:list={[
+    'flex h-10 w-10 items-center justify-center rounded-full text-blush-600 transition-colors duration-200 hover:bg-blush-100 active:bg-blush-100 dark:text-blush-300 dark:hover:bg-plum-800 dark:active:bg-plum-800',
+    cls,
+  ]}
+  href={href}
+  type={href ? undefined : 'button'}
+  aria-label={label}
+  {...rest}
+>
+  <Icon name={icon} class="h-6 w-6" aria-hidden="true" />
+</Tag>
