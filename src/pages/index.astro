@@ -4,7 +4,7 @@ import { Icon } from 'astro-icon/components';
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import ShareDialog from '../components/ShareDialog.astro';
-import { identity, contact, personality, ageLabel } from '../data/picha';
+import { identity, contact, personality, lullaby, ageLabel } from '../data/picha';
 
 const age = ageLabel();
 
@@ -141,6 +141,35 @@ const slides = Object.entries(slideModules)
         ))
       }
     </ul>
+  </section>
+
+  <!-- Her lullaby -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="Her lullaby">
+    <div
+      class="reveal flex items-start gap-4 rounded-3xl border border-blush-200/70 bg-gradient-to-br from-blush-100/60 to-transparent p-6 dark:border-plum-700 dark:from-plum-800/60"
+    >
+      <span
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
+        aria-hidden="true"
+      >
+        <Icon name="ph:music-notes" class="h-5.5 w-5.5" />
+      </span>
+      <div class="min-w-0">
+        <h2 class="font-display text-lg font-semibold">{lullaby.title}</h2>
+        <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+          {lullaby.detail}
+        </p>
+        <a
+          href={lullaby.url}
+          target="_blank"
+          rel="noopener"
+          class="mt-3 inline-flex items-center gap-2 rounded-full bg-blush-600 px-5 py-2 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-blush-700 hover:shadow-md active:translate-y-0"
+        >
+          <Icon name="ph:play" class="h-4 w-4" aria-hidden="true" />
+          {lullaby.cta}
+        </a>
+      </div>
+    </div>
   </section>
 
   <!-- If found (home only) -->

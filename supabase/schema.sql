@@ -150,7 +150,7 @@ security definer
 set search_path = public, private
 as $$
 declare
-  result text[];
+  cur text[];
 begin
   if not exists (
     select 1 from private.staff_secrets
@@ -158,18 +158,21 @@ begin
   ) then
     raise exception 'wrong pin';
   end if;
+  -- read-modify-write in plpgsql (no self-referential ON CONFLICT expression,
+  -- which Postgres rejects when schema-qualified)
+  select done into cur from public.picha_rounds where date = p_date;
+  cur := coalesce(cur, array[]::text[]);
+  if p_done then
+    if not (cur @> array[p_item]) then
+      cur := cur || p_item;
+    end if;
+  else
+    cur := array_remove(cur, p_item);
+  end if;
   insert into public.picha_rounds (date, done, updated_at)
-    values (p_date, case when p_done then array[p_item] else '{}' end, now())
-  on conflict (date) do update set
-    done = case
-      when p_done and not (public.picha_rounds.done @> array[p_item])
-        then public.picha_rounds.done || p_item
-      when p_done then public.picha_rounds.done
-      else array_remove(public.picha_rounds.done, p_item)
-    end,
-    updated_at = now()
-  returning done into result;
-  return result;
+    values (p_date, cur, now())
+  on conflict (date) do update set done = excluded.done, updated_at = now();
+  return cur;
 end;
 $$;
 

@@ -731,6 +731,18 @@ export const personality: CareItem[] = [
   },
 ];
 
+/**
+ * Her one song. Play it and she is asleep before it finishes — a genuinely
+ * useful trick for the staff (and any stand-in) at lights-out.
+ */
+export const lullaby = {
+  title: 'Her lullaby',
+  detail:
+    'There is one specific song, and she is unconscious before it ends. The staff keep it cued for lights-out; the effect is frankly suspicious. When she will not settle, this is the cheat code.',
+  cta: 'Play her lullaby',
+  url: 'https://youtu.be/dN8MQpcW_P4?si=UOiS5x15keGLzOPO',
+};
+
 export const safety: CareItem[] = [
   {
     icon: 'ph:shield-warning',

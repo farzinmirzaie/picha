@@ -28,6 +28,7 @@ import {
   likes,
   dislikes,
   personality,
+  lullaby,
   safety,
   toxicItems,
   callVetIf,
@@ -165,6 +166,8 @@ ${personality.map((p) => `- **${p.title}**: ${p.detail}`).join('\n')}
 
 Loves: ${likes.join('; ')}.
 Hard pass: ${dislikes.join('; ')}.
+
+${lullaby.title}: ${lullaby.detail} (${lullaby.url})
 
 ## Safety
 
