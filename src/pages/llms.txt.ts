@@ -17,6 +17,7 @@ import {
   vet,
   contact,
   microchip,
+  clinicalStatus,
   healthTimeline,
   recurringCare,
   dailyChecklist,
@@ -103,6 +104,8 @@ ${identity.looks} Home: ${identity.home}.
 ## Health record
 
 Vet status: ${vet.status}. Most recent clinic: ${vet.recentClinic}, phone ${vet.recentPhone}.
+
+Clinical status (one-time facts): ${clinicalStatus.map((c) => `${c.label}: ${c.value} (${c.sub})`).join('; ')}.
 
 ${
   treatment.length

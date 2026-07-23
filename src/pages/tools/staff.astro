@@ -25,12 +25,13 @@ import { supabaseClient } from '../../data/supabase';
     data-supabase-url={supabaseClient?.url}
     data-supabase-key={supabaseClient?.key}
   >
-    <!-- Locked: the PIN gate. Shown until a PIN is present on this device. -->
-    <div data-staff-lock class="reveal">
+    <!-- Locked: the PIN gate. Shown until a PIN is present on this device.
+         Centred vertically so it sits mid-screen, not tucked under the header. -->
+    <div data-staff-lock class="reveal flex min-h-[55vh] items-center justify-center py-6">
       <form
         data-staff-form
         autocomplete="off"
-        class="mx-auto max-w-sm rounded-3xl border border-blush-200/70 bg-paper-50 p-6 text-center shadow-sm sm:p-8 dark:border-plum-700 dark:bg-plum-900"
+        class="w-full max-w-sm rounded-3xl border border-blush-200/70 bg-paper-50 p-6 text-center shadow-sm sm:p-8 dark:border-plum-700 dark:bg-plum-900"
       >
         <span
           class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
@@ -130,7 +131,7 @@ import { supabaseClient } from '../../data/supabase';
     </div>
   </section>
 
-  <Footer showOnMobile />
+  <Footer />
 
   <script>
     // The Staff tool: a PIN gate over staff-only controls, and the ONE place
@@ -177,26 +178,29 @@ import { supabaseClient } from '../../data/supabase';
         const label = form.querySelector<HTMLElement>('[data-staff-submit-label]');
         const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
 
-        // Verify against the cloud when it's configured; without it (offline
-        // build) just trust the entry, the write RPCs will reject a bad PIN.
+        // Try to verify against the cloud when it's configured. Only an
+        // explicit rejection ('wrong pin') blocks sign-in. Any other outcome
+        // (check_pin not deployed yet, schema-cache lag, offline) accepts the
+        // entry: the write RPCs still enforce the PIN, and a bad one signs the
+        // device back out on first use. So a correct PIN never gets stuck on a
+        // "couldn't reach the cloud" false alarm.
         if (url && key) {
           if (label) label.textContent = 'Checking…';
           if (submit) submit.disabled = true;
+          let wrong = false;
           try {
             const { sbRpc } = await import('../../lib/sb');
             await sbRpc(url, key, 'check_pin', { p_pin: pin });
           } catch (err) {
+            wrong = String(err).includes('wrong pin');
+          } finally {
             if (submit) submit.disabled = false;
             if (label) label.textContent = 'Unlock';
-            showError(
-              String(err).includes('wrong pin')
-                ? 'That PIN was not recognised. Try again.'
-                : "Couldn't reach the cloud to check. Try again in a moment.",
-            );
+          }
+          if (wrong) {
+            showError('That PIN was not recognised. Try again.');
             return;
           }
-          if (submit) submit.disabled = false;
-          if (label) label.textContent = 'Unlock';
         }
 
         setStaffPin(pin);

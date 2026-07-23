@@ -204,3 +204,8 @@ $$;
 
 revoke all on function public.check_pin(text) from public;
 grant execute on function public.check_pin(text) to anon;
+
+-- Tell PostgREST to refresh its schema cache so any function added/changed
+-- above is callable immediately (otherwise a new RPC can 404 with
+-- "Could not find the function ... in the schema cache" until the next reload).
+notify pgrst, 'reload schema';

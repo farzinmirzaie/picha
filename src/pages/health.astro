@@ -11,6 +11,7 @@ import {
   recurringCare,
   treatment,
   callVetIf,
+  clinicalStatus,
   ageLabel,
   inDaysLabel,
 } from '../data/picha';
@@ -123,6 +124,21 @@ const segments = [
       </div>
 
       {
+        clinicalStatus.map((s) => (
+          <div class="reveal min-w-[8.5rem] shrink-0 snap-start rounded-2xl border border-blush-200/70 bg-paper-50 p-4 dark:border-plum-700 dark:bg-plum-900">
+            <div class="flex items-center gap-1.5 text-blush-500 dark:text-blush-300">
+              <Icon name={s.icon} class="h-4 w-4" aria-hidden="true" />
+              <span class="text-[10px] font-bold tracking-[0.14em] uppercase">
+                {s.label}
+              </span>
+            </div>
+            <p class="font-display mt-1.5 text-xl font-semibold">{s.value}</p>
+            <p class="mt-0.5 truncate text-[11px] leading-tight text-ink-400">{s.sub}</p>
+          </div>
+        ))
+      }
+
+      {
         next && (
           <div class="reveal min-w-[8.5rem] shrink-0 snap-start rounded-2xl border border-blush-200/70 bg-paper-50 p-4 dark:border-plum-700 dark:bg-plum-900">
             <div class="flex items-center gap-1.5 text-blush-500 dark:text-blush-300">
@@ -222,7 +238,7 @@ const segments = [
       <ol class="ml-3 pl-7">
         {
           upcoming.map((e, i) => (
-            <li class="group relative pb-8 last:pb-2">
+            <li class="reveal group relative pb-8 last:pb-2">
               <span
                 class="absolute -left-[27px] top-0 bottom-0 w-0.5 bg-amber-300/60 group-first:top-8 group-last:bottom-auto group-last:h-4 group-only:hidden dark:bg-amber-700/40"
                 aria-hidden="true"
@@ -431,9 +447,10 @@ const segments = [
       };
       tabs.forEach((tab, i) => tab.addEventListener('click', () => select(i)));
 
-      // fade-stagger the initially visible panel on page load too
-      const visible = panels.find((p) => !p.classList.contains('hidden'));
-      if (visible) animatePanel(visible);
+      // On first load the initially-visible panel's rows carry `.reveal`, so
+      // they fade in on scroll with the same stagger as the rest of the page
+      // (handled by Layout's observer). seg-in is only for later tab switches.
+
       // arrow keys move between segments, per the tabs pattern
       seg.addEventListener('keydown', (e) => {
         if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;

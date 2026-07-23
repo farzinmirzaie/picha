@@ -113,6 +113,32 @@ export const contact = {
 export const microchip = '458098500319352';
 
 /**
+ * One-time clinical status: the facts a vet wants at a glance and that rarely
+ * change (desexed, chipped, core-vaccine series). Rendered as vitals tiles on
+ * Health and echoed in llms.txt. Update here when one changes.
+ */
+export const clinicalStatus = [
+  {
+    icon: 'ph:first-aid',
+    label: 'Spayed',
+    value: 'Yes',
+    sub: '11 Jul 2026',
+  },
+  {
+    icon: 'ph:identification-card',
+    label: 'Microchip',
+    value: 'Yes',
+    sub: `ID ...${microchip.slice(-4)}`,
+  },
+  {
+    icon: 'ph:syringe',
+    label: 'Core vaccines',
+    value: 'FVRCP',
+    sub: 'series complete',
+  },
+];
+
+/**
  * Her life milestones + health history and future in one list. Entries with a
  * past date render as "done", future dates as "coming up" (the soonest is
  * highlighted), and entries without a date land in "to book".
