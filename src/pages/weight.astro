@@ -71,6 +71,8 @@ const bandNote =
         slot="app-action"
         type="button"
         data-weigh-open
+        data-staff-only
+        style="display:none"
         aria-label="Log a weigh-in"
         class="flex h-10 w-10 items-center justify-center rounded-full text-blush-600 transition-colors duration-200 hover:bg-blush-100 active:bg-blush-100 dark:text-blush-300 dark:hover:bg-plum-800 dark:active:bg-plum-800"
       >
@@ -235,12 +237,14 @@ const bandNote =
   {
     supabaseClient && (
       <>
-        {/* desktop: accordion after the ledger */}
+        {/* desktop: accordion after the ledger (staff-only) */}
         <section
           class="mx-auto hidden w-full max-w-2xl px-5 pt-10 md:block print:hidden"
           aria-label="Log a weigh-in"
+          data-staff-only
+          style="display:none"
         >
-          <details class="reveal group" data-acc data-weigh-details>
+          <details class="group" data-acc data-weigh-details>
             <summary class="mb-2 flex cursor-pointer list-none items-center gap-1.5 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300 [&::-webkit-details-marker]:hidden">
               <Icon
                 name="ph:caret-right"
@@ -291,9 +295,7 @@ const bandNote =
     import { chartSvg, chartAriaLabel, weightStats } from '../lib/weight-viz';
     import { dateLabel, shortLabel } from '../lib/dates';
     import { sbSelect, sbRpc } from '../lib/sb';
-
-    // Shared registrar PIN across tools (weight + training).
-    const PIN_KEY = 'picha-staff-pin';
+    import { staffPin, forgetStaffPin, applyStaffVisibility } from '../lib/staff';
 
     function render(entries: WeightEntry[]) {
       if (!entries.length) return;
@@ -366,14 +368,9 @@ const bandNote =
       const url = form.dataset.supabaseUrl!;
       const key = form.dataset.supabaseKey!;
 
-      // defaults + remembered PIN
       const dateInput = form.elements.namedItem('date') as HTMLInputElement;
-      const pinInput = form.elements.namedItem('pin') as HTMLInputElement;
       dateInput.value = new Date().toISOString().slice(0, 10);
       dateInput.max = dateInput.value; // audits are recorded, not scheduled
-      pinInput.value = localStorage.getItem(PIN_KEY) ?? '';
-      // known staff device: keep the desktop accordion ready to use
-      if (pinInput.value) form.closest('details')?.setAttribute('open', '');
 
       const status = form.querySelector<HTMLElement>('[data-form-status]')!;
       const setStatus = (text: string, isError = false) => {
@@ -391,9 +388,8 @@ const bandNote =
           await sbRpc(url, key, 'log_weight', {
             p_date: dateInput.value,
             p_kg: Number(kgInput.value),
-            p_pin: pinInput.value,
+            p_pin: staffPin() ?? '',
           });
-          localStorage.setItem(PIN_KEY, pinInput.value);
           kgInput.value = '';
           setStatus('Recorded. Management has been weighed.');
           await refresh();
@@ -404,12 +400,14 @@ const bandNote =
             setTimeout(() => animatedClose(dialog), 900);
           }
         } catch (err) {
-          setStatus(
-            String(err).includes('wrong pin')
-              ? 'Wrong PIN. The registrar is unimpressed.'
-              : 'Could not record it. Check the connection and try again.',
-            true,
-          );
+          if (String(err).includes('wrong pin')) {
+            // the stored PIN is no longer valid: sign out and hide the form
+            forgetStaffPin();
+            applyStaffVisibility();
+            setStatus('Sign-in expired. Re-enter the PIN in the Staff room.', true);
+          } else {
+            setStatus('Could not record it. Check the connection and try again.', true);
+          }
         } finally {
           button.disabled = false;
           setTimeout(() => setStatus(''), 4000);
@@ -418,10 +416,14 @@ const bandNote =
     }
 
     async function setupWeightLive() {
+      // show the weigh-in affordances only on a signed-in staff device
+      applyStaffVisibility();
       const forms = Array.from(
         document.querySelectorAll<HTMLFormElement>('[data-weight-form]:not([data-bound])'),
       );
       if (!forms.length) return;
+      // known staff device: keep the desktop accordion ready to use
+      if (staffPin()) document.querySelector('[data-weigh-details]')?.setAttribute('open', '');
       const { supabaseUrl: url, supabaseKey: key } = forms[0].dataset as {
         supabaseUrl: string;
         supabaseKey: string;

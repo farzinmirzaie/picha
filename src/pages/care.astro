@@ -273,8 +273,9 @@ import { supabaseClient } from '../data/supabase';
     // ids come from dailyChecklist in picha.ts — the store only tracks ids, so
     // adding/removing items never touches the DB. Writes are PIN-gated (the
     // shared registrar PIN); a device without the PIN just stays local.
+    import { staffPin, hasStaffPin, forgetStaffPin } from '../lib/staff';
+
     const STORE_KEY = 'picha-rounds';
-    const PIN_KEY = 'picha-staff-pin';
 
     type Store = { date: string; done: string[] };
 
@@ -345,7 +346,7 @@ import { supabaseClient } from '../data/supabase';
         note.textContent = 'Ticks reset every morning.';
         return;
       }
-      if (localStorage.getItem(PIN_KEY)) {
+      if (hasStaffPin()) {
         note.textContent = "Shared across the staff's devices; resets every morning.";
         return;
       }
@@ -410,7 +411,7 @@ import { supabaseClient } from '../data/supabase';
           paint();
           // sync to the shared store; the note explains a local-only fallback
           if (!url || !key) return;
-          const pin = localStorage.getItem(PIN_KEY);
+          const pin = staffPin();
           if (!pin) {
             updateNote();
             return;
@@ -427,7 +428,7 @@ import { supabaseClient } from '../data/supabase';
           } catch (err) {
             // keep the optimistic local state, but tell the staff why
             if (String(err).includes('wrong pin')) {
-              localStorage.removeItem(PIN_KEY);
+              forgetStaffPin();
               updateNote('That PIN was rejected. Open the Staff room to re-enter.');
             } else {
               updateNote("Saved on this device; couldn't reach the cloud.");

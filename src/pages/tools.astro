@@ -11,6 +11,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 // (or give it its own nav tab if it earns one).
 const inService = [
   {
+    icon: 'ph:lock-key',
+    title: 'Staff room',
+    detail: 'Sign in with the registrar PIN to unlock the staff-only controls across her tools.',
+    href: `${base}/tools/staff/`,
+  },
+  {
     icon: 'ph:chart-line-up',
     title: 'Weight tracker',
     detail: 'The royal waistline, charted over time.',
@@ -27,12 +33,6 @@ const inService = [
     title: 'The Royal Academy',
     detail: 'Staff certification in advanced cat cooperation, one course at a time.',
     href: `${base}/training/`,
-  },
-  {
-    icon: 'ph:lock-key',
-    title: 'Staff room',
-    detail: 'Members only: the registrar PIN, kept on your device.',
-    href: `${base}/tools/staff/`,
   },
 ];
 

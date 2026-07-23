@@ -151,6 +151,8 @@ const sinceLabel =
             class="group mt-5 border-t border-paper-200 pt-5 print:hidden dark:border-plum-800"
             data-registrar
             data-acc
+            data-staff-only
+            style="display:none"
           >
             <summary class="flex cursor-pointer list-none items-center gap-1.5 text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase [&::-webkit-details-marker]:hidden">
               <Icon
@@ -160,23 +162,13 @@ const sinceLabel =
               />
               Registrar controls
             </summary>
-            <div class="mt-2 grid grid-cols-2 gap-3">
-              <input
-                type="password"
-                data-train-pin
-                autocomplete="off"
-                inputmode="numeric"
-                placeholder="registrar PIN"
-                class="w-full rounded-xl border border-blush-200/70 bg-paper-100 px-3 py-2 text-sm font-bold outline-none focus:border-blush-400 dark:border-plum-700 dark:bg-plum-950"
-              />
-              <button
-                type="button"
-                data-train-action
-                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blush-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-blush-700 hover:shadow-md active:translate-y-0 disabled:opacity-50"
-              >
-                {graduated ? 'Graduated' : active ? `Mark step ${course.stepsDone + 1} passed` : 'Begin the course'}
-              </button>
-            </div>
+            <button
+              type="button"
+              data-train-action
+              class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blush-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-blush-700 hover:shadow-md active:translate-y-0 disabled:opacity-50"
+            >
+              {graduated ? 'Graduated' : active ? `Mark step ${course.stepsDone + 1} passed` : 'Begin the course'}
+            </button>
             <div class="mt-2 flex items-center justify-between gap-3">
               <p class="min-h-4 text-xs font-bold text-ink-400" data-train-status aria-live="polite" />
               <button
@@ -191,9 +183,8 @@ const sinceLabel =
               </button>
             </div>
             <p class="mt-2 text-[11px] leading-relaxed text-ink-400">
-              Milestones are recorded to her cloud file (same PIN as the weight
-              ledger; remembered on this device). A step counts as passed when
-              she stays relaxed through it on several separate days.
+              Milestones are recorded to her cloud file. A step counts as passed
+              when she stays relaxed through it on several separate days.
             </p>
           </details>
         )
@@ -277,7 +268,8 @@ const sinceLabel =
     // Course state is live: fetched from Supabase on load, written through the
     // PIN-checked log_training RPC, and re-rendered in place. The built HTML
     // is the offline fallback. "Practiced today" stays on-device.
-    const PIN_KEY = 'picha-staff-pin';
+    import { staffPin, forgetStaffPin, applyStaffVisibility } from '../../lib/staff';
+
     const PRACTICE_KEY = 'picha-training';
 
     type CourseState = { stepsDone: number; startedOn: string | null };
@@ -404,6 +396,9 @@ const sinceLabel =
         );
       };
 
+      // show the registrar controls only on a signed-in staff device
+      applyStaffVisibility(root);
+
       // ---- live refresh + writes (only when Supabase config is embedded) ----
       if (url && key) {
         const refresh = async () => {
@@ -424,10 +419,8 @@ const sinceLabel =
           }
         };
 
-        const pinInput = q<HTMLInputElement>('[data-train-pin]')!;
-        pinInput.value = localStorage.getItem(PIN_KEY) ?? '';
         // known staff device: keep the controls ready to use
-        if (pinInput.value) q('[data-registrar]')?.setAttribute('open', '');
+        if (staffPin()) q('[data-registrar]')?.setAttribute('open', '');
         const status = q('[data-train-status]')!;
         const setStatus = (text: string, isError = false) => {
           status.textContent = text;
@@ -436,9 +429,10 @@ const sinceLabel =
         };
 
         const write = async (next: CourseState) => {
-          if (!pinInput.value) {
-            setStatus('The registrar PIN is required.', true);
-            setTimeout(() => setStatus(''), 3000);
+          const pin = staffPin();
+          if (!pin) {
+            // no longer signed in: hide the controls, point to the Staff room
+            applyStaffVisibility(root);
             return;
           }
           setStatus('Filing the paperwork…');
@@ -448,9 +442,8 @@ const sinceLabel =
               p_slug: slug,
               p_steps_done: next.stepsDone,
               p_started_on: next.startedOn,
-              p_pin: pinInput.value,
+              p_pin: pin,
             });
-            localStorage.setItem(PIN_KEY, pinInput.value);
             state = next;
             render();
             setStatus(
@@ -459,12 +452,14 @@ const sinceLabel =
                 : 'Recorded in her file.',
             );
           } catch (err) {
-            setStatus(
-              String(err).includes('wrong pin')
-                ? 'Wrong PIN. The registrar is unimpressed.'
-                : 'Could not record it. Check the connection and try again.',
-              true,
-            );
+            if (String(err).includes('wrong pin')) {
+              // the stored PIN is no longer valid: sign out and hide controls
+              forgetStaffPin();
+              applyStaffVisibility(root);
+              setStatus('Sign-in expired. Re-enter the PIN in the Staff room.', true);
+            } else {
+              setStatus('Could not record it. Check the connection and try again.', true);
+            }
           } finally {
             setTimeout(() => setStatus(''), 4000);
           }

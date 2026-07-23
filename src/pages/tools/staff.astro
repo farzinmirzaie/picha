@@ -133,12 +133,12 @@ import { supabaseClient } from '../../data/supabase';
   <Footer showOnMobile />
 
   <script>
-    // The Staff tool: a PIN gate over staff-only controls. The registrar PIN
-    // is the same one the weigh-in ledger, the Academy and the rounds sync use
-    // (localStorage 'picha-staff-pin'); this page is the one place to set it or
-    // forget it. A stored PIN counts as unlocked; entering one verifies it
-    // against the cloud (check_pin) before saving, so a typo can't slip in.
-    const PIN_KEY = 'picha-staff-pin';
+    // The Staff tool: a PIN gate over staff-only controls, and the ONE place
+    // the registrar PIN is entered. The same PIN unlocks the weigh-in ledger,
+    // the Academy and the rounds sync (localStorage 'picha-staff-pin'); those
+    // pages only read it, never prompt for it. A stored PIN counts as unlocked;
+    // entering one verifies against the cloud (check_pin) before saving.
+    import { hasStaffPin, setStaffPin, forgetStaffPin } from '../../lib/staff';
 
     function render() {
       const root = document.querySelector<HTMLElement>('[data-staff]');
@@ -146,7 +146,7 @@ import { supabaseClient } from '../../data/supabase';
       const lock = root.querySelector<HTMLElement>('[data-staff-lock]');
       const panel = root.querySelector<HTMLElement>('[data-staff-panel]');
       if (!lock || !panel) return;
-      const unlocked = Boolean(localStorage.getItem(PIN_KEY));
+      const unlocked = hasStaffPin();
       lock.hidden = unlocked;
       panel.hidden = !unlocked;
     }
@@ -199,14 +199,14 @@ import { supabaseClient } from '../../data/supabase';
           if (label) label.textContent = 'Unlock';
         }
 
-        localStorage.setItem(PIN_KEY, pin);
+        setStaffPin(pin);
         input.value = '';
         render();
       });
 
       const forget = root.querySelector<HTMLButtonElement>('[data-staff-forget]');
       forget?.addEventListener('click', () => {
-        localStorage.removeItem(PIN_KEY);
+        forgetStaffPin();
         showError('');
         render();
       });
