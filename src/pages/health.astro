@@ -62,6 +62,14 @@ const upcoming: UpcomingEntry[] = [
 
 const next = upcoming.find((e) => e.date);
 
+// Near-term alert: surface the single next item only when it's due within 2
+// days, or already overdue (days < 0). Build-time gate, kept fresh by the
+// nightly rebuild; the countdown text itself updates live via [data-until].
+const nextDays = next?.date
+  ? Math.round((Date.parse(next.date) - Date.parse(today)) / 86_400_000)
+  : null;
+const showDueSoon = nextDays !== null && nextDays <= 2;
+
 // Build-time countdown text: the no-JS fallback inside [data-until] spans
 // (the client script recomputes it against the visitor's clock).
 const untilLabel = (iso: string) => {
@@ -153,6 +161,38 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
               </div>
             </div>
           ))}
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Due soon: the single next item, shown only within 2 days of its due date
+       (or once overdue). Build-time gate; countdown updates via [data-until]. -->
+  {
+    showDueSoon && next && (
+      <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Due soon">
+        <SectionLabel tone="amber" icon="ph:bell-ringing" class="reveal mb-2">
+          Due soon
+        </SectionLabel>
+        <div class="reveal flex items-start gap-4 rounded-3xl border border-amber-300/60 bg-paper-50 p-6 dark:border-amber-700/40 dark:bg-plum-900">
+          <IconBadge icon={next.icon} tone="amber" />
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <h3 class="font-display text-lg font-semibold">{next.title}</h3>
+              {next.everyLabel && <Chip tone="amber">{next.everyLabel}</Chip>}
+              {next.where && <Chip icon="ph:map-pin">{next.where}</Chip>}
+            </div>
+            <p class="mt-1 text-xs font-bold text-amber-700 dark:text-amber-300">
+              {next.everyLabel && 'due ~'}
+              {dateLabel(next.date!)}
+              <span data-until={next.date} data-overdue="overdue">
+                {untilLabel(next.date!)}
+              </span>
+            </p>
+            <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+              {next.detail}
+            </p>
+          </div>
         </div>
       </section>
     )
