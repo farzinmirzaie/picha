@@ -226,20 +226,10 @@ const bandNote =
           data-staff-only
           style="display:none"
         >
-          <details class="group" data-acc data-weigh-details>
-            <summary class="mb-2 flex cursor-pointer list-none items-center gap-1.5 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300 [&::-webkit-details-marker]:hidden">
-              <Icon
-                name="ph:caret-right"
-                class="h-3.5 w-3.5 transition-transform duration-200 group-open:rotate-90"
-                aria-hidden="true"
-              />
-              Log a weigh-in
-              <span class="font-bold tracking-normal normal-case text-ink-400">
-                · staff only
-              </span>
-            </summary>
-            <WeighInForm />
-          </details>
+          <SectionLabel class="mb-2">
+            Log a weigh-in <span class="font-bold tracking-normal normal-case text-ink-400">· staff only</span>
+          </SectionLabel>
+          <WeighInForm />
         </section>
 
         {/* mobile: dialog, opened from the app-bar action */}
@@ -389,8 +379,6 @@ const bandNote =
         document.querySelectorAll<HTMLFormElement>('[data-weight-form]:not([data-bound])'),
       );
       if (!forms.length) return;
-      // known staff device: keep the desktop accordion ready to use
-      if (staffPin()) document.querySelector('[data-weigh-details]')?.setAttribute('open', '');
       const { supabaseUrl: url, supabaseKey: key } = forms[0].dataset as {
         supabaseUrl: string;
         supabaseKey: string;

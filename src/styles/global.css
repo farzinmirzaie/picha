@@ -65,6 +65,14 @@ html {
   }
 }
 
+/* Native date input: keep the picker control (calendar icon / dropdown arrow)
+   clear of the field's right edge on mobile, and make it a pointer target.
+   The date field itself carries extra right padding (pr-9) for the room. */
+input[type='date']::-webkit-calendar-picker-indicator {
+  margin-inline-start: 0.25rem;
+  cursor: pointer;
+}
+
 /* No blue tap flash anywhere — buttons/links have their own pressed states. */
 * {
   -webkit-tap-highlight-color: transparent;
