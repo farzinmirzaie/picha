@@ -128,7 +128,7 @@ export const clinicalStatus = [
     icon: 'ph:identification-card',
     label: 'Microchip',
     value: 'Yes',
-    sub: `ID ...${microchip.slice(-4)}`,
+    sub: '11 Jul 2026',
   },
   {
     icon: 'ph:syringe',

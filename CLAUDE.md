@@ -57,6 +57,11 @@ src/
                        # (desktop accordion after the ledger + mobile dialog
                        # opened from the app-bar action)
     Footer.astro       # paw divider + credits — desktop-only unless `showOnMobile`
+    StatStrip.astro    # reusable snap-scroll stat-tile carousel (Health vitals +
+                       # Weight stats): edge fade gradients that appear only when
+                       # there's more to scroll, and reveals as one unit so every
+                       # tile (incl. off-screen) is loaded, not popping in on scroll.
+                       # Tiles go in the slot; DON'T give them `.reveal`.
   pages/
     index.astro        # Home — hero, share dialog (QR), story, get-to-know-her
     health.astro       # Health — vitals strip, segmented timeline, emergency
@@ -266,7 +271,8 @@ The site installs as an app (Add to Home Screen / install icon):
   desktop-only except on Tools (`<Footer showOnMobile />`); body bottom padding
   (`pb-20 md:pb-0`) clears the tab bar.
 - **Native UI patterns in use** (reuse these before inventing new ones):
-  snap-scroll stat tiles (`.no-scrollbar` strip, Health vitals), segmented
+  snap-scroll stat tiles (the `StatStrip.astro` component — Health vitals +
+  Weight stats), segmented
   control with sliding thumb (`[data-seg]`, Health timeline), grouped inset
   lists (rounded card + `divide-y` rows, Care/emergency), modal dialogs
   (`dialog.sheet` + `bindDialog()` from lib/dialog.ts: centred card on

@@ -1,0 +1,70 @@
+---
+/**
+ * Horizontally snap-scrolling stat tiles (Health vitals, Weight stats). Put the
+ * tiles in the default slot; give each `min-w-[…] shrink-0 snap-start` and the
+ * usual card classes (NOT `.reveal` — the whole strip reveals as one unit, so
+ * every tile, including any off the right edge, is fully rendered from the
+ * start and never pops in on scroll).
+ *
+ * The edges carry a fade gradient that appears only when there's more to
+ * scroll that way, hinting the strip is swipeable. Fade colour matches the page
+ * background (paper-100 / plum-950).
+ */
+interface Props {
+  /** Accessible label for the region. */
+  label: string;
+  /** Extra classes on the outer <section> (e.g. vertical spacing). */
+  class?: string;
+}
+const { label, class: cls = '' } = Astro.props;
+---
+
+<section aria-label={label} class:list={['relative mx-auto w-full max-w-2xl', cls]}>
+  <div
+    class="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-paper-100 to-transparent opacity-0 transition-opacity duration-200 dark:from-plum-950"
+    data-strip-fade="left"
+    aria-hidden="true"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-paper-100 to-transparent transition-opacity duration-200 dark:from-plum-950"
+    data-strip-fade="right"
+    aria-hidden="true"
+  >
+  </div>
+  <div
+    class="reveal no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-5 px-5 pb-1"
+    data-strip
+  >
+    <slot />
+  </div>
+</section>
+
+<script>
+  // Show each edge fade only when there's content to scroll that way.
+  function updateStrip(strip: HTMLElement) {
+    const section = strip.closest('section');
+    const left = section?.querySelector<HTMLElement>('[data-strip-fade="left"]');
+    const right = section?.querySelector<HTMLElement>('[data-strip-fade="right"]');
+    const max = strip.scrollWidth - strip.clientWidth;
+    const x = strip.scrollLeft;
+    left?.classList.toggle('opacity-0', x <= 1);
+    right?.classList.toggle('opacity-0', x >= max - 1);
+  }
+
+  function setupStrips() {
+    document.querySelectorAll<HTMLElement>('[data-strip]').forEach((strip) => {
+      if (strip.dataset.bound) return;
+      strip.dataset.bound = '1';
+      strip.addEventListener('scroll', () => updateStrip(strip), { passive: true });
+      updateStrip(strip);
+    });
+  }
+
+  // Module runs once; a single resize handler refreshes every strip.
+  window.addEventListener('resize', () =>
+    document.querySelectorAll<HTMLElement>('[data-strip]').forEach(updateStrip),
+  );
+  setupStrips();
+  document.addEventListener('astro:page-load', setupStrips);
+</script>
