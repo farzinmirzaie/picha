@@ -123,8 +123,11 @@ the `picha_rounds` table holds one row per day of completed item ids, read
 client-side on load + refocus, toggled through the `set_round` RPC (same
 registrar PIN). Item definitions live in `dailyChecklist` in picha.ts — the
 store only tracks ids, so add/remove items freely without touching the DB. A
-localStorage cache (`picha-rounds`) backs it for offline/optimistic use and a
-device without the PIN just stays local. Resets daily (date-keyed).
+localStorage cache (`picha-rounds`) backs it for offline/optimistic use. The
+checklist shows a sync-state note with a "Turn on sync" PIN prompt (the PIN is
+otherwise only set on Weight/Training), and surfaces write errors instead of
+failing silently. A device without the PIN just stays local. Resets daily
+(date-keyed).
 
 ### AI-friendly surface
 

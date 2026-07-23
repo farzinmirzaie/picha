@@ -163,6 +163,8 @@ const slides = Object.entries(slideModules)
           href={lullaby.url}
           target="_blank"
           rel="noopener"
+          data-lullaby
+          data-video-id={lullaby.videoId}
           class="mt-3 inline-flex items-center gap-2 rounded-full bg-blush-600 px-5 py-2 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-blush-700 hover:shadow-md active:translate-y-0"
         >
           <Icon name="ph:play" class="h-4 w-4" aria-hidden="true" />
@@ -202,21 +204,45 @@ const slides = Object.entries(slideModules)
 
 
   <script>
-    // Hero slideshow: crossfade through her photos every few seconds.
+    // Hero slideshow: crossfade through her photos. The play order (and start)
+    // are shuffled per visit, so it doesn't always open on the same photo or
+    // cycle in the same sequence.
     let slideTimer: ReturnType<typeof setInterval> | undefined;
+    let slideOrder: number[] = [];
+    let slidePos = 0;
 
     function setupSlideshow() {
       clearInterval(slideTimer);
       const slides = Array.from(
-        document.querySelectorAll<HTMLElement>('[data-hero-slide]'),
+        document.querySelectorAll<HTMLImageElement>('[data-hero-slide]'),
       );
       if (slides.length < 2) return;
+
+      // Fisher–Yates shuffle of the slide indices (fresh each setup).
+      slideOrder = slides.map((_, i) => i);
+      for (let i = slideOrder.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [slideOrder[i], slideOrder[j]] = [slideOrder[j], slideOrder[i]];
+      }
+      slidePos = 0;
+
+      const show = (idx: number) =>
+        slides.forEach((s, i) => {
+          s.classList.toggle('opacity-100', i === idx);
+          s.classList.toggle('opacity-0', i !== idx);
+        });
+
+      // Reveal the random start only once it has decoded, so a lazy-loaded
+      // photo never flashes blank — the eager first photo holds until then.
+      const start = slides[slideOrder[0]];
+      if (start.complete) show(slideOrder[0]);
+      else start.addEventListener('load', () => show(slideOrder[0]), { once: true });
+
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      let current = 0;
       slideTimer = setInterval(() => {
-        slides[current]?.classList.replace('opacity-100', 'opacity-0');
-        current = (current + 1) % slides.length;
-        slides[current]?.classList.replace('opacity-0', 'opacity-100');
+        slides[slideOrder[slidePos]]?.classList.replace('opacity-100', 'opacity-0');
+        slidePos = (slidePos + 1) % slideOrder.length;
+        slides[slideOrder[slidePos]]?.classList.replace('opacity-0', 'opacity-100');
       }, 4000);
     }
 
@@ -227,5 +253,33 @@ const slides = Object.entries(slideModules)
       if (document.hidden) clearInterval(slideTimer);
       else setupSlideshow();
     });
+
+    // "Play her lullaby": on mobile, jump into the native YouTube app when
+    // it's installed (deep link), and fall back to the web link otherwise.
+    function setupLullaby() {
+      const link = document.querySelector<HTMLAnchorElement>('[data-lullaby]');
+      if (!link || link.dataset.bound) return;
+      link.dataset.bound = '1';
+      link.addEventListener('click', (e) => {
+        if (!matchMedia('(pointer: coarse)').matches) return; // desktop: default
+        const id = link.dataset.videoId;
+        if (!id) return;
+        e.preventDefault();
+        const web = link.href;
+        let left = false;
+        const onHide = () => {
+          left = true;
+        };
+        document.addEventListener('visibilitychange', onHide, { once: true });
+        // try the app; if nothing takes over in time, open the web link
+        window.location.href = `vnd.youtube://watch?v=${id}`;
+        setTimeout(() => {
+          document.removeEventListener('visibilitychange', onHide);
+          if (!left && !document.hidden) window.location.href = web;
+        }, 600);
+      });
+    }
+    setupLullaby();
+    document.addEventListener('astro:page-load', setupLullaby);
   </script>
 </Layout>

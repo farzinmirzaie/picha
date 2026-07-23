@@ -83,6 +83,7 @@ import { supabaseClient } from '../data/supabase';
         All rounds complete. Management is pleased and will nap accordingly.
       </p>
     </div>
+    <p class="mt-2 px-1 text-[11px] leading-relaxed text-ink-400" data-rounds-note></p>
   </section>
 
   <!-- Zone 2: the care manual (everything a stand-in needs) -->
@@ -319,6 +320,51 @@ import { supabaseClient } from '../data/supabase';
       paint();
     }
 
+    // Sync-state footer: tells the staff whether ticks are shared, and lets
+    // them turn on sync (store the registrar PIN) right here — the PIN is
+    // otherwise only set on the Weight/Training pages, so a Care-only device
+    // would silently stay local.
+    function updateNote(override?: string) {
+      const note = document.querySelector<HTMLElement>('[data-rounds-note]');
+      if (!note) return;
+      const root = document.querySelector<HTMLElement>('[data-rounds]');
+      const configured = Boolean(root?.dataset.supabaseUrl && root?.dataset.supabaseKey);
+      note.textContent = '';
+      note.classList.remove('text-red-500');
+      note.classList.add('text-ink-400');
+      if (override) {
+        note.textContent = override;
+        if (override.toLowerCase().includes('pin') || override.toLowerCase().includes("couldn't")) {
+          note.classList.add('text-red-500');
+          note.classList.remove('text-ink-400');
+        }
+        return;
+      }
+      if (!configured) {
+        note.textContent = 'Ticks reset every morning.';
+        return;
+      }
+      if (localStorage.getItem(PIN_KEY)) {
+        note.textContent = "Shared across the staff's devices; resets every morning.";
+        return;
+      }
+      note.append('Ticks stay on this device. ');
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className =
+        'font-bold text-blush-600 underline decoration-dotted dark:text-blush-300';
+      btn.textContent = 'Turn on sync';
+      btn.addEventListener('click', () => {
+        const entered = prompt('Staff PIN to sync the rounds across devices:');
+        if (entered && entered.trim()) {
+          localStorage.setItem(PIN_KEY, entered.trim());
+          updateNote();
+          pullRounds();
+        }
+      });
+      note.append(btn);
+    }
+
     // Stateless: every paint reads the store fresh, so a day rollover always
     // shows the right state without threading a shared variable around.
     function paint() {
@@ -369,9 +415,13 @@ import { supabaseClient } from '../data/supabase';
             : store.done.filter((d) => d !== id);
           saveStore(store.done); // optimistic
           paint();
-          // sync to the shared store; silent local-only fallback without a PIN
+          // sync to the shared store; the note explains a local-only fallback
+          if (!url || !key) return;
           const pin = localStorage.getItem(PIN_KEY);
-          if (!url || !key || !pin) return;
+          if (!pin) {
+            updateNote();
+            return;
+          }
           try {
             const { sbRpc } = await import('../lib/sb');
             await sbRpc(url, key, 'set_round', {
@@ -380,13 +430,21 @@ import { supabaseClient } from '../data/supabase';
               p_done: nowDone,
               p_pin: pin,
             });
-          } catch {
-            /* keep the optimistic local state */
+            updateNote();
+          } catch (err) {
+            // keep the optimistic local state, but tell the staff why
+            if (String(err).includes('wrong pin')) {
+              localStorage.removeItem(PIN_KEY);
+              updateNote('Wrong PIN. Tap Turn on sync to re-enter.');
+            } else {
+              updateNote("Saved on this device; couldn't reach the cloud.");
+            }
           }
         });
       });
 
       pullRounds();
+      updateNote();
     }
 
     setupChecklist();

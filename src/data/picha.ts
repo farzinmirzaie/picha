@@ -740,7 +740,8 @@ export const lullaby = {
   detail:
     'There is one specific song, and she is unconscious before it ends. The staff keep it cued for lights-out; the effect is frankly suspicious. When she will not settle, this is the cheat code.',
   cta: 'Play her lullaby',
-  url: 'https://youtu.be/dN8MQpcW_P4?si=UOiS5x15keGLzOPO',
+  videoId: 'dN8MQpcW_P4',
+  url: 'https://www.youtube.com/watch?v=dN8MQpcW_P4',
 };
 
 export const safety: CareItem[] = [
