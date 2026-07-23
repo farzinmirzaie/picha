@@ -3,6 +3,8 @@ import { Icon } from 'astro-icon/components';
 import Layout from '../../layouts/Layout.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import Footer from '../../components/Footer.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import IconBadge from '../../components/IconBadge.astro';
 import { supabaseClient } from '../../data/supabase';
 ---
 
@@ -33,12 +35,7 @@ import { supabaseClient } from '../../data/supabase';
         autocomplete="off"
         class="w-full max-w-sm rounded-3xl border border-blush-200/70 bg-paper-50 p-6 text-center shadow-sm sm:p-8 dark:border-plum-700 dark:bg-plum-900"
       >
-        <span
-          class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
-          aria-hidden="true"
-        >
-          <Icon name="ph:lock-key" class="h-7 w-7" />
-        </span>
+        <IconBadge icon="ph:lock-key" size="lg" class="mx-auto" />
         <h2 class="font-display mt-4 text-xl font-semibold">Staff only</h2>
         <p class="mt-1.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
           Registrar PIN, please. It is remembered on this device so you only
@@ -89,11 +86,7 @@ import { supabaseClient } from '../../data/supabase';
         </p>
       </div>
 
-      <h2
-        class="mt-8 mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
-      >
-        This device
-      </h2>
+      <SectionLabel class="mt-8 mb-2">This device</SectionLabel>
       <div
         class="overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
       >
@@ -102,12 +95,7 @@ import { supabaseClient } from '../../data/supabase';
           data-staff-forget
           class="flex w-full items-center gap-3.5 px-5 py-4 text-left transition-colors active:bg-blush-100/50 dark:active:bg-plum-800/50"
         >
-          <span
-            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-300"
-            aria-hidden="true"
-          >
-            <Icon name="ph:sign-out" class="h-5 w-5" />
-          </span>
+          <IconBadge icon="ph:sign-out" size="sm" tone="red" />
           <span class="min-w-0 flex-1">
             <span class="block font-bold text-ink-900 dark:text-paper-100">
               Forget the PIN on this device

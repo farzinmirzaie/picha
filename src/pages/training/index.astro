@@ -4,6 +4,8 @@ import Layout from '../../layouts/Layout.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import Footer from '../../components/Footer.astro';
 import TrainingRules from '../../components/TrainingRules.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import IconBadge from '../../components/IconBadge.astro';
 import { trainingCourses } from '../../data/training';
 import { supabaseClient } from '../../data/supabase';
 
@@ -52,11 +54,7 @@ const summaryCaption = (a: number, g: number, s: number) =>
       class="reveal rounded-3xl border border-blush-200/70 bg-paper-50 p-5 dark:border-plum-700 dark:bg-plum-900"
     >
       <div class="flex items-center justify-between gap-2">
-        <span
-          class="text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
-        >
-          Staff progress
-        </span>
+        <SectionLabel tag="span">Staff progress</SectionLabel>
         <span class="text-[11px] font-bold text-ink-400" data-academy-count>
           {doneSteps}/{totalSteps} steps
         </span>
@@ -97,9 +95,7 @@ const summaryCaption = (a: number, g: number, s: number) =>
           aria-label={group.label}
           data-group={group.id}
         >
-          <h2 class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300">
-            {group.label}
-          </h2>
+          <SectionLabel class="reveal mb-2">{group.label}</SectionLabel>
           <div class="space-y-3" data-group-list={group.id}>
             {group.courses.map((c) => (
               <a
@@ -109,12 +105,7 @@ const summaryCaption = (a: number, g: number, s: number) =>
                 data-total={c.steps.length}
                 class="reveal group flex w-full items-center gap-4 rounded-3xl border border-blush-200/70 bg-paper-50 p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-900"
               >
-                <span
-                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
-                  aria-hidden="true"
-                >
-                  <Icon name={c.icon} class="h-5.5 w-5.5" />
-                </span>
+                <IconBadge icon={c.icon} />
                 <span class="min-w-0 flex-1">
                   <span class="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <span class="font-display text-lg font-semibold">{c.title}</span>

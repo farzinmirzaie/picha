@@ -1,0 +1,40 @@
+---
+/**
+ * The round icon "chip" that leads a list row, a card, or a callout. One
+ * consistent circle across the site.
+ *
+ *   <IconBadge icon="ph:scissors" />                 // md / blush (default)
+ *   <IconBadge icon="ph:sign-out" size="sm" tone="red" />
+ *
+ * Decorative by default (aria-hidden); the row's text carries the meaning.
+ */
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  icon: string;
+  /** sm = list rows, md = cards (default), lg = hero/callout. */
+  size?: 'sm' | 'md' | 'lg';
+  tone?: 'blush' | 'amber' | 'red';
+  class?: string;
+}
+const { icon, size = 'md', tone = 'blush', class: cls = '' } = Astro.props;
+const box = { sm: 'h-10 w-10', md: 'h-11 w-11', lg: 'h-14 w-14' };
+const glyph = { sm: 'h-5 w-5', md: 'h-5.5 w-5.5', lg: 'h-7 w-7' };
+const tones = {
+  blush: 'bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300',
+  amber: 'bg-amber-300/30 text-amber-700 dark:bg-amber-700/30 dark:text-amber-300',
+  red: 'bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-300',
+};
+---
+
+<span
+  class:list={[
+    'flex shrink-0 items-center justify-center rounded-full',
+    box[size],
+    tones[tone],
+    cls,
+  ]}
+  aria-hidden="true"
+>
+  <Icon name={icon} class={glyph[size]} />
+</span>

@@ -42,11 +42,15 @@ create table if not exists private.staff_secrets (
   value text not null
 );
 
-create or replace function public.log_weight(p_date date, p_kg numeric, p_pin text)
+-- One place that checks the shared staff PIN. Every write RPC and the Staff
+-- tool's gate call this instead of repeating the lookup; it raises 'wrong pin'
+-- on a mismatch. It lives in the private schema (never exposed over the API);
+-- the SECURITY DEFINER functions below reach it because they run as the owner.
+create or replace function private.verify_staff_pin(p_pin text)
 returns void
 language plpgsql
 security definer
-set search_path = public, private
+set search_path = private
 as $$
 begin
   if not exists (
@@ -55,6 +59,17 @@ begin
   ) then
     raise exception 'wrong pin';
   end if;
+end;
+$$;
+
+create or replace function public.log_weight(p_date date, p_kg numeric, p_pin text)
+returns void
+language plpgsql
+security definer
+set search_path = public, private
+as $$
+begin
+  perform private.verify_staff_pin(p_pin);
   if p_kg <= 0 or p_kg >= 20 then
     raise exception 'implausible weight';
   end if;
@@ -99,12 +114,7 @@ security definer
 set search_path = public, private
 as $$
 begin
-  if not exists (
-    select 1 from private.staff_secrets
-    where name = 'weight_pin' and value = p_pin
-  ) then
-    raise exception 'wrong pin';
-  end if;
+  perform private.verify_staff_pin(p_pin);
   insert into public.picha_training (slug, steps_done, started_on, updated_at)
   values (p_slug, p_steps_done, p_started_on, now())
   on conflict (slug) do update
@@ -152,12 +162,7 @@ as $$
 declare
   cur text[];
 begin
-  if not exists (
-    select 1 from private.staff_secrets
-    where name = 'weight_pin' and value = p_pin
-  ) then
-    raise exception 'wrong pin';
-  end if;
+  perform private.verify_staff_pin(p_pin);
   -- read-modify-write in plpgsql (no self-referential ON CONFLICT expression,
   -- which Postgres rejects when schema-qualified)
   select done into cur from public.picha_rounds where date = p_date;
@@ -193,12 +198,7 @@ security definer
 set search_path = public, private
 as $$
 begin
-  if not exists (
-    select 1 from private.staff_secrets
-    where name = 'weight_pin' and value = p_pin
-  ) then
-    raise exception 'wrong pin';
-  end if;
+  perform private.verify_staff_pin(p_pin);
 end;
 $$;
 

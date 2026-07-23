@@ -1,0 +1,42 @@
+---
+/**
+ * The little uppercase "eyebrow" heading used above almost every section
+ * (Grooming, The ledger, House rules, etc.). Put the text in the slot.
+ *
+ *   <SectionLabel class="reveal mb-2">Grooming</SectionLabel>
+ *   <SectionLabel tone="red" icon="ph:prohibit" tag="h3">Never within reach</SectionLabel>
+ *
+ * Spacing/reveal come from the caller via `class` (they vary per use).
+ */
+import { Icon } from 'astro-icon/components';
+
+type Tone = 'blush' | 'red' | 'amber';
+
+interface Props {
+  /** Colour family. Default blush; red for warnings, amber for medical. */
+  tone?: Tone;
+  /** Optional leading icon (renders inline). */
+  icon?: string;
+  /** Element to render as (h2 default; h3/p/span where the outline needs it). */
+  tag?: 'h2' | 'h3' | 'p' | 'span';
+  class?: string;
+}
+const { tone = 'blush', icon, tag: Tag = 'h2', class: cls = '' } = Astro.props;
+const tones: Record<Tone, string> = {
+  blush: 'text-blush-500 dark:text-blush-300',
+  red: 'text-red-500 dark:text-red-300',
+  amber: 'text-amber-700 dark:text-amber-300',
+};
+---
+
+<Tag
+  class:list={[
+    'text-[11px] font-bold tracking-[0.24em] uppercase',
+    tones[tone],
+    icon && 'flex items-center gap-1.5',
+    cls,
+  ]}
+>
+  {icon && <Icon name={icon} class="h-3.5 w-3.5" aria-hidden="true" />}
+  <slot />
+</Tag>

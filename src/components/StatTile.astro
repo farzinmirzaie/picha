@@ -1,0 +1,58 @@
+---
+/**
+ * A single stat tile for a StatStrip carousel (icon + label header, big value,
+ * small sub-line). Give dynamic tiles their client hooks via valueAttrs /
+ * subAttrs (e.g. data-age, data-stat), NOT by hand-writing the markup.
+ *
+ *   <StatTile icon="ph:cake" label="Age" value={ageLabel()} valueAttrs={{ 'data-age': true }} sub="adult at ~1.5-2 years" />
+ *
+ * Do NOT add `.reveal` here — StatStrip reveals the whole strip as one unit.
+ */
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  icon: string;
+  label: string;
+  value: string;
+  sub?: string;
+  truncateSub?: boolean;
+  /** Extra attributes spread onto the value <p> (client hooks/data-attrs). */
+  valueAttrs?: Record<string, unknown>;
+  /** Extra attributes spread onto the sub <p>. */
+  subAttrs?: Record<string, unknown>;
+  class?: string;
+}
+const {
+  icon,
+  label,
+  value,
+  sub,
+  truncateSub = false,
+  valueAttrs = {},
+  subAttrs = {},
+  class: cls = '',
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'min-w-[8.5rem] shrink-0 snap-start rounded-2xl border border-blush-200/70 bg-paper-50 p-4 dark:border-plum-700 dark:bg-plum-900',
+    cls,
+  ]}
+>
+  <div class="flex items-center gap-1.5 text-blush-500 dark:text-blush-300">
+    <Icon name={icon} class="h-4 w-4" aria-hidden="true" />
+    <span class="text-[10px] font-bold tracking-[0.14em] uppercase">{label}</span>
+  </div>
+  <p class="font-display mt-1.5 text-xl font-semibold" {...valueAttrs}>{value}</p>
+  {
+    sub && (
+      <p
+        class:list={['mt-0.5 text-[11px] leading-tight text-ink-400', truncateSub && 'truncate']}
+        {...subAttrs}
+      >
+        {sub}
+      </p>
+    )
+  }
+</div>

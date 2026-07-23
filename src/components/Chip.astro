@@ -1,0 +1,38 @@
+---
+/**
+ * Small pill/badge (a status or meta tag): "Next up", "every 2 months",
+ * "at the vet". Put the label in the slot.
+ *
+ *   <Chip tone="amber">Next up</Chip>
+ *   <Chip icon="ph:map-pin">at the vet</Chip>
+ *
+ * Note: chips whose look is toggled by client scripts (the training status
+ * chip, the weight delta chip) stay inline with their own class:list — this is
+ * for the static ones.
+ */
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  tone?: 'neutral' | 'amber' | 'blushSolid';
+  icon?: string;
+  class?: string;
+}
+const { tone = 'neutral', icon, class: cls = '' } = Astro.props;
+const tones = {
+  neutral: 'bg-paper-200 text-ink-600 dark:bg-plum-800 dark:text-ink-400',
+  amber: 'bg-amber-300/40 text-amber-700 dark:bg-amber-700/30 dark:text-amber-300',
+  blushSolid: 'bg-blush-600 text-white',
+};
+---
+
+<span
+  class:list={[
+    'rounded-full px-2.5 py-0.5 text-[11px] font-bold',
+    icon && 'inline-flex items-center gap-1',
+    tones[tone],
+    cls,
+  ]}
+>
+  {icon && <Icon name={icon} class="h-3 w-3" aria-hidden="true" />}
+  <slot />
+</span>

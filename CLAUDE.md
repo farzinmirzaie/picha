@@ -57,11 +57,22 @@ src/
                        # (desktop accordion after the ledger + mobile dialog
                        # opened from the app-bar action)
     Footer.astro       # paw divider + credits — desktop-only unless `showOnMobile`
-    StatStrip.astro    # reusable snap-scroll stat-tile carousel (Health vitals +
-                       # Weight stats): edge fade gradients that appear only when
-                       # there's more to scroll, and reveals as one unit so every
-                       # tile (incl. off-screen) is loaded, not popping in on scroll.
-                       # Tiles go in the slot; DON'T give them `.reveal`.
+    # --- UI primitives (reuse these; see § Reusable components) ---
+    SectionLabel.astro # the uppercase "eyebrow" heading above nearly every
+                       # section. Slot = text; tone blush|red|amber; optional
+                       # icon; tag h2|h3|p|span; spacing/reveal via `class`.
+    IconBadge.astro    # the round icon circle that leads a row/card/callout.
+                       # size sm|md|lg, tone blush|amber|red.
+    Chip.astro         # small pill/badge (status or meta tag). tone
+                       # neutral|amber|blushSolid, optional leading icon.
+                       # (JS-toggled chips stay inline — see the component.)
+    StatStrip.astro    # snap-scroll stat-tile carousel (Health vitals + Weight
+                       # stats): edge fade gradients that show only when there's
+                       # more to scroll, and reveals as one unit so every tile
+                       # (incl. off-screen) is loaded, not popping in on scroll.
+    StatTile.astro     # one tile inside a StatStrip. Dynamic tiles pass client
+                       # hooks via valueAttrs/subAttrs (data-age, data-stat, …),
+                       # never hand-written markup. DON'T add `.reveal`.
   pages/
     index.astro        # Home — hero, share dialog (QR), story, get-to-know-her
     health.astro       # Health — vitals strip, segmented timeline, emergency
@@ -90,6 +101,32 @@ supabase/schema.sql    # picha_weights table + RLS + seed (run in SQL editor)
 .github/workflows/deploy.yml  # build + deploy Pages + auto-release + nightly cron
 astro.config.mjs       # site + base (GitHub Pages project site) + sitemap
 ```
+
+### Reusable components (reach for these first)
+
+Before hand-writing markup, check whether a component already covers it — the
+UI is built from a small set of primitives, and consistency depends on reusing
+them. If you find yourself repeating a class string across pages, that's the
+signal to extract a new component (and document it here), not copy-paste.
+
+- **`SectionLabel`** — every uppercase eyebrow heading ("Grooming", "The
+  ledger", "House rules"). Never hand-write the `text-[11px] … tracking-[0.24em]
+  … uppercase` string again.
+- **`IconBadge`** — the round icon circle leading a row/card/callout
+  (`sm`/`md`/`lg`, `blush`/`amber`/`red`).
+- **`Chip`** — a small status/meta pill. (A chip whose look is toggled by a
+  client script stays inline with its own `class:list` — the component is for
+  static ones.)
+- **`StatStrip` + `StatTile`** — the snap-scroll stat carousel and its tiles
+  (Health vitals, Weight stats). Dynamic tiles get client hooks via
+  `valueAttrs`/`subAttrs`; never re-hand-roll a tile or the strip.
+- **`PageHeader`, `Footer`, `Nav`** — page chrome. **`TrainingRules`,
+  `WeighInForm`, `PassportDialog`, `ShareDialog`** — feature blocks.
+- **Dialogs**: use `dialog.sheet` + `bindDialog()` (lib/dialog.ts), never a
+  bespoke modal (see § PWA native patterns).
+
+Gotcha: don't name an Astro component prop `as` — it silently breaks Astro's
+`Props` typing (use `tag`, as `SectionLabel` does).
 
 ### Supabase (cloud data)
 
@@ -329,10 +366,9 @@ installed clients pick them up.
   Verify a name exists in `@iconify-json/ph/icons.json` before using it
   (`comb` doesn't — we use `paint-brush`). Emoji only survive in <title> tags.
 - **Tabs**: Home / Health / Care / Tools. Safety was folded into Care
-  (house rules + toxic list + if-found); `/safety` redirects to `/care` via
-  astro.config `redirects` — note the destination must include the `/picha`
-  base. New tools: build the page, list it on tools.astro, or give it a TABS
-  entry (keep the mobile grid-cols in sync with the tab count).
+  (house rules + toxic list + if-found). New tools: build the page, list it on
+  tools.astro, or give it a TABS entry (keep the mobile grid-cols in sync with
+  the tab count).
 - **Accessibility**: images have real `alt` (decorative ones use `alt=""`);
   decorative emoji use `aria-hidden`. Keep it that way.
 - Run `pnpm build` before committing — it typechecks and must pass clean.

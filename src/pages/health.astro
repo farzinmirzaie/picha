@@ -4,6 +4,10 @@ import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
 import StatStrip from '../components/StatStrip.astro';
+import StatTile from '../components/StatTile.astro';
+import SectionLabel from '../components/SectionLabel.astro';
+import IconBadge from '../components/IconBadge.astro';
+import Chip from '../components/Chip.astro';
 import {
   vet,
   contact,
@@ -90,68 +94,36 @@ const segments = [
   <StatStrip label="Vitals" class="pt-5">
     {
       next && (
-        <div class="min-w-[8.5rem] shrink-0 snap-start rounded-2xl border border-blush-200/70 bg-paper-50 p-4 dark:border-plum-700 dark:bg-plum-900">
-          <div class="flex items-center gap-1.5 text-blush-500 dark:text-blush-300">
-            <Icon name="ph:calendar-check" class="h-4 w-4" aria-hidden="true" />
-            <span class="text-[10px] font-bold tracking-[0.14em] uppercase">
-              Next due
-            </span>
-          </div>
-          <p class="font-display mt-1.5 text-xl font-semibold">
-            {shortLabel(next.date!)}
-          </p>
-          <p class="mt-0.5 truncate text-[11px] leading-tight text-ink-400">
-            {next.title}
-          </p>
-        </div>
+        <StatTile
+          icon="ph:calendar-check"
+          label="Next due"
+          value={shortLabel(next.date!)}
+          sub={next.title}
+          truncateSub
+        />
       )
     }
-
-    <div
-      class="min-w-[8.5rem] shrink-0 snap-start rounded-2xl border border-blush-200/70 bg-paper-50 p-4 dark:border-plum-700 dark:bg-plum-900"
-    >
-      <div class="flex items-center gap-1.5 text-blush-500 dark:text-blush-300">
-        <Icon name="ph:scales" class="h-4 w-4" aria-hidden="true" />
-        <span class="text-[10px] font-bold tracking-[0.14em] uppercase">Weight</span>
-      </div>
-      <p
-        class="font-display mt-1.5 text-xl font-semibold"
-        data-weight-live
-        data-supabase-url={supabaseClient?.url}
-        data-supabase-key={supabaseClient?.key}
-      >
-        {currentWeight.label}
-      </p>
-      <p class="mt-0.5 text-[11px] leading-tight text-ink-400">
-        target {weight.healthyTarget}
-      </p>
-    </div>
-
-    <div
-      class="min-w-[8.5rem] shrink-0 snap-start rounded-2xl border border-blush-200/70 bg-paper-50 p-4 dark:border-plum-700 dark:bg-plum-900"
-    >
-      <div class="flex items-center gap-1.5 text-blush-500 dark:text-blush-300">
-        <Icon name="ph:cake" class="h-4 w-4" aria-hidden="true" />
-        <span class="text-[10px] font-bold tracking-[0.14em] uppercase">Age</span>
-      </div>
-      <p class="font-display mt-1.5 text-xl font-semibold" data-age>{ageLabel()}</p>
-      <p class="mt-0.5 text-[11px] leading-tight text-ink-400">
-        adult at ~1.5–2 years
-      </p>
-    </div>
-
+    <StatTile
+      icon="ph:scales"
+      label="Weight"
+      value={currentWeight.label}
+      valueAttrs={{
+        'data-weight-live': true,
+        'data-supabase-url': supabaseClient?.url,
+        'data-supabase-key': supabaseClient?.key,
+      }}
+      sub={`target ${weight.healthyTarget}`}
+    />
+    <StatTile
+      icon="ph:cake"
+      label="Age"
+      value={ageLabel()}
+      valueAttrs={{ 'data-age': true }}
+      sub="adult at ~1.5–2 years"
+    />
     {
       clinicalStatus.map((s) => (
-        <div class="min-w-[8.5rem] shrink-0 snap-start rounded-2xl border border-blush-200/70 bg-paper-50 p-4 dark:border-plum-700 dark:bg-plum-900">
-          <div class="flex items-center gap-1.5 text-blush-500 dark:text-blush-300">
-            <Icon name={s.icon} class="h-4 w-4" aria-hidden="true" />
-            <span class="text-[10px] font-bold tracking-[0.14em] uppercase">
-              {s.label}
-            </span>
-          </div>
-          <p class="font-display mt-1.5 text-xl font-semibold">{s.value}</p>
-          <p class="mt-0.5 truncate text-[11px] leading-tight text-ink-400">{s.sub}</p>
-        </div>
+        <StatTile icon={s.icon} label={s.label} value={s.value} sub={s.sub} truncateSub />
       ))
     }
   </StatStrip>
@@ -161,27 +133,17 @@ const segments = [
   {
     treatment.length > 0 && (
       <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Doctor's orders">
-        <h2 class="reveal mb-2 flex items-center gap-1.5 text-[11px] font-bold tracking-[0.24em] text-amber-700 uppercase dark:text-amber-300">
-          <Icon name="ph:stethoscope" class="h-3.5 w-3.5" aria-hidden="true" />
+        <SectionLabel tone="amber" icon="ph:stethoscope" class="reveal mb-2">
           Doctor's orders
-        </h2>
+        </SectionLabel>
         <div class="space-y-3">
           {treatment.map((t) => (
             <div class="reveal flex items-start gap-4 rounded-3xl border border-amber-300/60 bg-paper-50 p-6 dark:border-amber-700/40 dark:bg-plum-900">
-              <span
-                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-300/30 text-amber-700 dark:bg-amber-700/30 dark:text-amber-300"
-                aria-hidden="true"
-              >
-                <Icon name={t.icon} class="h-5.5 w-5.5" />
-              </span>
+              <IconBadge icon={t.icon} tone="amber" />
               <div>
                 <div class="flex flex-wrap items-center gap-2">
                   <h3 class="font-display text-lg font-semibold">{t.title}</h3>
-                  {t.cadence && (
-                    <span class="rounded-full bg-amber-300/30 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:bg-amber-700/30 dark:text-amber-300">
-                      {t.cadence}
-                    </span>
-                  )}
+                  {t.cadence && <Chip tone="amber">{t.cadence}</Chip>}
                 </div>
                 <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
                   {t.detail}
@@ -254,23 +216,11 @@ const segments = [
               <h3 class="font-display pt-1 text-lg font-semibold">{e.title}</h3>
               {(i === 0 || e.everyLabel || e.where) && (
                 <div class="mt-1 mb-0.5 flex flex-wrap items-center gap-1.5">
-                  {i === 0 && (
-                    <span class="rounded-full bg-amber-300/40 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:bg-amber-700/30 dark:text-amber-300">
-                      Next up
-                    </span>
-                  )}
+                  {i === 0 && <Chip tone="amber">Next up</Chip>}
                   {e.everyLabel && (
-                    <span class="inline-flex items-center gap-1 rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-600 dark:bg-plum-800 dark:text-ink-400">
-                      <Icon name="ph:arrow-clockwise" class="h-3 w-3" aria-hidden="true" />
-                      {e.everyLabel}
-                    </span>
+                    <Chip icon="ph:arrow-clockwise">{e.everyLabel}</Chip>
                   )}
-                  {e.where && (
-                    <span class="inline-flex items-center gap-1 rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-600 dark:bg-plum-800 dark:text-ink-400">
-                      <Icon name="ph:map-pin" class="h-3 w-3" aria-hidden="true" />
-                      {e.where}
-                    </span>
-                  )}
+                  {e.where && <Chip icon="ph:map-pin">{e.where}</Chip>}
                 </div>
               )}
               <p class="text-xs font-bold text-amber-700/80 dark:text-amber-300/80">

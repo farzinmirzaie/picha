@@ -1,6 +1,7 @@
 ---
 /** The Academy's session rules card — shared by the hub and course pages. */
 import { Icon } from 'astro-icon/components';
+import SectionLabel from './SectionLabel.astro';
 import { trainingRules } from '../data/picha';
 
 interface Props {
@@ -14,11 +15,7 @@ const { padTop = 'pt-8' } = Astro.props;
   class:list={['mx-auto w-full max-w-2xl px-5 pb-8 md:pb-0', padTop]}
   aria-label="Session rules"
 >
-  <h2
-    class="reveal mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
-  >
-    Session rules
-  </h2>
+  <SectionLabel class="reveal mb-2">Session rules</SectionLabel>
   <div
     class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
   >
