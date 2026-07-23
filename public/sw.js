@@ -3,13 +3,14 @@
  * Scope is /picha/ (served from that path on GitHub Pages).
  * Bump CACHE when the precache list or site structure changes.
  */
-const CACHE = 'picha-v9';
+const CACHE = 'picha-v10';
 const BASE = '/picha/';
 const PRECACHE = [
   BASE,
   `${BASE}health/`,
   `${BASE}care/`,
   `${BASE}tools/`,
+  `${BASE}tools/staff/`,
   `${BASE}weight/`,
   `${BASE}cat-years/`,
   `${BASE}training/`,
