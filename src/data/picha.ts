@@ -940,24 +940,3 @@ export const felineStages = [
     blurb: 'Legendary status. Every sunbeam in the house is reserved.',
   },
 ];
-
-/**
- * Human label for a day count relative to today, kept readable at any size:
- * "today", "tomorrow", "in 12 days", "in 2 months and 4 days". Shared by the
- * [data-until] client script and any build-time countdown copy.
- */
-export function inDaysLabel(days: number): string {
-  if (days === 0) return 'today';
-  if (days === 1) return 'tomorrow';
-  if (days === -1) return 'yesterday';
-  const abs = Math.abs(days);
-  const months = Math.floor(abs / 30);
-  const rem = abs % 30;
-  const span =
-    months >= 1
-      ? `${months} month${months > 1 ? 's' : ''}${
-          rem ? ` and ${rem} day${rem > 1 ? 's' : ''}` : ''
-        }`
-      : `${abs} days`;
-  return days > 0 ? `in ${span}` : `${span} ago`;
-}

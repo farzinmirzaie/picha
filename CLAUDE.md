@@ -41,11 +41,11 @@ src/
                        # (picha_weights) with seed fallback — server-only import
   data/training.ts     # build-time loader: training progress from Supabase
                        # (picha_training) merged into the picha.ts catalogue
-  lib/dates.ts         # shared date helpers (dateLabel/shortLabel/addDays)
+  lib/dates.ts         # shared date helpers (dateLabel/shortLabel/addDays/inDaysLabel)
   lib/weight-viz.ts    # weight chart/stats renderers (build + client, no drift)
   lib/sb.ts            # Supabase REST/RPC helpers for client scripts
   layouts/Layout.astro # <html> shell, fonts, PWA, ClientRouter, shared scripts
-  components/
+  components/          # feature blocks + page chrome (design primitives in ui/)
     Nav.astro          # tab nav: desktop pill bar + mobile bottom tab bar (TABS array)
     PageHeader.astro   # sub-page header (kicker, serif title, blurb; avatar md+ only)
     PassportDialog.astro # the pet-passport <dialog> + opener script — include once
@@ -57,20 +57,20 @@ src/
                        # (desktop accordion after the ledger + mobile dialog
                        # opened from the app-bar action)
     Footer.astro       # paw divider + credits — desktop-only unless `showOnMobile`
-    # --- UI primitives (reuse these; see § Reusable components) ---
-    SectionLabel.astro # the uppercase "eyebrow" heading above nearly every
+    ui/                # reusable design primitives — reach for these first
+      SectionLabel.astro # the uppercase "eyebrow" heading above nearly every
                        # section. Slot = text; tone blush|red|amber; optional
                        # icon; tag h2|h3|p|span; spacing/reveal via `class`.
-    IconBadge.astro    # the round icon circle that leads a row/card/callout.
+      IconBadge.astro  # the round icon circle that leads a row/card/callout.
                        # size sm|md|lg, tone blush|amber|red.
-    Chip.astro         # small pill/badge (status or meta tag). tone
+      Chip.astro       # small pill/badge (status or meta tag). tone
                        # neutral|amber|blushSolid, optional leading icon.
                        # (JS-toggled chips stay inline — see the component.)
-    StatStrip.astro    # snap-scroll stat-tile carousel (Health vitals + Weight
+      StatStrip.astro  # snap-scroll stat-tile carousel (Health vitals + Weight
                        # stats): edge fade gradients that show only when there's
                        # more to scroll, and reveals as one unit so every tile
                        # (incl. off-screen) is loaded, not popping in on scroll.
-    StatTile.astro     # one tile inside a StatStrip. Dynamic tiles pass client
+      StatTile.astro   # one tile inside a StatStrip. Dynamic tiles pass client
                        # hooks via valueAttrs/subAttrs (data-age, data-stat, …),
                        # never hand-written markup. DON'T add `.reveal`.
   pages/
@@ -275,8 +275,8 @@ swaps):
 
 - `[data-age]` spans → refilled via `ageLabel()` from `src/data/picha.ts`
   (fractional months to one decimal, e.g. "~7.7 months old").
-- `[data-until="YYYY-MM-DD"]` spans → filled with `inDaysLabel()` (also in
-  picha.ts): "today"/"tomorrow"/"in 12 days", and month+day phrasing past 30
+- `[data-until="YYYY-MM-DD"]` spans → filled with `inDaysLabel()` (in
+  `lib/dates.ts`): "today"/"tomorrow"/"in 12 days", and month+day phrasing past 30
   days ("in 2 months and 4 days"). Dates more than ~2 months out get no
   countdown at all. Past dates show the `data-overdue` text if set, else the
   confirm-with-the-vet note.

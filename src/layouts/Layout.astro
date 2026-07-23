@@ -131,7 +131,8 @@ const appTitle = appTitleProp ?? tabTitles[current] ?? 'Picha';
     </main>
 
     <script>
-      import { ageLabel, inDaysLabel } from '../data/picha';
+      import { ageLabel } from '../data/picha';
+      import { inDaysLabel } from '../lib/dates';
 
       // Everything here re-runs after ClientRouter page swaps (astro:page-load).
       function hydrate() {

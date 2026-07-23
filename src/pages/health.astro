@@ -3,11 +3,11 @@ import { Icon } from 'astro-icon/components';
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
-import StatStrip from '../components/StatStrip.astro';
-import StatTile from '../components/StatTile.astro';
-import SectionLabel from '../components/SectionLabel.astro';
-import IconBadge from '../components/IconBadge.astro';
-import Chip from '../components/Chip.astro';
+import StatStrip from '../components/ui/StatStrip.astro';
+import StatTile from '../components/ui/StatTile.astro';
+import SectionLabel from '../components/ui/SectionLabel.astro';
+import IconBadge from '../components/ui/IconBadge.astro';
+import Chip from '../components/ui/Chip.astro';
 import {
   vet,
   contact,
@@ -18,11 +18,10 @@ import {
   callVetIf,
   clinicalStatus,
   ageLabel,
-  inDaysLabel,
 } from '../data/picha';
 import { currentWeight } from '../data/weights';
 import { supabaseClient } from '../data/supabase';
-import { dateLabel, shortLabel, addDays } from '../lib/dates';
+import { dateLabel, shortLabel, addDays, inDaysLabel } from '../lib/dates';
 
 // Split the timeline by date: past = done, future = coming up (soonest first,
 // the first one is "next"), undated = still to book. The split is computed at

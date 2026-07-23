@@ -33,10 +33,9 @@ import {
   safety,
   toxicItems,
   callVetIf,
-  inDaysLabel,
 } from '../data/picha';
 
-import { addDays } from '../lib/dates';
+import { addDays, inDaysLabel } from '../lib/dates';
 
 const SITE = 'https://farzinmirzaie.github.io/picha';
 const today = new Date().toISOString().slice(0, 10);
