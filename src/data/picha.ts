@@ -98,6 +98,8 @@ export const vet = {
   status: 'Auditioning vets; no permanent hire yet',
   recentClinic: 'HP Vet (Pusat Veterinar Healing Pets), Damansara Utama, PJ',
   recentPhone: '03-7732 8878',
+  /** Query for the maps directions link (clinic name + area). */
+  mapsQuery: 'Pusat Veterinar Healing Pets, Damansara Utama',
 };
 
 /** Owner contact — shown publicly so the page doubles as a "if found" tag. */
