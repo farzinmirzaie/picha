@@ -268,6 +268,10 @@ const sinceLabel =
 
     type CourseState = { stepsDone: number; startedOn: string | null };
 
+    // Set by setupCourse to the latest live re-fetch, for the foreground
+    // listeners at the bottom of the script.
+    let liveRefresh: (() => void) | null = null;
+
     function setupCourse() {
       const root = document.querySelector<HTMLElement>('[data-course]');
       if (!root || root.dataset.bound) return;
@@ -412,6 +416,7 @@ const sinceLabel =
             /* offline: built state stands */
           }
         };
+        liveRefresh = refresh;
 
         // known staff device: keep the controls ready to use
         if (staffPin()) q('[data-registrar]')?.setAttribute('open', '');
@@ -513,5 +518,15 @@ const sinceLabel =
 
     setupCourse();
     document.addEventListener('astro:page-load', setupCourse);
+    // Re-pull progress when the tab/app returns to the foreground.
+    const revalidateCourse = () => {
+      if (document.querySelector('[data-course]')) liveRefresh?.();
+    };
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') revalidateCourse();
+    });
+    window.addEventListener('pageshow', (e) => {
+      if ((e as PageTransitionEvent).persisted) revalidateCourse();
+    });
   </script>
 </Layout>

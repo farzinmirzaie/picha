@@ -459,5 +459,14 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
       setupSegments();
       refreshWeightTile();
     });
+
+    // Refresh the weight tile when the tab/app returns to the foreground, so a
+    // weigh-in logged elsewhere shows up without a manual reload.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') refreshWeightTile();
+    });
+    window.addEventListener('pageshow', (e) => {
+      if ((e as PageTransitionEvent).persisted) refreshWeightTile();
+    });
   </script>
 </Layout>

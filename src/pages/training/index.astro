@@ -166,13 +166,11 @@ const summaryCaption = (a: number, g: number, s: number) =>
   <script>
     // Live progress: re-fetch on load, update step counts and regroup cards
     // (in session / syllabus / graduated). Built HTML is the offline fallback.
-    function setupAcademy() {
+    function refreshAcademy() {
       const root = document.querySelector<HTMLElement>('[data-academy]');
-      if (!root || root.dataset.bound) return;
-      root.dataset.bound = '1';
-      const url = root.dataset.supabaseUrl;
-      const key = root.dataset.supabaseKey;
-      if (!url || !key) return;
+      const url = root?.dataset.supabaseUrl;
+      const key = root?.dataset.supabaseKey;
+      if (!root || !url || !key) return;
 
       (async () => {
         try {
@@ -243,7 +241,14 @@ const summaryCaption = (a: number, g: number, s: number) =>
       })();
     }
 
-    setupAcademy();
-    document.addEventListener('astro:page-load', setupAcademy);
+    refreshAcademy();
+    document.addEventListener('astro:page-load', refreshAcademy);
+    // Re-pull progress when the tab/app returns to the foreground.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') refreshAcademy();
+    });
+    window.addEventListener('pageshow', (e) => {
+      if ((e as PageTransitionEvent).persisted) refreshAcademy();
+    });
   </script>
 </Layout>

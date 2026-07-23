@@ -254,6 +254,10 @@ const bandNote =
     import { sbSelect, sbRpc } from '../lib/sb';
     import { staffPin, forgetStaffPin, applyStaffVisibility } from '../lib/staff';
 
+    // Set by setupWeightLive to the latest live re-fetch, so the foreground
+    // listeners below can call it without threading closures around.
+    let liveRefresh: (() => void) | null = null;
+
     function render(entries: WeightEntry[]) {
       if (!entries.length) return;
       const { heaviest, lightest, average, latest, previous, deltaG } =
@@ -398,6 +402,7 @@ const bandNote =
           /* offline or blocked: the built-in data stands */
         }
       };
+      liveRefresh = refresh;
 
       forms.forEach((form) => {
         form.dataset.bound = '1';
@@ -421,5 +426,18 @@ const bandNote =
 
     setupWeightLive();
     document.addEventListener('astro:page-load', setupWeightLive);
+
+    // Re-pull the ledger when the tab/app returns to the foreground (resumed
+    // from background, refocused, or restored from the back-forward cache), so
+    // a weigh-in logged elsewhere shows up without a manual reload.
+    const revalidate = () => {
+      if (document.querySelector('[data-weight-chart]')) liveRefresh?.();
+    };
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') revalidate();
+    });
+    window.addEventListener('pageshow', (e) => {
+      if ((e as PageTransitionEvent).persisted) revalidate();
+    });
   </script>
 </Layout>

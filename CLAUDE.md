@@ -154,10 +154,13 @@ picha.ts when they're missing or the fetch fails — builds never break. Never
 import weights.ts from client scripts.
 
 On top of the build-time render, the weight page is **live**: its client
-script re-fetches the ledger on every visit and re-renders chart + stats +
-ledger via the shared `src/lib/weight-viz.ts` module (pure string/DOM
-renderers used by both build and client — keep them in sync by construction,
-don't fork the markup). The anon key is embedded in the page on purpose: RLS
+script re-fetches the ledger on every visit (on load, on ClientRouter
+`astro:page-load`, and when the tab/app returns to the foreground —
+`visibilitychange`/`pageshow`, so a weigh-in logged elsewhere shows up without
+a manual reload) and re-renders chart + stats + ledger via the shared
+`src/lib/weight-viz.ts` module (pure string/DOM renderers used by both build
+and client — keep them in sync by construction, don't fork the markup). The
+Health weight tile and the Training hub/course pages revalidate the same way. The anon key is embedded in the page on purpose: RLS
 allows `select` only. **Writes** go through the entry form on the weight
 page, which calls the `log_weight` RPC — a SECURITY DEFINER function that
 checks a staff PIN stored in the `private` schema (set it once in SQL; see
@@ -309,8 +312,13 @@ push rebuilds — only the countdown chips are client-side.)
 The site installs as an app (Add to Home Screen / install icon):
 
 - `public/manifest.webmanifest` — name, icons, `start_url`/`scope` = `/picha/`.
-- `public/sw.js` — service worker (network-first pages, cache-first assets).
-  Bump `CACHE` (`picha-vN`) when the precache list changes.
+- `public/sw.js` — service worker. Pages/HTML use **stale-while-revalidate**
+  (serve the cached shell instantly, refresh the cache in the background) so
+  in-app ClientRouter navigations — which are NOT `mode:'navigate'` and would
+  otherwise hit the cache-first path and go stale — stay current without a
+  manual reload; hashed assets are cache-first; cross-origin (Supabase) is never
+  cached, so live data is always fresh. Bump `CACHE` (`picha-vN`) when the
+  precache list OR the fetch strategy changes.
 - Registration + `<link rel="manifest">` + apple-touch meta live in
   `src/layouts/Layout.astro`. Use the `asset()` helper for base-prefixed URLs
   (BASE_URL already ends in `/` — don't double the slash).
