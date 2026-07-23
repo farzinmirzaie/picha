@@ -1,0 +1,220 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '../../layouts/Layout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Footer from '../../components/Footer.astro';
+import { supabaseClient } from '../../data/supabase';
+---
+
+<Layout
+  title="Staff · Picha 🐾"
+  description="Staff quarters: the registrar PIN lives here, for the humans on payroll."
+  current="tools"
+  appTitle="Staff"
+>
+  <PageHeader
+    kicker="Staff"
+    title="The staff room"
+    blurb="Members only. This is where the registrar PIN is kept, unlocking the weigh-in ledger, the Academy records and the daily rounds sync across your devices."
+  />
+
+  <section
+    class="mx-auto w-full max-w-2xl px-5 pt-4 pb-8 md:pb-0"
+    aria-label="Staff controls"
+    data-staff
+    data-supabase-url={supabaseClient?.url}
+    data-supabase-key={supabaseClient?.key}
+  >
+    <!-- Locked: the PIN gate. Shown until a PIN is present on this device. -->
+    <div data-staff-lock class="reveal">
+      <form
+        data-staff-form
+        autocomplete="off"
+        class="mx-auto max-w-sm rounded-3xl border border-blush-200/70 bg-paper-50 p-6 text-center shadow-sm sm:p-8 dark:border-plum-700 dark:bg-plum-900"
+      >
+        <span
+          class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
+          aria-hidden="true"
+        >
+          <Icon name="ph:lock-key" class="h-7 w-7" />
+        </span>
+        <h2 class="font-display mt-4 text-xl font-semibold">Staff only</h2>
+        <p class="mt-1.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+          Registrar PIN, please. It is remembered on this device so you only
+          type it once.
+        </p>
+        <label class="mt-5 block text-left">
+          <span class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
+            Registrar PIN
+          </span>
+          <input
+            type="password"
+            name="pin"
+            required
+            autocomplete="off"
+            inputmode="numeric"
+            placeholder="staff PIN"
+            class="mt-1 w-full rounded-xl border border-blush-200/70 bg-paper-100 px-3 py-2 text-center text-lg font-bold tracking-[0.3em] outline-none focus:border-blush-400 dark:border-plum-700 dark:bg-plum-950"
+          />
+        </label>
+        <p
+          class="mt-2 hidden text-left text-xs font-bold text-red-500"
+          data-staff-error
+          aria-live="polite"
+        >
+        </p>
+        <button
+          type="submit"
+          class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blush-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:bg-blush-700 active:translate-y-0.5"
+        >
+          <Icon name="ph:lock-key-open" class="h-4.5 w-4.5" aria-hidden="true" />
+          <span data-staff-submit-label>Unlock</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Unlocked: staff controls. Revealed once a PIN is present. -->
+    <div data-staff-panel hidden>
+      <div
+        class="flex items-center gap-3 rounded-2xl border border-blush-200/70 bg-blush-100/40 px-5 py-3.5 dark:border-plum-700 dark:bg-plum-800/40"
+      >
+        <Icon
+          name="ph:shield-check"
+          class="h-5 w-5 shrink-0 text-blush-600 dark:text-blush-300"
+          aria-hidden="true"
+        />
+        <p class="text-sm font-bold text-blush-700 dark:text-blush-300">
+          Signed in. This device can log weigh-ins, Academy progress and rounds.
+        </p>
+      </div>
+
+      <h2
+        class="mt-8 mb-2 text-[11px] font-bold tracking-[0.24em] text-blush-500 uppercase dark:text-blush-300"
+      >
+        This device
+      </h2>
+      <div
+        class="overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
+      >
+        <button
+          type="button"
+          data-staff-forget
+          class="flex w-full items-center gap-3.5 px-5 py-4 text-left transition-colors active:bg-blush-100/50 dark:active:bg-plum-800/50"
+        >
+          <span
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-300"
+            aria-hidden="true"
+          >
+            <Icon name="ph:sign-out" class="h-5 w-5" />
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block font-bold text-ink-900 dark:text-paper-100">
+              Forget the PIN on this device
+            </span>
+            <span class="block text-xs leading-relaxed text-ink-400">
+              Clears the saved PIN here. Other devices are untouched, and the
+              PIN itself never changes.
+            </span>
+          </span>
+          <Icon
+            name="ph:caret-right"
+            class="h-4 w-4 shrink-0 text-ink-400"
+            aria-hidden="true"
+          />
+        </button>
+      </div>
+      <p class="mt-3 px-1 text-[11px] leading-relaxed text-ink-400">
+        More staff controls will move in here over time. For now the room is
+        mostly the coat rack.
+      </p>
+    </div>
+  </section>
+
+  <Footer showOnMobile />
+
+  <script>
+    // The Staff tool: a PIN gate over staff-only controls. The registrar PIN
+    // is the same one the weigh-in ledger, the Academy and the rounds sync use
+    // (localStorage 'picha-staff-pin'); this page is the one place to set it or
+    // forget it. A stored PIN counts as unlocked; entering one verifies it
+    // against the cloud (check_pin) before saving, so a typo can't slip in.
+    const PIN_KEY = 'picha-staff-pin';
+
+    function render() {
+      const root = document.querySelector<HTMLElement>('[data-staff]');
+      if (!root) return;
+      const lock = root.querySelector<HTMLElement>('[data-staff-lock]');
+      const panel = root.querySelector<HTMLElement>('[data-staff-panel]');
+      if (!lock || !panel) return;
+      const unlocked = Boolean(localStorage.getItem(PIN_KEY));
+      lock.hidden = unlocked;
+      panel.hidden = !unlocked;
+    }
+
+    function showError(msg: string) {
+      const el = document.querySelector<HTMLElement>('[data-staff-error]');
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.toggle('hidden', !msg);
+    }
+
+    function setupStaff() {
+      const root = document.querySelector<HTMLElement>('[data-staff]');
+      if (!root || root.dataset.bound) return;
+      root.dataset.bound = '1';
+
+      const url = root.dataset.supabaseUrl;
+      const key = root.dataset.supabaseKey;
+
+      const form = root.querySelector<HTMLFormElement>('[data-staff-form]');
+      form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        showError('');
+        const input = form.elements.namedItem('pin') as HTMLInputElement;
+        const pin = input.value.trim();
+        if (!pin) return;
+
+        const label = form.querySelector<HTMLElement>('[data-staff-submit-label]');
+        const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+
+        // Verify against the cloud when it's configured; without it (offline
+        // build) just trust the entry, the write RPCs will reject a bad PIN.
+        if (url && key) {
+          if (label) label.textContent = 'Checking…';
+          if (submit) submit.disabled = true;
+          try {
+            const { sbRpc } = await import('../../lib/sb');
+            await sbRpc(url, key, 'check_pin', { p_pin: pin });
+          } catch (err) {
+            if (submit) submit.disabled = false;
+            if (label) label.textContent = 'Unlock';
+            showError(
+              String(err).includes('wrong pin')
+                ? 'That PIN was not recognised. Try again.'
+                : "Couldn't reach the cloud to check. Try again in a moment.",
+            );
+            return;
+          }
+          if (submit) submit.disabled = false;
+          if (label) label.textContent = 'Unlock';
+        }
+
+        localStorage.setItem(PIN_KEY, pin);
+        input.value = '';
+        render();
+      });
+
+      const forget = root.querySelector<HTMLButtonElement>('[data-staff-forget]');
+      forget?.addEventListener('click', () => {
+        localStorage.removeItem(PIN_KEY);
+        showError('');
+        render();
+      });
+
+      render();
+    }
+
+    setupStaff();
+    document.addEventListener('astro:page-load', setupStaff);
+  </script>
+</Layout>

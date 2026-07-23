@@ -123,8 +123,16 @@ const slides = Object.entries(slideModules)
       class="mt-2 divide-y divide-paper-300/70 md:grid md:grid-cols-2 md:gap-x-10 md:divide-y-0 dark:divide-plum-800"
     >
       {
-        personality.map((p) => (
-          <li class="reveal flex items-start gap-4 py-5">
+        personality.map((p, i) => (
+          <li
+            class:list={[
+              'reveal flex items-start gap-4 py-5',
+              // an odd last item spans both desktop columns so no gap is left
+              i === personality.length - 1 && personality.length % 2 === 1
+                ? 'md:col-span-2'
+                : '',
+            ]}
+          >
             <span
               class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blush-100 text-blush-600 dark:bg-plum-800 dark:text-blush-300"
               aria-hidden="true"

@@ -178,3 +178,29 @@ $$;
 
 revoke all on function public.set_round(date, text, boolean, text) from public;
 grant execute on function public.set_round(date, text, boolean, text) to anon;
+
+-- ---------------------------------------------------------------------------
+-- PIN gate for the Staff tool (/tools/staff/). Verifies the registrar PIN
+-- without touching any data: raises 'wrong pin' on a mismatch (same message
+-- the write RPCs use) so the client can reuse the shared sbRpc helper. The PIN
+-- itself never leaves the private schema.
+-- ---------------------------------------------------------------------------
+
+create or replace function public.check_pin(p_pin text)
+returns void
+language plpgsql
+security definer
+set search_path = public, private
+as $$
+begin
+  if not exists (
+    select 1 from private.staff_secrets
+    where name = 'weight_pin' and value = p_pin
+  ) then
+    raise exception 'wrong pin';
+  end if;
+end;
+$$;
+
+revoke all on function public.check_pin(text) from public;
+grant execute on function public.check_pin(text) to anon;

@@ -264,63 +264,9 @@ import { supabaseClient } from '../data/supabase';
     </ul>
   </section>
 
-  {
-    supabaseClient && (
-      <dialog id="round-sync" class="sheet sheet-sm" aria-labelledby="round-sync-title">
-        <div class="rounded-2xl bg-paper-50 shadow-2xl max-md:rounded-b-none max-md:pb-[env(safe-area-inset-bottom)] dark:bg-plum-900">
-          <div class="sticky top-0 z-10 flex items-center justify-between bg-blush-600 px-5 py-3">
-            <h2
-              id="round-sync-title"
-              class="text-[11px] font-bold tracking-[0.22em] text-white uppercase"
-            >
-              Turn on sync
-            </h2>
-            <button
-              type="button"
-              data-dialog-close
-              class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition-colors hover:bg-white/35"
-              aria-label="Close"
-            >
-              <Icon name="ph:x" class="h-4 w-4" aria-hidden="true" />
-            </button>
-          </div>
-          <form data-round-sync-form class="p-5" autocomplete="off">
-            <p class="text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-              Enter the staff registrar PIN to share today's rounds across your
-              devices. It is remembered on this device.
-            </p>
-            <label class="mt-4 block">
-              <span class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
-                Registrar PIN
-              </span>
-              <input
-                type="password"
-                name="pin"
-                required
-                autocomplete="off"
-                inputmode="numeric"
-                placeholder="staff PIN"
-                class="mt-1 w-full rounded-xl border border-blush-200/70 bg-paper-100 px-3 py-2 text-sm font-bold outline-none focus:border-blush-400 dark:border-plum-700 dark:bg-plum-950"
-              />
-            </label>
-            <button
-              type="submit"
-              class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blush-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-200 hover:bg-blush-700 active:translate-y-0.5"
-            >
-              <Icon name="ph:check" class="h-4.5 w-4.5" aria-hidden="true" />
-              Turn on sync
-            </button>
-          </form>
-        </div>
-      </dialog>
-    )
-  }
-
   <Footer />
 
   <script>
-    import { bindDialog, animatedClose } from '../lib/dialog';
-
     // "Today's rounds" checklist. Completion is shared across the staff's
     // devices via Supabase (picha_rounds, one row per day of done ids) with a
     // localStorage cache for offline/optimistic use; both reset each day. Item
@@ -374,10 +320,11 @@ import { supabaseClient } from '../data/supabase';
       paint();
     }
 
-    // Sync-state footer: tells the staff whether ticks are shared, and lets
-    // them turn on sync (store the registrar PIN) right here — the PIN is
-    // otherwise only set on the Weight/Training pages, so a Care-only device
-    // would silently stay local.
+    // Sync-state footer: tells the staff whether ticks are shared, and points a
+    // local-only device to the Staff room to enter the registrar PIN (the one
+    // place PIN entry lives now).
+    const staffHref = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/tools/staff/`;
+
     function updateNote(override?: string) {
       const note = document.querySelector<HTMLElement>('[data-rounds-note]');
       if (!note) return;
@@ -403,16 +350,12 @@ import { supabaseClient } from '../data/supabase';
         return;
       }
       note.append('Ticks stay on this device. ');
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className =
+      const link = document.createElement('a');
+      link.href = staffHref;
+      link.className =
         'font-bold text-blush-600 underline decoration-dotted dark:text-blush-300';
-      btn.textContent = 'Turn on sync';
-      btn.addEventListener('click', () => {
-        const dialog = document.getElementById('round-sync') as HTMLDialogElement | null;
-        dialog?.showModal();
-      });
-      note.append(btn);
+      link.textContent = 'Turn on sync';
+      note.append(link);
     }
 
     // Stateless: every paint reads the store fresh, so a day rollover always
@@ -485,7 +428,7 @@ import { supabaseClient } from '../data/supabase';
             // keep the optimistic local state, but tell the staff why
             if (String(err).includes('wrong pin')) {
               localStorage.removeItem(PIN_KEY);
-              updateNote('Wrong PIN. Tap Turn on sync to re-enter.');
+              updateNote('That PIN was rejected. Open the Staff room to re-enter.');
             } else {
               updateNote("Saved on this device; couldn't reach the cloud.");
             }
@@ -495,27 +438,6 @@ import { supabaseClient } from '../data/supabase';
 
       pullRounds();
       updateNote();
-      setupSync();
-    }
-
-    // The "Turn on sync" bottom sheet: store the PIN, then pull + repaint.
-    function setupSync() {
-      const dialog = document.getElementById('round-sync') as HTMLDialogElement | null;
-      if (!dialog || dialog.dataset.bound) return;
-      dialog.dataset.bound = '1';
-      bindDialog(dialog);
-      const form = dialog.querySelector<HTMLFormElement>('[data-round-sync-form]');
-      form?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const input = form.elements.namedItem('pin') as HTMLInputElement;
-        const pin = input.value.trim();
-        if (!pin) return;
-        localStorage.setItem(PIN_KEY, pin);
-        input.value = '';
-        animatedClose(dialog);
-        updateNote();
-        pullRounds();
-      });
     }
 
     setupChecklist();
