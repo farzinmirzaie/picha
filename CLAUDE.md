@@ -189,10 +189,11 @@ without touching the DB. A localStorage cache (`picha-rounds`) backs it for
 offline/optimistic use. The checklist shows a sync-state note with a "Turn on
 sync" action linking to the Staff room (the one place the registrar PIN is
 entered now), and surfaces write errors instead of failing silently. A device
-without the PIN just stays local. The list rolls over at **noon MYT** (the
-`careDayKey()` shifts `now` back 4h → the UTC date, so the boundary is 04:00
-UTC on every device regardless of its own timezone); the reset is entirely
-this date key (a new day queries a date with no row), not the build.
+without the PIN just stays local. The list rolls over at **midnight MYT** (the
+`careDayKey()` adds 8h to `now` → the UTC date = the MYT calendar date, so the
+boundary is 00:00 MYT on every device regardless of its own timezone); the
+reset is entirely this date key (a new day queries a date with no row), not
+the build.
 
 ### AI-friendly surface
 

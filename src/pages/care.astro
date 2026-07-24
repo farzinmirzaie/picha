@@ -238,17 +238,16 @@ import { supabaseClient } from '../data/supabase';
 
     type Store = { date: string; done: string[] };
 
-    // A "care day" runs noon-to-noon Malaysia time (UTC+8), so the rounds roll
-    // over at 12:00 MYT — the same moment the nightly rebuild runs — rather
-    // than at each device's local midnight. 04:00 UTC is noon MYT; shifting
-    // "now" back 4h and taking the UTC date yields a key that flips exactly
-    // then and is identical on every device regardless of its timezone. The
-    // reset is entirely this date-key: a new day queries a date with no row
-    // (or no matching cache), so the list comes up empty. The build doesn't
-    // clear anything — old picha_rounds rows just sit as harmless history.
-    const NOON_MYT_OFFSET_MS = 4 * 60 * 60 * 1000; // 04:00 UTC = 12:00 MYT
+    // The rounds roll over at midnight Malaysia time (UTC+8), the same wall
+    // clock the staff live on — not at each device's own local midnight, so
+    // every device agrees on which day is "today". Adding 8h to "now" and
+    // taking the UTC date yields the MYT calendar date, which flips exactly at
+    // 00:00 MYT. The reset is entirely this date key: a new day queries a date
+    // with no row (or no matching cache), so the list comes up empty. The
+    // build doesn't clear anything — old picha_rounds rows just sit as history.
+    const MYT_OFFSET_MS = 8 * 60 * 60 * 1000; // MYT = UTC+8
     const careDayKey = () =>
-      new Date(Date.now() - NOON_MYT_OFFSET_MS).toISOString().slice(0, 10);
+      new Date(Date.now() + MYT_OFFSET_MS).toISOString().slice(0, 10);
 
     function loadStore(): Store {
       const today = careDayKey();
@@ -312,11 +311,11 @@ import { supabaseClient } from '../data/supabase';
         return;
       }
       if (!configured) {
-        note.textContent = 'Ticks reset each day at noon.';
+        note.textContent = 'Ticks reset each night at midnight.';
         return;
       }
       if (hasStaffPin()) {
-        note.textContent = "Shared across the staff's devices; resets each day at noon.";
+        note.textContent = "Shared across the staff's devices; resets each night at midnight.";
         return;
       }
       note.append('Ticks stay on this device. ');
@@ -413,7 +412,7 @@ import { supabaseClient } from '../data/supabase';
     setupChecklist();
     document.addEventListener('astro:page-load', setupChecklist);
     // Re-pull the shared state on every return to the page so it never shows a
-    // stale list: on refocus (incl. a rollover past noon, or a sibling
+    // stale list: on refocus (incl. a rollover past midnight, or a sibling
     // device's change) and on back/forward-cache restores (pageshow).
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') pullRounds();

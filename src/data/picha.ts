@@ -306,31 +306,32 @@ export const recurringCare: RecurringItem[] = [
 /**
  * The staff's daily to-dos — rendered as an interactive checklist on the Care
  * page, in the order they happen across the day (no time-of-day labels; the
- * sequence says it). A task that happens more than once (meals, play) simply
- * appears more than once with its own id. Completion is shared across the
- * staff's devices via Supabase (`picha_rounds`, keyed by date) with a
- * localStorage fallback; both roll over at noon MYT. Items are defined here
- * only — add/remove/reorder freely, the store just tracks ids. Keep ids
- * stable: they're the storage keys.
+ * sequence says it). A task that happens more than once (wet food, litter,
+ * play) simply appears more than once with its own id. The fountain and dry
+ * feeder are automatic, so those items are about topping up, not measuring.
+ * Completion is shared across the staff's devices via Supabase
+ * (`picha_rounds`, keyed by date) with a localStorage fallback; both roll over
+ * at midnight MYT. Items are defined here only — add/remove/reorder freely,
+ * the store just tracks ids. Keep ids stable: they're the storage keys.
  */
 export const dailyChecklist = [
   {
     id: 'water',
     icon: 'ph:drop',
-    label: 'Fountain check',
-    hint: 'Fresh running water; rinse the bowl if needed',
+    label: 'Top up the fountain',
+    hint: 'Refill the reservoir; the fountain runs itself',
   },
   {
     id: 'meals-1',
     icon: 'ph:bowl-food',
-    label: 'Measured meals',
-    hint: 'Weighed portion, no free buffet',
+    label: 'Wet food service',
+    hint: 'Her five-star course; the feeder handles the kibble',
   },
   {
-    id: 'eyes',
-    icon: 'ph:sparkle',
-    label: 'Eye & face wipe',
-    hint: 'Pet wipe around the eyes and chin',
+    id: 'litter-1',
+    icon: 'ph:toilet',
+    label: 'Scoop the litter',
+    hint: 'First pass; she has standards',
   },
   {
     id: 'combing',
@@ -339,28 +340,46 @@ export const dailyChecklist = [
     hint: 'Both sides; she will rotate herself',
   },
   {
-    id: 'play-1',
+    id: 'eyes',
+    icon: 'ph:sparkle',
+    label: 'Eye & face wipe',
+    hint: 'Pet wipe around the eyes and chin',
+  },
+  {
+    id: 'play-hunt',
     icon: 'ph:feather',
     label: 'Hunt session',
     hint: '10–15 min of wand-toy duty',
   },
   {
-    id: 'litter',
-    icon: 'ph:toilet',
-    label: 'Scoop the litter',
-    hint: 'Daily; she has standards',
+    id: 'academy',
+    icon: 'ph:graduation-cap',
+    label: 'Academy session',
+    hint: 'One short training rep; see the Royal Academy',
+  },
+  {
+    id: 'treat',
+    icon: 'ph:cookie',
+    label: 'A treat, if earned',
+    hint: "Only when she's earned it; capped at 10% of her food",
   },
   {
     id: 'meals-2',
     icon: 'ph:bowl-food',
-    label: 'Measured meals',
-    hint: 'Second serving, same strict portion',
+    label: 'Wet food service',
+    hint: 'Second course, same royal standards',
   },
   {
-    id: 'play-2',
-    icon: 'ph:feather',
-    label: 'Hunt session',
-    hint: 'Another round to work off the treats',
+    id: 'play-ball',
+    icon: 'ph:tennis-ball',
+    label: 'Ball session',
+    hint: 'Toss the ball; let her chase and pounce',
+  },
+  {
+    id: 'litter-2',
+    icon: 'ph:toilet',
+    label: 'Scoop the litter',
+    hint: 'Second pass to keep it five-star',
   },
 ];
 
