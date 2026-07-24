@@ -43,6 +43,8 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          # VAPID public key (safe to expose) — lets the client subscribe to push.
+          PUBLIC_VAPID_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
 
       # Requires Pages to be enabled once: Settings → Pages → Source: "GitHub Actions".
       # (Auto-enablement via the default token isn't permitted on this repo.)

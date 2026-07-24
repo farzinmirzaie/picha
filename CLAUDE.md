@@ -105,10 +105,18 @@ public/icon-*.png      # PWA icons — cropped from her photo (see § icons)
   pages/llms.txt.ts    # /llms.txt — whole site as markdown for AI agents,
                        # generated from picha.ts at build (llmstxt.org)
 public/robots.txt      # points at sitemap-index.xml + llms.txt
-supabase/schema.sql    # picha_weights table + RLS + seed (run in SQL editor)
+public/sw.js           # service worker: SWR pages, cache-first assets, Web Push
+  lib/push.ts          # client Web Push opt-in (subscribe/unsubscribe/state)
+scripts/notify/        # scheduled reminder sender (Node/tsx; Web Push)
+  index.ts             # orchestrator: read subs → run providers → push → prune
+  lib.ts               # service-role Supabase helpers + MYT date math + types
+  providers/           # one module per reminder type (add here to extend)
+supabase/schema.sql    # weights/training/rounds + push_subscriptions + RLS/RPCs
 .mcp.json              # Supabase MCP for Claude Code (authenticate via /mcp)
-.env.example           # SUPABASE_URL + SUPABASE_ANON_KEY for local live builds
+.env.example           # SUPABASE_URL/ANON_KEY + PUBLIC_VAPID_KEY for local builds
 .github/workflows/deploy.yml  # build + deploy Pages + auto-release + nightly cron
+.github/workflows/notify.yml  # push reminders cron (every 3h, 09:00–21:00 MYT)
+docs/notifications.md  # Web Push setup, secrets + how to add a reminder
 astro.config.mjs       # site + base (GitHub Pages project site) + sitemap
 ```
 
@@ -194,6 +202,13 @@ without the PIN just stays local. The list rolls over at **midnight MYT** (the
 boundary is 00:00 MYT on every device regardless of its own timezone); the
 reset is entirely this date key (a new day queries a date with no row), not
 the build.
+
+**Push subscriptions** live in `push_subscriptions` (endpoint + keys). Unlike
+the other tables it has **no anon read** (subscriptions are device secrets):
+the client writes via the PIN-gated `save_push_subscription` /
+`delete_push_subscription` RPCs, and the reminder sender reads it with the
+`service_role` key (which bypasses RLS). See § PWA notifications and
+`docs/notifications.md`.
 
 ### AI-friendly surface
 
@@ -355,9 +370,16 @@ The site installs as an app (Add to Home Screen / install icon):
   localStorage cache; item ids come from `dailyChecklist` in picha.ts — keep
   them stable). Content inside initially-hidden panels must NOT use `.reveal`
   (the observer never fires for them).
-- **Notifications**: local `showNotification()` works while the app is open;
-  background/scheduled reminders would need a Web Push backend (Notification
-  Triggers API is dead). Planned as a future tool, not built.
+- **Notifications**: Web Push is built (background reminders that fire while
+  the app is closed; Android/Chrome mainly, installed iOS 16.4+). Devices
+  opt in via the **Reminders** toggle in the Staff room (PIN-gated); the
+  `push` / `notificationclick` handlers in `public/sw.js` render a generic
+  `{title, body, url, tag}` payload; the scheduled sender (`scripts/notify/`,
+  run by `.github/workflows/notify.yml` every 3h, 09:00–21:00 MYT) reads
+  subscriptions and pushes. **Extend it by adding a provider** in
+  `scripts/notify/providers/` — no client/SW changes. Full setup, secrets and
+  the extension guide: `docs/notifications.md`. (Local scheduled notifications
+  without a server aren't possible — the Notification Triggers API is dead.)
 
 ### Regenerating icons
 

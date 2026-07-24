@@ -205,6 +205,65 @@ $$;
 revoke all on function public.check_pin(text) from public;
 grant execute on function public.check_pin(text) to anon;
 
+-- ---------------------------------------------------------------------------
+-- Web Push subscriptions (background reminders — scripts/notify). One row per
+-- browser/device push endpoint. These rows are device secrets, so the table is
+-- deliberately NOT readable over the anon API (no select/insert/delete policy).
+-- The client writes through the SECURITY DEFINER RPCs below; the scheduled
+-- sender reads it with the service_role key (which bypasses RLS). Subscribing
+-- is staff-gated (same registrar PIN); unsubscribing only needs the endpoint
+-- (an unguessable URL), so a device can always turn itself off even if the PIN
+-- was forgotten.
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.push_subscriptions (
+  endpoint   text primary key,
+  p256dh     text not null,
+  auth       text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.push_subscriptions enable row level security;
+-- No policies on purpose: anon can neither read nor write directly. All access
+-- goes through the RPCs (definer) or the service_role key (the sender).
+
+create or replace function public.save_push_subscription(
+  p_endpoint text,
+  p_p256dh text,
+  p_auth text,
+  p_pin text
+)
+returns void
+language plpgsql
+security definer
+set search_path = public, private
+as $$
+begin
+  perform private.verify_staff_pin(p_pin);
+  insert into public.push_subscriptions (endpoint, p256dh, auth)
+    values (p_endpoint, p_p256dh, p_auth)
+  on conflict (endpoint) do update
+    set p256dh = excluded.p256dh, auth = excluded.auth;
+end;
+$$;
+
+revoke all on function public.save_push_subscription(text, text, text, text) from public;
+grant execute on function public.save_push_subscription(text, text, text, text) to anon;
+
+create or replace function public.delete_push_subscription(p_endpoint text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  delete from public.push_subscriptions where endpoint = p_endpoint;
+end;
+$$;
+
+revoke all on function public.delete_push_subscription(text) from public;
+grant execute on function public.delete_push_subscription(text) to anon;
+
 -- Tell PostgREST to refresh its schema cache so any function added/changed
 -- above is callable immediately (otherwise a new RPC can 404 with
 -- "Could not find the function ... in the schema cache" until the next reload).

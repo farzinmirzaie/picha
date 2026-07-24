@@ -84,6 +84,39 @@ import { supabaseClient } from '../../data/supabase';
         </p>
       </div>
 
+      <SectionLabel class="mt-8 mb-2">Reminders</SectionLabel>
+      <div
+        class="overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
+      >
+        <button
+          type="button"
+          data-push-toggle
+          class="flex w-full items-center gap-3.5 px-5 py-4 text-left transition-colors active:bg-blush-100/50 disabled:cursor-default disabled:active:bg-transparent dark:active:bg-plum-800/50"
+        >
+          <IconBadge icon="ph:bell" size="sm" />
+          <span class="min-w-0 flex-1">
+            <span class="block font-bold text-ink-900 dark:text-paper-100">
+              Reminders on this device
+            </span>
+            <span class="block text-xs leading-relaxed text-ink-400" data-push-sub>
+              A nudge every few hours while daily rounds are still pending.
+            </span>
+          </span>
+          <span
+            data-push-state
+            class="shrink-0 rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-600 dark:bg-plum-800 dark:text-ink-400"
+          >
+            Off
+          </span>
+        </button>
+      </div>
+      <p
+        class="mt-3 hidden px-1 text-[11px] leading-relaxed text-ink-400"
+        data-push-note
+        aria-live="polite"
+      >
+      </p>
+
       <SectionLabel class="mt-8 mb-2">This device</SectionLabel>
       <div
         class="overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
@@ -125,7 +158,8 @@ import { supabaseClient } from '../../data/supabase';
     // the Academy and the rounds sync (localStorage 'picha-staff-pin'); those
     // pages only read it, never prompt for it. A stored PIN counts as unlocked;
     // entering one verifies against the cloud (check_pin) before saving.
-    import { hasStaffPin, setStaffPin, forgetStaffPin } from '../../lib/staff';
+    import { hasStaffPin, setStaffPin, forgetStaffPin, staffPin } from '../../lib/staff';
+    import { getPushState, enablePush, disablePush } from '../../lib/push';
 
     function render() {
       const root = document.querySelector<HTMLElement>('[data-staff]');
@@ -136,6 +170,46 @@ import { supabaseClient } from '../../data/supabase';
       const unlocked = hasStaffPin();
       lock.hidden = unlocked;
       panel.hidden = !unlocked;
+      if (unlocked) renderPush();
+    }
+
+    const CHIP_OFF =
+      'shrink-0 rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-600 dark:bg-plum-800 dark:text-ink-400';
+    const CHIP_ON =
+      'shrink-0 rounded-full bg-blush-600 px-2.5 py-0.5 text-[11px] font-bold text-white';
+
+    // Reflect the current push state onto the toggle. Runs whenever the panel
+    // is (re)shown, so returning to the page after granting/blocking in the
+    // browser updates the label without a manual refresh.
+    async function renderPush() {
+      const toggle = document.querySelector<HTMLButtonElement>('[data-push-toggle]');
+      const chip = document.querySelector<HTMLElement>('[data-push-state]');
+      const note = document.querySelector<HTMLElement>('[data-push-note]');
+      if (!toggle || !chip || !note) return;
+      const state = await getPushState();
+      const on = state === 'subscribed';
+      chip.textContent = on ? 'On' : 'Off';
+      chip.className = on ? CHIP_ON : CHIP_OFF;
+      toggle.disabled = state === 'unsupported';
+      const notes: Record<string, string> = {
+        unsupported: "This browser can't deliver reminders while the app is closed.",
+        denied:
+          'Notifications are blocked for this site. Turn them on in your browser settings, then tap again.',
+        subscribed:
+          'On. A nudge every few hours while rounds are pending (quiet overnight); silent once the list is clear.',
+        unsubscribed: 'Off. Tap to get a nudge while daily rounds are still pending.',
+        default: 'Off. Tap to get a nudge while daily rounds are still pending.',
+      };
+      setPushNote(notes[state] ?? '', false);
+    }
+
+    function setPushNote(msg: string, isError: boolean) {
+      const note = document.querySelector<HTMLElement>('[data-push-note]');
+      if (!note) return;
+      note.textContent = msg;
+      note.classList.toggle('hidden', !msg);
+      note.classList.toggle('text-red-500', isError);
+      note.classList.toggle('text-ink-400', !isError);
     }
 
     function showError(msg: string) {
@@ -195,10 +269,38 @@ import { supabaseClient } from '../../data/supabase';
       });
 
       const forget = root.querySelector<HTMLButtonElement>('[data-staff-forget]');
-      forget?.addEventListener('click', () => {
+      forget?.addEventListener('click', async () => {
+        // Turn reminders off with the PIN still available, then forget it.
+        if (url && key) await disablePush(url, key).catch(() => {});
         forgetStaffPin();
         showError('');
         render();
+      });
+
+      const pushToggle = root.querySelector<HTMLButtonElement>('[data-push-toggle]');
+      pushToggle?.addEventListener('click', async () => {
+        setPushNote('Working…', false);
+        pushToggle.disabled = true;
+        let errMsg = '';
+        try {
+          if (!url || !key) throw new Error('The cloud is not configured.');
+          const state = await getPushState();
+          if (state === 'subscribed') {
+            await disablePush(url, key);
+          } else {
+            const pin = staffPin();
+            if (!pin) throw new Error('Sign in first.');
+            await enablePush(url, key, pin);
+          }
+        } catch (err) {
+          errMsg = String(err).includes('wrong pin')
+            ? 'That PIN was rejected. Sign out and back in, then try again.'
+            : (err as Error).message || 'Could not update reminders.';
+        } finally {
+          pushToggle.disabled = false;
+          await renderPush(); // refresh chip + default note...
+          if (errMsg) setPushNote(errMsg, true); // ...then surface any error over it
+        }
       });
 
       render();
@@ -206,5 +308,10 @@ import { supabaseClient } from '../../data/supabase';
 
     setupStaff();
     document.addEventListener('astro:page-load', setupStaff);
+    // Re-check push state when the tab returns to the foreground (permission
+    // may have changed in browser settings while we were away).
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && hasStaffPin()) renderPush();
+    });
   </script>
 </Layout>

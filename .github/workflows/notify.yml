@@ -1,0 +1,40 @@
+name: Reminders
+
+# Sends the "rounds still pending" push reminder every 3 hours during waking
+# hours. Cron is UTC; 01/04/07/10/13 UTC == 09/12/15/18/21 MYT (UTC+8). The
+# script also guards the MYT window and no-ops (green) until the secrets exist.
+on:
+  schedule:
+    - cron: '0 1,4,7,10,13 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Don't stack runs; a late cron shouldn't overlap the next.
+concurrency:
+  group: reminders
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm notify
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}

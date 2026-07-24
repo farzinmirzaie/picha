@@ -3,7 +3,7 @@
  * Scope is /picha/ (served from that path on GitHub Pages).
  * Bump CACHE when the precache list or site structure changes.
  */
-const CACHE = 'picha-v11';
+const CACHE = 'picha-v12';
 const BASE = '/picha/';
 const PRECACHE = [
   BASE,
@@ -39,6 +39,56 @@ self.addEventListener('activate', (event) => {
         Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))),
       )
       .then(() => self.clients.claim()),
+  );
+});
+
+// ---- Web Push: background reminders (fire even when the app is closed) ----
+// The payload is generic JSON: { title, body, url, tag }. This handler renders
+// whatever it's given, so new reminder types are added in the sender
+// (scripts/notify), never here.
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { body: event.data ? event.data.text() : '' };
+  }
+  const title = data.title || 'Picha';
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: data.body || '',
+      icon: data.icon || `${BASE}icon-192.png`,
+      badge: data.badge || `${BASE}icon-192.png`,
+      tag: data.tag || 'picha',
+      renotify: true,
+      data: { url: data.url || BASE },
+    }),
+  );
+});
+
+// Tap a notification: focus an open app window (navigating it to the target)
+// or open a fresh one.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = new URL(
+    (event.notification.data && event.notification.data.url) || BASE,
+    self.location.origin,
+  ).href;
+  event.waitUntil(
+    (async () => {
+      const wins = await self.clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true,
+      });
+      for (const w of wins) {
+        if (w.url.startsWith(self.location.origin + BASE)) {
+          await w.focus();
+          if ('navigate' in w && w.url !== target) await w.navigate(target).catch(() => {});
+          return;
+        }
+      }
+      await self.clients.openWindow(target);
+    })(),
   );
 });
 
