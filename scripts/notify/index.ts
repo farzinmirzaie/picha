@@ -65,7 +65,11 @@ async function main(): Promise<void> {
     return;
   }
 
-  const ctx: ProviderCtx = { now, sbSelect };
+  const ctx: ProviderCtx = {
+    now,
+    sbSelect,
+    manual: process.env.GITHUB_EVENT_NAME === 'workflow_dispatch',
+  };
   const messages: PushMessage[] = [];
   for (const provider of providers) {
     try {

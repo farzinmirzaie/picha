@@ -54,11 +54,15 @@ export interface PushMessage {
   body: string;
   url?: string;
   tag?: string;
+  /** Also set the PWA app-icon badge (a dot) when this arrives. */
+  setBadge?: boolean;
 }
 
 export interface ProviderCtx {
   now: Date;
   sbSelect: <T>(path: string) => Promise<T>;
+  /** True on a manual workflow_dispatch run — lets once-a-day providers fire on demand for testing. */
+  manual: boolean;
 }
 
 /**

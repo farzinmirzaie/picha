@@ -3,7 +3,7 @@
  * Scope is /picha/ (served from that path on GitHub Pages).
  * Bump CACHE when the precache list or site structure changes.
  */
-const CACHE = 'picha-v12';
+const CACHE = 'picha-v13';
 const BASE = '/picha/';
 const PRECACHE = [
   BASE,
@@ -54,7 +54,7 @@ self.addEventListener('push', (event) => {
     data = { body: event.data ? event.data.text() : '' };
   }
   const title = data.title || 'Picha';
-  event.waitUntil(
+  const tasks = [
     self.registration.showNotification(title, {
       body: data.body || '',
       icon: data.icon || `${BASE}icon-192.png`,
@@ -63,7 +63,13 @@ self.addEventListener('push', (event) => {
       renotify: true,
       data: { url: data.url || BASE },
     }),
-  );
+  ];
+  // Optionally light the app-icon badge (a dot) — e.g. "Due soon". It clears
+  // itself next time the app is opened (Layout's applyDueSoon re-decides).
+  if (data.setBadge && self.navigator && 'setAppBadge' in self.navigator) {
+    tasks.push(self.navigator.setAppBadge().catch(() => {}));
+  }
+  event.waitUntil(Promise.all(tasks));
 });
 
 // Tap a notification: focus an open app window (navigating it to the target)
