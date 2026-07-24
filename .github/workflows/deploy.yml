@@ -7,9 +7,10 @@ on:
     branches: [master]
   workflow_dispatch:
   schedule:
-    # Nightly rebuild (~05:00 MYT) so weigh-ins logged in Supabase show up
-    # without a push. Releases are only cut for pushes (see the release job).
-    - cron: '0 21 * * *'
+    # Daily rebuild at noon MYT (04:00 UTC; MYT is UTC+8) so weigh-ins logged in
+    # Supabase show up without a push. Releases are only cut for pushes (see the
+    # release job). Note: GitHub may start scheduled runs a little late.
+    - cron: '0 4 * * *'
 
 permissions:
   contents: write # create tags + releases

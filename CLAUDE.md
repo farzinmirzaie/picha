@@ -166,8 +166,8 @@ page, which calls the `log_weight` RPC — a SECURITY DEFINER function that
 checks a staff PIN stored in the `private` schema (set it once in SQL; see
 schema.sql). Same-date entries update the existing row. The PIN is remembered
 per device (localStorage `picha-staff-pin`, shared with training). The Health
-vitals weight tile also refreshes client-side from the ledger. The nightly
-rebuild (21:00 UTC) keeps the static fallback + llms.txt current.
+vitals weight tile also refreshes client-side from the ledger. The daily
+rebuild (noon MYT / 04:00 UTC) keeps the static fallback + llms.txt current.
 
 **Training progress** works the same way: content (steps, copy) stays in
 `trainingCourses` in picha.ts; progress (`steps_done`, `started_on`) lives in
@@ -266,8 +266,9 @@ Note: `base` is `/picha`, so local URLs are under `/picha` (e.g.
 
 ## Deployment & releases
 
-`.github/workflows/deploy.yml` runs on every push to `master` (plus a nightly
-21:00 UTC rebuild and manual dispatch, which redeploy but skip the release):
+`.github/workflows/deploy.yml` runs on every push to `master` (plus a daily
+noon-MYT / 04:00 UTC rebuild and manual dispatch, which redeploy but skip the
+release):
 
 1. **build** — `pnpm build` (with `SUPABASE_URL`/`SUPABASE_ANON_KEY` secrets
    for the weight-ledger fetch), upload `dist/` as the Pages artifact.
