@@ -5,13 +5,13 @@ import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
 import SectionLabel from '../components/ui/SectionLabel.astro';
 import IconBadge from '../components/ui/IconBadge.astro';
-import { dailyChecklist, food, grooming, litter, safety, toxicItems } from '../data/picha';
+import { dailyChecklist, food, grooming } from '../data/picha';
 import { supabaseClient } from '../data/supabase';
 ---
 
 <Layout
   title="Care · Picha 🐾"
-  description="Picha's daily care guide: routine, food, grooming, litter and house rules."
+  description="Picha's daily care guide: her rounds, food and grooming."
   current="care"
 >
   <PageHeader
@@ -111,7 +111,7 @@ import { supabaseClient } from '../data/supabase';
   </section>
 
   <!-- On the menu -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Food">
+  <section class="mx-auto w-full max-w-2xl px-5 pt-8 pb-10 md:pb-0" aria-label="Food">
     <div
       class="reveal rounded-3xl border border-blush-200/70 bg-paper-50 p-6 sm:p-8 dark:border-plum-700 dark:bg-plum-900"
     >
@@ -144,69 +144,6 @@ import { supabaseClient } from '../data/supabase';
         }
       </ul>
     </div>
-  </section>
-
-  <!-- Litter corner + house rules, one grouped card each -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Litter">
-    <SectionLabel class="reveal mb-2">The litter corner</SectionLabel>
-    <div
-      class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
-    >
-      <ul class="divide-y divide-paper-200 dark:divide-plum-800">
-        {
-          litter.map((l) => (
-            <li class="flex items-start gap-3.5 px-5 py-4">
-              <IconBadge icon={l.icon} size="sm" />
-              <div>
-                <h3 class="font-display font-semibold">{l.title}</h3>
-                <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-                  {l.detail}
-                </p>
-              </div>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
-
-  <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="House rules">
-    <SectionLabel class="reveal mb-2">House rules</SectionLabel>
-    <div
-      class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
-    >
-      <ul class="divide-y divide-paper-200 dark:divide-plum-800">
-        {
-          safety.map((s) => (
-            <li class="flex items-start gap-3.5 px-5 py-4">
-              <IconBadge icon={s.icon} size="sm" />
-              <div>
-                <h3 class="font-display font-semibold">{s.title}</h3>
-                <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-                  {s.detail}
-                </p>
-              </div>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-
-    <!-- Toxic list: deliberately plain-spoken. -->
-    <SectionLabel tone="red" icon="ph:prohibit" tag="h3" class="reveal mt-6">
-      Never within reach
-    </SectionLabel>
-    <ul class="mt-3 flex flex-wrap gap-2">
-      {
-        toxicItems.map((t) => (
-          <li
-            class="reveal rounded-full bg-red-50 px-3.5 py-1.5 text-sm font-bold text-red-700 ring-1 ring-red-200 dark:bg-red-950/40 dark:text-red-300 dark:ring-red-900/50"
-          >
-            {t}
-          </li>
-        ))
-      }
-    </ul>
   </section>
 
   <Footer />
