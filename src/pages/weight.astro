@@ -13,7 +13,14 @@ import IconBadge from '../components/ui/IconBadge.astro';
 import { weightTarget, weight } from '../data/picha';
 import { weightHistory, currentWeight } from '../data/weights';
 import { supabaseClient } from '../data/supabase';
-import { CHART, chartSvg, chartAriaLabel, weightStats } from '../lib/weight-viz';
+import {
+  CHART,
+  chartSvg,
+  chartAriaLabel,
+  weightStats,
+  deltaLabel,
+  rowDeltaLabel,
+} from '../lib/weight-viz';
 import { dateLabel, shortLabel } from '../lib/dates';
 
 // Build-time render from the Supabase ledger (seed fallback) via the shared
@@ -121,7 +128,7 @@ const bandNote =
         >
           <Icon
             name="ph:trend-up"
-            class:list={['h-3.5 w-3.5', deltaG >= 0 ? '' : 'hidden']}
+            class:list={['h-3.5 w-3.5', deltaG > 0 ? '' : 'hidden']}
             data-delta-up
             aria-hidden="true"
           />
@@ -131,9 +138,7 @@ const bandNote =
             data-delta-down
             aria-hidden="true"
           />
-          <span data-delta-text>
-            {Math.abs(deltaG)} g {deltaG >= 0 ? 'up' : 'down'} since the last audit
-          </span>
+          <span data-delta-text>{deltaLabel(deltaG)}</span>
         </span>
       </div>
 
@@ -189,7 +194,7 @@ const bandNote =
                       name="ph:trend-up"
                       class:list={[
                         'h-3 w-3',
-                        rowDelta !== undefined && rowDelta >= 0 ? '' : 'hidden',
+                        rowDelta !== undefined && rowDelta > 0 ? '' : 'hidden',
                       ]}
                       data-row-up
                       aria-hidden="true"
@@ -203,9 +208,7 @@ const bandNote =
                       data-row-down
                       aria-hidden="true"
                     />
-                    <span data-row-delta>
-                      {rowDelta === undefined ? 'opening entry' : `${Math.abs(rowDelta)} g`}
-                    </span>
+                    <span data-row-delta>{rowDeltaLabel(rowDelta)}</span>
                   </p>
                 </div>
               </li>
@@ -249,7 +252,13 @@ const bandNote =
 
   <script>
     import { weightTarget, type WeightEntry } from '../data/picha';
-    import { chartSvg, chartAriaLabel, weightStats } from '../lib/weight-viz';
+    import {
+      chartSvg,
+      chartAriaLabel,
+      weightStats,
+      deltaLabel,
+      rowDeltaLabel,
+    } from '../lib/weight-viz';
     import { dateLabel, shortLabel } from '../lib/dates';
     import { sbSelect, sbRpc } from '../lib/sb';
     import { staffPin, forgetStaffPin, applyStaffVisibility } from '../lib/staff';
@@ -289,11 +298,10 @@ const bandNote =
       if (chip) {
         chip.classList.toggle('hidden', !previous);
         chip.classList.toggle('inline-flex', Boolean(previous));
-        chip.querySelector('[data-delta-up]')?.classList.toggle('hidden', deltaG < 0);
+        chip.querySelector('[data-delta-up]')?.classList.toggle('hidden', deltaG <= 0);
         chip.querySelector('[data-delta-down]')?.classList.toggle('hidden', deltaG >= 0);
         const text = chip.querySelector('[data-delta-text]');
-        if (text)
-          text.textContent = ` ${Math.abs(deltaG)} g ${deltaG >= 0 ? 'up' : 'down'} since the last audit`;
+        if (text) text.textContent = deltaLabel(deltaG);
       }
 
       // ledger: clone the first row as a template, then rebuild
@@ -312,14 +320,13 @@ const bandNote =
         q('[data-row-kg]')!.textContent = `${p.kg} kg`;
         q('[data-row-up]')?.classList.toggle(
           'hidden',
-          rowDelta === undefined || rowDelta < 0,
+          rowDelta === undefined || rowDelta <= 0,
         );
         q('[data-row-down]')?.classList.toggle(
           'hidden',
           rowDelta === undefined || rowDelta >= 0,
         );
-        q('[data-row-delta]')!.textContent =
-          rowDelta === undefined ? 'opening entry' : `${Math.abs(rowDelta)} g`;
+        q('[data-row-delta]')!.textContent = rowDeltaLabel(rowDelta);
         return li;
       });
       list.replaceChildren(...rows);

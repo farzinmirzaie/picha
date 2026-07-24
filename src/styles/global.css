@@ -50,13 +50,17 @@ html {
 
 /* Tell the browser to theme native controls (date/number inputs, spinners,
    scrollbars) with the page — without this their text renders in light theme
-   on our dark surfaces and reads as blank. */
+   on our dark surfaces and reads as blank. `accent-color` tints the native
+   widgets (the date picker's selected day, number spinners, range sliders) in
+   the brand pink instead of the OS default blue; support is best-effort. */
 :root {
   color-scheme: light;
+  accent-color: var(--color-blush-600);
 }
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
+    accent-color: var(--color-blush-400);
   }
 }
 @media (min-width: 768px) {

@@ -212,9 +212,22 @@ const appTitle = appTitleProp ?? tabTitles[current] ?? 'Picha';
         document
           .querySelectorAll<HTMLElement>('[data-health-badge]')
           .forEach((el) => el.classList.toggle('hidden', !due));
-        // Health page "Due soon" card (present only on /health/)
+        // Health page "Due soon" card (present only on /health/). It can't use
+        // `.reveal` (the scroll observer never fires for an initially-hidden
+        // element), so play the seg-in entrance whenever it (re)appears.
         const card = document.querySelector<HTMLElement>('[data-due-soon]');
-        if (card) card.hidden = !due;
+        if (card) {
+          const wasHidden = card.hidden;
+          card.hidden = !due;
+          if (due && (wasHidden || !card.dataset.shown)) {
+            card.dataset.shown = '1';
+            card.classList.remove('seg-in');
+            void card.offsetWidth;
+            card.classList.add('seg-in');
+          } else if (!due) {
+            delete card.dataset.shown;
+          }
+        }
         // PWA app-icon badge (Badging API; installed apps only, no-op elsewhere)
         const nav = navigator as Navigator & {
           setAppBadge?: (n?: number) => Promise<void>;

@@ -11,6 +11,19 @@ import { dateLabel, shortLabel } from './dates';
 export const CHART = { W: 640, H: 320 };
 const PAD = { top: 26, right: 18, bottom: 40, left: 46 };
 
+/** Chart/stats delta-chip phrasing; "no change" when the weight held steady. */
+export function deltaLabel(g: number): string {
+  if (g === 0) return 'no change since the last audit';
+  return `${Math.abs(g)} g ${g > 0 ? 'up' : 'down'} since the last audit`;
+}
+
+/** Ledger-row delta phrasing: opening entry, no change, or "N g". */
+export function rowDeltaLabel(g: number | undefined): string {
+  if (g === undefined) return 'opening entry';
+  if (g === 0) return 'no change';
+  return `${Math.abs(g)} g`;
+}
+
 export function weightStats(history: WeightEntry[]) {
   const entries = [...history].sort((a, b) => a.date.localeCompare(b.date));
   const kgs = entries.map((e) => e.kg);
