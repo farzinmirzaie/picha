@@ -6,13 +6,13 @@ import Footer from '../components/Footer.astro';
 import SectionLabel from '../components/ui/SectionLabel.astro';
 import IconBadge from '../components/ui/IconBadge.astro';
 import Chip from '../components/ui/Chip.astro';
-import { dailyChecklist, food, grooming } from '../data/picha';
+import { dailyChecklist, grooming } from '../data/picha';
 import { supabaseClient } from '../data/supabase';
 ---
 
 <Layout
   title="Care · Picha 🐾"
-  description="Picha's daily care guide: her rounds, food and grooming."
+  description="Picha's daily care guide: her rounds and grooming."
   current="care"
 >
   <PageHeader
@@ -81,7 +81,7 @@ import { supabaseClient } from '../data/supabase';
   </section>
 
   <!-- Grooming -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="Grooming">
+  <section class="mx-auto w-full max-w-2xl px-5 pt-12 pb-10 md:pb-0" aria-label="Grooming">
     <SectionLabel class="reveal mb-2">Grooming</SectionLabel>
     <div
       class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
@@ -107,42 +107,6 @@ import { supabaseClient } from '../data/supabase';
                   {item.detail}
                 </p>
               </div>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
-
-  <!-- On the menu -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-8 pb-10 md:pb-0" aria-label="Food">
-    <div
-      class="reveal rounded-3xl border border-blush-200/70 bg-paper-50 p-6 sm:p-8 dark:border-plum-700 dark:bg-plum-900"
-    >
-      <p
-        class="text-center text-[10px] font-bold tracking-[0.3em] text-blush-400 uppercase dark:text-blush-300/70"
-      >
-        · On the menu ·
-      </p>
-      <ul class="mt-5 space-y-5">
-        {
-          food.map((f) => (
-            <li>
-              <div class="flex items-baseline gap-2">
-                <Icon
-                  name={f.icon}
-                  class="h-4.5 w-4.5 shrink-0 translate-y-0.5 text-blush-500 dark:text-blush-300"
-                  aria-hidden="true"
-                />
-                <h3 class="font-display font-semibold">{f.title}</h3>
-                <span
-                  class="mx-1 flex-1 border-b border-dotted border-ink-400/40"
-                  aria-hidden="true"
-                />
-              </div>
-              <p class="mt-1 pl-7 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-                {f.detail}
-              </p>
             </li>
           ))
         }
