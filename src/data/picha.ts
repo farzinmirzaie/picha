@@ -381,6 +381,18 @@ export const dailyChecklist = [
     label: 'Scoop the litter',
     hint: 'Second pass to keep it five-star',
   },
+  {
+    id: 'cuddle',
+    icon: 'ph:hand-heart',
+    label: 'Lap & cuddle time',
+    hint: 'Mandatory affection audit; she decides when it ends',
+  },
+  {
+    id: 'lockup',
+    icon: 'ph:moon-stars',
+    label: 'Nightly lock-up',
+    hint: 'Windows and balcony shut, nothing risky left out',
+  },
 ];
 
 /* ---------- the Royal Academy (training tool) ---------- */
