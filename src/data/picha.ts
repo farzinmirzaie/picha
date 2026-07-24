@@ -305,17 +305,26 @@ export const recurringCare: RecurringItem[] = [
 
 /**
  * The staff's daily to-dos — rendered as an interactive checklist on the Care
- * page. Completion is shared across the staff's devices via Supabase
- * (`picha_rounds`, keyed by date), with a localStorage fallback; both reset
- * each day. Items are defined here only — add/remove freely, the store just
- * tracks ids. Keep ids stable: they're the storage keys.
+ * page, in the order they happen across the day (no time-of-day labels; the
+ * sequence says it). A task that happens more than once (meals, play) simply
+ * appears more than once with its own id. Completion is shared across the
+ * staff's devices via Supabase (`picha_rounds`, keyed by date) with a
+ * localStorage fallback; both roll over at noon MYT. Items are defined here
+ * only — add/remove/reorder freely, the store just tracks ids. Keep ids
+ * stable: they're the storage keys.
  */
 export const dailyChecklist = [
   {
-    id: 'combing',
-    icon: 'ph:paint-brush',
-    label: 'The daily combing',
-    hint: 'Both sides; she will rotate herself',
+    id: 'water',
+    icon: 'ph:drop',
+    label: 'Fountain check',
+    hint: 'Fresh running water; rinse the bowl if needed',
+  },
+  {
+    id: 'meals-1',
+    icon: 'ph:bowl-food',
+    label: 'Measured meals',
+    hint: 'Weighed portion, no free buffet',
   },
   {
     id: 'eyes',
@@ -324,19 +333,13 @@ export const dailyChecklist = [
     hint: 'Pet wipe around the eyes and chin',
   },
   {
-    id: 'meals',
-    icon: 'ph:bowl-food',
-    label: 'Measured meals',
-    hint: 'Weighed portions, no free buffet',
+    id: 'combing',
+    icon: 'ph:paint-brush',
+    label: 'The daily combing',
+    hint: 'Both sides; she will rotate herself',
   },
   {
-    id: 'water',
-    icon: 'ph:drop',
-    label: 'Fountain check',
-    hint: 'Fresh water, rinse if needed',
-  },
-  {
-    id: 'play',
+    id: 'play-1',
     icon: 'ph:feather',
     label: 'Hunt session',
     hint: '10–15 min of wand-toy duty',
@@ -346,6 +349,18 @@ export const dailyChecklist = [
     icon: 'ph:toilet',
     label: 'Scoop the litter',
     hint: 'Daily; she has standards',
+  },
+  {
+    id: 'meals-2',
+    icon: 'ph:bowl-food',
+    label: 'Measured meals',
+    hint: 'Second serving, same strict portion',
+  },
+  {
+    id: 'play-2',
+    icon: 'ph:feather',
+    label: 'Hunt session',
+    hint: 'Another round to work off the treats',
   },
 ];
 

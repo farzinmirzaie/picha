@@ -17,7 +17,7 @@ import { supabaseClient } from '../data/supabase';
   <PageHeader
     kicker="Daily Care"
     title="A day with Picha"
-    blurb="Serving Picha is a full-time position. Check off today's rounds; she is keeping score."
+    blurb="Serving Picha is a full-time position: no weekends off, benefits paid in purrs. Work through today's rounds top to bottom; she is keeping score."
   />
 
   <!-- Today's rounds: interactive checklist (localStorage, resets daily) -->
@@ -238,10 +238,20 @@ import { supabaseClient } from '../data/supabase';
 
     type Store = { date: string; done: string[] };
 
-    const todayIso = () => new Date().toISOString().slice(0, 10);
+    // A "care day" runs noon-to-noon Malaysia time (UTC+8), so the rounds roll
+    // over at 12:00 MYT — the same moment the nightly rebuild runs — rather
+    // than at each device's local midnight. 04:00 UTC is noon MYT; shifting
+    // "now" back 4h and taking the UTC date yields a key that flips exactly
+    // then and is identical on every device regardless of its timezone. The
+    // reset is entirely this date-key: a new day queries a date with no row
+    // (or no matching cache), so the list comes up empty. The build doesn't
+    // clear anything — old picha_rounds rows just sit as harmless history.
+    const NOON_MYT_OFFSET_MS = 4 * 60 * 60 * 1000; // 04:00 UTC = 12:00 MYT
+    const careDayKey = () =>
+      new Date(Date.now() - NOON_MYT_OFFSET_MS).toISOString().slice(0, 10);
 
     function loadStore(): Store {
-      const today = new Date().toDateString();
+      const today = careDayKey();
       try {
         const raw = JSON.parse(localStorage.getItem(STORE_KEY) ?? '');
         if (raw && raw.date === today && Array.isArray(raw.done)) return raw;
@@ -254,7 +264,7 @@ import { supabaseClient } from '../data/supabase';
     function saveStore(done: string[]) {
       localStorage.setItem(
         STORE_KEY,
-        JSON.stringify({ date: new Date().toDateString(), done }),
+        JSON.stringify({ date: careDayKey(), done }),
       );
     }
 
@@ -270,7 +280,7 @@ import { supabaseClient } from '../data/supabase';
           const rows = await sbSelect<Array<{ done: string[] }>>(
             url,
             key,
-            `picha_rounds?select=done&date=eq.${todayIso()}`,
+            `picha_rounds?select=done&date=eq.${careDayKey()}`,
           );
           saveStore(Array.isArray(rows) && rows[0]?.done ? rows[0].done : []);
         } catch {
@@ -302,11 +312,11 @@ import { supabaseClient } from '../data/supabase';
         return;
       }
       if (!configured) {
-        note.textContent = 'Ticks reset every morning.';
+        note.textContent = 'Ticks reset each day at noon.';
         return;
       }
       if (hasStaffPin()) {
-        note.textContent = "Shared across the staff's devices; resets every morning.";
+        note.textContent = "Shared across the staff's devices; resets each day at noon.";
         return;
       }
       note.append('Ticks stay on this device. ');
@@ -378,7 +388,7 @@ import { supabaseClient } from '../data/supabase';
           try {
             const { sbRpc } = await import('../lib/sb');
             await sbRpc(url, key, 'set_round', {
-              p_date: todayIso(),
+              p_date: careDayKey(),
               p_item: id,
               p_done: nowDone,
               p_pin: pin,
@@ -402,10 +412,12 @@ import { supabaseClient } from '../data/supabase';
 
     setupChecklist();
     document.addEventListener('astro:page-load', setupChecklist);
-    // Refocus (incl. a rollover past midnight, or a sibling device's change):
-    // re-pull the shared state and repaint.
+    // Re-pull the shared state on every return to the page so it never shows a
+    // stale list: on refocus (incl. a rollover past noon, or a sibling
+    // device's change) and on back/forward-cache restores (pageshow).
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') pullRounds();
     });
+    window.addEventListener('pageshow', () => pullRounds());
   </script>
 </Layout>

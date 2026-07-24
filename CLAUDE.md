@@ -180,15 +180,19 @@ entry. The values in picha.ts are the offline seed only.
 
 **Daily rounds** (the Care checklist) are shared across the staff's devices:
 the `picha_rounds` table holds one row per day of completed item ids, read
-client-side on load + refocus, toggled through the `set_round` RPC (same
-registrar PIN). Item definitions live in `dailyChecklist` in picha.ts — the
-store only tracks ids, so add/remove items freely without touching the DB. A
-localStorage cache (`picha-rounds`) backs it for offline/optimistic use. The
-checklist shows a sync-state note with a "Turn on sync" action that opens a
-PIN bottom sheet (`#round-sync`, the shared `dialog.sheet` pattern; the PIN is
-otherwise only set on Weight/Training), and surfaces write errors instead of
-failing silently. A device without the PIN just stays local. Resets daily
-(date-keyed).
+client-side on load + refocus + `pageshow`, toggled through the `set_round`
+RPC (same registrar PIN). Item definitions live in `dailyChecklist` in
+picha.ts, listed in the order they happen across a day (no time-of-day labels)
+— a task done more than once (meals, play) just appears more than once with
+its own id. The store only tracks ids, so add/remove/reorder items freely
+without touching the DB. A localStorage cache (`picha-rounds`) backs it for
+offline/optimistic use. The checklist shows a sync-state note with a "Turn on
+sync" action linking to the Staff room (the one place the registrar PIN is
+entered now), and surfaces write errors instead of failing silently. A device
+without the PIN just stays local. The list rolls over at **noon MYT** (the
+`careDayKey()` shifts `now` back 4h → the UTC date, so the boundary is 04:00
+UTC on every device regardless of its own timezone); the reset is entirely
+this date key (a new day queries a date with no row), not the build.
 
 ### AI-friendly surface
 
