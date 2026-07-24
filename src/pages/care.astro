@@ -44,7 +44,7 @@ import { supabaseClient } from '../data/supabase';
                 type="button"
                 data-check-item={item.id}
                 aria-pressed="false"
-                class="flex w-full items-center gap-3.5 px-5 py-3.5 text-left transition-colors active:bg-blush-100/50 dark:active:bg-plum-800/50"
+                class="flex w-full items-center gap-3.5 px-5 py-3.5 text-left transition-colors active:bg-blush-100/50 disabled:cursor-default disabled:active:bg-transparent dark:active:bg-plum-800/50"
               >
                 <IconBadge icon={item.icon} size="sm" />
                 <span class="min-w-0 flex-1">
@@ -79,22 +79,8 @@ import { supabaseClient } from '../data/supabase';
     <p class="mt-2 px-1 text-[11px] leading-relaxed text-ink-400" data-rounds-note></p>
   </section>
 
-  <!-- Zone 2: the care manual (everything a stand-in needs) -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="The care manual">
-    <div class="reveal border-t border-paper-300/70 pt-8 dark:border-plum-800">
-      <SectionLabel tag="p">Reference</SectionLabel>
-      <h2 class="font-display mt-1 text-2xl font-semibold tracking-tight">
-        The care manual
-      </h2>
-      <p class="mt-1.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-        Everything a stand-in needs while the regular staff are off duty:
-        grooming, meals, the litter corner and the house rules.
-      </p>
-    </div>
-  </section>
-
   <!-- Grooming -->
-  <section class="mx-auto w-full max-w-2xl px-5 pt-6" aria-label="Grooming">
+  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="Grooming">
     <SectionLabel class="reveal mb-2">Grooming</SectionLabel>
     <div
       class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
@@ -289,9 +275,9 @@ import { supabaseClient } from '../data/supabase';
       paint();
     }
 
-    // Sync-state footer: tells the staff whether ticks are shared, and points a
-    // local-only device to the Staff room to enter the registrar PIN (the one
-    // place PIN entry lives now).
+    // Sync-state footer: for staff it confirms the ticks are shared; for
+    // everyone else it explains the list is read-only and points to the Staff
+    // room to sign in (the one place the registrar PIN is entered now).
     const staffHref = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/tools/staff/`;
 
     function updateNote(override?: string) {
@@ -318,13 +304,14 @@ import { supabaseClient } from '../data/supabase';
         note.textContent = "Shared across the staff's devices; resets each night at midnight.";
         return;
       }
-      note.append('Ticks stay on this device. ');
+      note.append('The rounds are staff-only. ');
       const link = document.createElement('a');
       link.href = staffHref;
       link.className =
         'font-bold text-blush-600 underline decoration-dotted dark:text-blush-300';
-      link.textContent = 'Turn on sync';
+      link.textContent = 'Sign in as staff';
       note.append(link);
+      note.append(' to check them off.');
     }
 
     // Stateless: every paint reads the store fresh, so a day rollover always
@@ -335,8 +322,15 @@ import { supabaseClient } from '../data/supabase';
       );
       if (!items.length) return;
       const store = loadStore();
+      // Only staff (a registrar PIN on the device) may tick items; everyone
+      // else sees the shared list read-only. Without Supabase (dev builds)
+      // there's no shared list, so local ticking stays enabled.
+      const root = document.querySelector<HTMLElement>('[data-rounds]');
+      const configured = Boolean(root?.dataset.supabaseUrl && root?.dataset.supabaseKey);
+      const editable = !configured || hasStaffPin();
       items.forEach((btn) => {
         const checked = store.done.includes(btn.dataset.checkItem!);
+        btn.disabled = !editable;
         btn.setAttribute('aria-pressed', String(checked));
         const box = btn.querySelector<HTMLElement>('[data-check-box]')!;
         const tick = box.querySelector('svg');
@@ -369,6 +363,7 @@ import { supabaseClient } from '../data/supabase';
         if (btn.dataset.bound) return;
         btn.dataset.bound = '1';
         btn.addEventListener('click', async () => {
+          if (btn.disabled) return; // read-only for non-staff
           const store = loadStore(); // re-check the date on every tap
           const id = btn.dataset.checkItem!;
           const nowDone = !store.done.includes(id);
@@ -415,8 +410,14 @@ import { supabaseClient } from '../data/supabase';
     // stale list: on refocus (incl. a rollover past midnight, or a sibling
     // device's change) and on back/forward-cache restores (pageshow).
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') pullRounds();
+      if (document.visibilityState === 'visible') {
+        pullRounds();
+        updateNote(); // a PIN may have been entered at the Staff room
+      }
     });
-    window.addEventListener('pageshow', () => pullRounds());
+    window.addEventListener('pageshow', () => {
+      pullRounds();
+      updateNote();
+    });
   </script>
 </Layout>
