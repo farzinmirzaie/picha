@@ -32,7 +32,7 @@ service worker  ◀──────────── Web Push ◀────
 
 | Provider | Fires | Sends when | Title / body | Extras |
 | --- | --- | --- | --- | --- |
-| `daily-checklist` | every 3h, 09:00–21:00 MYT | any Care round still pending today | "N rounds still pending" / "Picha is waiting on: …" → `/care/` | — |
+| `daily-checklist` | every 3h, 09:00–21:00 MYT | any Care round still pending today | "Picha has filed N complaints" / "Picha has noticed some rounds are still undone. She is disappointed but not surprised." → `/care/` | — |
 | `due-soon` | once a day (09:00 MYT slot); manual dispatch any time | soonest health item within `DUE_SOON_DAYS` (2) or overdue | "Due today/tomorrow/in N days/Overdue: &lt;item&gt;" / the item's own detail → `/health/` | sets the app-icon badge (`setBadge`) |
 
 The app-icon badge set by `due-soon` clears itself the next time the app is
