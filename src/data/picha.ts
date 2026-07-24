@@ -16,6 +16,8 @@ export interface CareItem {
   detail: string;
   /** Optional cadence hint, e.g. "Daily", "Every 2–4 weeks". */
   cadence?: string;
+  /** Not part of the routine yet (planned / in training) — tones its chip amber. */
+  planned?: boolean;
 }
 
 export interface TimelineEntry {
@@ -666,26 +668,22 @@ export const food: CareItem[] = [
   },
 ];
 
+// Active routines first (by how often they happen), then the planned ones —
+// `planned` tones their cadence chip amber so "coming soon" reads at a glance.
 export const grooming: CareItem[] = [
   {
     icon: 'ph:paint-brush',
     title: 'The daily combing',
     cadence: 'Daily',
     detail:
-      'Stainless steel comb, once a day. She rotates herself like a rotisserie to present each side. Essential for the long coat: prevents mats, sustains the glamour.',
+      'The tool of record is a stainless steel comb, worked through both sides while she rotates herself like a rotisserie. The long coat depends on it: it prevents mats and sustains the glamour.',
   },
   {
     icon: 'ph:sparkle',
     title: 'Face touch-ups',
     cadence: 'As needed',
-    detail: 'Pet wipes for the eyes and face, whenever the look needs refreshing.',
-  },
-  {
-    icon: 'ph:scissors',
-    title: 'Nails',
-    cadence: 'Every 2–4 weeks',
     detail:
-      'The manicure programme has not started yet. Front paws first, then every 2–4 weeks. Management has not yet been informed.',
+      'Pet wipes for the eyes and face, kept within reach for whenever the look needs refreshing.',
   },
   {
     icon: 'ph:spray-bottle',
@@ -702,9 +700,18 @@ export const grooming: CareItem[] = [
       'Rarely required; the daily combing does the heavy lifting. An occasional bath or a professional spa day, by appointment.',
   },
   {
+    icon: 'ph:scissors',
+    title: 'Nails',
+    cadence: 'Every 2–4 weeks',
+    planned: true,
+    detail:
+      'The manicure programme has not started yet. Front paws first, then every 2–4 weeks. Management has not yet been informed.',
+  },
+  {
     icon: 'ph:tooth',
     title: 'Teeth',
     cadence: 'In training',
+    planned: true,
     detail:
       'The toothbrushing era approaches: Histo Tree cat-safe dental gel (beef flavour) has been purchased and awaits her formal approval.',
   },
