@@ -3,7 +3,7 @@
  * Scope is /picha/ (served from that path on GitHub Pages).
  * Bump CACHE when the precache list or site structure changes.
  */
-const CACHE = 'picha-v14';
+const CACHE = 'picha-v15';
 const BASE = '/picha/';
 const PRECACHE = [
   BASE,
@@ -17,6 +17,7 @@ const PRECACHE = [
   `${BASE}manifest.webmanifest`,
   `${BASE}icon-192.png`,
   `${BASE}icon-512.png`,
+  `${BASE}notification-icon.png`,
   `${BASE}icon-maskable-512.png`,
   `${BASE}apple-touch-icon.png`,
   `${BASE}favicon.svg`,
@@ -54,17 +55,18 @@ self.addEventListener('push', (event) => {
     data = { body: event.data ? event.data.text() : '' };
   }
   const title = data.title || 'Picha';
-  // Just the small app icon (`badge`) — no large `icon`, or Android draws both
-  // and you get the same paw twice. `icon` is only used when a payload sets it
-  // (e.g. a future reminder that wants a distinct large image).
+  // Large icon = Picha's face (a distinct avatar); small `badge` = the paw.
+  // They must differ, or Android/MIUI shows the same image twice. (Android
+  // always fills the large-icon slot for web push; left empty it invents a
+  // letter-monogram from the device account.)
   const options = {
     body: data.body || '',
+    icon: data.icon || `${BASE}notification-icon.png`,
     badge: data.badge || `${BASE}icon-192.png`,
     tag: data.tag || 'picha',
     renotify: true,
     data: { url: data.url || BASE },
   };
-  if (data.icon) options.icon = data.icon;
   const tasks = [self.registration.showNotification(title, options)];
   // Optionally light the app-icon badge (a dot) — e.g. "Due soon". It clears
   // itself next time the app is opened (Layout's applyDueSoon re-decides).

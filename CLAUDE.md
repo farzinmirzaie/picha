@@ -101,7 +101,9 @@ src/
   assets/
     picha.jpg          # avatar photo (astro:assets; also the source for app icons)
 public/favicon.svg     # Phosphor paw-print on a blush tile (photo is mush at 16px)
-public/icon-*.png      # PWA icons — cropped from her photo (see § icons)
+public/icon-*.png      # PWA icons — the paw tile (favicon art at app size)
+public/notification-icon.png # push large-icon: her face (must differ from the
+                       # paw badge, or Android shows the same image twice)
   pages/llms.txt.ts    # /llms.txt — whole site as markdown for AI agents,
                        # generated from picha.ts at build (llmstxt.org)
 public/robots.txt      # points at sitemap-index.xml + llms.txt
