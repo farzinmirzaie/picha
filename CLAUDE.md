@@ -374,12 +374,16 @@ The site installs as an app (Add to Home Screen / install icon):
   the app is closed; Android/Chrome mainly, installed iOS 16.4+). Devices
   opt in via the **Reminders** toggle in the Staff room (PIN-gated); the
   `push` / `notificationclick` handlers in `public/sw.js` render a generic
-  `{title, body, url, tag}` payload; the scheduled sender (`scripts/notify/`,
-  run by `.github/workflows/notify.yml` every 3h, 09:00–21:00 MYT) reads
-  subscriptions and pushes. **Extend it by adding a provider** in
-  `scripts/notify/providers/` — no client/SW changes. Full setup, secrets and
-  the extension guide: `docs/notifications.md`. (Local scheduled notifications
-  without a server aren't possible — the Notification Triggers API is dead.)
+  `{title, body, url, tag, setBadge}` payload (`setBadge` lights the app-icon
+  badge from the SW while closed); the scheduled sender (`scripts/notify/`, run
+  by `.github/workflows/notify.yml` every 3h, 09:00–21:00 MYT) reads
+  subscriptions and pushes. Two providers today: `daily-checklist` (every tick;
+  pending Care rounds) and `due-soon` (once a day / manual; soonest health item
+  within `DUE_SOON_DAYS`, also sets the badge — reuses `lib/health`). **Extend
+  it by adding a provider** in `scripts/notify/providers/` — no client/SW
+  changes. Full setup, secrets and the extension guide: `docs/notifications.md`.
+  (Local scheduled notifications without a server aren't possible — the
+  Notification Triggers API is dead.)
 
 ### Regenerating icons
 

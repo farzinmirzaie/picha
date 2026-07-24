@@ -28,6 +28,17 @@ service worker  ◀──────────── Web Push ◀────
   during 09:00–21:00 MYT. It asks each provider what to send now, pushes it, and
   prunes dead subscriptions. Fails soft (exits green) until the secrets exist.
 
+## Current reminders
+
+| Provider | Fires | Sends when | Title / body | Extras |
+| --- | --- | --- | --- | --- |
+| `daily-checklist` | every 3h, 09:00–21:00 MYT | any Care round still pending today | "N rounds still pending" / "Picha is waiting on: …" → `/care/` | — |
+| `due-soon` | once a day (09:00 MYT slot); manual dispatch any time | soonest health item within `DUE_SOON_DAYS` (2) or overdue | "Due today/tomorrow/in N days/Overdue: &lt;item&gt;" / the item's own detail → `/health/` | sets the app-icon badge (`setBadge`) |
+
+The app-icon badge set by `due-soon` clears itself the next time the app is
+opened (Layout's `applyDueSoon` re-decides against the live clock); a closed app
+keeps it until then.
+
 ## Adding a new reminder (the extension point)
 
 1. Write a provider in `scripts/notify/providers/`:
