@@ -3,7 +3,7 @@
  * Scope is /picha/ (served from that path on GitHub Pages).
  * Bump CACHE when the precache list or site structure changes.
  */
-const CACHE = 'picha-v13';
+const CACHE = 'picha-v14';
 const BASE = '/picha/';
 const PRECACHE = [
   BASE,
@@ -54,16 +54,18 @@ self.addEventListener('push', (event) => {
     data = { body: event.data ? event.data.text() : '' };
   }
   const title = data.title || 'Picha';
-  const tasks = [
-    self.registration.showNotification(title, {
-      body: data.body || '',
-      icon: data.icon || `${BASE}icon-192.png`,
-      badge: data.badge || `${BASE}icon-192.png`,
-      tag: data.tag || 'picha',
-      renotify: true,
-      data: { url: data.url || BASE },
-    }),
-  ];
+  // Just the small app icon (`badge`) — no large `icon`, or Android draws both
+  // and you get the same paw twice. `icon` is only used when a payload sets it
+  // (e.g. a future reminder that wants a distinct large image).
+  const options = {
+    body: data.body || '',
+    badge: data.badge || `${BASE}icon-192.png`,
+    tag: data.tag || 'picha',
+    renotify: true,
+    data: { url: data.url || BASE },
+  };
+  if (data.icon) options.icon = data.icon;
+  const tasks = [self.registration.showNotification(title, options)];
   // Optionally light the app-icon badge (a dot) — e.g. "Due soon". It clears
   // itself next time the app is opened (Layout's applyDueSoon re-decides).
   if (data.setBadge && self.navigator && 'setAppBadge' in self.navigator) {
