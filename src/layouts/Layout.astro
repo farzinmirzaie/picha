@@ -214,18 +214,18 @@ const appTitle = appTitleProp ?? tabTitles[current] ?? 'Picha';
           .forEach((el) => el.classList.toggle('hidden', !due));
         // Health page "Due soon" card (present only on /health/). It can't use
         // `.reveal` in markup (the scroll observer never fires for an
-        // initially-hidden element), so drive the SAME reveal transition by
-        // hand whenever it (re)appears — matches the rest of the page's fade-up.
+        // initially-hidden element), so play the matching fade-up KEYFRAME when
+        // it (re)appears — a keyframe fires reliably on class-add even right
+        // after un-hiding, where a transition often wouldn't.
         const card = document.querySelector<HTMLElement>('[data-due-soon]');
         if (card) {
           const wasHidden = card.hidden;
           card.hidden = !due;
           if (due && (wasHidden || !card.dataset.shown)) {
             card.dataset.shown = '1';
-            card.classList.remove('in');
-            card.classList.add('reveal');
-            void card.offsetWidth; // commit the opacity:0 start state
-            card.classList.add('in');
+            card.classList.remove('fade-up-in');
+            void card.offsetWidth; // restart the animation on re-show
+            card.classList.add('fade-up-in');
           } else if (!due) {
             delete card.dataset.shown;
           }
