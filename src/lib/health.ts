@@ -1,9 +1,11 @@
 /**
- * Shared health-timeline derivations (build-time). The Health page, the Nav
- * badge and the PWA app badge all read the "due soon" signal from here, so it's
- * computed in exactly one place and can't drift. Dates are ISO; "today" is the
- * build date — the nightly rebuild keeps these fresh, same as the timeline's
- * done / coming-up split.
+ * Shared health-timeline derivations. The timeline split and the *initial*
+ * (no-JS / first-paint) "due soon" state come from here at build time. The
+ * live decision is made on the client (Layout's applyDueSoon) against the
+ * visitor's own clock, off the soonest due-date stamped on <body
+ * data-health-next> — so the Due soon card, the Nav tab badge and the PWA app
+ * badge flip at the right moment without waiting for a rebuild. Dates are ISO;
+ * the default `today` here is the build date.
  */
 import { healthTimeline, recurringCare } from '../data/picha';
 import { addDays } from './dates';

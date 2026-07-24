@@ -302,11 +302,18 @@ swaps):
 - `.reveal` elements → scroll-reveal via IntersectionObserver (elements in
   the same intersection batch get a short capped stagger, assigned by the
   script); skipped under `prefers-reduced-motion`.
+- **"Due soon"** (Health `[data-due-soon]` card + the Nav Health tab badge +
+  the PWA app-icon badge) → decided live by `applyDueSoon()` in Layout against
+  the visitor's clock, off the soonest due-date on `<body data-health-next>`
+  (threshold: `DUE_SOON_DAYS` = within 2 days / overdue). Runs on load,
+  `astro:page-load` and `visibilitychange`, so it flips across midnight / on
+  refocus without a rebuild. The card is always in the DOM (hidden), so it must
+  NOT use `.reveal`; its build-time state is the no-JS fallback.
 
 The server still renders a build-time value inside those spans as the no-JS
 fallback. **Add new relative dates by using these hooks**, not hardcoded text.
 (The health timeline's done/upcoming *split* is build-time — fine, since every
-push rebuilds — only the countdown chips are client-side.)
+push rebuilds.)
 
 ## PWA (installable)
 

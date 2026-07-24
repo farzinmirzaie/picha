@@ -138,14 +138,23 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
   }
 
   <!-- Due soon: the single next item, shown only within 2 days of its due date
-       (or once overdue). Build-time gate; countdown updates via [data-until]. -->
+       (or once overdue). Always in the DOM; visibility is decided live on the
+       client (Layout's applyDueSoon, via [data-due-soon]) against the visitor's
+       clock, with the build-time state as the initial (no-JS) value. No
+       `.reveal` here — it can be revealed from hidden, where the observer never
+       fires. Countdown text updates via [data-until]. -->
   {
-    showDueSoon && next && (
-      <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Due soon">
-        <SectionLabel tone="amber" icon="ph:bell-ringing" class="reveal mb-2">
+    next && (
+      <section
+        class="mx-auto w-full max-w-2xl px-5 pt-8"
+        aria-label="Due soon"
+        data-due-soon
+        hidden={!showDueSoon}
+      >
+        <SectionLabel tone="amber" icon="ph:bell-ringing" class="mb-2">
           Due soon
         </SectionLabel>
-        <div class="reveal flex items-start gap-4 rounded-3xl border border-amber-300/60 bg-paper-50 p-6 dark:border-amber-700/40 dark:bg-plum-900">
+        <div class="flex items-start gap-4 rounded-3xl border border-amber-300/60 bg-paper-50 p-6 dark:border-amber-700/40 dark:bg-plum-900">
           <IconBadge icon={next.icon} tone="amber" />
           <div class="min-w-0">
             <div class="flex flex-wrap items-center gap-2">
