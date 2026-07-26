@@ -208,13 +208,6 @@ export const healthTimeline: TimelineEntry[] = [
   },
   {
     icon: 'ph:syringe',
-    title: 'FVRCP booster',
-    detail: 'Felocell 4 annual booster due.',
-    date: '2027-06-22',
-    where: 'at the vet',
-  },
-  {
-    icon: 'ph:syringe',
     title: 'Rabies vaccine',
     detail: 'Required before any travel plans Her Fluffiness may approve.',
   },
@@ -293,6 +286,16 @@ export const recurringCare: RecurringItem[] = [
     everyLabel: 'Every year',
     intervalDays: 365,
     lastDone: '2026-07-11',
+    where: 'at the vet',
+  },
+  {
+    icon: 'ph:syringe',
+    title: 'FVRCP booster',
+    detail:
+      'Felocell 4, the yearly top-up that keeps the core feline viruses on their side of the palace gates.',
+    everyLabel: 'Every year',
+    intervalDays: 365,
+    lastDone: '2026-06-22',
     where: 'at the vet',
   },
   {
