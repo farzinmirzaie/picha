@@ -248,7 +248,7 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:bug',
     title: 'Parasite control',
     detail:
-      'Revolution Plus spot-on, applied by the staff at home. Fleas, ticks and worms, evicted monthly. This dose is held to a week after the medicated bath, so the spot-on stays on skin that has not just been washed.',
+      'Revolution Plus spot-on between the shoulder blades, applied by the staff. Fleas, ticks and worms are served their eviction notice.',
     everyLabel: 'Every month',
     intervalDays: 30,
     lastDone: '2026-06-24',
@@ -259,7 +259,7 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:pill',
     title: 'Deworming',
     detail:
-      'Interior pest control, on the standard adult schedule. Given at home, hidden in something delicious.',
+      'Interior pest patrol on the standard adult schedule: a pill, smuggled in inside something delicious and served without ceremony.',
     everyLabel: 'Every 3 months',
     intervalDays: 90,
     lastDone: '2026-06-25',
@@ -269,7 +269,7 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:sparkle',
     title: 'Grooming & spa day',
     detail:
-      'The professional glow-up: bath, blow-dry, a tidy shave of the paws and private area, and a medicated tick-and-flea shampoo for the resident cloud.',
+      'The full salon treatment: bath, blow-dry and a top-to-tail tidy-up, so the resident cloud stays soft and photogenic.',
     everyLabel: 'Every 2 months',
     intervalDays: 60,
     lastDone: '2026-07-24',
@@ -279,7 +279,7 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:broom',
     title: 'Litter box deep clean',
     detail:
-      'Full scrub and fresh litter; the royal facilities are restored to five stars.',
+      'A full scrub and a complete change of litter; the royal facilities restored to five stars.',
     everyLabel: 'Every 3 months',
     intervalDays: 90,
     lastDone: '2026-07-11',
@@ -289,7 +289,7 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:stethoscope',
     title: 'Full annual checkup',
     detail:
-      'The nose-to-tail service: full exam, weight and teeth review. Clock started at the spay visit.',
+      'The once-a-year, nose-to-tail service: full exam, weight check and an audience with the royal teeth.',
     everyLabel: 'Every year',
     intervalDays: 365,
     lastDone: '2026-07-11',
@@ -299,7 +299,7 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:scissors',
     title: 'Nail trim',
     detail:
-      'The manicure programme is officially in session: first clip done at the salon, then every 2–4 weeks. Management filed a complaint but submitted to the clippers.',
+      'Front paws first, back paws only with royal consent. Management files a formal complaint every time, then submits to the clippers.',
     everyLabel: 'Every 2–4 weeks',
     intervalDays: 21,
     lastDone: '2026-07-24',
