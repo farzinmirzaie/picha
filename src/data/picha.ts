@@ -248,10 +248,11 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:bug',
     title: 'Parasite control',
     detail:
-      'Revolution Plus spot-on, applied by the staff at home. Fleas, ticks and worms, evicted monthly.',
+      'Revolution Plus spot-on, applied by the staff at home. Fleas, ticks and worms, evicted monthly. This dose is held to a week after the medicated bath, so the spot-on stays on skin that has not just been washed.',
     everyLabel: 'Every month',
     intervalDays: 30,
     lastDone: '2026-06-24',
+    nextDue: '2026-07-31',
     where: 'at home',
   },
   {
@@ -268,10 +269,10 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:sparkle',
     title: 'Grooming & spa day',
     detail:
-      'The professional glow-up: bath, tidy-up and blow-dry for the resident cloud.',
+      'The professional glow-up: bath, blow-dry, a tidy shave of the paws and private area, and a medicated tick-and-flea shampoo for the resident cloud.',
     everyLabel: 'Every 2 months',
     intervalDays: 60,
-    nextDue: '2026-08-01',
+    lastDone: '2026-07-24',
     where: 'at the salon',
   },
   {
@@ -298,9 +299,10 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:scissors',
     title: 'Nail trim',
     detail:
-      'Front paws first. The programme has not started; management has not yet been informed.',
+      'The manicure programme is officially in session: first clip done at the salon, then every 2–4 weeks. Management filed a complaint but submitted to the clippers.',
     everyLabel: 'Every 2–4 weeks',
     intervalDays: 21,
+    lastDone: '2026-07-24',
     where: 'at home',
   },
 ];
