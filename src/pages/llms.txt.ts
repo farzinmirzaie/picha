@@ -82,7 +82,7 @@ ${identity.looks} Home: ${identity.home}.
 - [Weight tracker](${SITE}/weight/): weight chart, stats and the weigh-in ledger
 - [Cat-years converter](${SITE}/cat-years/): her age in human years, feline life stages, converter for any cat
 - [The Royal Academy](${SITE}/training/): training courses with step-by-step curricula and live progress (per-course pages under /training/<slug>/)
-- [Reading Picha](${SITE}/body-language/): a body-language field guide (ears first; eyes, tail and paws to come)
+- [Reading Picha](${SITE}/body-language/): a body-language field guide to her moods
 
 ## Identity
 
@@ -166,7 +166,7 @@ ${litter.map((l) => `- **${l.title}**: ${l.detail}`).join('\n')}
 
 ## Body language: reading her ears
 
-The first chapter of the body-language guide. Tone in brackets is how to treat it (calm = approach freely, alert = engaged, wary = ease off, danger = give space).
+How to read her mood from her ears. Tone in brackets is how to treat it (calm = approach freely, alert = engaged, wary = ease off, danger = give space).
 
 ${earSignals.map((s) => `- **${s.title}** [${s.tone}] — ${s.mood}: ${s.detail}`).join('\n')}
 
