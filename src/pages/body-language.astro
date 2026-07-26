@@ -1,0 +1,148 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { Icon } from 'astro-icon/components';
+import Layout from '../layouts/Layout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Footer from '../components/Footer.astro';
+import SectionLabel from '../components/ui/SectionLabel.astro';
+import { earSignals } from '../data/picha';
+
+// Ear photos, cropped from the reference chart. Match each signal by id
+// (ear-<id>.png), so adding eyes/tail/paws later is the same pattern.
+const earImages = import.meta.glob<{ default: ImageMetadata }>('../assets/ears/*.png', {
+  eager: true,
+});
+const earImageById: Record<string, ImageMetadata> = {};
+for (const [path, mod] of Object.entries(earImages)) {
+  const id = path.match(/ear-(.+)\.png$/)?.[1];
+  if (id) earImageById[id] = mod.default;
+}
+
+// tone → how to treat it, driving the number badge + mood chip colours.
+const badgeTone: Record<string, string> = {
+  calm: 'bg-blush-600',
+  alert: 'bg-ink-400',
+  wary: 'bg-amber-500',
+  danger: 'bg-red-600',
+};
+const chipTone: Record<string, string> = {
+  calm: 'bg-blush-100 text-blush-700 dark:bg-plum-800 dark:text-blush-300',
+  alert: 'bg-paper-200 text-ink-600 dark:bg-plum-800 dark:text-ink-400',
+  wary: 'bg-amber-300/40 text-amber-700 dark:bg-amber-700/30 dark:text-amber-300',
+  danger: 'bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300',
+};
+const legend = [
+  { tone: 'calm', label: 'Calm' },
+  { tone: 'alert', label: 'Alert' },
+  { tone: 'wary', label: 'Ease off' },
+  { tone: 'danger', label: 'Give space' },
+];
+---
+
+<Layout
+  title="Body language · Picha 🐾"
+  description="A field guide to reading Picha's mood from her ears, with eyes, tail and paws to come."
+  current="tools"
+  appTitle="Body language"
+>
+  <PageHeader
+    kicker="Cat to human"
+    title="Reading Picha"
+    blurb="A field guide to Her Fluffiness, one body part at a time. We start where cats are most honest: the ears. Eyes, tail and paws to follow."
+  />
+
+  <section class="mx-auto w-full max-w-3xl px-5 pt-4" aria-label="Ear positions">
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+      <SectionLabel class="reveal">Her ears</SectionLabel>
+      <div
+        class="reveal flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold text-ink-400"
+      >
+        {
+          legend.map((l) => (
+            <span class="inline-flex items-center gap-1.5">
+              <span class:list={['h-2 w-2 rounded-full', badgeTone[l.tone]]} />
+              {l.label}
+            </span>
+          ))
+        }
+      </div>
+    </div>
+    <p class="reveal mb-4 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+      Ears are the most honest part of a cat: they move before she does. Here is
+      the full set, from "come say hi" to "back off".
+    </p>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        earSignals.map((s) => (
+          <article class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900">
+            <div class="relative aspect-square bg-white">
+              {earImageById[s.id] && (
+                <Image
+                  src={earImageById[s.id]}
+                  alt={`Picha with ears ${s.title.toLowerCase()}`}
+                  width={320}
+                  densities={[1, 2]}
+                  class="h-full w-full object-contain"
+                />
+              )}
+              <span
+                class:list={[
+                  'absolute top-3 left-3 flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold text-white',
+                  badgeTone[s.tone],
+                ]}
+              >
+                {s.num}
+              </span>
+            </div>
+            <div class="p-4">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h3 class="font-display font-semibold">{s.title}</h3>
+                <span
+                  class:list={[
+                    'rounded-full px-2.5 py-0.5 text-[11px] font-bold whitespace-nowrap',
+                    chipTone[s.tone],
+                  ]}
+                >
+                  {s.mood}
+                </span>
+              </div>
+              <p class="mt-1.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+                {s.detail}
+              </p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="mt-6 space-y-3">
+      <p
+        class="reveal flex items-start gap-2 rounded-2xl border border-dashed border-paper-300 bg-paper-50/60 px-4 py-3 text-xs leading-relaxed text-ink-500 dark:border-plum-700 dark:bg-plum-900/60"
+      >
+        <Icon name="ph:wave-sine" class="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+        <span>
+          One a photo can't hold: quick ear-<em>flicking</em> or twitching. Usually
+          plain irritation (or a passing fly); if it comes with head-shaking or
+          scratching, check her ears.
+        </span>
+      </p>
+      <p
+        class="reveal flex items-start gap-2 rounded-2xl bg-red-50 px-4 py-3 text-xs leading-relaxed font-medium text-red-700 ring-1 ring-red-200 dark:bg-red-950/40 dark:text-red-300 dark:ring-red-900/50"
+      >
+        <Icon name="ph:hand-palm" class="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+        <span>
+          When the ears say ease off or give space, the kind move is exactly
+          that: no reaching, no scooping. Let her come back to you.
+        </span>
+      </p>
+    </div>
+
+    <p class="reveal mt-6 text-center text-xs text-ink-400">
+      Eyes, tail and paws are next in the guide.
+    </p>
+  </section>
+
+  <Footer showOnMobile />
+</Layout>

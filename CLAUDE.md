@@ -97,9 +97,12 @@ src/
                        # felineStages) lives in picha.ts (current="tools")
     training/index.astro   # Royal Academy hub — courses grouped by status
     training/[slug].astro  # one page per course: step ladder, rules, practice tick
+    body-language.astro    # "Reading Picha" — body-language field guide; ear
+                       # signals now (earSignals), eyes/tail/paws later (current="tools")
   styles/global.css    # Tailwind @theme (paper/plum/ink/blush/amber) + animations
   assets/
     picha.jpg          # avatar photo (astro:assets; also the source for app icons)
+    ears/ear-*.png     # body-language ear crops, keyed by earSignals[].id
 public/favicon.svg     # Phosphor paw-print on a blush tile (photo is mush at 16px)
 public/icon-*.png      # PWA icons — the paw tile (favicon art at app size)
 public/notification-icon.png # push large-icon: her face (must differ from the

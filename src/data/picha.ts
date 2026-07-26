@@ -402,6 +402,142 @@ export const dailyChecklist = [
   },
 ];
 
+/* ---------- body language (the "Reading Picha" tool) ---------- */
+
+export interface EarSignal {
+  /** Asset key: src/assets/ears/ear-<id>.png. */
+  id: string;
+  /** Number in the field guide (matches the reference chart). */
+  num: number;
+  /** The ear position. */
+  title: string;
+  /** One-line read, shown as a chip. */
+  mood: string;
+  /**
+   * How to treat it: calm (approach freely), alert (engaged, not upset),
+   * wary (ease off), danger (give her space). Drives the card's colour.
+   */
+  tone: 'calm' | 'alert' | 'wary' | 'danger';
+  detail: string;
+}
+
+/**
+ * Ear positions — the first chapter of the body-language reader
+ * (/body-language). Photos are cropped from the reference chart; eyes, tail and
+ * paws come later as their own signal sets. Descriptions follow standard feline
+ * body-language guidance; the two `danger` states stay plain and unambiguous.
+ */
+export const earSignals: EarSignal[] = [
+  {
+    id: 'forward',
+    num: 1,
+    title: 'Forward',
+    mood: 'Curious & friendly',
+    tone: 'calm',
+    detail:
+      'Ears up and swung forward. She is engaged and interested; a good moment to say hello.',
+  },
+  {
+    id: 'neutral',
+    num: 2,
+    title: 'Relaxed / neutral',
+    mood: 'Calm & content',
+    tone: 'calm',
+    detail:
+      'Ears upright and easy, facing loosely forward. All is well in the kingdom: comfortable, calm and at ease.',
+  },
+  {
+    id: 'swiveling',
+    num: 3,
+    title: 'Swiveling',
+    mood: 'Listening',
+    tone: 'alert',
+    detail:
+      'Ears rotating like little satellite dishes to track a sound. Alert and reading the room, not upset.',
+  },
+  {
+    id: 'sideways',
+    num: 4,
+    title: 'Sideways (airplane mode)',
+    mood: 'Overstimulated',
+    tone: 'wary',
+    detail:
+      'Ears turned out to the sides like little wings. Uncertain, annoyed or over it; a gentle sign to ease off.',
+  },
+  {
+    id: 'slightly-back',
+    num: 5,
+    title: 'Slightly back',
+    mood: 'Irritated',
+    tone: 'wary',
+    detail:
+      'Ears tipped back a touch. Cautious and a little annoyed, weighing whether to react. Give her a moment.',
+  },
+  {
+    id: 'flat',
+    num: 6,
+    title: 'Flat against head',
+    mood: 'Give her space',
+    tone: 'danger',
+    detail:
+      'Ears pinned flat to the head to protect them. Fear or defensive aggression under real stress. Do not reach in; let her calm down on her own.',
+  },
+  {
+    id: 'one-ear-back',
+    num: 7,
+    title: 'One ear back',
+    mood: 'Multitasking',
+    tone: 'alert',
+    detail:
+      'One ear forward, one swung back, tracking two things at once (often something behind her). Mildly on guard.',
+  },
+  {
+    id: 'high-tall',
+    num: 8,
+    title: 'High & tall',
+    mood: 'On high alert',
+    tone: 'alert',
+    detail:
+      'Ears at full height, straight up. Very alert and keyed up, locked onto something she has decided is important.',
+  },
+  {
+    id: 'low-wide',
+    num: 9,
+    title: 'Low & wide',
+    mood: 'Anxious',
+    tone: 'wary',
+    detail:
+      'Ears held low and splayed wide. Worried and feeling threatened, but not looking for a fight. Reassure her, do not crowd.',
+  },
+  {
+    id: 'predatory',
+    num: 10,
+    title: 'Predatory focus',
+    mood: 'Hunting',
+    tone: 'alert',
+    detail:
+      'Ears forward and locked, the whole face focused. Full hunting mode: intense concentration, ready to pounce (on a toy, ideally).',
+  },
+  {
+    id: 'sleepy',
+    num: 11,
+    title: 'Content & sleepy',
+    mood: 'Blissed out',
+    tone: 'calm',
+    detail:
+      'Ears loose and slightly rotated as she dozes. Deeply relaxed, comfortable and safe. Peak contentment.',
+  },
+  {
+    id: 'hissing',
+    num: 12,
+    title: 'Aggressive / hissing',
+    mood: 'Back off',
+    tone: 'danger',
+    detail:
+      'Mouth open, ears back, warning issued. She feels threatened and is telling you to stay away. Respect it and give her room.',
+  },
+];
+
 /* ---------- the Royal Academy (training tool) ---------- */
 
 export interface TrainingStep {
