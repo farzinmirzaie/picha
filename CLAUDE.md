@@ -83,6 +83,9 @@ src/
       StatTile.astro   # one tile inside a StatStrip. Dynamic tiles pass client
                        # hooks via valueAttrs/subAttrs (data-age, data-stat, …),
                        # never hand-written markup. DON'T add `.reveal`.
+      SegmentedTabs.astro # the sliding-thumb pill tab control + switching
+                       # script. Render it, then sibling [data-seg-panel={id}]
+                       # panels (Health timeline filter, Reading-Picha parts).
   pages/
     index.astro        # Home — hero, share dialog (QR), story, get-to-know-her
     health.astro       # Health — vitals strip, segmented timeline, emergency
@@ -148,6 +151,10 @@ signal to extract a new component (and document it here), not copy-paste.
 - **`StatStrip` + `StatTile`** — the snap-scroll stat carousel and its tiles
   (Health vitals, Weight stats). Dynamic tiles get client hooks via
   `valueAttrs`/`subAttrs`; never re-hand-roll a tile or the strip.
+- **`SegmentedTabs`** — the sliding-thumb pill tab control. Pass `tabs`, then
+  add sibling `[data-seg-panel={id}]` panels (first shown, rest `hidden`); the
+  component's script wires the switching. Used by the Health timeline filter and
+  the Reading-Picha body parts.
 - **`PageHeader`, `Footer`, `Nav`** — page chrome. **`TrainingRules`,
   `WeighInForm`, `PassportDialog`, `ShareDialog`** — feature blocks.
 - **Dialogs**: use `dialog.sheet` + `bindDialog()` (lib/dialog.ts), never a
@@ -362,7 +369,10 @@ The site installs as an app (Add to Home Screen / install icon):
 - **Mobile chrome**: sticky app bar (tab label + optional right-side action,
   in `Layout.astro`, `md:hidden`) on top + bottom tab bar. The footer is
   desktop-only except on Tools (`<Footer showOnMobile />`); body bottom padding
-  (`pb-20 md:pb-0`) clears the tab bar.
+  (`pb-20 md:pb-0`) clears the tab bar. **New pages: no mobile footer** — use
+  plain `<Footer />` (desktop-only), and give the last section its own
+  `pb-10 md:pb-0` so the content has a little breathing room above the tab bar
+  on mobile (see body-language.astro).
 - **Native UI patterns in use** (reuse these before inventing new ones):
   snap-scroll stat tiles (the `StatStrip.astro` component — Health vitals +
   Weight stats), segmented

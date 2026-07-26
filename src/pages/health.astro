@@ -8,6 +8,7 @@ import StatTile from '../components/ui/StatTile.astro';
 import SectionLabel from '../components/ui/SectionLabel.astro';
 import IconBadge from '../components/ui/IconBadge.astro';
 import Chip from '../components/ui/Chip.astro';
+import SegmentedTabs from '../components/ui/SegmentedTabs.astro';
 import {
   vet,
   contact,
@@ -180,39 +181,7 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
 
   <!-- Timeline with segmented control -->
   <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Timeline">
-    <div
-      class="reveal relative grid grid-cols-3 rounded-full bg-paper-200/80 p-1 dark:bg-plum-800/80"
-      role="tablist"
-      aria-label="Timeline filter"
-      data-seg
-    >
-      <span
-        class="pointer-events-none absolute inset-y-1 left-1 w-[calc((100%-0.5rem)/3)] rounded-full bg-paper-50 shadow-sm transition-transform duration-300 ease-out dark:bg-plum-950"
-        data-seg-thumb
-        aria-hidden="true"
-      >
-      </span>
-      {
-        segments.map((s, i) => (
-          <button
-            type="button"
-            role="tab"
-            id={`seg-tab-${s.id}`}
-            aria-controls={`seg-panel-${s.id}`}
-            aria-selected={i === 0 ? 'true' : 'false'}
-            data-seg-tab={s.id}
-            class:list={[
-              'relative z-10 rounded-full py-1.5 text-xs font-bold transition-colors duration-200 hover:text-blush-600 dark:hover:text-blush-300',
-              i === 0
-                ? 'text-blush-700 dark:text-blush-300'
-                : 'text-ink-400',
-            ]}
-          >
-            {s.label}
-          </button>
-        ))
-      }
-    </div>
+    <SegmentedTabs tabs={segments} label="Timeline filter" />
 
     <!-- Coming up -->
     <div id="seg-panel-upcoming" role="tabpanel" aria-labelledby="seg-tab-upcoming" data-seg-panel="upcoming" class="pt-6">
@@ -386,62 +355,6 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
   <Footer />
 
   <script>
-    // Segmented control: slide the thumb, toggle panels.
-    function setupSegments() {
-      const seg = document.querySelector<HTMLElement>('[data-seg]');
-      if (!seg || seg.dataset.bound) return;
-      seg.dataset.bound = '1';
-      const thumb = seg.querySelector<HTMLElement>('[data-seg-thumb]')!;
-      const tabs = Array.from(seg.querySelectorAll<HTMLButtonElement>('[data-seg-tab]'));
-      const panels = Array.from(
-        document.querySelectorAll<HTMLElement>('[data-seg-panel]'),
-      );
-      // Stagger the panel's rows in (used on page load and on tab switch).
-      // Rows are visible without JS; the animation only decorates.
-      const animatePanel = (panel: HTMLElement) => {
-        panel.querySelectorAll<HTMLElement>('li').forEach((li, i) => {
-          li.classList.remove('seg-in');
-          void li.offsetWidth;
-          li.style.animationDelay = `${Math.min(i * 50, 350)}ms`;
-          li.classList.add('seg-in');
-        });
-      };
-
-      const select = (i: number) => {
-        const tab = tabs[i];
-        thumb.style.transform = `translateX(${i * 100}%)`;
-        tabs.forEach((t) => {
-          const active = t === tab;
-          t.setAttribute('aria-selected', String(active));
-          t.classList.toggle('text-blush-700', active);
-          t.classList.toggle('dark:text-blush-300', active);
-          t.classList.toggle('text-ink-400', !active);
-        });
-        panels.forEach((p) => {
-          const show = p.dataset.segPanel === tab.dataset.segTab;
-          const wasHidden = p.classList.contains('hidden');
-          p.classList.toggle('hidden', !show);
-          if (show && wasHidden) animatePanel(p);
-        });
-      };
-      tabs.forEach((tab, i) => tab.addEventListener('click', () => select(i)));
-
-      // On first load the initially-visible panel's rows carry `.reveal`, so
-      // they fade in on scroll with the same stagger as the rest of the page
-      // (handled by Layout's observer). seg-in is only for later tab switches.
-
-      // arrow keys move between segments, per the tabs pattern
-      seg.addEventListener('keydown', (e) => {
-        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-        const current = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
-        const nextIdx =
-          (current + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
-        select(nextIdx);
-        tabs[nextIdx].focus();
-        e.preventDefault();
-      });
-    }
-
     // Weight tile: refresh from the live Supabase ledger (same data the
     // Weight tracker shows); the built value stands when offline.
     async function refreshWeightTile() {
@@ -462,12 +375,8 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
       }
     }
 
-    setupSegments();
     refreshWeightTile();
-    document.addEventListener('astro:page-load', () => {
-      setupSegments();
-      refreshWeightTile();
-    });
+    document.addEventListener('astro:page-load', refreshWeightTile);
 
     // Refresh the weight tile when the tab/app returns to the foreground, so a
     // weigh-in logged elsewhere shows up without a manual reload.

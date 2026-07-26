@@ -1,0 +1,120 @@
+---
+/**
+ * The segmented pill control (sliding thumb + tab buttons) that switches
+ * between sibling panels. Used by the Health timeline filter and the
+ * Reading-Picha body parts.
+ *
+ * Render it, then add one panel per tab as a sibling with a matching
+ * `data-seg-panel={id}` and `role="tabpanel"`; hide all but the first with
+ * `class="hidden"`. The first tab starts selected. The script here wires every
+ * [data-seg] on the page and toggles the panels whose ids belong to it.
+ *
+ *   <SegmentedTabs tabs={[{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }]} label="Filter" />
+ *   <div data-seg-panel="a" role="tabpanel" aria-labelledby="seg-tab-a">…</div>
+ *   <div data-seg-panel="b" role="tabpanel" aria-labelledby="seg-tab-b" class="hidden">…</div>
+ */
+interface Props {
+  tabs: { id: string; label: string }[];
+  /** aria-label for the tablist. */
+  label?: string;
+  class?: string;
+}
+const { tabs, label = 'Filter', class: cls = '' } = Astro.props;
+---
+
+<div
+  class:list={[
+    'reveal relative grid rounded-full bg-paper-200/80 p-1 dark:bg-plum-800/80',
+    cls,
+  ]}
+  style={`grid-template-columns: repeat(${tabs.length}, minmax(0, 1fr))`}
+  role="tablist"
+  aria-label={label}
+  data-seg
+>
+  <span
+    class="pointer-events-none absolute inset-y-1 left-1 rounded-full bg-paper-50 shadow-sm transition-transform duration-300 ease-out dark:bg-plum-950"
+    style={`width: calc((100% - 0.5rem) / ${tabs.length})`}
+    data-seg-thumb
+    aria-hidden="true"
+  >
+  </span>
+  {
+    tabs.map((t, i) => (
+      <button
+        type="button"
+        role="tab"
+        id={`seg-tab-${t.id}`}
+        aria-controls={`seg-panel-${t.id}`}
+        aria-selected={i === 0 ? 'true' : 'false'}
+        data-seg-tab={t.id}
+        class:list={[
+          'relative z-10 rounded-full py-1.5 text-xs font-bold transition-colors duration-200 hover:text-blush-600 dark:hover:text-blush-300',
+          i === 0 ? 'text-blush-700 dark:text-blush-300' : 'text-ink-400',
+        ]}
+      >
+        {t.label}
+      </button>
+    ))
+  }
+</div>
+
+<script>
+  // Wire every segmented control on the page: slide the thumb, toggle its own
+  // panels, and stagger the revealed panel's rows/cards in on switch.
+  function setupSegments() {
+    document.querySelectorAll<HTMLElement>('[data-seg]').forEach((seg) => {
+      if (seg.dataset.bound) return;
+      seg.dataset.bound = '1';
+      const thumb = seg.querySelector<HTMLElement>('[data-seg-thumb]')!;
+      const tabs = Array.from(seg.querySelectorAll<HTMLButtonElement>('[data-seg-tab]'));
+      const ids = new Set(tabs.map((t) => t.dataset.segTab));
+      const panels = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-seg-panel]'),
+      ).filter((p) => ids.has(p.dataset.segPanel));
+
+      // Decorative stagger on switch; content is visible without JS.
+      const animatePanel = (panel: HTMLElement) => {
+        panel.querySelectorAll<HTMLElement>('li, article').forEach((el, i) => {
+          el.classList.remove('seg-in');
+          void el.offsetWidth;
+          el.style.animationDelay = `${Math.min(i * 45, 340)}ms`;
+          el.classList.add('seg-in');
+        });
+      };
+
+      const select = (i: number) => {
+        const tab = tabs[i];
+        thumb.style.transform = `translateX(${i * 100}%)`;
+        tabs.forEach((t) => {
+          const active = t === tab;
+          t.setAttribute('aria-selected', String(active));
+          t.classList.toggle('text-blush-700', active);
+          t.classList.toggle('dark:text-blush-300', active);
+          t.classList.toggle('text-ink-400', !active);
+        });
+        panels.forEach((p) => {
+          const show = p.dataset.segPanel === tab.dataset.segTab;
+          const wasHidden = p.classList.contains('hidden');
+          p.classList.toggle('hidden', !show);
+          if (show && wasHidden) animatePanel(p);
+        });
+      };
+      tabs.forEach((tab, i) => tab.addEventListener('click', () => select(i)));
+
+      // arrow keys move between segments, per the tabs pattern
+      seg.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+        const current = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+        const nextIdx =
+          (current + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+        select(nextIdx);
+        tabs[nextIdx].focus();
+        e.preventDefault();
+      });
+    });
+  }
+
+  setupSegments();
+  document.addEventListener('astro:page-load', setupSegments);
+</script>
