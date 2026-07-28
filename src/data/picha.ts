@@ -332,7 +332,7 @@ export const dailyChecklist = [
     id: 'meals-1',
     icon: 'ph:bowl-food',
     label: 'Wet food service',
-    hint: 'Her five-star course; the feeder handles the kibble',
+    hint: 'First course, around 10am; mix in any kibble she left',
   },
   {
     id: 'litter-1',
@@ -368,13 +368,13 @@ export const dailyChecklist = [
     id: 'treat',
     icon: 'ph:cookie',
     label: 'A treat, if earned',
-    hint: "Only when she's earned it; capped at 10% of her food",
+    hint: 'Around 4pm, only when earned; capped at 10% of her food',
   },
   {
     id: 'meals-2',
     icon: 'ph:bowl-food',
     label: 'Wet food service',
-    hint: 'Second course, same royal standards',
+    hint: 'Second course, around 9:30pm before lights-out',
   },
   {
     id: 'play-ball',
@@ -793,7 +793,7 @@ export const food: CareItem[] = [
     icon: 'ph:bowl-food',
     title: 'Portion control',
     detail:
-      'Measured meals only; the buffet is closed. Post-spay royalty gains weight easily, and the waistline is under active management.',
+      'Measured meals only; the buffet is closed. Three 20 g kibble drops from the feeder (60 g a day), plus two hand-served wet courses and one afternoon treat. Post-spay royalty gains weight easily, and the waistline is under active management.',
   },
   {
     icon: 'ph:cookie',
@@ -806,6 +806,68 @@ export const food: CareItem[] = [
     title: 'The fountain',
     detail:
       'Fresh running water 24/7 from her personal drinking fountain. Still water is beneath her.',
+  },
+];
+
+/**
+ * Her daily feeding timetable. Kibble is automatic (`auto`) on the feeder's
+ * three timed drops (20 g each, 60 g a day); the wet courses and the afternoon
+ * treat are served by the staff. `time` is display-only, kept in day order.
+ * Approximate hand-served times are prefixed with "~".
+ */
+export interface MealSlot {
+  time: string;
+  icon: string;
+  title: string;
+  /** Portion, when fixed (kibble). */
+  amount?: string;
+  /** Dispensed by the automatic feeder rather than served by the staff. */
+  auto?: boolean;
+  detail: string;
+}
+
+export const feedingSchedule: MealSlot[] = [
+  {
+    time: '7:00 AM',
+    icon: 'ph:bowl-food',
+    title: 'Morning kibble',
+    amount: '20 g',
+    auto: true,
+    detail: 'The feeder drops her first course on schedule; she nibbles at it when the mood strikes.',
+  },
+  {
+    time: '~10:00 AM',
+    icon: 'ph:fork-knife',
+    title: 'Wet food, first course',
+    detail: 'Her five-star course, served by hand. Any kibble she left from the morning gets mixed in.',
+  },
+  {
+    time: '1:00 PM',
+    icon: 'ph:bowl-food',
+    title: 'Midday kibble',
+    amount: '20 g',
+    auto: true,
+    detail: 'The second automatic drop, keeping the day evenly fed.',
+  },
+  {
+    time: '~4:00 PM',
+    icon: 'ph:cookie',
+    title: 'Snack or treat',
+    detail: 'The afternoon negotiation, kept within the 10% treat cap no matter how convincing the eyes get.',
+  },
+  {
+    time: '7:00 PM',
+    icon: 'ph:bowl-food',
+    title: 'Evening kibble',
+    amount: '20 g',
+    auto: true,
+    detail: 'The last automatic drop of the day.',
+  },
+  {
+    time: '~9:30 PM',
+    icon: 'ph:fork-knife',
+    title: 'Wet food, second course',
+    detail: 'The nightcap, served before lights-out. Nothing after, she sleeps it off.',
   },
 ];
 

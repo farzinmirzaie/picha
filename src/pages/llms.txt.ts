@@ -24,6 +24,7 @@ import {
   treatment,
   trainingRules,
   food,
+  feedingSchedule,
   grooming,
   litter,
   likes,
@@ -155,6 +156,9 @@ ${dailyChecklist.map((c) => `- ${c.label}: ${c.hint}`).join('\n')}
 ### Food
 
 ${food.map((f) => `- **${f.title}**: ${f.detail}`).join('\n')}
+
+Daily feeding schedule (kibble is automatic on the feeder, wet food and treats served by hand):
+${feedingSchedule.map((s) => `- **${s.time} — ${s.title}**${s.amount ? ` (${s.amount})` : ''}: ${s.detail}`).join('\n')}
 
 ### Grooming
 

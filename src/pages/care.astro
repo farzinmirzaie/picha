@@ -6,7 +6,7 @@ import Footer from '../components/Footer.astro';
 import SectionLabel from '../components/ui/SectionLabel.astro';
 import IconBadge from '../components/ui/IconBadge.astro';
 import Chip from '../components/ui/Chip.astro';
-import { dailyChecklist, grooming } from '../data/picha';
+import { dailyChecklist, feedingSchedule, grooming } from '../data/picha';
 import { supabaseClient } from '../data/supabase';
 ---
 
@@ -78,6 +78,50 @@ import { supabaseClient } from '../data/supabase';
       </p>
     </div>
     <p class="mt-2 px-1 text-[11px] leading-relaxed text-ink-400" data-rounds-note></p>
+  </section>
+
+  <!-- The menu: daily feeding timetable (automatic kibble + hand-served wet) -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="The menu">
+    <SectionLabel class="reveal mb-2">The menu</SectionLabel>
+    <p class="reveal mb-3 px-1 text-sm leading-relaxed text-ink-500 dark:text-ink-400">
+      Kibble runs itself: three 20 g drops from the feeder, 60 g a day. The two
+      wet courses and the afternoon treat are served by hand in between.
+    </p>
+    <div
+      class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
+    >
+      <ul class="divide-y divide-paper-200 dark:divide-plum-800">
+        {
+          feedingSchedule.map((slot) => (
+            <li class="flex items-start gap-3.5 px-5 py-4">
+              <IconBadge icon={slot.icon} size="sm" />
+              <div class="min-w-0 flex-1">
+                <div class="flex items-baseline justify-between gap-3">
+                  <h3 class="font-display font-semibold">{slot.title}</h3>
+                  <span class="shrink-0 whitespace-nowrap text-xs font-bold tabular-nums text-ink-400">
+                    {slot.time}
+                  </span>
+                </div>
+                <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+                  {slot.detail}
+                </p>
+                <div class="mt-1.5">
+                  {slot.auto ? (
+                    <Chip tone="neutral" icon="ph:timer">
+                      {slot.amount} · feeder
+                    </Chip>
+                  ) : (
+                    <Chip tone="blushSolid" icon="ph:hand-heart">
+                      By hand
+                    </Chip>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </section>
 
   <!-- Grooming -->
