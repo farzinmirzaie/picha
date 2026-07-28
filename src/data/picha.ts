@@ -844,9 +844,8 @@ export const grooming: CareItem[] = [
     icon: 'ph:scissors',
     title: 'Nails',
     cadence: 'Every 2–4 weeks',
-    planned: true,
     detail:
-      'The manicure programme has not started yet. Front paws first, then every 2–4 weeks. Management has not yet been informed.',
+      'A manicure every 2–4 weeks with cat clippers: front paws first, back paws as she permits. Best conducted while she is drowsy and least inclined to file a complaint.',
   },
   {
     icon: 'ph:tooth',
@@ -854,7 +853,7 @@ export const grooming: CareItem[] = [
     cadence: 'In training',
     planned: true,
     detail:
-      'The toothbrushing era approaches: Histo Tree cat-safe dental gel (beef flavour) has been purchased and awaits her formal approval.',
+      'Toothbrushing with Histo Tree cat-safe dental gel (beef flavour), building from a finger on the gums up to a full daily brush. A work in progress, conducted entirely at her pace.',
   },
 ];
 
