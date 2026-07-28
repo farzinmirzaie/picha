@@ -117,6 +117,15 @@ export const contact = {
 export const microchip = '458098500319352';
 
 /**
+ * Public microchip registration: where a finder can look her up and reach the
+ * staff. Her chip is listed here against current contact details.
+ */
+export const microchipRegistry = {
+  name: 'Petfinder.my',
+  url: 'https://www.petfinder.my/pets/148740/',
+};
+
+/**
  * One-time clinical status: the facts a vet wants at a glance and that rarely
  * change (desexed, chipped, core-vaccine series). Rendered as vitals tiles on
  * Health and echoed in llms.txt. Update here when one changes.
@@ -221,12 +230,6 @@ export const healthTimeline: TimelineEntry[] = [
     title: 'Dental check',
     detail:
       'A first professional look at the royal teeth; the toothbrushing training programme deserves expert oversight.',
-  },
-  {
-    icon: 'ph:identification-card',
-    title: 'Pet Passport + microchip registration',
-    detail:
-      'Government paperwork: register the microchip and confirm it points at current contact details.',
   },
 ];
 
@@ -1049,7 +1052,7 @@ export const safety: CareItem[] = [
     icon: 'ph:identification-badge',
     title: 'ID & collar',
     detail:
-      'Microchipped; public registration to current contact details still to be confirmed. A breakaway safety collar is recommended for climbing royalty.',
+      'Microchipped and registered with Petfinder.my; the public listing points to current contact details, so a finder can look up her chip and call home. A breakaway safety collar is recommended for climbing royalty.',
   },
 ];
 

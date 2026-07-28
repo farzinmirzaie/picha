@@ -17,6 +17,7 @@ import {
   vet,
   contact,
   microchip,
+  microchipRegistry,
   clinicalStatus,
   healthTimeline,
   recurringCare,
@@ -93,7 +94,7 @@ ${identity.looks} Home: ${identity.home}.
 - Colour: ${identity.colour}
 - Born: ${BIRTH_DATE} (${ageLabel()}, ~${Math.round(catYears(ageInMonths()))} in human years by the common veterinary conversion)
 - Microchip: ${microchip} (implanted between the shoulders)
-- Passport: pending
+- Microchip registration: registered at ${microchipRegistry.name}, public listing at ${microchipRegistry.url} (points to current contact details)
 
 ## Weight
 

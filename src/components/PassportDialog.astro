@@ -7,7 +7,7 @@ import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import SheetHeader from './ui/SheetHeader.astro';
 import pichaPhoto from '../assets/picha.jpg';
-import { identity, microchip } from '../data/picha';
+import { identity, microchip, microchipRegistry } from '../data/picha';
 
 // Layout modelled on the official pet passport: dotted fields, pen-blue values.
 const particulars = [
@@ -81,6 +81,15 @@ const particulars = [
           <p class="pen border-b border-dotted border-[#b9ad99] pb-0.5 text-xs sm:text-sm">
             Between shoulders
           </p>
+          <p class="text-[10px] leading-tight font-bold">Registered at</p>
+          <a
+            href={microchipRegistry.url}
+            target="_blank"
+            rel="noopener"
+            class="pen border-b border-dotted border-[#b9ad99] pb-0.5 text-xs underline sm:text-sm"
+          >
+            {microchipRegistry.name}
+          </a>
         </div>
 
         <div class="mt-5">
