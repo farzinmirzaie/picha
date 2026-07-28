@@ -912,10 +912,9 @@ export const grooming: CareItem[] = [
   {
     icon: 'ph:tooth',
     title: 'Teeth',
-    cadence: 'In training',
-    planned: true,
+    cadence: 'Daily',
     detail:
-      'Toothbrushing with Histo Tree cat-safe dental gel (beef flavour), building from a finger on the gums up to a full daily brush. A work in progress, conducted entirely at her pace.',
+      'A daily brush with Histo Tree cat-safe dental gel (beef flavour), worked along the gumline a few seconds a side. Tolerated, barely, in exchange for the treat that follows.',
   },
 ];
 
