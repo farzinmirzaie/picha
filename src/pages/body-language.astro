@@ -6,22 +6,74 @@ import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
 import SegmentedTabs from '../components/ui/SegmentedTabs.astro';
-import { earSignals } from '../data/picha';
+import { earSignals, eyeSignals } from '../data/picha';
 
 // Signal photos, cropped from the reference chart. Match each signal by id
-// (ear-<id>.png). Each body part is a segment/panel; the same pattern extends
-// to more parts by adding a segment + its own signal set.
-const earImages = import.meta.glob<{ default: ImageMetadata }>('../assets/ears/*.png', {
-  eager: true,
-});
-const earImageById: Record<string, ImageMetadata> = {};
-for (const [path, mod] of Object.entries(earImages)) {
-  const id = path.match(/ear-(.+)\.png$/)?.[1];
-  if (id) earImageById[id] = mod.default;
+// (<part>-<id>.png). Each body part is a segment/panel; the same pattern
+// extends to more parts by adding a segment + its own signal set + crops.
+function imagesById(
+  glob: Record<string, { default: ImageMetadata }>,
+  part: string,
+): Record<string, ImageMetadata> {
+  const re = new RegExp(`${part}-(.+)\\.png$`);
+  const out: Record<string, ImageMetadata> = {};
+  for (const [path, mod] of Object.entries(glob)) {
+    const id = path.match(re)?.[1];
+    if (id) out[id] = mod.default;
+  }
+  return out;
 }
+const earImageById = imagesById(
+  import.meta.glob<{ default: ImageMetadata }>('../assets/ears/*.png', { eager: true }),
+  'ear',
+);
+const eyeImageById = imagesById(
+  import.meta.glob<{ default: ImageMetadata }>('../assets/eyes/*.png', { eager: true }),
+  'eye',
+);
 
-// Segments = the tabs. Each has its signal set and image lookup.
-const segments = [{ id: 'ears', label: 'Ears', signals: earSignals, images: earImageById }];
+// Segments = the tabs. Each has its noun (for alt text), signal set, image
+// lookup and its own footer notes (things a still photo can't capture).
+const segments = [
+  {
+    id: 'ears',
+    label: 'Ears',
+    noun: 'ears',
+    signals: earSignals,
+    images: earImageById,
+    notes: [
+      {
+        tone: 'info',
+        icon: 'ph:wave-sine',
+        text: "One a photo can't hold: quick ear-flicking or twitching. Usually plain irritation (or a passing fly); if it comes with head-shaking or scratching, check her ears.",
+      },
+      {
+        tone: 'danger',
+        icon: 'ph:hand-palm',
+        text: 'When the signals say ease off or give space, the kind move is exactly that: no reaching, no scooping. Let her come back to you.',
+      },
+    ],
+  },
+  {
+    id: 'eyes',
+    label: 'Eyes',
+    noun: 'eyes',
+    signals: eyeSignals,
+    images: eyeImageById,
+    notes: [
+      {
+        tone: 'info',
+        icon: 'ph:wave-sine',
+        text: "Two things a still can't show: a hard, unblinking stare (a challenge, so look away and don't stare back) and the third eyelid sliding across the inner corner (often tiredness, sometimes illness).",
+      },
+      {
+        tone: 'danger',
+        icon: 'ph:first-aid',
+        text: 'Eyes are also health tells. Unequal pupils that do not settle, a suddenly cloudy, red or weepy eye, constant squinting, or pawing at one eye are a vet call, not a mood.',
+      },
+    ],
+  },
+];
 
 // tone → how to treat it, driving the corner dot + mood chip colours.
 const dotTone: Record<string, string> = {
@@ -90,7 +142,7 @@ const legend = [
                   {seg.images[s.id] && (
                     <Image
                       src={seg.images[s.id]}
-                      alt={`Picha with ears ${s.title.toLowerCase()}`}
+                      alt={`Picha's ${seg.noun}: ${s.title.toLowerCase()}`}
                       width={320}
                       densities={[1, 2]}
                       class="h-full w-full object-contain"
@@ -116,21 +168,19 @@ const legend = [
           </div>
 
           <div class="mt-6 space-y-3">
-            <p class="reveal flex items-start gap-2 rounded-2xl border border-dashed border-paper-300 bg-paper-50/60 px-4 py-3 text-xs leading-relaxed text-ink-500 dark:border-plum-700 dark:bg-plum-900/60">
-              <Icon name="ph:wave-sine" class="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-              <span>
-                One a photo can't hold: quick ear-<em>flicking</em> or twitching.
-                Usually plain irritation (or a passing fly); if it comes with
-                head-shaking or scratching, check her ears.
-              </span>
-            </p>
-            <p class="reveal flex items-start gap-2 rounded-2xl bg-red-50 px-4 py-3 text-xs leading-relaxed font-medium text-red-700 ring-1 ring-red-200 dark:bg-red-950/40 dark:text-red-300 dark:ring-red-900/50">
-              <Icon name="ph:hand-palm" class="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-              <span>
-                When the signals say ease off or give space, the kind move is
-                exactly that: no reaching, no scooping. Let her come back to you.
-              </span>
-            </p>
+            {seg.notes.map((n) => (
+              <p
+                class:list={[
+                  'reveal flex items-start gap-2 rounded-2xl px-4 py-3 text-xs leading-relaxed',
+                  n.tone === 'danger'
+                    ? 'bg-red-50 font-medium text-red-700 ring-1 ring-red-200 dark:bg-red-950/40 dark:text-red-300 dark:ring-red-900/50'
+                    : 'border border-dashed border-paper-300 bg-paper-50/60 text-ink-500 dark:border-plum-700 dark:bg-plum-900/60',
+                ]}
+              >
+                <Icon name={n.icon} class="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                <span>{n.text}</span>
+              </p>
+            ))}
           </div>
         </div>
       ))

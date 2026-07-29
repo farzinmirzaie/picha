@@ -407,12 +407,12 @@ export const dailyChecklist = [
 
 /* ---------- body language (the "Reading Picha" tool) ---------- */
 
-export interface EarSignal {
-  /** Asset key: src/assets/ears/ear-<id>.png. */
+export interface BodySignal {
+  /** Asset key: src/assets/<part>/<part>-<id>.png (e.g. ears/ear-forward.png). */
   id: string;
   /** Number in the field guide (matches the reference chart). */
   num: number;
-  /** The ear position. */
+  /** The position / expression. */
   title: string;
   /** One-line read, shown as a chip. */
   mood: string;
@@ -430,7 +430,7 @@ export interface EarSignal {
  * paws come later as their own signal sets. Descriptions follow standard feline
  * body-language guidance; the two `danger` states stay plain and unambiguous.
  */
-export const earSignals: EarSignal[] = [
+export const earSignals: BodySignal[] = [
   {
     id: 'forward',
     num: 1,
@@ -538,6 +538,123 @@ export const earSignals: EarSignal[] = [
     tone: 'danger',
     detail:
       'Mouth open, ears back, warning issued. She feels threatened and is telling you to stay away. Respect it and give her room.',
+  },
+];
+
+/**
+ * Eye positions and pupils, the second chapter of the body-language reader.
+ * Photos are cropped from the reference chart (eyes/eye-<id>.png). Pupil size
+ * shifts with light as well as mood, so these read alongside her ears and body,
+ * never on their own; the fearful and medical states stay plain and exact.
+ */
+export const eyeSignals: BodySignal[] = [
+  {
+    id: 'neutral',
+    num: 1,
+    title: 'Relaxed / neutral',
+    mood: 'Calm & content',
+    tone: 'calm',
+    detail:
+      'Eyes open and easy, pupils a normal almond. All is well: comfortable, content and at ease. A fine moment to say hello.',
+  },
+  {
+    id: 'sleepy',
+    num: 2,
+    title: 'Soft / sleepy',
+    mood: 'Sleepy & safe',
+    tone: 'calm',
+    detail:
+      'Lids low and soft, eyes half closed at rest. Deeply relaxed and feeling safe. Let her drift; this is real trust.',
+  },
+  {
+    id: 'dilated',
+    num: 3,
+    title: 'Dilated / excited',
+    mood: 'Excited / aroused',
+    tone: 'alert',
+    detail:
+      'Pupils blown wide and round. Excited, playful or aroused, though wide pupils can also mean fear, so read her ears and body too. Fine for play while the mood stays light.',
+  },
+  {
+    id: 'alert',
+    num: 4,
+    title: 'Interested / alert',
+    mood: 'Curious & engaged',
+    tone: 'alert',
+    detail:
+      'Eyes open, pupils mid-size, gaze fixed on something. Curious and mentally engaged, taking it all in.',
+  },
+  {
+    id: 'narrowed',
+    num: 5,
+    title: 'Narrowed / intense',
+    mood: 'Locked in',
+    tone: 'alert',
+    detail:
+      'Pupils drawn to a focused line, stare steady. Determined and confident while she sizes things up. Let her work it out.',
+  },
+  {
+    id: 'very-narrow',
+    num: 6,
+    title: 'Very narrow / agitated',
+    mood: 'Overstimulated',
+    tone: 'wary',
+    detail:
+      'Pupils pulled to thin slits. Annoyed, overstimulated, or simply in bright light. If the mood is tense, ease off the fuss and give her a breather.',
+  },
+  {
+    id: 'suspicious',
+    num: 7,
+    title: 'Suspicious / cautious',
+    mood: 'Wary & watching',
+    tone: 'wary',
+    detail:
+      'Eyes half narrowed, watching closely. Unsure and checking whether things are safe. Move slowly and let her make the call.',
+  },
+  {
+    id: 'round',
+    num: 8,
+    title: 'Round / surprised',
+    mood: 'Startled',
+    tone: 'alert',
+    detail:
+      'Eyes suddenly wide and round. Something sudden caught her off guard and she is on alert. Give her a beat to see it is nothing.',
+  },
+  {
+    id: 'unequal',
+    num: 9,
+    title: 'Unequal pupils',
+    mood: 'Check on her',
+    tone: 'wary',
+    detail:
+      'One pupil larger than the other. It can be normal in dim or changing light, but if it lasts, or comes with squinting, pawing at the eye, or her seeming off, call the vet.',
+  },
+  {
+    id: 'slow-blink',
+    num: 10,
+    title: 'Slow blink',
+    mood: 'I trust you',
+    tone: 'calm',
+    detail:
+      'A slow, lazy blink held for a beat. Her way of saying she trusts you and feels safe. Slow-blink back; it is the highest compliment a cat gives.',
+  },
+  {
+    id: 'wide-eyed',
+    num: 11,
+    title: 'Wide-eyed / fearful',
+    mood: 'Scared',
+    tone: 'danger',
+    detail:
+      'Eyes stretched wide, usually with big pupils, body braced. Scared and feeling threatened, looking for a way out. Do not crowd or corner her; give her space and a clear exit.',
+  },
+  {
+    id: 'closed',
+    num: 12,
+    title: 'Blink / eyes closed',
+    mood: 'Deeply relaxed',
+    tone: 'calm',
+    detail:
+      'Eyes shut, face soft and smooth. Very relaxed and trusting, or tuning the world out to rest. Leave her to it.',
   },
 ];
 

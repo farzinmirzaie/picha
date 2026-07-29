@@ -36,6 +36,7 @@ import {
   toxicItems,
   callVetIf,
   earSignals,
+  eyeSignals,
 } from '../data/picha';
 
 import { addDays, inDaysLabel } from '../lib/dates';
@@ -176,6 +177,14 @@ How to read her mood from her ears. Tone in brackets is how to treat it (calm = 
 ${earSignals.map((s) => `- **${s.title}** [${s.tone}] — ${s.mood}: ${s.detail}`).join('\n')}
 
 Also watch for rapid ear-flicking or twitching: usually irritation (or a passing fly); if paired with head-shaking or scratching, check her ears.
+
+## Body language: reading her eyes
+
+How to read her mood from her eyes and pupils. Pupil size shifts with light as well as emotion, so read eyes together with ears and body. Tone in brackets is how to treat it (calm = approach freely, alert = engaged, wary = ease off, danger = give space).
+
+${eyeSignals.map((s) => `- **${s.title}** [${s.tone}] — ${s.mood}: ${s.detail}`).join('\n')}
+
+Health note: a hard unblinking stare is a challenge (look away). Unequal pupils that do not settle, a suddenly cloudy, red or weepy eye, constant squinting, or pawing at one eye are a vet call, not a mood.
 
 ## Personality
 
