@@ -341,7 +341,7 @@ export const dailyChecklist = [
     id: 'litter-1',
     icon: 'ph:toilet',
     label: 'Scoop the litter',
-    hint: 'First pass; she has standards',
+    hint: 'Morning pass; she has standards',
   },
   {
     id: 'combing',
@@ -368,6 +368,12 @@ export const dailyChecklist = [
     hint: 'One short training rep; see the Royal Academy',
   },
   {
+    id: 'litter-mid',
+    icon: 'ph:toilet',
+    label: 'Scoop the litter',
+    hint: 'Midday check, only if there is anything to clear',
+  },
+  {
     id: 'treat',
     icon: 'ph:cookie',
     label: 'A treat, if earned',
@@ -389,7 +395,7 @@ export const dailyChecklist = [
     id: 'litter-2',
     icon: 'ph:toilet',
     label: 'Scoop the litter',
-    hint: 'Second pass to keep it five-star',
+    hint: 'Evening pass to keep it five-star',
   },
   {
     id: 'cuddle',

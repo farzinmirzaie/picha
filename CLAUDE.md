@@ -59,6 +59,8 @@ src/
     SignalCard.astro   # one body-language signal card (photo + mood chip above
                        # the title + read) for /body-language; shared across
                        # every body part (ears, eyes, future) so cards match
+    ToolCard.astro     # one "In service" card on Tools (icon + title + blurb +
+                       # caret); href → <a>, else <button> (the passport opener)
     WeighInForm.astro  # the weigh-in entry form — rendered twice on /weight
                        # (desktop accordion after the ledger + mobile dialog
                        # opened from the app-bar action)
@@ -213,8 +215,12 @@ its own id. The store only tracks ids, so add/remove/reorder items freely
 without touching the DB. A localStorage cache (`picha-rounds`) backs it for
 offline/optimistic use. The checklist shows a sync-state note with a "Turn on
 sync" action linking to the Staff room (the one place the registrar PIN is
-entered now), and surfaces write errors instead of failing silently. A device
-without the PIN just stays local. The list rolls over at **midnight MYT** (the
+entered now). It handles loading + error states: the first shared pull dims and
+pulses the list with a "Loading…" note (bounded by an 8s timeout so a stalled
+network can't spin forever), a failed pull falls back to the cache with an amber
+"Offline" note, and each write pulses its own tickbox while in flight and
+surfaces PIN/cloud errors instead of failing silently. A device without the PIN
+just stays local. The list rolls over at **midnight MYT** (the
 `careDayKey()` adds 8h to `now` → the UTC date = the MYT calendar date, so the
 boundary is 00:00 MYT on every device regardless of its own timezone); the
 reset is entirely this date key (a new day queries a date with no row), not

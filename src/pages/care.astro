@@ -55,7 +55,7 @@ import { supabaseClient } from '../data/supabase';
                   >
                     {item.label}
                   </span>
-                  <span class="block truncate text-xs text-ink-400">{item.hint}</span>
+                  <span class="block text-xs leading-snug text-ink-400">{item.hint}</span>
                 </span>
                 <span
                   class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-blush-200 text-white transition-all duration-200 dark:border-plum-600"
@@ -198,26 +198,63 @@ import { supabaseClient } from '../data/supabase';
       );
     }
 
+    // Dim + pulse the list while the first shared pull is in flight, so it
+    // reads as "loading" rather than a wrong (empty) answer. Later refetches
+    // (refocus, pageshow) are silent since the cached list is already shown.
+    let hydrated = false;
+    function setListLoading(on: boolean) {
+      const list = document.querySelector<HTMLElement>('[data-rounds] ul');
+      list?.classList.toggle('animate-pulse', on);
+      list?.classList.toggle('opacity-60', on);
+    }
+
+    // Pulse the tapped item's tickbox while its write is in flight, and mark it
+    // pending so a second tap can't race the first.
+    function setItemPending(btn: HTMLButtonElement, on: boolean) {
+      btn.dataset.pending = on ? '1' : '';
+      btn.querySelector<HTMLElement>('[data-check-box]')?.classList.toggle('animate-pulse', on);
+    }
+
     // Pull today's shared state from Supabase (server is the source of truth
     // for the shared list); falls back to the local cache when offline.
     async function pullRounds() {
       const root = document.querySelector<HTMLElement>('[data-rounds]');
       const url = root?.dataset.supabaseUrl;
       const key = root?.dataset.supabaseKey;
-      if (url && key) {
-        try {
-          const { sbSelect } = await import('../lib/sb');
-          const rows = await sbSelect<Array<{ done: string[] }>>(
+      paint(); // show whatever we already have (cache / SSR) right away
+      if (!url || !key) {
+        updateNote();
+        return;
+      }
+      const firstLoad = !hydrated;
+      if (firstLoad) {
+        setListLoading(true);
+        updateNote('Loading today’s rounds…');
+      }
+      try {
+        const { sbSelect } = await import('../lib/sb');
+        // Bound the wait so a stalled network can't leave the list pulsing
+        // forever; on timeout we fall back to the cached copy.
+        const rows = await Promise.race([
+          sbSelect<Array<{ done: string[] }>>(
             url,
             key,
             `picha_rounds?select=done&date=eq.${careDayKey()}`,
-          );
-          saveStore(Array.isArray(rows) && rows[0]?.done ? rows[0].done : []);
-        } catch {
-          /* offline: the local cache stands */
-        }
+          ),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('timeout')), 8000),
+          ),
+        ]);
+        saveStore(Array.isArray(rows) && rows[0]?.done ? rows[0].done : []);
+        updateNote();
+      } catch {
+        // offline / stalled / fetch failed: the local cache stands, but say so.
+        updateNote('Offline: showing this device’s saved rounds.', 'warn');
+      } finally {
+        hydrated = true;
+        setListLoading(false);
+        paint();
       }
-      paint();
     }
 
     // Sync-state footer: for staff it confirms the ticks are shared; for
@@ -225,22 +262,30 @@ import { supabaseClient } from '../data/supabase';
     // room to sign in (the one place the registrar PIN is entered now).
     const staffHref = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/tools/staff/`;
 
-    function updateNote(override?: string) {
+    type NoteTone = 'muted' | 'warn' | 'error';
+    function updateNote(override?: string, tone: NoteTone = 'muted') {
       const note = document.querySelector<HTMLElement>('[data-rounds-note]');
       if (!note) return;
       const root = document.querySelector<HTMLElement>('[data-rounds]');
       const configured = Boolean(root?.dataset.supabaseUrl && root?.dataset.supabaseKey);
       note.textContent = '';
-      note.classList.remove('text-red-500');
-      note.classList.add('text-ink-400');
+      note.classList.remove(
+        'text-ink-400',
+        'text-amber-700',
+        'dark:text-amber-300',
+        'text-red-500',
+      );
+      const setTone = (t: NoteTone) => {
+        if (t === 'error') note.classList.add('text-red-500');
+        else if (t === 'warn') note.classList.add('text-amber-700', 'dark:text-amber-300');
+        else note.classList.add('text-ink-400');
+      };
       if (override) {
         note.textContent = override;
-        if (override.toLowerCase().includes('pin') || override.toLowerCase().includes("couldn't")) {
-          note.classList.add('text-red-500');
-          note.classList.remove('text-ink-400');
-        }
+        setTone(tone);
         return;
       }
+      setTone('muted');
       if (!configured) {
         note.textContent = 'Ticks reset each night at midnight.';
         return;
@@ -308,7 +353,7 @@ import { supabaseClient } from '../data/supabase';
         if (btn.dataset.bound) return;
         btn.dataset.bound = '1';
         btn.addEventListener('click', async () => {
-          if (btn.disabled) return; // read-only for non-staff
+          if (btn.disabled || btn.dataset.pending === '1') return; // read-only / mid-write
           const store = loadStore(); // re-check the date on every tap
           const id = btn.dataset.checkItem!;
           const nowDone = !store.done.includes(id);
@@ -324,6 +369,7 @@ import { supabaseClient } from '../data/supabase';
             updateNote();
             return;
           }
+          setItemPending(btn, true); // pulse the box while the write is in flight
           try {
             const { sbRpc } = await import('../lib/sb');
             await sbRpc(url, key, 'set_round', {
@@ -337,16 +383,17 @@ import { supabaseClient } from '../data/supabase';
             // keep the optimistic local state, but tell the staff why
             if (String(err).includes('wrong pin')) {
               forgetStaffPin();
-              updateNote('That PIN was rejected. Open the Staff room to re-enter.');
+              updateNote('That PIN was rejected. Open the Staff room to re-enter.', 'error');
             } else {
-              updateNote("Saved on this device; couldn't reach the cloud.");
+              updateNote('Saved on this device; the cloud did not answer.', 'warn');
             }
+          } finally {
+            setItemPending(btn, false);
           }
         });
       });
 
-      pullRounds();
-      updateNote();
+      pullRounds(); // owns the sync-state note (loading / normal / offline)
     }
 
     setupChecklist();
@@ -355,14 +402,11 @@ import { supabaseClient } from '../data/supabase';
     // stale list: on refocus (incl. a rollover past midnight, or a sibling
     // device's change) and on back/forward-cache restores (pageshow).
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        pullRounds();
-        updateNote(); // a PIN may have been entered at the Staff room
-      }
+      // Re-pull on refocus: a PIN may have been entered at the Staff room, a
+      // sibling device may have ticked something, or the day may have rolled
+      // over. pullRounds repaints and refreshes the note.
+      if (document.visibilityState === 'visible') pullRounds();
     });
-    window.addEventListener('pageshow', () => {
-      pullRounds();
-      updateNote();
-    });
+    window.addEventListener('pageshow', () => pullRounds());
   </script>
 </Layout>

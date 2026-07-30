@@ -1,0 +1,40 @@
+---
+/**
+ * One "In service" card on the Tools page: icon, title, blurb and a caret.
+ * Renders an <a> when given `href`, otherwise a <button> (e.g. the Pet Passport
+ * card, which opens a dialog). Extra attributes pass through, so callers add
+ * `data-astro-prefetch` (links) or `data-passport-open` (the dialog opener).
+ */
+import { Icon } from 'astro-icon/components';
+import IconBadge from './ui/IconBadge.astro';
+
+interface Props {
+  icon: string;
+  title: string;
+  detail: string;
+  href?: string;
+  [key: string]: unknown;
+}
+const { icon, title, detail, href, ...rest } = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  href={href}
+  type={href ? undefined : 'button'}
+  {...rest}
+  class="reveal group mt-3 flex w-full items-center gap-4 rounded-3xl border border-blush-200/70 bg-paper-50 p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-900"
+>
+  <IconBadge icon={icon} />
+  <span class="min-w-0 flex-1">
+    <span class="font-display text-lg font-semibold">{title}</span>
+    <span class="mt-0.5 block text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+      {detail}
+    </span>
+  </span>
+  <Icon
+    name="ph:caret-right"
+    class="h-4 w-4 shrink-0 text-ink-400 transition-transform duration-200 group-hover:translate-x-1"
+    aria-hidden="true"
+  />
+</Tag>
