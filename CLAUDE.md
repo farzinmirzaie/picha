@@ -56,6 +56,9 @@ src/
     ShareDialog.astro  # share sheet: build-time QR (qrcode pkg) + Web Share /
                        # copy-link; any [data-share-open] element opens it (Home)
     TrainingRules.astro # the Academy's session-rules card (hub + course pages)
+    SignalCard.astro   # one body-language signal card (photo + mood chip above
+                       # the title + read) for /body-language; shared across
+                       # every body part (ears, eyes, future) so cards match
     WeighInForm.astro  # the weigh-in entry form — rendered twice on /weight
                        # (desktop accordion after the ledger + mobile dialog
                        # opened from the app-bar action)
@@ -100,12 +103,14 @@ src/
                        # felineStages) lives in picha.ts (current="tools")
     training/index.astro   # Royal Academy hub — courses grouped by status
     training/[slug].astro  # one page per course: step ladder, rules, practice tick
-    body-language.astro    # "Reading Picha" — body-language field guide; ear
-                       # signals now (earSignals), eyes/tail/paws later (current="tools")
+    body-language.astro    # "Reading Picha" — body-language field guide; ears +
+                       # eyes now (earSignals/eyeSignals, one segment each, via
+                       # the shared SignalCard); tail/paws later (current="tools")
   styles/global.css    # Tailwind @theme (paper/plum/ink/blush/amber) + animations
   assets/
     picha.jpg          # avatar photo (astro:assets; also the source for app icons)
     ears/ear-*.png     # body-language ear crops, keyed by earSignals[].id
+    eyes/eye-*.png     # body-language eye crops, keyed by eyeSignals[].id
 public/favicon.svg     # Phosphor paw-print on a blush tile (photo is mush at 16px)
 public/icon-*.png      # PWA icons — the paw tile (favicon art at app size)
 public/notification-icon.png # push large-icon: her face (must differ from the

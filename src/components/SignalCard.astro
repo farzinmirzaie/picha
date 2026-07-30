@@ -1,0 +1,60 @@
+---
+/**
+ * One body-language signal card for the "Reading Picha" reader (/body-language):
+ * a photo, the mood chip and the read. Shared across every body part (ears,
+ * eyes, and whatever comes next) so the cards stay identical by construction.
+ * The mood chip sits in the card body above the title; its colour comes from
+ * the signal's `tone` (how to treat it).
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import type { BodySignal } from '../data/picha';
+
+interface Props {
+  signal: BodySignal;
+  image?: ImageMetadata;
+  /** Body-part noun for alt text, e.g. "ears", "eyes". */
+  noun: string;
+}
+const { signal: s, image, noun } = Astro.props;
+
+// tone → mood-chip colour (how to treat it).
+const chipTone: Record<BodySignal['tone'], string> = {
+  calm: 'bg-blush-100 text-blush-700 dark:bg-plum-800 dark:text-blush-300',
+  alert: 'bg-paper-200 text-ink-600 dark:bg-plum-800 dark:text-ink-400',
+  wary: 'bg-amber-300/40 text-amber-700 dark:bg-amber-700/30 dark:text-amber-300',
+  danger: 'bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300',
+};
+---
+
+<article
+  class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
+>
+  <div class="aspect-square bg-white">
+    {
+      image && (
+        <Image
+          src={image}
+          alt={`Picha's ${noun}: ${s.title.toLowerCase()}`}
+          width={320}
+          densities={[1, 2]}
+          class="h-full w-full object-contain"
+        />
+      )
+    }
+  </div>
+  <div class="p-4">
+    <span
+      class:list={[
+        'inline-block rounded-full px-2.5 py-0.5 text-[11px] font-bold',
+        chipTone[s.tone],
+      ]}
+    >
+      {s.mood}
+    </span>
+    <h3 class="mt-2 font-display font-semibold">{s.title}</h3>
+    <p class="mt-1.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+      {s.detail}
+    </p>
+  </div>
+</article>

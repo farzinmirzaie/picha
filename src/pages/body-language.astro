@@ -1,11 +1,11 @@
 ---
-import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import { Icon } from 'astro-icon/components';
 import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
 import SegmentedTabs from '../components/ui/SegmentedTabs.astro';
+import SignalCard from '../components/SignalCard.astro';
 import { earSignals, eyeSignals } from '../data/picha';
 
 // Signal photos, cropped from the reference chart. Match each signal by id
@@ -74,26 +74,6 @@ const segments = [
     ],
   },
 ];
-
-// tone → how to treat it, driving the corner dot + mood chip colours.
-const dotTone: Record<string, string> = {
-  calm: 'bg-blush-600',
-  alert: 'bg-ink-400',
-  wary: 'bg-amber-500',
-  danger: 'bg-red-600',
-};
-const chipTone: Record<string, string> = {
-  calm: 'bg-blush-100 text-blush-700 dark:bg-plum-800 dark:text-blush-300',
-  alert: 'bg-paper-200 text-ink-600 dark:bg-plum-800 dark:text-ink-400',
-  wary: 'bg-amber-300/40 text-amber-700 dark:bg-amber-700/30 dark:text-amber-300',
-  danger: 'bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300',
-};
-const legend = [
-  { tone: 'calm', label: 'Calm' },
-  { tone: 'alert', label: 'Alert' },
-  { tone: 'wary', label: 'Ease off' },
-  { tone: 'danger', label: 'Give space' },
-];
 ---
 
 <Layout
@@ -112,20 +92,6 @@ const legend = [
     <!-- Segmented tabs (one per body part) -->
     <SegmentedTabs tabs={segments.map((s) => ({ id: s.id, label: s.label }))} label="Body part" />
 
-    <!-- Tone key -->
-    <div
-      class="reveal mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] font-bold text-ink-400"
-    >
-      {
-        legend.map((l) => (
-          <span class="inline-flex items-center gap-1.5">
-            <span class:list={['h-2 w-2 rounded-full', dotTone[l.tone]]} />
-            {l.label}
-          </span>
-        ))
-      }
-    </div>
-
     {
       segments.map((seg, si) => (
         <div
@@ -137,33 +103,7 @@ const legend = [
         >
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {seg.signals.map((s) => (
-              <article class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900">
-                <div class="relative aspect-square bg-white">
-                  {seg.images[s.id] && (
-                    <Image
-                      src={seg.images[s.id]}
-                      alt={`Picha's ${seg.noun}: ${s.title.toLowerCase()}`}
-                      width={320}
-                      densities={[1, 2]}
-                      class="h-full w-full object-contain"
-                    />
-                  )}
-                  <span
-                    class:list={[
-                      'absolute top-3 left-3 rounded-full px-2.5 py-0.5 text-[11px] font-bold shadow-sm',
-                      chipTone[s.tone],
-                    ]}
-                  >
-                    {s.mood}
-                  </span>
-                </div>
-                <div class="p-4">
-                  <h3 class="font-display font-semibold">{s.title}</h3>
-                  <p class="mt-1.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-                    {s.detail}
-                  </p>
-                </div>
-              </article>
+              <SignalCard signal={s} image={seg.images[s.id]} noun={seg.noun} />
             ))}
           </div>
 
