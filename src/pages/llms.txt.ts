@@ -37,6 +37,7 @@ import {
   callVetIf,
   earSignals,
   eyeSignals,
+  tailSignals,
 } from '../data/picha';
 
 import { addDays, inDaysLabel } from '../lib/dates';
@@ -185,6 +186,12 @@ How to read her mood from her eyes and pupils. Pupil size shifts with light as w
 ${eyeSignals.map((s) => `- **${s.title}** [${s.tone}] — ${s.mood}: ${s.detail}`).join('\n')}
 
 Health note: a hard unblinking stare is a challenge (look away). Unequal pupils that do not settle, a suddenly cloudy, red or weepy eye, constant squinting, or pawing at one eye are a vet call, not a mood.
+
+## Body language: reading her tail
+
+How to read her mood from her tail. Motion carries half the meaning (a fast lash beats a slow sway), so read the tail together with her ears, eyes and posture. Tone in brackets is how to treat it (calm = approach freely, alert = engaged, wary = ease off, danger = give space).
+
+${tailSignals.map((s) => `- **${s.title}** [${s.tone}] — ${s.mood}: ${s.detail}`).join('\n')}
 
 ## Personality
 

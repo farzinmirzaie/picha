@@ -6,7 +6,7 @@ import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
 import SegmentedTabs from '../components/ui/SegmentedTabs.astro';
 import SignalCard from '../components/SignalCard.astro';
-import { earSignals, eyeSignals } from '../data/picha';
+import { earSignals, eyeSignals, tailSignals } from '../data/picha';
 
 // Signal photos, cropped from the reference chart. Match each signal by id
 // (<part>-<id>.png). Each body part is a segment/panel; the same pattern
@@ -30,6 +30,10 @@ const earImageById = imagesById(
 const eyeImageById = imagesById(
   import.meta.glob<{ default: ImageMetadata }>('../assets/eyes/*.png', { eager: true }),
   'eye',
+);
+const tailImageById = imagesById(
+  import.meta.glob<{ default: ImageMetadata }>('../assets/tails/*.png', { eager: true }),
+  'tail',
 );
 
 // Segments = the tabs. Each has its noun (for alt text), signal set, image
@@ -70,6 +74,25 @@ const segments = [
         tone: 'danger',
         icon: 'ph:first-aid',
         text: 'Eyes are also health tells. Unequal pupils that do not settle, a suddenly cloudy, red or weepy eye, constant squinting, or pawing at one eye are a vet call, not a mood.',
+      },
+    ],
+  },
+  {
+    id: 'tails',
+    label: 'Tail',
+    noun: 'tail',
+    signals: tailSignals,
+    images: tailImageById,
+    notes: [
+      {
+        tone: 'info',
+        icon: 'ph:wave-sine',
+        text: 'A still cannot show the motion, and motion is half the message: a fast lash means far more than a slow sway. A low tail can read as calm or cautious, so always check it against her ears, eyes and posture.',
+      },
+      {
+        tone: 'danger',
+        icon: 'ph:hand-palm',
+        text: 'When her tail says back off (puffed, thumping, a hard flick), take it at its word: stop what you are doing, give her space, and let her reset.',
       },
     ],
   },

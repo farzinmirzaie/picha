@@ -664,6 +664,124 @@ export const eyeSignals: BodySignal[] = [
   },
 ];
 
+/**
+ * Tail positions, the third chapter of the body-language reader. Photos are
+ * cropped from the reference chart (tails/tail-<id>.png). Tails are the loudest
+ * signal she has, and motion carries half the meaning (a fast lash beats a slow
+ * sway), so these read alongside her ears, eyes and posture; the fearful and
+ * defensive states stay plain.
+ */
+export const tailSignals: BodySignal[] = [
+  {
+    id: 'held-high',
+    num: 1,
+    title: 'Held high',
+    mood: 'Confident',
+    tone: 'calm',
+    detail:
+      'Tail straight up like a flagpole. Confident, happy and pleased with the world. A good moment to say hello.',
+  },
+  {
+    id: 'upright-curved',
+    num: 2,
+    title: 'Upright with tip curved',
+    mood: 'Friendly hello',
+    tone: 'calm',
+    detail:
+      'Tail up with a little hook at the tip, the friendly question mark. Her warmest hello: she is glad to see you.',
+  },
+  {
+    id: 'gentle-curve',
+    num: 3,
+    title: 'Gentle curve',
+    mood: 'Content',
+    tone: 'calm',
+    detail:
+      'Tail up in a soft, easy curve. Content and comfortable, cruising through her day.',
+  },
+  {
+    id: 'horizontal',
+    num: 4,
+    title: 'Horizontal',
+    mood: 'Curious',
+    tone: 'alert',
+    detail:
+      'Tail held straight out behind her. Alert and curious, sizing something up before she commits.',
+  },
+  {
+    id: 'low-relaxed',
+    num: 5,
+    title: 'Low / relaxed',
+    mood: 'At ease',
+    tone: 'calm',
+    detail:
+      'Tail carried low and loose. Calm and neutral. A low tail can also mean caution, so read it with her ears and body.',
+  },
+  {
+    id: 'tucked',
+    num: 6,
+    title: 'Tucked',
+    mood: 'Insecure',
+    tone: 'wary',
+    detail:
+      'Tail curled down and tucked close. Anxious, unsure or feeling small. Do not crowd her; go slow and let her settle.',
+  },
+  {
+    id: 'puffed-up',
+    num: 7,
+    title: 'Puffed up',
+    mood: 'Spooked',
+    tone: 'danger',
+    detail:
+      'Tail bristled into a bottlebrush. Frightened and trying to look bigger. Something spooked her; give her room until she calms.',
+  },
+  {
+    id: 'puffed-curve',
+    num: 8,
+    title: 'Puffed with curve',
+    mood: 'Defensive',
+    tone: 'danger',
+    detail:
+      'Bottlebrush tail over an arched back, the Halloween-cat pose. Highly aroused and defensive. Back off and let the moment pass.',
+  },
+  {
+    id: 'flicking',
+    num: 9,
+    title: 'Flicking',
+    mood: 'Irritated',
+    tone: 'wary',
+    detail:
+      'Tail swishing side to side. Annoyed, irritated or over it. A clear sign to ease off before she is truly done.',
+  },
+  {
+    id: 'tip-twitching',
+    num: 10,
+    title: 'Tip twitching',
+    mood: 'Focused',
+    tone: 'alert',
+    detail:
+      'Just the tip flicking while the rest stays still. Focused and concentrating, often mid-hunt. Engaged, not upset.',
+  },
+  {
+    id: 'wrapped',
+    num: 11,
+    title: 'Wrapped around',
+    mood: 'Cozy',
+    tone: 'calm',
+    detail:
+      'Tail curled neatly around herself. Relaxed and cozy, keeping warm and self-contained. Peak contentment.',
+  },
+  {
+    id: 'thumping',
+    num: 12,
+    title: 'Thumping',
+    mood: 'Back off',
+    tone: 'danger',
+    detail:
+      'Tail thumping the floor. Very annoyed and warning you to back off. Stop, and give her space.',
+  },
+];
+
 /* ---------- the Royal Academy (training tool) ---------- */
 
 export interface TrainingStep {
