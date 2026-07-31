@@ -43,6 +43,7 @@ const segments = [
     id: 'ears',
     label: 'Ears',
     noun: 'ears',
+    objectPosition: 'center' as const,
     signals: earSignals,
     images: earImageById,
     notes: [
@@ -62,6 +63,7 @@ const segments = [
     id: 'eyes',
     label: 'Eyes',
     noun: 'eyes',
+    objectPosition: 'center' as const,
     signals: eyeSignals,
     images: eyeImageById,
     notes: [
@@ -81,6 +83,7 @@ const segments = [
     id: 'tails',
     label: 'Tail',
     noun: 'tail',
+    objectPosition: 'left' as const,
     signals: tailSignals,
     images: tailImageById,
     notes: [
@@ -126,7 +129,12 @@ const segments = [
         >
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {seg.signals.map((s) => (
-              <SignalCard signal={s} image={seg.images[s.id]} noun={seg.noun} />
+              <SignalCard
+                signal={s}
+                image={seg.images[s.id]}
+                noun={seg.noun}
+                objectPosition={seg.objectPosition}
+              />
             ))}
           </div>
 

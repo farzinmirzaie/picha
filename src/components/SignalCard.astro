@@ -15,8 +15,10 @@ interface Props {
   image?: ImageMetadata;
   /** Body-part noun for alt text, e.g. "ears", "eyes". */
   noun: string;
+  /** How the photo sits in its square frame (tails read better left-aligned). */
+  objectPosition?: 'center' | 'left';
 }
-const { signal: s, image, noun } = Astro.props;
+const { signal: s, image, noun, objectPosition = 'center' } = Astro.props;
 
 // tone → mood-chip colour (how to treat it).
 const chipTone: Record<BodySignal['tone'], string> = {
@@ -38,7 +40,10 @@ const chipTone: Record<BodySignal['tone'], string> = {
           alt={`Picha's ${noun}: ${s.title.toLowerCase()}`}
           width={320}
           densities={[1, 2]}
-          class="h-full w-full object-contain"
+          class:list={[
+            'h-full w-full object-contain',
+            objectPosition === 'left' ? 'object-left' : 'object-center',
+          ]}
         />
       )
     }
