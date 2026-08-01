@@ -984,6 +984,47 @@ export const trainingCourses: TrainingCourse[] = [
     ],
   },
   {
+    slug: 'talking-buttons',
+    icon: 'ph:chat-circle-dots',
+    title: 'The Talking Buttons',
+    tagline: 'Four buttons, one cat, and the dawn of demands you can hear.',
+    why: 'Recordable sound buttons let her ask for things on purpose instead of the usual guessing games. Done properly (staff model the presses, nobody forces her paw, and the reward comes at once) it is real enrichment and a genuine line of communication. Start with a single button and add the rest only as she gets it.',
+    resistance: 1,
+    stepsDone: 0,
+    steps: [
+      {
+        title: 'Record and place one',
+        detail:
+          'Record a single clear, high-value word she already loves; "play" or "treat" make good first words. Put that one button where the thing lives: the play button by the toys, the treat button by the jar.',
+      },
+      {
+        title: 'Model it, every time',
+        detail:
+          'Just before the thing happens, a staffer presses the button, says the word, then delivers it right away. Both staff, the same word, many times a day. Never press her paw for her; she learns by watching.',
+      },
+      {
+        title: 'Honour the first press',
+        detail:
+          'Reward any sniff or paw near the button, and the instant she presses it herself, deliver the thing immediately, even when the timing is terrible. The first real press can take weeks. Treat it like a graduation.',
+      },
+      {
+        title: 'Add the second button',
+        detail:
+          'Once she presses button one on purpose, add a second, clearly different word ("food" or "water" work well), set a little apart so the two do not blur. Keep modelling both.',
+      },
+      {
+        title: 'Add the third',
+        detail:
+          'Bring in a third word once she tells the first two apart in context rather than just mashing them. A social word like "pets" is a good pick. Reward the presses that actually make sense.',
+      },
+      {
+        title: 'The full soundboard',
+        detail:
+          'Add the fourth button and fix all four in place on the anti-slip pad. She now has a working vocabulary and can put in requests on the record. Graduation, and the start of a lifelong negotiation.',
+      },
+    ],
+  },
+  {
     slug: 'harness',
     icon: 'ph:person-simple-walk',
     title: 'Harness & Leash (Elective)',
