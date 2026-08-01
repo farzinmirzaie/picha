@@ -244,11 +244,21 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:bug',
     title: 'Parasite control',
     detail:
-      'NexGard Combo spot-on (esafoxolaner, eprinomectin, praziquantel) between the shoulder blades. One monthly dose evicts the lot: fleas, ticks, ear mites and the full worm crew, tapeworm included. No separate deworming pill needed.',
+      'NexGard Combo spot-on, parted onto the skin at the base of the skull (the back of the head), where she cannot lick it off. Fleas, ticks and ear mites, evicted. Monthly with a few days of grace, but never sooner than a month apart; a bit late is fine, too early risks a double dose.',
     everyLabel: 'Every month',
-    intervalDays: 30,
+    intervalDays: 35,
     lastDone: '2026-08-01',
-    where: 'at the vet',
+    where: 'at home',
+  },
+  {
+    icon: 'ph:pill',
+    title: 'Deworming',
+    detail:
+      'A separate dewormer on the standard adult schedule (the spot-on does not replace it): a pill, smuggled in inside something delicious and served without ceremony.',
+    everyLabel: 'Every 3 months',
+    intervalDays: 90,
+    lastDone: '2026-06-25',
+    where: 'at home',
   },
   {
     icon: 'ph:sparkle',
