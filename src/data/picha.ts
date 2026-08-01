@@ -244,22 +244,11 @@ export const recurringCare: RecurringItem[] = [
     icon: 'ph:bug',
     title: 'Parasite control',
     detail:
-      'Revolution Plus spot-on between the shoulder blades, applied by the staff. Fleas, ticks and worms are served their eviction notice.',
+      'NexGard Combo spot-on (esafoxolaner, eprinomectin, praziquantel) between the shoulder blades. One monthly dose evicts the lot: fleas, ticks, ear mites and the full worm crew, tapeworm included. No separate deworming pill needed.',
     everyLabel: 'Every month',
     intervalDays: 30,
-    lastDone: '2026-06-24',
-    nextDue: '2026-07-31',
-    where: 'at home',
-  },
-  {
-    icon: 'ph:pill',
-    title: 'Deworming',
-    detail:
-      'Interior pest patrol on the standard adult schedule: a pill, smuggled in inside something delicious and served without ceremony.',
-    everyLabel: 'Every 3 months',
-    intervalDays: 90,
-    lastDone: '2026-06-25',
-    where: 'at home',
+    lastDone: '2026-08-01',
+    where: 'at the vet',
   },
   {
     icon: 'ph:sparkle',
