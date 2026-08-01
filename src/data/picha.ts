@@ -1025,6 +1025,47 @@ export const trainingCourses: TrainingCourse[] = [
     ],
   },
   {
+    slug: 'party-tricks',
+    icon: 'ph:magic-wand',
+    title: 'Party Tricks',
+    tagline: 'High fives, spins, and other ways to make the staff applaud.',
+    why: 'Tricks are pure enrichment: they work her brain, burn energy and turn training into a game the whole household enjoys. They also build the focus and cooperation every other course leans on. Lure and reward, never pose her by hand.',
+    resistance: 2,
+    stepsDone: 0,
+    steps: [
+      {
+        title: 'Marker and target',
+        detail:
+          'Pick a marker (a clicker, or a crisp "yes") and pair it with a treat until the sound alone means "well done". Then teach a nose-touch: hold a finger out and reward the instant she boops it. This one skill powers every trick.',
+      },
+      {
+        title: 'Sit',
+        detail:
+          'Hold a treat at her nose and slide it up and back over her head; as her nose follows and her bottom drops, mark and reward. Once it is smooth, add the word "sit" just before she does it.',
+      },
+      {
+        title: 'High five',
+        detail:
+          'Hold a treat in a loose fist near her chest. The instant a paw lifts to investigate, mark and reward. Shape it higher over a few sessions until the paw meets your open palm, then name it "high five".',
+      },
+      {
+        title: 'Spin',
+        detail:
+          'Lead her nose with a treat in a slow circle so she turns on the spot; mark the full turn and reward. Make the circle smaller each day, shrink it to a finger twirl, and add the word "spin".',
+      },
+      {
+        title: 'Fade the lure',
+        detail:
+          'Now make the same hand motion with no treat in it, and pay from the other hand once she performs. Say the cue once, give her a beat, and reward the cue rather than food held at her nose.',
+      },
+      {
+        title: 'The finale',
+        detail:
+          'Add one showstopper (a "sit pretty" beg, or a hop through a held hoop), then string two tricks into a little routine on cue. She now performs for the household audience by request. Graduation, and a standing ovation.',
+      },
+    ],
+  },
+  {
     slug: 'harness',
     icon: 'ph:person-simple-walk',
     title: 'Harness & Leash (Elective)',
