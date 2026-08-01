@@ -30,7 +30,7 @@ import { upcomingHealth, nextDueHealth, isHealthDueSoon } from '../lib/health';
 // and the progress bar update client-side.
 const today = new Date().toISOString().slice(0, 10);
 const done = healthTimeline
-  .filter((e) => e.date && e.date < today)
+  .filter((e) => e.date && e.date <= today)
   .sort((a, b) => b.date!.localeCompare(a.date!));
 const toBook = healthTimeline.filter((e) => !e.date);
 

@@ -216,6 +216,13 @@ export const healthTimeline: TimelineEntry[] = [
     date: '2026-07-21',
   },
   {
+    icon: 'ph:bug',
+    title: 'Parasite control',
+    detail:
+      'NexGard Combo spot-on applied at the base of the skull, her new monthly flea and tick guard. Revolution Plus retired.',
+    date: '2026-08-01',
+  },
+  {
     icon: 'ph:syringe',
     title: 'Rabies vaccine',
     detail: 'Required before any travel plans Her Fluffiness may approve.',
@@ -224,6 +231,11 @@ export const healthTimeline: TimelineEntry[] = [
     icon: 'ph:test-tube',
     title: 'FeLV vaccine',
     detail: 'Optional. To discuss with whichever vet wins the job.',
+  },
+  {
+    icon: 'ph:identification-card',
+    title: 'Pet passport',
+    detail: 'The official pet passport, still to be sorted for any future travel.',
   },
 ];
 

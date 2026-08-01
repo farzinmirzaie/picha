@@ -28,7 +28,7 @@ const buildToday = () => new Date().toISOString().slice(0, 10);
 /** One-time future visits + recurring upkeep, merged and sorted by due date. */
 export function upcomingHealth(today: string = buildToday()): UpcomingEntry[] {
   const onceUpcoming = healthTimeline
-    .filter((e) => e.date && e.date >= today)
+    .filter((e) => e.date && e.date > today)
     .sort((a, b) => a.date!.localeCompare(b.date!));
   return [
     ...onceUpcoming,
