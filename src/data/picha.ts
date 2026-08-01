@@ -225,12 +225,6 @@ export const healthTimeline: TimelineEntry[] = [
     title: 'FeLV vaccine',
     detail: 'Optional. To discuss with whichever vet wins the job.',
   },
-  {
-    icon: 'ph:tooth',
-    title: 'Dental check',
-    detail:
-      'A first professional look at the royal teeth; the toothbrushing training programme deserves expert oversight.',
-  },
 ];
 
 /**
