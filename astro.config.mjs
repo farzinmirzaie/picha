@@ -10,6 +10,15 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://farzinmirzaie.github.io',
   base: '/picha',
+  // Multilingual: English at the root, other locales prefixed (/picha/ms/…).
+  // `fallback` auto-generates locale routes from the default for pages not yet
+  // translated, so nothing 404s during the rollout.
+  i18n: {
+    locales: ['en', 'ms'],
+    defaultLocale: 'en',
+    routing: { prefixDefaultLocale: false, fallbackType: 'rewrite' },
+    fallback: { ms: 'en' },
+  },
   integrations: [
     icon(),
     // the 404 page is for lost visitors, not for crawlers
