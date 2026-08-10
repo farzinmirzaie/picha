@@ -6,11 +6,12 @@
  * source of truth (picha.ts), so the count never drifts from the Care page.
  */
 import { dailyChecklist } from '../../../src/data/picha';
+import { notifyChecklistMessage, notifyUrl } from '../../../src/i18n/content';
 import { careDayKey, type ReminderProvider } from '../lib';
 
 export const dailyChecklistProvider: ReminderProvider = {
   id: 'daily-checklist',
-  async build({ now, sbSelect }) {
+  async build({ now, sbSelect }, locale) {
     const rows = await sbSelect<Array<{ done: string[] }>>(
       `picha_rounds?select=done&date=eq.${careDayKey(now)}`,
     );
@@ -18,11 +19,12 @@ export const dailyChecklistProvider: ReminderProvider = {
     const remaining = dailyChecklist.filter((item) => !done.has(item.id)).length;
     if (remaining === 0) return [];
 
+    const { title, body } = notifyChecklistMessage(remaining, locale);
     return [
       {
-        title: `Picha has filed ${remaining} complaint${remaining === 1 ? '' : 's'}`,
-        body: 'Picha has noticed some rounds are still undone. She is disappointed but not surprised.',
-        url: '/picha/care/',
+        title,
+        body,
+        url: notifyUrl('care', locale),
         tag: 'daily-checklist',
       },
     ];

@@ -70,17 +70,26 @@ async function main(): Promise<void> {
     sbSelect,
     manual: process.env.GITHUB_EVENT_NAME === 'workflow_dispatch',
   };
-  const messages: PushMessage[] = [];
-  for (const provider of providers) {
-    try {
-      const msgs = await provider.build(ctx);
-      if (msgs.length) console.log(`[notify] ${provider.id}: ${msgs.length} message(s).`);
-      messages.push(...msgs);
-    } catch (err) {
-      console.error(`[notify] provider "${provider.id}" failed:`, err);
+
+  // Build one message set per distinct device locale, so every device gets its
+  // reminder in the language it chose. Providers are cheap and few, so
+  // re-running them per locale is fine.
+  const locales = [...new Set(subs.map((s) => s.locale || 'en'))];
+  const messagesByLocale: Record<string, PushMessage[]> = {};
+  for (const locale of locales) {
+    const messages: PushMessage[] = [];
+    for (const provider of providers) {
+      try {
+        const msgs = await provider.build(ctx, locale);
+        if (msgs.length) console.log(`[notify] ${provider.id} (${locale}): ${msgs.length} message(s).`);
+        messages.push(...msgs);
+      } catch (err) {
+        console.error(`[notify] provider "${provider.id}" (${locale}) failed:`, err);
+      }
     }
+    messagesByLocale[locale] = messages;
   }
-  if (!messages.length) {
+  if (!Object.values(messagesByLocale).some((m) => m.length)) {
     console.log('[notify] Nothing pending; no reminders due.');
     return;
   }
@@ -89,6 +98,7 @@ async function main(): Promise<void> {
   let pruned = 0;
   for (const sub of subs) {
     const target = { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } };
+    const messages = messagesByLocale[sub.locale || 'en'] ?? [];
     for (const msg of messages) {
       try {
         await webpush.sendNotification(target, JSON.stringify(msg));

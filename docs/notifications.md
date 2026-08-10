@@ -21,9 +21,10 @@ service worker  ◀──────────── Web Push ◀────
 - **Service worker**: `public/sw.js` `push` + `notificationclick` handlers. The
   payload is generic JSON `{ title, body, url, tag }`; the SW renders whatever
   it's sent, so **new reminder types need no SW change**.
-- **Store**: `push_subscriptions` table + `save_push_subscription` /
-  `delete_push_subscription` RPCs (`supabase/schema.sql`). The table is closed
-  to the anon key; the sender reads it with the `service_role` key.
+- **Store**: `push_subscriptions` table (endpoint + keys + `locale`) +
+  `save_push_subscription` / `delete_push_subscription` RPCs
+  (`supabase/schema.sql`). The table is closed to the anon key; the sender reads
+  it with the `service_role` key.
 - **Sender**: `scripts/notify/` run by `.github/workflows/notify.yml` every 3h
   during 09:00–21:00 MYT. It asks each provider what to send now, pushes it, and
   prunes dead subscriptions. Fails soft (exits green) until the secrets exist.
@@ -47,8 +48,11 @@ keeps it until then.
    import { type ReminderProvider } from '../lib';
    export const weighInDueProvider: ReminderProvider = {
      id: 'weigh-in-due',
-     async build({ now, sbSelect }) {
-       // ...decide; return [] to send nothing, or [{ title, body, url, tag }]
+     async build({ now, sbSelect }, locale) {
+       // ...decide; return [] to send nothing, or [{ title, body, url, tag }].
+       // `locale` is the target device's language ('en' | 'ms' | 'zh') — pull
+       // strings from src/i18n/content.ts and build URLs with notifyUrl(page,
+       // locale) so the reminder arrives in that language.
      },
    };
    ```
@@ -59,6 +63,14 @@ That's it — the sender loops all providers, and the SW already renders any
 payload. No client or service-worker edits. (If a reminder needs its own
 schedule, give it its own cron entry / workflow later; today all providers run
 on the shared 3-hour tick.)
+
+**Localization.** Each device's chosen language is stored on its
+`push_subscriptions` row (`locale`, set by `save_push_subscription`), and the
+sender builds one message set per distinct locale, so a device gets its
+reminder in the language it picked on the site. Keep notification strings in
+`src/i18n/content.ts` (Node-safe) with a block per locale — never hardcode
+English in a provider. Devices that subscribed before the `locale` column
+existed default to English until they toggle reminders off/on again.
 
 ## One-time setup (owner)
 

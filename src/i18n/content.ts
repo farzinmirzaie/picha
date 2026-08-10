@@ -2218,3 +2218,60 @@ export const shareCopy: Record<string, ShareCopy> = {
   },
 };
 export const getShareCopy = (locale?: string): ShareCopy => shareCopy[locale ?? 'en'] ?? shareCopy.en;
+
+// ---------------------------------------------------------------------------
+// Push-notification copy. Consumed by the scheduled sender (scripts/notify,
+// Node/tsx) — NOT by the browser — so it must stay Node-safe (content.ts only
+// pulls picha facts + lib/dates, which it already does). Each device's locale
+// is stored on its push_subscriptions row; the sender builds one message set
+// per distinct locale.
+// ---------------------------------------------------------------------------
+
+/** Locale-prefixed site path for a notification's click-through URL. */
+export function notifyUrl(page: string, locale?: string): string {
+  const base = '/picha';
+  return locale && locale !== 'en' ? `${base}/${locale}/${page}/` : `${base}/${page}/`;
+}
+
+/** Daily-checklist reminder title + body in the given locale. */
+export function notifyChecklistMessage(
+  remaining: number,
+  locale?: string,
+): { title: string; body: string } {
+  if (locale === 'zh') {
+    return {
+      title: `Picha 已提出 ${remaining} 项投诉`,
+      body: 'Picha 注意到有些例行任务还没完成。她很失望，但并不意外。',
+    };
+  }
+  if (locale === 'ms') {
+    return {
+      title: `Picha telah memfailkan ${remaining} aduan`,
+      body: 'Picha perasan beberapa pusingan masih belum siap. Dia kecewa tetapi tidak terkejut.',
+    };
+  }
+  return {
+    title: `Picha has filed ${remaining} complaint${remaining === 1 ? '' : 's'}`,
+    body: 'Picha has noticed some rounds are still undone. She is disappointed but not surprised.',
+  };
+}
+
+/** Due-soon reminder title ("Due today: <item>", etc.) in the given locale. */
+export function dueSoonTitle(itemTitle: string, days: number, locale?: string): string {
+  if (locale === 'zh') {
+    if (days < 0) return `已逾期：${itemTitle}`;
+    if (days === 0) return `今天到期：${itemTitle}`;
+    if (days === 1) return `明天到期：${itemTitle}`;
+    return `${days} 天后到期：${itemTitle}`;
+  }
+  if (locale === 'ms') {
+    if (days < 0) return `Lewat tempoh: ${itemTitle}`;
+    if (days === 0) return `Perlu hari ini: ${itemTitle}`;
+    if (days === 1) return `Perlu esok: ${itemTitle}`;
+    return `Perlu dalam ${days} hari: ${itemTitle}`;
+  }
+  if (days < 0) return `Overdue: ${itemTitle}`;
+  if (days === 0) return `Due today: ${itemTitle}`;
+  if (days === 1) return `Due tomorrow: ${itemTitle}`;
+  return `Due in ${days} days: ${itemTitle}`;
+}

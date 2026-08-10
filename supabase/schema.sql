@@ -220,18 +220,26 @@ create table if not exists public.push_subscriptions (
   endpoint   text primary key,
   p256dh     text not null,
   auth       text not null,
+  locale     text not null default 'en',
   created_at timestamptz not null default now()
 );
+-- Existing installs: add the locale column if the table predates it.
+alter table public.push_subscriptions add column if not exists locale text not null default 'en';
 
 alter table public.push_subscriptions enable row level security;
 -- No policies on purpose: anon can neither read nor write directly. All access
 -- goes through the RPCs (definer) or the service_role key (the sender).
 
+-- The sender reads each device's locale to pick which language to push, so the
+-- reminder arrives in the language that device chose on the site. Defaults to
+-- 'en'; devices subscribed before this column existed stay English until they
+-- toggle reminders again.
 create or replace function public.save_push_subscription(
   p_endpoint text,
   p_p256dh text,
   p_auth text,
-  p_pin text
+  p_pin text,
+  p_locale text default 'en'
 )
 returns void
 language plpgsql
@@ -240,15 +248,15 @@ set search_path = public, private
 as $$
 begin
   perform private.verify_staff_pin(p_pin);
-  insert into public.push_subscriptions (endpoint, p256dh, auth)
-    values (p_endpoint, p_p256dh, p_auth)
+  insert into public.push_subscriptions (endpoint, p256dh, auth, locale)
+    values (p_endpoint, p_p256dh, p_auth, coalesce(nullif(p_locale, ''), 'en'))
   on conflict (endpoint) do update
-    set p256dh = excluded.p256dh, auth = excluded.auth;
+    set p256dh = excluded.p256dh, auth = excluded.auth, locale = excluded.locale;
 end;
 $$;
 
-revoke all on function public.save_push_subscription(text, text, text, text) from public;
-grant execute on function public.save_push_subscription(text, text, text, text) to anon;
+revoke all on function public.save_push_subscription(text, text, text, text, text) from public;
+grant execute on function public.save_push_subscription(text, text, text, text, text) to anon;
 
 create or replace function public.delete_push_subscription(p_endpoint text)
 returns void

@@ -10,31 +10,26 @@
  * regardless, for on-demand testing.
  */
 import { nextDueHealth, DUE_SOON_DAYS } from '../../../src/lib/health';
+import { localizeHealthItem, dueSoonTitle, notifyUrl } from '../../../src/i18n/content';
 import { careDayKey, mytHour, type ReminderProvider } from '../lib';
 
 export const dueSoonProvider: ReminderProvider = {
   id: 'due-soon',
-  async build({ now, manual }) {
+  async build({ now, manual }, locale) {
     if (!manual && mytHour(now) !== 9) return [];
 
     const next = nextDueHealth(careDayKey(now)); // MYT calendar date
     if (!next || next.days > DUE_SOON_DAYS) return [];
 
-    const { item, days } = next;
-    const when =
-      days < 0
-        ? `Overdue: ${item.title}`
-        : days === 0
-          ? `Due today: ${item.title}`
-          : days === 1
-            ? `Due tomorrow: ${item.title}`
-            : `Due in ${days} days: ${item.title}`;
+    const { days } = next;
+    // Translate the item's title/detail into the target locale (facts stay put).
+    const item = localizeHealthItem(next.item, locale);
 
     return [
       {
-        title: when,
+        title: dueSoonTitle(item.title, days, locale),
         body: item.detail,
-        url: '/picha/health/',
+        url: notifyUrl('health', locale),
         tag: 'health-due-soon',
         setBadge: true,
       },

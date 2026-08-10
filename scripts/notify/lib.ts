@@ -22,10 +22,12 @@ export interface StoredSub {
   endpoint: string;
   p256dh: string;
   auth: string;
+  /** The language this device chose on the site; drives which message it gets. */
+  locale: string;
 }
 
 export function getSubscriptions(): Promise<StoredSub[]> {
-  return sbSelect<StoredSub[]>('push_subscriptions?select=endpoint,p256dh,auth');
+  return sbSelect<StoredSub[]>('push_subscriptions?select=endpoint,p256dh,auth,locale');
 }
 
 /** Drop a dead subscription (the push service returned 404/410 Gone). */
@@ -72,5 +74,6 @@ export interface ProviderCtx {
  */
 export interface ReminderProvider {
   id: string;
-  build(ctx: ProviderCtx): Promise<PushMessage[]>;
+  /** Build this reminder's messages for a given locale ('en' | 'ms' | 'zh'). */
+  build(ctx: ProviderCtx, locale: string): Promise<PushMessage[]>;
 }

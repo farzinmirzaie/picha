@@ -254,7 +254,7 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
               </span>
               <h3 class="font-display pt-1 text-lg font-semibold">{e.title}</h3>
               <p class="text-xs font-bold text-blush-500/90 dark:text-blush-300/80">
-                {dateLabel(e.date!)}
+                {dateLabel(e.date!, locale)}
               </p>
               <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
                 {e.detail}

@@ -82,6 +82,8 @@ export async function enablePush(url: string, key: string, pin: string): Promise
       p_p256dh: json.keys?.p256dh,
       p_auth: json.keys?.auth,
       p_pin: pin,
+      // Remember which language this device chose, so reminders arrive in it.
+      p_locale: document.documentElement.lang || 'en',
     });
   } catch (err) {
     await sub.unsubscribe().catch(() => {});
