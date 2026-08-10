@@ -8,8 +8,20 @@ import SectionLabel from '../../components/ui/SectionLabel.astro';
 import IconBadge from '../../components/ui/IconBadge.astro';
 import { trainingCourses } from '../../data/training';
 import { supabaseClient } from '../../data/supabase';
+import {
+  getTrainingCopy,
+  localizeCourse,
+  stepOfLabel,
+  allStepsPassedLabel,
+  stepsNotStartedLabel,
+  stepsCountLabel,
+  academyCaption,
+} from '../../i18n/content';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const locale = Astro.currentLocale ?? 'en';
+const lb = locale === 'en' ? base : `${base}/${locale}`;
+const tc = getTrainingCopy(locale);
 
 // Status is derived from Supabase-merged data: graduated when every step is
 // passed, in session once startedOn is set, otherwise on the syllabus. The
@@ -19,10 +31,14 @@ const status = (c: (typeof trainingCourses)[number]) =>
   c.stepsDone >= c.steps.length ? 'graduated' : c.startedOn ? 'active' : 'syllabus';
 
 const groups = [
-  { id: 'active', label: 'In session' },
-  { id: 'syllabus', label: 'The syllabus' },
-  { id: 'graduated', label: 'Graduated' },
-].map((g) => ({ ...g, courses: trainingCourses.filter((c) => status(c) === g.id) }));
+  { id: 'active', label: tc.groups.active },
+  { id: 'syllabus', label: tc.groups.syllabus },
+  { id: 'graduated', label: tc.groups.graduated },
+].map((g) => ({
+  id: g.id,
+  label: g.label,
+  courses: trainingCourses.filter((c) => status(c) === g.id).map((c) => localizeCourse(c, locale)),
+}));
 
 // Overall staff progress across every course (steps mastered / total).
 const totalSteps = trainingCourses.reduce((n, c) => n + c.steps.length, 0);
@@ -32,21 +48,15 @@ const doneSteps = trainingCourses.reduce(
 );
 const pct = totalSteps ? Math.round((doneSteps / totalSteps) * 100) : 0;
 const countOf = (id: string) => groups.find((g) => g.id === id)!.courses.length;
-const summaryCaption = (a: number, g: number, s: number) =>
-  [`${a} in session`, `${g} graduated`, `${s} on the syllabus`].join(' · ');
 ---
 
 <Layout
-  title="Training · Picha 🐾"
-  description="The Royal Academy: Picha's training courses with step-by-step curricula and live progress."
+  title={tc.metaTitle}
+  description={tc.metaDescription}
   current="tools"
-  appTitle="Academy"
+  appTitle={tc.appTitle}
 >
-  <PageHeader
-    kicker="Tools · In service"
-    title="The Royal Academy"
-    blurb="Courses in advanced cat cooperation. Officially it is the staff being trained and certified; Her Fluffiness merely grades the coursework."
-  />
+  <PageHeader kicker={tc.kicker} title={tc.title} blurb={tc.blurb} />
 
   <!-- Overall staff progress -->
   <section class="mx-auto w-full max-w-2xl px-5 pt-5" aria-label="Overall progress">
@@ -54,9 +64,9 @@ const summaryCaption = (a: number, g: number, s: number) =>
       class="reveal rounded-3xl border border-blush-200/70 bg-paper-50 p-5 dark:border-plum-700 dark:bg-plum-900"
     >
       <div class="flex items-center justify-between gap-2">
-        <SectionLabel tag="span">Staff progress</SectionLabel>
+        <SectionLabel tag="span">{tc.staffProgress}</SectionLabel>
         <span class="text-[11px] font-bold text-ink-400" data-academy-count>
-          {doneSteps}/{totalSteps} steps
+          {stepsCountLabel(doneSteps, totalSteps, locale)}
         </span>
       </div>
       <div
@@ -75,7 +85,7 @@ const summaryCaption = (a: number, g: number, s: number) =>
         </div>
       </div>
       <p class="mt-2 text-[11px] leading-relaxed text-ink-400" data-academy-caption>
-        {summaryCaption(countOf('active'), countOf('graduated'), countOf('syllabus'))}
+        {academyCaption(countOf('active'), countOf('graduated'), countOf('syllabus'), locale)}
       </p>
     </div>
   </section>
@@ -99,7 +109,7 @@ const summaryCaption = (a: number, g: number, s: number) =>
           <div class="space-y-3" data-group-list={group.id}>
             {group.courses.map((c) => (
               <a
-                href={`${base}/training/${c.slug}/`}
+                href={`${lb}/training/${c.slug}/`}
                 data-astro-prefetch
                 data-course-card={c.slug}
                 data-total={c.steps.length}
@@ -125,10 +135,10 @@ const summaryCaption = (a: number, g: number, s: number) =>
                   <span class="mt-1.5 flex flex-wrap items-center gap-2">
                     <span class="text-[11px] font-bold text-ink-400" data-course-steps>
                       {status(c) === 'syllabus'
-                        ? `${c.steps.length} steps · not started`
+                        ? stepsNotStartedLabel(c.steps.length, locale)
                         : status(c) === 'graduated'
-                          ? `all ${c.steps.length} steps passed`
-                          : `step ${c.stepsDone + 1} of ${c.steps.length}`}
+                          ? allStepsPassedLabel(c.steps.length, locale)
+                          : stepOfLabel(c.stepsDone, c.steps.length, locale)}
                     </span>
                     <span
                       class="inline-flex items-center gap-0.5 text-blush-400 dark:text-blush-300/70"
@@ -156,8 +166,7 @@ const summaryCaption = (a: number, g: number, s: number) =>
 
   <TrainingRules padTop="pt-10">
     <p class="mt-2 px-1 text-[11px] leading-relaxed text-ink-400">
-      Milestones are recorded on each course page by PIN-carrying staff and
-      land straight in her cloud file.
+      {tc.registrarNoteHub}
     </p>
   </TrainingRules>
 
@@ -175,6 +184,14 @@ const summaryCaption = (a: number, g: number, s: number) =>
       (async () => {
         try {
           const { sbSelect } = await import('../../lib/sb');
+          const {
+            stepOfLabel,
+            allStepsPassedLabel,
+            stepsNotStartedLabel,
+            stepsCountLabel,
+            academyCaption,
+          } = await import('../../i18n/content');
+          const locale = document.documentElement.lang || 'en';
           const rows = await sbSelect<
             Array<{ slug: string; steps_done: number; started_on: string | null }>
           >(url, key, 'picha_training?select=slug,steps_done,started_on');
@@ -201,10 +218,10 @@ const summaryCaption = (a: number, g: number, s: number) =>
             if (steps)
               steps.textContent =
                 group === 'graduated'
-                  ? `all ${total} steps passed`
+                  ? allStepsPassedLabel(total, locale)
                   : group === 'active'
-                    ? `step ${stepsDone + 1} of ${total}`
-                    : `${total} steps · not started`;
+                    ? stepOfLabel(stepsDone, total, locale)
+                    : stepsNotStartedLabel(total, locale);
             card
               .querySelector('[data-course-medal]')
               ?.classList.toggle('hidden', group !== 'graduated');
@@ -225,10 +242,10 @@ const summaryCaption = (a: number, g: number, s: number) =>
             const el = document.querySelector<HTMLElement>(sel);
             if (el) el.textContent = text;
           };
-          set('[data-academy-count]', `${doneSteps}/${totalSteps} steps`);
+          set('[data-academy-count]', stepsCountLabel(doneSteps, totalSteps, locale));
           set(
             '[data-academy-caption]',
-            `${counts.active} in session · ${counts.graduated} graduated · ${counts.syllabus} on the syllabus`,
+            academyCaption(counts.active, counts.graduated, counts.syllabus, locale),
           );
           const bar = document.querySelector<HTMLElement>('[data-academy-bar]');
           if (bar) {

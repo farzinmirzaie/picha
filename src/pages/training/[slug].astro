@@ -8,7 +8,14 @@ import SectionLabel from '../../components/ui/SectionLabel.astro';
 import Button from '../../components/ui/Button.astro';
 import { trainingCourses } from '../../data/training';
 import { supabaseClient } from '../../data/supabase';
-import { dateLabel } from '../../lib/dates';
+import {
+  getTrainingCopy,
+  localizeCourse,
+  stepOfLabel,
+  allStepsPassedLabel,
+  markStepPassedLabel,
+  inSessionSinceLabel,
+} from '../../i18n/content';
 
 export function getStaticPaths() {
   return trainingCourses.map((course) => ({
@@ -17,16 +24,19 @@ export function getStaticPaths() {
   }));
 }
 
-const { course } = Astro.props;
+const locale = Astro.currentLocale ?? 'en';
+const tc = getTrainingCopy(locale);
+const course = localizeCourse(Astro.props.course, locale);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const lb = locale === 'en' ? base : `${base}/${locale}`;
 
 // Build-time state (Supabase-merged); the client script re-fetches on load
 // and re-renders, so milestones recorded elsewhere show up without a rebuild.
 const graduated = course.stepsDone >= course.steps.length;
 const active = !graduated && Boolean(course.startedOn);
-const statusLabel = graduated ? 'Graduated' : active ? 'In session' : 'On the syllabus';
+const statusLabel = graduated ? tc.statusGraduated : active ? tc.statusActive : tc.statusSyllabus;
 const sinceLabel =
-  active && course.startedOn ? `In session since ${dateLabel(course.startedOn)}` : '';
+  active && course.startedOn ? inSessionSinceLabel(course.startedOn, locale) : '';
 ---
 
 <Layout
@@ -35,15 +45,15 @@ const sinceLabel =
   current="tools"
   appTitle={course.title}
 >
-  <PageHeader kicker="The Royal Academy" title={course.title} blurb={course.tagline} />
+  <PageHeader kicker={tc.title} title={course.title} blurb={course.tagline} />
 
   <section class="mx-auto w-full max-w-2xl px-5" aria-label="Course status">
     <a
-      href={`${base}/training/`}
+      href={`${lb}/training/`}
       class="reveal inline-flex items-center gap-1.5 text-xs font-bold text-blush-600 dark:text-blush-300"
     >
       <Icon name="ph:arrow-left" class="h-3.5 w-3.5" aria-hidden="true" />
-      All courses
+      {tc.allCourses}
     </a>
 
     <div
@@ -73,14 +83,14 @@ const sinceLabel =
         <span class="text-[11px] font-bold text-ink-400" data-step-count>
           {
             graduated
-              ? `all ${course.steps.length} steps passed`
-              : `step ${course.stepsDone + 1} of ${course.steps.length}`
+              ? allStepsPassedLabel(course.steps.length, locale)
+              : stepOfLabel(course.stepsDone, course.steps.length, locale)
           }
         </span>
         <span
           class="ml-auto inline-flex items-center gap-1 text-[11px] font-bold text-ink-400"
         >
-          resistance
+          {tc.resistanceWord}
           <span
             class="inline-flex items-center gap-0.5 text-blush-400 dark:text-blush-300/70"
             role="img"
@@ -127,7 +137,7 @@ const sinceLabel =
         data-grad-banner
       >
         <Icon name="ph:medal" class="h-5 w-5 shrink-0" aria-hidden="true" />
-        Graduated with honours. The staff are officially certified.
+        {tc.gradBanner}
       </div>
 
       <p class="mt-4 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
@@ -144,7 +154,7 @@ const sinceLabel =
         ]}
       >
         <Icon name="ph:seal-check" class="h-4.5 w-4.5" aria-hidden="true" />
-        <span data-practice-label>Mark today's session done</span>
+        <span data-practice-label>{tc.practiceMark}</span>
       </button>
 
       {
@@ -162,10 +172,10 @@ const sinceLabel =
                 class="h-3 w-3 transition-transform duration-200 group-open:rotate-90"
                 aria-hidden="true"
               />
-              Registrar controls
+              {tc.registrarControls}
             </summary>
             <Button block data-train-action class="mt-2">
-              {graduated ? 'Graduated' : active ? `Mark step ${course.stepsDone + 1} passed` : 'Begin the course'}
+              {graduated ? tc.graduatedBtn : active ? markStepPassedLabel(course.stepsDone, locale) : tc.begin}
             </Button>
             <div class="mt-2 flex items-center justify-between gap-3">
               <p class="min-h-4 text-xs font-bold text-ink-400" data-train-status aria-live="polite" />
@@ -177,12 +187,11 @@ const sinceLabel =
                   active || graduated ? '' : 'hidden',
                 ]}
               >
-                undo
+                {tc.undo}
               </button>
             </div>
             <p class="mt-2 text-[11px] leading-relaxed text-ink-400">
-              Milestones are recorded to her cloud file. A step counts as passed
-              when she stays relaxed through it on several separate days.
+              {tc.registrarNoteCourse}
             </p>
           </details>
         )
@@ -192,7 +201,7 @@ const sinceLabel =
 
   <!-- The step ladder -->
   <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Steps">
-    <SectionLabel class="reveal mb-2">The curriculum</SectionLabel>
+    <SectionLabel class="reveal mb-2">{tc.curriculum}</SectionLabel>
     <div
       class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
     >
@@ -239,7 +248,7 @@ const sinceLabel =
                         current ? '' : 'hidden',
                       ]}
                     >
-                      up next
+                      {tc.upNext}
                     </span>
                   </div>
                   <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
@@ -263,6 +272,13 @@ const sinceLabel =
     // PIN-checked log_training RPC, and re-rendered in place. The built HTML
     // is the offline fallback. "Practiced today" stays on-device.
     import { staffPin, forgetStaffPin, applyStaffVisibility } from '../../lib/staff';
+    import {
+      getTrainingCopy,
+      stepOfLabel,
+      allStepsPassedLabel,
+      markStepPassedLabel,
+      inSessionSinceLabel,
+    } from '../../i18n/content';
 
     const PRACTICE_KEY = 'picha-training';
 
@@ -281,6 +297,8 @@ const sinceLabel =
       const total = Number(root.dataset.total);
       const url = root.dataset.supabaseUrl;
       const key = root.dataset.supabaseKey;
+      const locale = document.documentElement.lang || 'en';
+      const tc = getTrainingCopy(locale);
       let state: CourseState = {
         stepsDone: Number(root.dataset.stepsDone),
         startedOn: root.dataset.startedOn || null,
@@ -311,27 +329,20 @@ const sinceLabel =
           chip.className = `${chipClasses.base} ${
             graduated ? chipClasses.graduated : active ? chipClasses.active : chipClasses.syllabus
           }`;
-          chip.textContent = graduated ? 'Graduated' : active ? 'In session' : 'On the syllabus';
+          chip.textContent = graduated ? tc.statusGraduated : active ? tc.statusActive : tc.statusSyllabus;
         }
         const count = q('[data-step-count]');
         if (count)
           count.textContent = graduated
-            ? `all ${total} steps passed`
-            : `step ${state.stepsDone + 1} of ${total}`;
+            ? allStepsPassedLabel(total, locale)
+            : stepOfLabel(state.stepsDone, total, locale);
 
         // "in session since" line + graduation banner
         const since = q('[data-since]');
         if (since) {
           const show = active && state.startedOn;
           since.classList.toggle('hidden', !show);
-          if (show) {
-            const d = new Date(state.startedOn!).toLocaleDateString('en-GB', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-            });
-            since.textContent = `In session since ${d}`;
-          }
+          if (show) since.textContent = inSessionSinceLabel(state.startedOn!, locale);
         }
         const banner = q('[data-grad-banner]');
         if (banner) {
@@ -382,10 +393,10 @@ const sinceLabel =
         const action = q<HTMLButtonElement>('[data-train-action]');
         if (action) {
           action.textContent = graduated
-            ? 'Graduated'
+            ? tc.graduatedBtn
             : active
-              ? `Mark step ${state.stepsDone + 1} passed`
-              : 'Begin the course';
+              ? markStepPassedLabel(state.stepsDone, locale)
+              : tc.begin;
           action.disabled = graduated;
         }
         q('[data-train-undo]')?.classList.toggle(
@@ -434,7 +445,7 @@ const sinceLabel =
             applyStaffVisibility(root);
             return;
           }
-          setStatus('Filing the paperwork…');
+          setStatus(tc.filing);
           try {
             const { sbRpc } = await import('../../lib/sb');
             await sbRpc(url, key, 'log_training', {
@@ -445,19 +456,15 @@ const sinceLabel =
             });
             state = next;
             render();
-            setStatus(
-              next.stepsDone >= total
-                ? 'Graduated. The academy is very proud.'
-                : 'Recorded in her file.',
-            );
+            setStatus(next.stepsDone >= total ? tc.gradRecorded : tc.recorded);
           } catch (err) {
             if (String(err).includes('wrong pin')) {
               // the stored PIN is no longer valid: sign out and hide controls
               forgetStaffPin();
               applyStaffVisibility(root);
-              setStatus('Sign-in expired. Re-enter the PIN in the Staff room.', true);
+              setStatus(tc.signExpired, true);
             } else {
-              setStatus('Could not record it. Check the connection and try again.', true);
+              setStatus(tc.couldNotRecord, true);
             }
           } finally {
             setTimeout(() => setStatus(''), 4000);
@@ -500,7 +507,7 @@ const sinceLabel =
           btn.classList.toggle('bg-blush-600', done);
           btn.classList.toggle('text-white', done);
           btn.classList.toggle('dark:text-white', done);
-          label.textContent = done ? 'Session logged for today' : "Mark today's session done";
+          label.textContent = done ? tc.practiceDone : tc.practiceMark;
         };
         btn.addEventListener('click', () => {
           const store = loadStore();

@@ -12,13 +12,22 @@ export const CHART = { W: 640, H: 320 };
 const PAD = { top: 26, right: 18, bottom: 40, left: 46 };
 
 /** Chart/stats delta-chip phrasing; "no change" when the weight held steady. */
-export function deltaLabel(g: number): string {
+export function deltaLabel(g: number, locale?: string): string {
+  if (locale === 'ms') {
+    if (g === 0) return 'tiada perubahan sejak audit lepas';
+    return `${Math.abs(g)} g ${g > 0 ? 'naik' : 'turun'} sejak audit lepas`;
+  }
   if (g === 0) return 'no change since the last audit';
   return `${Math.abs(g)} g ${g > 0 ? 'up' : 'down'} since the last audit`;
 }
 
 /** Ledger-row delta phrasing: opening entry, no change, or "N g". */
-export function rowDeltaLabel(g: number | undefined): string {
+export function rowDeltaLabel(g: number | undefined, locale?: string): string {
+  if (locale === 'ms') {
+    if (g === undefined) return 'catatan pembukaan';
+    if (g === 0) return 'tiada perubahan';
+    return `${Math.abs(g)} g`;
+  }
   if (g === undefined) return 'opening entry';
   if (g === 0) return 'no change';
   return `${Math.abs(g)} g`;
@@ -44,7 +53,9 @@ export function weightStats(history: WeightEntry[]) {
 export function chartSvg(
   history: WeightEntry[],
   target: { min: number; max: number },
+  locale?: string,
 ): string {
+  const bandLabel = locale === 'ms' ? 'julat dewasa sihat' : 'healthy adult range';
   const { entries, kgs, heaviest, lightest, latest } = weightStats(history);
   const { W, H } = CHART;
   const innerW = W - PAD.left - PAD.right;
@@ -94,7 +105,7 @@ export function chartSvg(
     parts.push(
       `<rect x="${PAD.left}" y="${bandTopY.toFixed(1)}" width="${innerW}" height="${(bandBottomY - bandTopY).toFixed(1)}" class="fill-amber-300/15 dark:fill-amber-700/15"/>`,
       `<line x1="${PAD.left}" x2="${PAD.left + innerW}" y1="${bandBottomY.toFixed(1)}" y2="${bandBottomY.toFixed(1)}" stroke-dasharray="5 5" stroke-width="1.5" class="stroke-amber-500/70"/>`,
-      `<text x="${PAD.left + innerW - 6}" y="${(bandBottomY - 7).toFixed(1)}" text-anchor="end" class="fill-amber-700 text-[10px] font-bold tracking-[0.08em] uppercase dark:fill-amber-300">healthy adult range</text>`,
+      `<text x="${PAD.left + innerW - 6}" y="${(bandBottomY - 7).toFixed(1)}" text-anchor="end" class="fill-amber-700 text-[10px] font-bold tracking-[0.08em] uppercase dark:fill-amber-300">${bandLabel}</text>`,
     );
   }
 
@@ -131,14 +142,17 @@ export function chartSvg(
   );
   for (const p of xLabelled) {
     parts.push(
-      `<text x="${p.px.toFixed(1)}" y="${H - PAD.bottom + 18}" text-anchor="middle" class="fill-ink-400 text-[10px] font-bold">${shortLabel(p.date)}</text>`,
+      `<text x="${p.px.toFixed(1)}" y="${H - PAD.bottom + 18}" text-anchor="middle" class="fill-ink-400 text-[10px] font-bold">${shortLabel(p.date, locale)}</text>`,
     );
   }
 
   return parts.join('');
 }
 
-export function chartAriaLabel(history: WeightEntry[]): string {
+export function chartAriaLabel(history: WeightEntry[], locale?: string): string {
   const { entries, latest } = weightStats(history);
+  if (locale === 'ms') {
+    return `Carta garis berat Picha: ${entries.length} timbangan dari ${dateLabel(entries[0].date, locale)} hingga ${dateLabel(latest.date, locale)}, kini ${latest.kg} kg. Angka penuh ada dalam lejar di bawah.`;
+  }
   return `Line chart of Picha's weight: ${entries.length} weigh-ins from ${dateLabel(entries[0].date)} to ${dateLabel(latest.date)}, currently ${latest.kg} kg. Full figures are in the ledger below.`;
 }

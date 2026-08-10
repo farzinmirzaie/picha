@@ -8,7 +8,8 @@
  * so the page zips each translated {title, detail} with that item's icon.
  */
 import { identity, personality, lullaby, humanAgeLine } from '../data/picha';
-import type { BodySignal } from '../data/picha';
+import type { BodySignal, TrainingCourse } from '../data/picha';
+import { dateLabel } from '../lib/dates';
 
 export interface HomeCopy {
   tagline: string;
@@ -871,5 +872,455 @@ export function localizeHealthItem<
     ...(o ? { title: o.title, detail: o.detail } : {}),
     ...(item.everyLabel ? { everyLabel: everyLabelMs[item.everyLabel] ?? item.everyLabel } : {}),
     ...(item.where ? { where: whereMs[item.where] ?? item.where } : {}),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Weight tracker. Facts (kg values, dates, targets) stay in picha.ts /
+// weights.ts; prose here. Small fragments compose the templated stat subs +
+// ledger rows in both build and client (see the helpers below). The chart
+// string labels live in lib/weight-viz (kept dependency-free).
+// ---------------------------------------------------------------------------
+export interface WeightCopy {
+  metaTitle: string;
+  metaDescription: string;
+  appTitle: string;
+  kicker: string;
+  title: string;
+  blurb: string; // note appended by the page
+  note: string; // "Still growing until ~1.5–2 years old."
+  statCurrent: string;
+  statHeaviest: string;
+  statLightest: string;
+  statAverage: string;
+  weighedPre: string; // "weighed {date}"
+  peakFloofPre: string; // "peak floof, {date}"
+  featherweightPre: string; // "featherweight, {date}"
+  acrossPre: string; // "across {n} audit(s)"
+  auditWord: string;
+  auditWordPlural: string;
+  trend: string;
+  bandFootnotePre: string; // "The amber band is the healthy adult range ("
+  bandFootnotePost: string; // ")."
+  bandNote: { under: string; in: string; over: string };
+  ledgerLabel: string;
+  auditNoPre: string; // "audit no. {NN}"
+  latest: string; // " · latest"
+  logWeighIn: string;
+  staffOnly: string;
+  form: {
+    date: string;
+    weightKg: string;
+    record: string;
+    sameDateNote: string;
+    filing: string;
+    recorded: string;
+    signExpired: string;
+    couldNotRecord: string;
+  };
+}
+export const weightCopy: Record<string, WeightCopy> = {
+  en: {
+    metaTitle: 'Weight · Picha 🐾',
+    metaDescription:
+      "Picha's weight tracker: every weigh-in charted, with stats and the full ledger.",
+    appTitle: 'Weight',
+    kicker: 'Tools · In service',
+    title: 'The royal waistline',
+    blurb:
+      'Every audit on the books, charted. Measured meals keep the trend honest; this page keeps the staff honest.',
+    note: 'Still growing until ~1.5–2 years old.',
+    statCurrent: 'Current',
+    statHeaviest: 'Heaviest',
+    statLightest: 'Lightest',
+    statAverage: 'Average',
+    weighedPre: 'weighed',
+    peakFloofPre: 'peak floof,',
+    featherweightPre: 'featherweight,',
+    acrossPre: 'across',
+    auditWord: 'audit',
+    auditWordPlural: 'audits',
+    trend: 'The trend',
+    bandFootnotePre: 'The amber band is the healthy adult range (',
+    bandFootnotePost: ').',
+    bandNote: {
+      under: 'Sitting under it, for now, is entirely by design.',
+      in: 'She has arrived. The waistline committee is satisfied.',
+      over: 'She is above it; the portion policy is under formal review.',
+    },
+    ledgerLabel: 'The ledger',
+    auditNoPre: 'audit no.',
+    latest: 'latest',
+    logWeighIn: 'Log a weigh-in',
+    staffOnly: 'staff only',
+    form: {
+      date: 'Date',
+      weightKg: 'Weight (kg)',
+      record: 'Record audit',
+      sameDateNote: 'Same-date entries update the existing row.',
+      filing: 'Filing the paperwork…',
+      recorded: 'Recorded. Management has been weighed.',
+      signExpired: 'Sign-in expired. Re-enter the PIN in the Staff room.',
+      couldNotRecord: 'Could not record it. Check the connection and try again.',
+    },
+  },
+  ms: {
+    metaTitle: 'Berat · Picha 🐾',
+    metaDescription:
+      'Penjejak berat Picha: setiap timbangan dicarta, dengan statistik dan lejar penuh.',
+    appTitle: 'Berat',
+    kicker: 'Alatan · Sedang bertugas',
+    title: 'Ukur lilit pinggang diraja',
+    blurb:
+      'Setiap audit direkod, dicarta. Hidangan bersukat memastikan trend jujur; halaman ini memastikan kakitangan jujur.',
+    note: 'Masih membesar sehingga ~1.5–2 tahun.',
+    statCurrent: 'Semasa',
+    statHeaviest: 'Terberat',
+    statLightest: 'Teringan',
+    statAverage: 'Purata',
+    weighedPre: 'ditimbang',
+    peakFloofPre: 'gebu puncak,',
+    featherweightPre: 'ringan bulu,',
+    acrossPre: 'merentas',
+    auditWord: 'audit',
+    auditWordPlural: 'audit',
+    trend: 'Trend',
+    bandFootnotePre: 'Jalur amber ialah julat dewasa sihat (',
+    bandFootnotePost: ').',
+    bandNote: {
+      under: 'Berada di bawahnya, buat masa ini, memang dirancang.',
+      in: 'Dia telah sampai. Jawatankuasa ukur lilit pinggang berpuas hati.',
+      over: 'Dia di atasnya; polisi bahagian makanan sedang disemak rasmi.',
+    },
+    ledgerLabel: 'Lejar',
+    auditNoPre: 'audit no.',
+    latest: 'terkini',
+    logWeighIn: 'Catat timbangan',
+    staffOnly: 'kakitangan sahaja',
+    form: {
+      date: 'Tarikh',
+      weightKg: 'Berat (kg)',
+      record: 'Rekod audit',
+      sameDateNote: 'Catatan tarikh sama mengemas kini baris sedia ada.',
+      filing: 'Memfailkan dokumen…',
+      recorded: 'Direkod. Pihak pengurusan telah ditimbang.',
+      signExpired: 'Log masuk tamat tempoh. Masukkan semula PIN di Bilik Kakitangan.',
+      couldNotRecord: 'Tidak dapat merekodnya. Semak sambungan dan cuba lagi.',
+    },
+  },
+};
+export const getWeightCopy = (locale?: string): WeightCopy => weightCopy[locale ?? 'en'] ?? weightCopy.en;
+
+// ---------------------------------------------------------------------------
+// Royal Academy (training hub + course pages). Facts (slug, icon, resistance,
+// step counts, dates) stay in picha.ts/training.ts; prose here. Course content
+// (title/tagline/why/steps) is translated per slug and applied by
+// localizeCourse(). The compose helpers build the templated status strings for
+// both build and client.
+// ---------------------------------------------------------------------------
+export interface TrainingCopy {
+  metaTitle: string;
+  metaDescription: string;
+  appTitle: string;
+  kicker: string;
+  title: string;
+  blurb: string;
+  staffProgress: string;
+  stepsWord: string; // "{done}/{total} steps"
+  groups: { active: string; syllabus: string; graduated: string };
+  inSessionWord: string; // caption "{a} in session"
+  graduatedWord: string;
+  onSyllabusWord: string;
+  stepWord: string; // "step {x} of {y}"
+  ofWord: string;
+  allWord: string; // "all {n} steps passed"
+  passedWord: string;
+  notStarted: string; // "{n} steps · not started"
+  registrarNoteHub: string;
+  // course page
+  allCourses: string;
+  statusGraduated: string;
+  statusActive: string;
+  statusSyllabus: string;
+  inSessionSincePre: string; // "In session since {date}"
+  gradBanner: string;
+  resistanceWord: string;
+  upNext: string;
+  curriculum: string;
+  registrarControls: string;
+  begin: string;
+  markStepPre: string; // "Mark step {x} passed"
+  markStepPost: string;
+  graduatedBtn: string;
+  undo: string;
+  registrarNoteCourse: string;
+  practiceMark: string;
+  practiceDone: string;
+  filing: string;
+  gradRecorded: string;
+  recorded: string;
+  signExpired: string;
+  couldNotRecord: string;
+  rulesLabel: string;
+  rules: string[];
+}
+export const trainingCopy: Record<string, TrainingCopy> = {
+  en: {
+    metaTitle: 'Training · Picha 🐾',
+    metaDescription:
+      "The Royal Academy: Picha's training courses with step-by-step curricula and live progress.",
+    appTitle: 'Academy',
+    kicker: 'Tools · In service',
+    title: 'The Royal Academy',
+    blurb:
+      'Courses in advanced cat cooperation. Officially it is the staff being trained and certified; Her Fluffiness merely grades the coursework.',
+    staffProgress: 'Staff progress',
+    stepsWord: 'steps',
+    groups: { active: 'In session', syllabus: 'The syllabus', graduated: 'Graduated' },
+    inSessionWord: 'in session',
+    graduatedWord: 'graduated',
+    onSyllabusWord: 'on the syllabus',
+    stepWord: 'step',
+    ofWord: 'of',
+    allWord: 'all',
+    passedWord: 'steps passed',
+    notStarted: 'not started',
+    registrarNoteHub:
+      'Milestones are recorded on each course page by PIN-carrying staff and land straight in her cloud file.',
+    allCourses: 'All courses',
+    statusGraduated: 'Graduated',
+    statusActive: 'In session',
+    statusSyllabus: 'On the syllabus',
+    inSessionSincePre: 'In session since',
+    gradBanner: 'Graduated with honours. The staff are officially certified.',
+    resistanceWord: 'resistance',
+    upNext: 'up next',
+    curriculum: 'The curriculum',
+    registrarControls: 'Registrar controls',
+    begin: 'Begin the course',
+    markStepPre: 'Mark step',
+    markStepPost: 'passed',
+    graduatedBtn: 'Graduated',
+    undo: 'undo',
+    registrarNoteCourse:
+      'Milestones are recorded to her cloud file. A step counts as passed when she stays relaxed through it on several separate days.',
+    practiceMark: "Mark today's session done",
+    practiceDone: 'Session logged for today',
+    filing: 'Filing the paperwork…',
+    gradRecorded: 'Graduated. The academy is very proud.',
+    recorded: 'Recorded in her file.',
+    signExpired: 'Sign-in expired. Re-enter the PIN in the Staff room.',
+    couldNotRecord: 'Could not record it. Check the connection and try again.',
+    rulesLabel: 'Session rules',
+    rules: [
+      'Short sessions: 2–5 minutes, once or twice a day.',
+      'Always end on a success, even a tiny one.',
+      'Treats are the salary; keep them within the daily 10% budget.',
+      'Never force it. If she leaves, class is dismissed.',
+      'One step at a time; repeat a step for days before moving on.',
+    ],
+  },
+  ms: {
+    metaTitle: 'Latihan · Picha 🐾',
+    metaDescription:
+      'Akademi Diraja: kursus latihan Picha dengan kurikulum langkah demi langkah dan kemajuan langsung.',
+    appTitle: 'Akademi',
+    kicker: 'Alatan · Sedang bertugas',
+    title: 'Akademi Diraja',
+    blurb:
+      'Kursus dalam kerjasama kucing lanjutan. Secara rasmi, kakitangan yang dilatih dan diperakui; Tuan Puteri Gebu sekadar menggredkan tugasan.',
+    staffProgress: 'Kemajuan kakitangan',
+    stepsWord: 'langkah',
+    groups: { active: 'Dalam sesi', syllabus: 'Silibus', graduated: 'Bergraduat' },
+    inSessionWord: 'dalam sesi',
+    graduatedWord: 'bergraduat',
+    onSyllabusWord: 'dalam silibus',
+    stepWord: 'langkah',
+    ofWord: 'daripada',
+    allWord: 'semua',
+    passedWord: 'langkah lulus',
+    notStarted: 'belum bermula',
+    registrarNoteHub:
+      'Pencapaian direkodkan di setiap halaman kursus oleh kakitangan berPIN dan terus masuk ke fail awannya.',
+    allCourses: 'Semua kursus',
+    statusGraduated: 'Bergraduat',
+    statusActive: 'Dalam sesi',
+    statusSyllabus: 'Dalam silibus',
+    inSessionSincePre: 'Dalam sesi sejak',
+    gradBanner: 'Bergraduat dengan kepujian. Kakitangan kini diperakui secara rasmi.',
+    resistanceWord: 'rintangan',
+    upNext: 'seterusnya',
+    curriculum: 'Kurikulum',
+    registrarControls: 'Kawalan pendaftar',
+    begin: 'Mulakan kursus',
+    markStepPre: 'Tandakan langkah',
+    markStepPost: 'lulus',
+    graduatedBtn: 'Bergraduat',
+    undo: 'buat asal',
+    registrarNoteCourse:
+      'Pencapaian direkodkan ke fail awannya. Satu langkah dikira lulus apabila dia kekal tenang melaluinya pada beberapa hari berasingan.',
+    practiceMark: 'Tandakan sesi hari ini selesai',
+    practiceDone: 'Sesi direkod untuk hari ini',
+    filing: 'Memfailkan dokumen…',
+    gradRecorded: 'Bergraduat. Akademi sangat berbangga.',
+    recorded: 'Direkod dalam failnya.',
+    signExpired: 'Log masuk tamat tempoh. Masukkan semula PIN di Bilik Kakitangan.',
+    couldNotRecord: 'Tidak dapat merekodnya. Semak sambungan dan cuba lagi.',
+    rulesLabel: 'Peraturan sesi',
+    rules: [
+      'Sesi pendek: 2–5 minit, sekali atau dua kali sehari.',
+      'Sentiasa akhiri dengan kejayaan, walau sekecil mana pun.',
+      'Ganjaran ialah gajinya; kekalkan dalam bajet harian 10%.',
+      'Jangan sekali-kali paksa. Jika dia beredar, kelas tamat.',
+      'Satu langkah pada satu masa; ulang satu langkah beberapa hari sebelum meneruskan.',
+    ],
+  },
+};
+export const getTrainingCopy = (locale?: string): TrainingCopy =>
+  trainingCopy[locale ?? 'en'] ?? trainingCopy.en;
+
+// Composed status strings (shared by build + client). ---------------------
+export function stepOfLabel(done: number, total: number, locale?: string): string {
+  const c = getTrainingCopy(locale);
+  return `${c.stepWord} ${done + 1} ${c.ofWord} ${total}`;
+}
+export function allStepsPassedLabel(total: number, locale?: string): string {
+  const c = getTrainingCopy(locale);
+  return `${c.allWord} ${total} ${c.passedWord}`;
+}
+export function stepsNotStartedLabel(total: number, locale?: string): string {
+  const c = getTrainingCopy(locale);
+  return `${total} ${c.stepsWord} · ${c.notStarted}`;
+}
+export function stepsCountLabel(done: number, total: number, locale?: string): string {
+  const c = getTrainingCopy(locale);
+  return `${done}/${total} ${c.stepsWord}`;
+}
+export function academyCaption(a: number, g: number, s: number, locale?: string): string {
+  const c = getTrainingCopy(locale);
+  return `${a} ${c.inSessionWord} · ${g} ${c.graduatedWord} · ${s} ${c.onSyllabusWord}`;
+}
+export function inSessionSinceLabel(iso: string, locale?: string): string {
+  return `${getTrainingCopy(locale).inSessionSincePre} ${dateLabel(iso, locale)}`;
+}
+export function markStepPassedLabel(done: number, locale?: string): string {
+  const c = getTrainingCopy(locale);
+  return `${c.markStepPre} ${done + 1} ${c.markStepPost}`;
+}
+
+// Course content translations, keyed by slug. --------------------------------
+type CourseText = { title: string; tagline: string; why: string; steps: { title: string; detail: string }[] };
+const courseMs: Record<string, CourseText> = {
+  toothbrushing: {
+    title: 'Berus Gigi 101',
+    tagline: 'Era berus gigi bermula, tertakluk kepada kelulusan rasminya.',
+    why: 'Kucing menyembunyikan penyakit gigi sehingga ia menyakitkan. Berus setiap hari ialah pencegahan terbaik, dan gel Histo Tree perisa daging sudah pun dibeli.',
+    steps: [
+      { title: 'Ujian rasa', detail: 'Secalit gel gigi pada jari, ditawarkan sebagai ganjaran. Ulang beberapa hari sehingga dia menganggapnya makanan.' },
+      { title: 'Dagu dan pipi', detail: 'Sementara dia menjilat gel, sentuh bibir dan pipinya. Beberapa saat sahaja, kemudian lepaskan dan puji.' },
+      { title: 'Jari pada gusi', detail: 'Gel pada jari, digosok lembut di sepanjang gigi hadapan dan garisan gusi. Berhenti sebelum dia membantah.' },
+      { title: 'Masuknya berus', detail: 'Berus gigi kucing muncul. Dia menghidunya dan menjilat gel darinya. Belum berus lagi.' },
+      { title: 'Sapuan pertama', detail: 'Beberapa saat berus sebenar pada gigi hadapan, satu sisi. Akhiri dengan ganjaran.' },
+      { title: 'Rutin penuh', detail: 'Kedua-dua sisi dan gigi belakang, bawah seminit, setiap hari. Bergraduat.' },
+    ],
+  },
+  manicure: {
+    title: 'Program Manikur',
+    tagline: 'Kaki depan dahulu. Pihak pengurusan telah dimaklumkan.',
+    why: 'Kuku dalaman tumbuh melebihi dan tersangkut. Potong berkala melindungi kakinya, perabot dan kakitangan.',
+    steps: [
+      { title: 'Diplomasi kaki', detail: 'Semasa dakapan santai, pegang sebelah kaki selama satu saat, lepaskan, ganjari. Tingkatkan sehingga picitan lembut.' },
+      { title: 'Tekanan', detail: 'Tekan lembut tapak jari supaya satu kuku terjulur, kagumi, lepaskan, ganjari.' },
+      { title: 'Berkenalan dengan pemotong', detail: 'Pemotong kuku diletakkan berdekatan semasa dakapan dan berbunyi klik di udara. Tiada apa berlaku kepadanya. Ganjaran mencurah.' },
+      { title: 'Satu kuku sahaja', detail: 'Potong hujung satu kuku depan ketika dia tenang. Berhenti serta-merta dan raikan.' },
+      { title: 'Satu kaki setiap sesi', detail: 'Beberapa kuku setiap sesi, kaki depan dahulu, setiap 2–4 minggu. Bergraduat.' },
+    ],
+  },
+  carrier: {
+    title: 'Diplomasi Bekas Bawa',
+    tagline: 'Dari penjara mudah alih ke kabin kelas pertama.',
+    why: 'Setiap lawatan doktor haiwan bermula dengan bekas bawa. Kucing yang masuk secara sukarela menjadikan setiap perjalanan lebih tenang dan pantas.',
+    steps: [
+      { title: 'Taraf perabot', detail: 'Bekas bawa dibiar terbuka di ruang tamu dengan selimut lembut di dalamnya, seolah-olah ia sentiasa di situ.' },
+      { title: 'Lokasi snek', detail: 'Ganjaran dan sesekali hidangan muncul berhampiran bekas bawa, kemudian di dalam pintu, kemudian di belakang.' },
+      { title: 'Permainan pintu', detail: 'Pintu ditutup beberapa saat sementara dia makan snek di dalam, dan dibuka sebelum dia peduli.' },
+      { title: 'Bawaan pendek', detail: 'Dibawa sebentar di sekeliling apartmen, kemudian dilepaskan dan durian runtuh ganjaran.' },
+      { title: 'Ujian percubaan', detail: 'Turun ke lobi atau pemanduan singkat dan terus pulang. Tiada doktor haiwan di hujungnya. Bergraduat.' },
+    ],
+  },
+  holding: {
+    title: 'Toleransi Pegangan Lanjutan',
+    tagline: 'Sepuluh saat tenang dalam dakapan kakitangan dikira satu kejayaan diplomatik.',
+    why: 'Pemeriksaan doktor haiwan, dandanan dan sesekali penyelamatan dari rak semuanya lebih lancar untuk kucing yang tahan dipegang.',
+    steps: [
+      { title: 'Tangan, tanpa angkat', detail: 'Kedua-dua tangan diletakkan di sisinya seketika semasa dakapan, kemudian lepaskan, kemudian ganjari.' },
+      { title: 'Angkatan sepuluh saat', detail: 'Angkatan pendek dan rendah. Kaki kembali ke tanah sebelum dia terfikir untuk meronta.' },
+      { title: 'Mendarat di riba', detail: 'Angkat dan letakkan dia di riba; kebebasan diberi serta-merta. Riba menjadi destinasi yang baik.' },
+      { title: 'Setengah minit', detail: 'Pegangan santai 30 saat dengan usapan perlahan, berakhir sebelum dia meminta.' },
+      { title: 'Gaya klinik', detail: 'Pegangan gaya doktor haiwan yang lembut sehingga seminit, tenang sepanjang masa. Bergraduat.' },
+    ],
+  },
+  recall: {
+    title: 'Panggilan, Dengan Temu Janji',
+    tagline: 'Dia datang bila dipanggil. Bila dia bersetuju dengan premisnya.',
+    why: 'Tindak balas nama yang boleh diharap mencari kucing yang bersembunyi dengan pantas, yang penting apabila ada jaguh sorok-sorok di dalam rumah.',
+    steps: [
+      { title: 'Nama sama dengan ganjaran', detail: 'Sebut "Picha", ganjaran tiba. Ulang beberapa hari sehingga kepalanya berpaling pantas mendengar perkataan itu.' },
+      { title: 'Panggilan rentas bilik', detail: 'Panggil dia dari seberang bilik dan ganjari ketibaannya, setiap kali.' },
+      { title: 'Panggilan luar pandangan', detail: 'Panggil dari bilik lain. Ketibaan memperoleh durian runtuh.' },
+      { title: 'Latihan rawak', detail: 'Panggilan pada saat rawak setiap hari; ganjaran berbeza antara makanan, permainan dan kasih sayang. Bergraduat.' },
+    ],
+  },
+  'talking-buttons': {
+    title: 'Butang Bercakap',
+    tagline: 'Empat butang, seekor kucing, dan permulaan tuntutan yang boleh anda dengar.',
+    why: 'Butang bunyi boleh rakam membolehkan dia meminta sesuatu dengan sengaja dan bukannya teka-teki biasa. Dilakukan dengan betul (kakitangan menunjuk cara menekan, tiada siapa memaksa kakinya, dan ganjaran tiba serta-merta) ia pengayaan sebenar dan saluran komunikasi yang tulen. Mulakan dengan satu butang dan tambah selebihnya hanya apabila dia memahaminya.',
+    steps: [
+      { title: 'Rakam dan letak satu', detail: 'Rakam satu perkataan yang jelas dan bernilai tinggi yang sudah dia sukai; "main" atau "snek" jadi perkataan pertama yang baik. Letak butang itu di tempat bendanya berada: butang main di sisi mainan, butang snek di sisi balang.' },
+      { title: 'Tunjuk cara, setiap kali', detail: 'Sebelum benda itu berlaku, seorang kakitangan menekan butang, sebut perkataannya, kemudian sampaikan serta-merta. Kedua-dua kakitangan, perkataan yang sama, banyak kali sehari. Jangan sekali-kali tekan kakinya untuknya; dia belajar dengan memerhati.' },
+      { title: 'Raikan tekanan pertama', detail: 'Ganjari sebarang hiduan atau kaki berhampiran butang, dan sebaik sahaja dia menekannya sendiri, sampaikan bendanya serta-merta, walaupun masanya teruk. Tekanan pertama yang sebenar boleh mengambil masa berminggu. Anggap ia seperti bergraduat.' },
+      { title: 'Tambah butang kedua', detail: 'Setelah dia menekan butang satu dengan sengaja, tambah butang kedua dengan perkataan yang jelas berbeza ("makan" atau "air" sesuai), diletakkan sedikit jauh supaya kedua-duanya tidak bercampur. Terus tunjuk cara kedua-duanya.' },
+      { title: 'Tambah yang ketiga', detail: 'Bawa masuk perkataan ketiga apabila dia dapat membezakan dua yang pertama mengikut konteks dan bukan sekadar menekan sesuka hati. Perkataan sosial seperti "belai" ialah pilihan yang baik. Ganjari tekanan yang benar-benar masuk akal.' },
+      { title: 'Papan bunyi penuh', detail: 'Tambah butang keempat dan tetapkan keempat-empatnya pada pad anti-gelincir. Dia kini mempunyai perbendaharaan kata yang berfungsi dan boleh membuat permintaan secara rasmi. Bergraduat, dan permulaan rundingan sepanjang hayat.' },
+    ],
+  },
+  'party-tricks': {
+    title: 'Helah Pesta',
+    tagline: 'Tepuk kaki, pusingan, dan cara lain untuk membuat kakitangan bertepuk tangan.',
+    why: 'Helah ialah pengayaan tulen: ia mengasah otaknya, membakar tenaga dan menjadikan latihan satu permainan yang seisi rumah nikmati. Ia juga membina fokus dan kerjasama yang menjadi sandaran setiap kursus lain. Umpan dan ganjari, jangan sekali-kali aturkan gayanya dengan tangan.',
+    steps: [
+      { title: 'Penanda dan sasaran', detail: 'Pilih satu penanda (pengeklik, atau sebutan "ya" yang tegas) dan pasangkannya dengan ganjaran sehingga bunyi itu sendiri bermaksud "syabas". Kemudian ajar sentuhan hidung: hulurkan jari dan ganjari sebaik sahaja dia menyentuhnya. Satu kemahiran ini menggerakkan setiap helah.' },
+      { title: 'Duduk', detail: 'Pegang ganjaran di hidungnya dan luncurkannya ke atas dan ke belakang kepalanya; sambil hidungnya mengikut dan punggungnya turun, tanda dan ganjari. Setelah lancar, tambah perkataan "duduk" sebelum dia melakukannya.' },
+      { title: 'Tepuk kaki', detail: 'Pegang ganjaran dalam genggaman longgar berhampiran dadanya. Sebaik sahaja kaki terangkat untuk menyiasat, tanda dan ganjari. Bentuk ia lebih tinggi selama beberapa sesi sehingga kaki bertemu tapak tangan terbuka anda, kemudian namakannya "tepuk kaki".' },
+      { title: 'Pusing', detail: 'Pandu hidungnya dengan ganjaran dalam bulatan perlahan supaya dia berpusing di tempatnya; tanda pusingan penuh dan ganjari. Kecilkan bulatan setiap hari, ciutkannya kepada pusingan jari, dan tambah perkataan "pusing".' },
+      { title: 'Pudarkan umpan', detail: 'Kini buat gerakan tangan yang sama tanpa ganjaran di dalamnya, dan bayar dari tangan yang satu lagi setelah dia melakukannya. Sebut isyarat sekali, beri dia seketika, dan ganjari isyarat itu dan bukan makanan yang dipegang di hidungnya.' },
+      { title: 'Kemuncak', detail: 'Tambah satu aksi hebat (gaya merayu "duduk cantik", atau lompatan melalui gelung yang dipegang), kemudian rangkaikan dua helah menjadi rutin kecil atas isyarat. Dia kini beraksi untuk penonton seisi rumah atas permintaan. Bergraduat, dan tepukan gemuruh.' },
+    ],
+  },
+  harness: {
+    title: 'Abah-abah & Tali (Pilihan)',
+    tagline: 'Untuk ekspedisi masa depan hipotetikal yang Tuan Puteri Gebu mungkin tugaskan.',
+    why: 'Pilihan. Berguna hanya jika perjalanan atau masa luar berpengawasan pernah menjadi agenda, jadi ia menunggu di belakang silibus.',
+    steps: [
+      { title: 'Abah-abah wujud', detail: 'Ia terletak di lantai untuk dihidu. Ganjaran berlaku berhampirannya.' },
+      { title: 'Dipakai, tidak dikancing', detail: 'Disidai di bahunya beberapa saat setiap kali, diikuti ganjaran.' },
+      { title: 'Dikancing di dalam rumah', detail: 'Dikancing beberapa minit sementara permainan mengalihkan perhatiannya daripada pakaian itu.' },
+      { title: 'Mengekori tali', detail: 'Tali dipasang, dia merayau di apartmen, kakitangan mengikut seperti pegawai istana.' },
+      { title: 'Ekspedisi koridor', detail: 'Berjalan singkat berpengiring di luar pintu hadapan. Bergraduat.' },
+    ],
+  },
+};
+
+/** Return a course with prose in the active locale (English passes through). */
+export function localizeCourse(course: TrainingCourse, locale?: string): TrainingCourse {
+  if (locale !== 'ms') return course;
+  const o = courseMs[course.slug];
+  if (!o) return course;
+  return {
+    ...course,
+    title: o.title,
+    tagline: o.tagline,
+    why: o.why,
+    steps: course.steps.map((s, i) => ({ ...s, ...(o.steps[i] ?? {}) })),
   };
 }

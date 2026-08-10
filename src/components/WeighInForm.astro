@@ -8,11 +8,13 @@
  */
 import Button from './ui/Button.astro';
 import { supabaseClient } from '../data/supabase';
+import { getWeightCopy } from '../i18n/content';
 
 interface Props {
   flush?: boolean;
 }
 const { flush = false } = Astro.props;
+const f = getWeightCopy(Astro.currentLocale).form;
 ---
 
 <form
@@ -30,7 +32,7 @@ const { flush = false } = Astro.props;
   <div class="grid grid-cols-2 gap-3">
     <label class="block">
       <span class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
-        Date
+        {f.date}
       </span>
       <input
         type="date"
@@ -41,7 +43,7 @@ const { flush = false } = Astro.props;
     </label>
     <label class="block">
       <span class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
-        Weight (kg)
+        {f.weightKg}
       </span>
       <input
         type="number"
@@ -57,10 +59,10 @@ const { flush = false } = Astro.props;
       />
     </label>
   </div>
-  <Button block type="submit" icon="ph:scales" class="mt-3">Record audit</Button>
+  <Button block type="submit" icon="ph:scales" class="mt-3">{f.record}</Button>
   <p class="mt-3 min-h-4 text-xs font-bold text-ink-400" data-form-status aria-live="polite">
   </p>
   <p class="mt-3 text-[11px] leading-relaxed text-ink-400">
-    Same-date entries update the existing row.
+    {f.sameDateNote}
   </p>
 </form>
