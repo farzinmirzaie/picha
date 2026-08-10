@@ -453,6 +453,11 @@ in every change from now on.
   **prose** is per-locale. So a weight/date/product change is still made once,
   and translations never drift from the facts. When you touch `picha.ts`, move
   the prose into the locale dictionaries and leave the facts in place.
+  - The owners' contact labels `contact.owners[].name` ("Mommy" / "Daddy") are
+    **intentionally kept in English in every locale** — they're her fixed
+    nicknames (proper names), not role words. Don't translate them (owner
+    decision); the if-found buttons read "Hubungi Mommy" / "致电 Daddy" on
+    purpose.
 - **Translate the voice, not the words.** Keep the playful "staff of the cat"
   register in every language (Malay, Chinese, …); a literal translation that
   loses the humour is wrong.
