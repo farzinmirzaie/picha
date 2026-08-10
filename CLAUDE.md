@@ -53,7 +53,7 @@ src/
     PageHeader.astro   # sub-page header (kicker, serif title, blurb; avatar md+ only)
     PassportDialog.astro # the pet-passport <dialog> + opener script — include once
                        # per page; any [data-passport-open] element opens it (Tools)
-    ShareDialog.astro  # share sheet: build-time QR (qrcode pkg) + Web Share /
+    ShareDialog.astro  # share sheet: custom QR image (assets/qr.png) + Web Share /
                        # copy-link; any [data-share-open] element opens it (Home)
     TrainingRules.astro # the Academy's session-rules card (hub + course pages)
     SignalCard.astro   # one body-language signal card (photo + mood chip above

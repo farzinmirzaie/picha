@@ -2,24 +2,19 @@
 /**
  * The share sheet: QR code to the site + native share / copy-link buttons.
  * Include once per page; any element with `data-share-open` opens it.
- * The QR is rendered at build time (qrcode pkg), so the dialog ships no JS
- * beyond the open/share/copy handlers. Generic on purpose: it hands the whole
- * app to a vet, a day care, or family in one scan.
+ * The QR is a custom-designed image (src/assets/qr.png) encoding the site URL;
+ * it sits on a white tile so it scans reliably in both themes. The dialog ships
+ * no JS beyond the open/share/copy handlers. Generic on purpose: it hands the
+ * whole app to a vet, a day care, or family in one scan.
  */
 import { Icon } from 'astro-icon/components';
-import QRCode from 'qrcode';
+import { Image } from 'astro:assets';
 import SheetHeader from './ui/SheetHeader.astro';
 import Button from './ui/Button.astro';
+import qrImage from '../assets/qr.png';
 
 const url = new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`, Astro.site)
   .href;
-// Ink on a white tile scans reliably in both themes.
-const qrSvg = await QRCode.toString(url, {
-  type: 'svg',
-  margin: 0,
-  errorCorrectionLevel: 'M',
-  color: { dark: '#38262e', light: '#ffffff00' },
-});
 ---
 
 <dialog id="share" class="sheet" aria-labelledby="share-title" data-url={url}>
@@ -33,11 +28,18 @@ const qrSvg = await QRCode.toString(url, {
       </p>
 
       <div
-        class="mx-auto mt-5 w-44 rounded-2xl border border-paper-300/70 bg-white p-3.5 shadow-sm dark:border-plum-700"
+        class="mx-auto mt-5 w-52 rounded-2xl border border-paper-300/70 bg-white p-3.5 shadow-sm dark:border-plum-700"
         role="img"
         aria-label={`QR code linking to ${url}`}
       >
-        <div class="[&>svg]:h-auto [&>svg]:w-full" set:html={qrSvg} aria-hidden="true" />
+        <Image
+          src={qrImage}
+          alt=""
+          width={600}
+          format="png"
+          class="h-auto w-full"
+          aria-hidden="true"
+        />
       </div>
       <p class="select-text mt-3 font-mono text-[11px] break-all text-ink-400">{url}</p>
 
