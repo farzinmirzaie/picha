@@ -12,19 +12,20 @@ import { Image } from 'astro:assets';
 import SheetHeader from './ui/SheetHeader.astro';
 import Button from './ui/Button.astro';
 import qrImage from '../assets/qr.png';
+import { getShareCopy } from '../i18n/content';
 
+const c = getShareCopy(Astro.currentLocale);
 const url = new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`, Astro.site)
   .href;
 ---
 
-<dialog id="share" class="sheet" aria-labelledby="share-title" data-url={url}>
+<dialog id="share" class="sheet" aria-labelledby="share-title" data-url={url} data-share-text={c.shareText}>
   <div class="rounded-2xl bg-paper-50 shadow-2xl max-md:rounded-b-none max-md:pb-[env(safe-area-inset-bottom)] dark:bg-plum-900">
-    <SheetHeader title="Share her profile" titleId="share-title" closeLabel="Close share sheet" />
+    <SheetHeader title={c.sheetTitle} titleId="share-title" closeLabel={c.closeLabel} />
 
     <div class="p-6 text-center">
       <p class="mx-auto max-w-xs text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-        For the vet, the day care, the family: scan the code or send the link.
-        Everything about Picha, one page.
+        {c.blurb}
       </p>
 
       <div
@@ -44,7 +45,7 @@ const url = new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`, Astro.sit
       <p class="select-text mt-3 font-mono text-[11px] break-all text-ink-400">{url}</p>
 
       <div class="mt-5 flex flex-wrap justify-center gap-2.5">
-        <Button data-share-native icon="ph:share-network">Share</Button>
+        <Button data-share-native icon="ph:share-network">{c.share}</Button>
         <Button variant="outline" data-share-copy>
           <span class="relative h-4.5 w-4.5 shrink-0" aria-hidden="true">
             <Icon
@@ -58,7 +59,7 @@ const url = new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`, Astro.sit
               class="absolute inset-0 h-full w-full scale-0 opacity-0 transition-all duration-300 ease-out"
             />
           </span>
-          <span data-share-copy-label>Copy link</span>
+          <span data-share-copy-label>{c.copyLink}</span>
         </Button>
       </div>
     </div>
@@ -67,6 +68,7 @@ const url = new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`, Astro.sit
 
 <script>
   import { bindDialog } from '../lib/dialog';
+  import { getShareCopy } from '../i18n/content';
 
   function setupShare() {
     const dialog = document.getElementById('share') as HTMLDialogElement | null;
@@ -88,11 +90,12 @@ const url = new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`, Astro.sit
     // Remove inline-flex too, or it would beat the `hidden` display utility.
     if (!navigator.share) native?.classList.remove('inline-flex');
     if (!navigator.share) native?.classList.add('hidden');
+    const shareText = dialog.dataset.shareText || 'Picha 🐾';
     native?.addEventListener('click', async () => {
       try {
         await navigator.share({
           title: 'Picha 🐾',
-          text: 'Picha the cat: profile, health record and care guide.',
+          text: shareText,
           url,
         });
       } catch {
@@ -110,7 +113,8 @@ const url = new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`, Astro.sit
       iconCopy?.classList.toggle('opacity-0', on);
       iconCheck?.classList.toggle('scale-0', !on);
       iconCheck?.classList.toggle('opacity-0', !on);
-      if (copyLabel) copyLabel.textContent = on ? 'Copied' : 'Copy link';
+      const sc = getShareCopy(document.documentElement.lang || 'en');
+      if (copyLabel) copyLabel.textContent = on ? sc.copied : sc.copyLink;
     };
     copy?.addEventListener('click', async () => {
       try {

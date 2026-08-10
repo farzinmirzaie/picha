@@ -8,17 +8,20 @@ import { Icon } from 'astro-icon/components';
 import SheetHeader from './ui/SheetHeader.astro';
 import pichaPhoto from '../assets/picha.jpg';
 import { identity, microchip, microchipRegistry } from '../data/picha';
+import { getPassportCopy } from '../i18n/content';
+
+const c = getPassportCopy(Astro.currentLocale);
 
 // Layout modelled on the official pet passport: dotted fields, pen-blue values.
 const particulars = [
-  { label: "Pet's Name", value: identity.name },
-  { label: 'Species', value: 'Feline' },
-  { label: 'Breed', value: identity.breed },
-  { label: 'Sex', value: 'Female' },
-  { label: 'Neutered', value: 'Yes' },
-  { label: 'Colour', value: identity.colour },
-  { label: 'Date of Birth', value: identity.bornLabel },
-  { label: 'Passport No.', value: 'Pending' },
+  { label: c.labels.name, value: identity.name },
+  { label: c.labels.species, value: c.species },
+  { label: c.labels.breed, value: identity.breed },
+  { label: c.labels.sex, value: c.sexFemale },
+  { label: c.labels.neutered, value: c.yes },
+  { label: c.labels.colour, value: identity.colour },
+  { label: c.labels.dob, value: identity.bornLabel },
+  { label: c.labels.passportNo, value: c.pending },
 ];
 ---
 
@@ -26,13 +29,13 @@ const particulars = [
 <dialog id="passport" class="sheet" aria-labelledby="passport-title">
   <div class="rounded-2xl bg-[#fbf7ef] text-[#3a3a3a] shadow-2xl max-md:rounded-b-none max-md:pb-[env(safe-area-inset-bottom)]">
     <!-- cover strip (stays fixed while the document scrolls) -->
-    <SheetHeader title="Pet Passport" titleId="passport-title" closeLabel="Close passport" />
+    <SheetHeader title={c.sheetTitle} titleId="passport-title" closeLabel={c.closeLabel} />
 
     <div class="grid sm:grid-cols-2">
       <!-- left page: particulars -->
       <div class="border-b border-dashed border-[#d8cfc0] p-5 sm:border-r sm:border-b-0 sm:p-6">
         <h3 class="text-[10px] font-bold tracking-[0.18em] uppercase">
-          Pet's Particulars
+          {c.particularsHeading}
         </h3>
         <dl class="mt-4 space-y-3.5">
           {
@@ -52,10 +55,10 @@ const particulars = [
           aria-hidden="true"
         >
           <span class="inline-flex items-center gap-1">
-            <Icon name="ph:paw-print" class="h-3 w-3" /> Royal Household of Picha
+            <Icon name="ph:paw-print" class="h-3 w-3" /> {c.household}
           </span><br />
           <span class="font-normal normal-case italic tracking-normal"
-            >Signature: paw on file</span
+            >{c.signature}</span
           >
         </div>
       </div>
@@ -63,11 +66,11 @@ const particulars = [
       <!-- right page: identity -->
       <div class="p-5 sm:p-6">
         <h3 class="text-[10px] font-bold tracking-[0.18em] uppercase">
-          Pet Identity
+          {c.identityHeading}
         </h3>
 
         <div class="mt-4">
-          <p class="text-[10px] font-bold">Microchip No.</p>
+          <p class="text-[10px] font-bold">{c.microchipNo}</p>
           <div class="mt-1.5 rounded-md border border-[#d8cfc0] bg-white px-3 py-2">
             <div class="barcode h-9 w-full" aria-hidden="true"></div>
             <p class="select-text mt-1 text-center font-mono text-xs tracking-[0.28em]">
@@ -77,11 +80,11 @@ const particulars = [
         </div>
 
         <div class="mt-4 grid grid-cols-[6.5rem_1fr] items-end gap-2 sm:grid-cols-[7.5rem_1fr]">
-          <p class="text-[10px] leading-tight font-bold">Site of Implant</p>
+          <p class="text-[10px] leading-tight font-bold">{c.siteOfImplant}</p>
           <p class="pen border-b border-dotted border-[#b9ad99] pb-0.5 text-[11px] sm:text-xs">
-            Between shoulders
+            {c.betweenShoulders}
           </p>
-          <p class="text-[10px] leading-tight font-bold">Registered at</p>
+          <p class="text-[10px] leading-tight font-bold">{c.registeredAt}</p>
           <a
             href={microchipRegistry.url}
             target="_blank"
@@ -93,7 +96,7 @@ const particulars = [
         </div>
 
         <div class="mt-5">
-          <p class="text-center text-[10px] font-bold">Pet Photo</p>
+          <p class="text-center text-[10px] font-bold">{c.petPhoto}</p>
           <div
             class="mx-auto mt-2 w-40 rotate-1 border-4 border-white shadow-md sm:w-44"
           >

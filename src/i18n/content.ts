@@ -1324,3 +1324,255 @@ export function localizeCourse(course: TrainingCourse, locale?: string): Trainin
     steps: course.steps.map((s, i) => ({ ...s, ...(o.steps[i] ?? {}) })),
   };
 }
+
+// ---------------------------------------------------------------------------
+// Staff room (PIN gate + staff-only controls). Server + client strings.
+// ---------------------------------------------------------------------------
+export interface StaffCopy {
+  metaTitle: string;
+  metaDescription: string;
+  appTitle: string;
+  kicker: string;
+  title: string;
+  blurb: string;
+  staffOnly: string;
+  pinPrompt: string;
+  pinLabel: string;
+  pinPlaceholder: string;
+  unlock: string;
+  checking: string;
+  pinNotRecognised: string;
+  unlockedBanner: string;
+  remindersLabel: string;
+  reminderTitle: string;
+  reminderSub: string;
+  on: string;
+  off: string;
+  deviceLabel: string;
+  forgetTitle: string;
+  forgetSub: string;
+  moreControlsNote: string;
+  push: {
+    unsupported: string;
+    denied: string;
+    subscribed: string;
+    off: string;
+    working: string;
+    pinRejected: string;
+    cloudNotConfigured: string;
+    signInFirst: string;
+    couldNotUpdate: string;
+  };
+}
+export const staffCopy: Record<string, StaffCopy> = {
+  en: {
+    metaTitle: 'Staff · Picha 🐾',
+    metaDescription: 'Staff quarters: the registrar PIN lives here, for the humans on payroll.',
+    appTitle: 'Staff',
+    kicker: 'Members only',
+    title: 'The staff room',
+    blurb:
+      'Where the humans keep the treats, the coffee and the registrar PIN. Sign in to reach the staff-only controls management would never hand to just anyone.',
+    staffOnly: 'Staff only',
+    pinPrompt:
+      'Registrar PIN, please. The treat cupboard is staff only. Enter it once and this device remembers you.',
+    pinLabel: 'Registrar PIN',
+    pinPlaceholder: 'staff PIN',
+    unlock: 'Unlock',
+    checking: 'Checking…',
+    pinNotRecognised: 'That PIN was not recognised. Try again.',
+    unlockedBanner:
+      "You're in; treats are in the top drawer. This device can now log weigh-ins, Academy progress and daily rounds.",
+    remindersLabel: 'Reminders',
+    reminderTitle: 'Reminders on this device',
+    reminderSub: 'A nudge every few hours while daily rounds are still pending.',
+    on: 'On',
+    off: 'Off',
+    deviceLabel: 'This device',
+    forgetTitle: 'Forget the PIN on this device',
+    forgetSub:
+      'Clears the saved PIN here. Other devices are untouched, and the PIN itself never changes.',
+    moreControlsNote:
+      "More staff controls will move in over time. For now it's mostly a treat jar, a kettle and a coat rack.",
+    push: {
+      unsupported: "This browser can't deliver reminders while the app is closed.",
+      denied:
+        'Notifications are blocked for this site. Turn them on in your browser settings, then tap again.',
+      subscribed:
+        'On. A nudge every few hours while rounds are pending (quiet overnight); silent once the list is clear.',
+      off: 'Off. Tap to get a nudge while daily rounds are still pending.',
+      working: 'Working…',
+      pinRejected: 'That PIN was rejected. Sign out and back in, then try again.',
+      cloudNotConfigured: 'The cloud is not configured.',
+      signInFirst: 'Sign in first.',
+      couldNotUpdate: 'Could not update reminders.',
+    },
+  },
+  ms: {
+    metaTitle: 'Kakitangan · Picha 🐾',
+    metaDescription:
+      'Kuarters kakitangan: PIN pendaftar disimpan di sini, untuk manusia yang bergaji.',
+    appTitle: 'Kakitangan',
+    kicker: 'Ahli sahaja',
+    title: 'Bilik kakitangan',
+    blurb:
+      'Tempat manusia menyimpan snek, kopi dan PIN pendaftar. Log masuk untuk mencapai kawalan khas kakitangan yang pihak pengurusan takkan serahkan kepada sebarang orang.',
+    staffOnly: 'Kakitangan sahaja',
+    pinPrompt:
+      'PIN pendaftar, sila. Almari snek untuk kakitangan sahaja. Masukkan sekali dan peranti ini akan mengingati anda.',
+    pinLabel: 'PIN pendaftar',
+    pinPlaceholder: 'PIN kakitangan',
+    unlock: 'Buka kunci',
+    checking: 'Menyemak…',
+    pinNotRecognised: 'PIN itu tidak dikenali. Cuba lagi.',
+    unlockedBanner:
+      'Anda berjaya masuk; snek ada dalam laci atas. Peranti ini kini boleh mencatat timbangan, kemajuan Akademi dan pusingan harian.',
+    remindersLabel: 'Peringatan',
+    reminderTitle: 'Peringatan pada peranti ini',
+    reminderSub: 'Satu peringatan setiap beberapa jam sementara pusingan harian masih tertunggak.',
+    on: 'Hidup',
+    off: 'Mati',
+    deviceLabel: 'Peranti ini',
+    forgetTitle: 'Lupakan PIN pada peranti ini',
+    forgetSub:
+      'Membersihkan PIN tersimpan di sini. Peranti lain tidak terjejas, dan PIN itu sendiri tidak berubah.',
+    moreControlsNote:
+      'Lebih banyak kawalan kakitangan akan masuk dari masa ke masa. Buat masa ini, kebanyakannya balang snek, cerek dan penyangkut kot.',
+    push: {
+      unsupported: 'Pelayar ini tidak dapat menghantar peringatan semasa aplikasi ditutup.',
+      denied:
+        'Pemberitahuan disekat untuk laman ini. Hidupkannya dalam tetapan pelayar anda, kemudian ketik lagi.',
+      subscribed:
+        'Hidup. Satu peringatan setiap beberapa jam sementara pusingan tertunggak (senyap pada waktu malam); senyap sebaik senarai kosong.',
+      off: 'Mati. Ketik untuk mendapat peringatan sementara pusingan harian masih tertunggak.',
+      working: 'Sedang berfungsi…',
+      pinRejected: 'PIN itu ditolak. Log keluar dan masuk semula, kemudian cuba lagi.',
+      cloudNotConfigured: 'Awan tidak dikonfigurasikan.',
+      signInFirst: 'Log masuk dahulu.',
+      couldNotUpdate: 'Tidak dapat mengemas kini peringatan.',
+    },
+  },
+};
+export const getStaffCopy = (locale?: string): StaffCopy => staffCopy[locale ?? 'en'] ?? staffCopy.en;
+
+// ---------------------------------------------------------------------------
+// Passport dialog + Share dialog (both included on multiple pages).
+// ---------------------------------------------------------------------------
+export interface PassportCopy {
+  sheetTitle: string;
+  closeLabel: string;
+  particularsHeading: string;
+  identityHeading: string;
+  labels: {
+    name: string;
+    species: string;
+    breed: string;
+    sex: string;
+    neutered: string;
+    colour: string;
+    dob: string;
+    passportNo: string;
+  };
+  species: string; // "Feline"
+  sexFemale: string;
+  yes: string;
+  pending: string;
+  household: string; // stamp
+  signature: string; // stamp
+  microchipNo: string;
+  siteOfImplant: string;
+  betweenShoulders: string;
+  registeredAt: string;
+  petPhoto: string;
+}
+export const passportCopy: Record<string, PassportCopy> = {
+  en: {
+    sheetTitle: 'Pet Passport',
+    closeLabel: 'Close passport',
+    particularsHeading: "Pet's Particulars",
+    identityHeading: 'Pet Identity',
+    labels: {
+      name: "Pet's Name",
+      species: 'Species',
+      breed: 'Breed',
+      sex: 'Sex',
+      neutered: 'Neutered',
+      colour: 'Colour',
+      dob: 'Date of Birth',
+      passportNo: 'Passport No.',
+    },
+    species: 'Feline',
+    sexFemale: 'Female',
+    yes: 'Yes',
+    pending: 'Pending',
+    household: 'Royal Household of Picha',
+    signature: 'Signature: paw on file',
+    microchipNo: 'Microchip No.',
+    siteOfImplant: 'Site of Implant',
+    betweenShoulders: 'Between shoulders',
+    registeredAt: 'Registered at',
+    petPhoto: 'Pet Photo',
+  },
+  ms: {
+    sheetTitle: 'Pasport Haiwan',
+    closeLabel: 'Tutup pasport',
+    particularsHeading: 'Butiran Haiwan',
+    identityHeading: 'Identiti Haiwan',
+    labels: {
+      name: 'Nama Haiwan',
+      species: 'Spesies',
+      breed: 'Baka',
+      sex: 'Jantina',
+      neutered: 'Dikembiri',
+      colour: 'Warna',
+      dob: 'Tarikh Lahir',
+      passportNo: 'No. Pasport',
+    },
+    species: 'Kucing',
+    sexFemale: 'Betina',
+    yes: 'Ya',
+    pending: 'Belum selesai',
+    household: 'Istana Diraja Picha',
+    signature: 'Tandatangan: tapak kaki dalam fail',
+    microchipNo: 'No. Mikrocip',
+    siteOfImplant: 'Tapak Implan',
+    betweenShoulders: 'Antara bahu',
+    registeredAt: 'Didaftarkan di',
+    petPhoto: 'Foto Haiwan',
+  },
+};
+export const getPassportCopy = (locale?: string): PassportCopy =>
+  passportCopy[locale ?? 'en'] ?? passportCopy.en;
+
+export interface ShareCopy {
+  sheetTitle: string;
+  closeLabel: string;
+  blurb: string;
+  share: string;
+  copyLink: string;
+  copied: string;
+  shareText: string; // native-share body
+}
+export const shareCopy: Record<string, ShareCopy> = {
+  en: {
+    sheetTitle: 'Share her profile',
+    closeLabel: 'Close share sheet',
+    blurb:
+      'For the vet, the day care, the family: scan the code or send the link. Everything about Picha, one page.',
+    share: 'Share',
+    copyLink: 'Copy link',
+    copied: 'Copied',
+    shareText: 'Picha the cat: profile, health record and care guide.',
+  },
+  ms: {
+    sheetTitle: 'Kongsi profilnya',
+    closeLabel: 'Tutup helaian kongsi',
+    blurb:
+      'Untuk doktor haiwan, taska, keluarga: imbas kod atau hantar pautan. Segala tentang Picha, satu halaman.',
+    share: 'Kongsi',
+    copyLink: 'Salin pautan',
+    copied: 'Disalin',
+    shareText: 'Picha si kucing: profil, rekod kesihatan dan panduan penjagaan.',
+  },
+};
+export const getShareCopy = (locale?: string): ShareCopy => shareCopy[locale ?? 'en'] ?? shareCopy.en;

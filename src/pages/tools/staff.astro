@@ -7,19 +7,18 @@ import SectionLabel from '../../components/ui/SectionLabel.astro';
 import IconBadge from '../../components/ui/IconBadge.astro';
 import Button from '../../components/ui/Button.astro';
 import { supabaseClient } from '../../data/supabase';
+import { getStaffCopy } from '../../i18n/content';
+
+const c = getStaffCopy(Astro.currentLocale);
 ---
 
 <Layout
-  title="Staff · Picha 🐾"
-  description="Staff quarters: the registrar PIN lives here, for the humans on payroll."
+  title={c.metaTitle}
+  description={c.metaDescription}
   current="tools"
-  appTitle="Staff"
+  appTitle={c.appTitle}
 >
-  <PageHeader
-    kicker="Members only"
-    title="The staff room"
-    blurb="Where the humans keep the treats, the coffee and the registrar PIN. Sign in to reach the staff-only controls management would never hand to just anyone."
-  />
+  <PageHeader kicker={c.kicker} title={c.title} blurb={c.blurb} />
 
   <section
     class="mx-auto w-full max-w-2xl px-5 pt-4 pb-8 md:pb-0"
@@ -37,14 +36,13 @@ import { supabaseClient } from '../../data/supabase';
         class="w-full max-w-sm rounded-3xl border border-blush-200/70 bg-paper-50 p-6 text-center shadow-sm sm:p-8 dark:border-plum-700 dark:bg-plum-900"
       >
         <IconBadge icon="ph:lock-key" size="lg" class="mx-auto" />
-        <h2 class="font-display mt-4 text-xl font-semibold">Staff only</h2>
+        <h2 class="font-display mt-4 text-xl font-semibold">{c.staffOnly}</h2>
         <p class="mt-1.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-          Registrar PIN, please. The treat cupboard is staff only. Enter it once
-          and this device remembers you.
+          {c.pinPrompt}
         </p>
         <label class="mt-5 block text-left">
           <span class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
-            Registrar PIN
+            {c.pinLabel}
           </span>
           <input
             type="password"
@@ -52,7 +50,7 @@ import { supabaseClient } from '../../data/supabase';
             required
             autocomplete="off"
             inputmode="numeric"
-            placeholder="staff PIN"
+            placeholder={c.pinPlaceholder}
             class="mt-1 w-full rounded-xl border border-blush-200/70 bg-paper-100 px-3 py-2 text-center text-lg font-bold tracking-[0.3em] outline-none focus:border-blush-400 dark:border-plum-700 dark:bg-plum-950"
           />
         </label>
@@ -63,7 +61,7 @@ import { supabaseClient } from '../../data/supabase';
         >
         </p>
         <Button block type="submit" icon="ph:lock-key-open" class="mt-4">
-          <span data-staff-submit-label>Unlock</span>
+          <span data-staff-submit-label>{c.unlock}</span>
         </Button>
       </form>
     </div>
@@ -79,12 +77,11 @@ import { supabaseClient } from '../../data/supabase';
           aria-hidden="true"
         />
         <p class="text-sm font-bold text-blush-700 dark:text-blush-300">
-          You're in; treats are in the top drawer. This device can now log
-          weigh-ins, Academy progress and daily rounds.
+          {c.unlockedBanner}
         </p>
       </div>
 
-      <SectionLabel class="mt-8 mb-2">Reminders</SectionLabel>
+      <SectionLabel class="mt-8 mb-2">{c.remindersLabel}</SectionLabel>
       <div
         class="overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
       >
@@ -96,17 +93,17 @@ import { supabaseClient } from '../../data/supabase';
           <IconBadge icon="ph:bell" size="sm" />
           <span class="min-w-0 flex-1">
             <span class="block font-bold text-ink-900 dark:text-paper-100">
-              Reminders on this device
+              {c.reminderTitle}
             </span>
             <span class="block text-xs leading-relaxed text-ink-400" data-push-sub>
-              A nudge every few hours while daily rounds are still pending.
+              {c.reminderSub}
             </span>
           </span>
           <span
             data-push-state
             class="shrink-0 rounded-full bg-paper-200 px-2.5 py-0.5 text-[11px] font-bold text-ink-600 dark:bg-plum-800 dark:text-ink-400"
           >
-            Off
+            {c.off}
           </span>
         </button>
       </div>
@@ -117,7 +114,7 @@ import { supabaseClient } from '../../data/supabase';
       >
       </p>
 
-      <SectionLabel class="mt-8 mb-2">This device</SectionLabel>
+      <SectionLabel class="mt-8 mb-2">{c.deviceLabel}</SectionLabel>
       <div
         class="overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
       >
@@ -129,11 +126,10 @@ import { supabaseClient } from '../../data/supabase';
           <IconBadge icon="ph:sign-out" size="sm" tone="red" />
           <span class="min-w-0 flex-1">
             <span class="block font-bold text-ink-900 dark:text-paper-100">
-              Forget the PIN on this device
+              {c.forgetTitle}
             </span>
             <span class="block text-xs leading-relaxed text-ink-400">
-              Clears the saved PIN here. Other devices are untouched, and the
-              PIN itself never changes.
+              {c.forgetSub}
             </span>
           </span>
           <Icon
@@ -144,8 +140,7 @@ import { supabaseClient } from '../../data/supabase';
         </button>
       </div>
       <p class="mt-3 px-1 text-[11px] leading-relaxed text-ink-400">
-        More staff controls will move in over time. For now it's mostly a treat
-        jar, a kettle and a coat rack.
+        {c.moreControlsNote}
       </p>
     </div>
   </section>
@@ -160,6 +155,9 @@ import { supabaseClient } from '../../data/supabase';
     // entering one verifies against the cloud (check_pin) before saving.
     import { hasStaffPin, setStaffPin, forgetStaffPin, staffPin } from '../../lib/staff';
     import { getPushState, enablePush, disablePush } from '../../lib/push';
+    import { getStaffCopy } from '../../i18n/content';
+
+    const sc = () => getStaffCopy(document.documentElement.lang || 'en');
 
     function render() {
       const root = document.querySelector<HTMLElement>('[data-staff]');
@@ -188,17 +186,16 @@ import { supabaseClient } from '../../data/supabase';
       if (!toggle || !chip || !note) return;
       const state = await getPushState();
       const on = state === 'subscribed';
-      chip.textContent = on ? 'On' : 'Off';
+      const c = sc();
+      chip.textContent = on ? c.on : c.off;
       chip.className = on ? CHIP_ON : CHIP_OFF;
       toggle.disabled = state === 'unsupported';
       const notes: Record<string, string> = {
-        unsupported: "This browser can't deliver reminders while the app is closed.",
-        denied:
-          'Notifications are blocked for this site. Turn them on in your browser settings, then tap again.',
-        subscribed:
-          'On. A nudge every few hours while rounds are pending (quiet overnight); silent once the list is clear.',
-        unsubscribed: 'Off. Tap to get a nudge while daily rounds are still pending.',
-        default: 'Off. Tap to get a nudge while daily rounds are still pending.',
+        unsupported: c.push.unsupported,
+        denied: c.push.denied,
+        subscribed: c.push.subscribed,
+        unsubscribed: c.push.off,
+        default: c.push.off,
       };
       setPushNote(notes[state] ?? '', false);
     }
@@ -245,7 +242,7 @@ import { supabaseClient } from '../../data/supabase';
         // device back out on first use. So a correct PIN never gets stuck on a
         // "couldn't reach the cloud" false alarm.
         if (url && key) {
-          if (label) label.textContent = 'Checking…';
+          if (label) label.textContent = sc().checking;
           if (submit) submit.disabled = true;
           let wrong = false;
           try {
@@ -255,10 +252,10 @@ import { supabaseClient } from '../../data/supabase';
             wrong = String(err).includes('wrong pin');
           } finally {
             if (submit) submit.disabled = false;
-            if (label) label.textContent = 'Unlock';
+            if (label) label.textContent = sc().unlock;
           }
           if (wrong) {
-            showError('That PIN was not recognised. Try again.');
+            showError(sc().pinNotRecognised);
             return;
           }
         }
@@ -279,23 +276,23 @@ import { supabaseClient } from '../../data/supabase';
 
       const pushToggle = root.querySelector<HTMLButtonElement>('[data-push-toggle]');
       pushToggle?.addEventListener('click', async () => {
-        setPushNote('Working…', false);
+        setPushNote(sc().push.working, false);
         pushToggle.disabled = true;
         let errMsg = '';
         try {
-          if (!url || !key) throw new Error('The cloud is not configured.');
+          if (!url || !key) throw new Error(sc().push.cloudNotConfigured);
           const state = await getPushState();
           if (state === 'subscribed') {
             await disablePush(url, key);
           } else {
             const pin = staffPin();
-            if (!pin) throw new Error('Sign in first.');
+            if (!pin) throw new Error(sc().push.signInFirst);
             await enablePush(url, key, pin);
           }
         } catch (err) {
           errMsg = String(err).includes('wrong pin')
-            ? 'That PIN was rejected. Sign out and back in, then try again.'
-            : (err as Error).message || 'Could not update reminders.';
+            ? sc().push.pinRejected
+            : (err as Error).message || sc().push.couldNotUpdate;
         } finally {
           pushToggle.disabled = false;
           await renderPush(); // refresh chip + default note...
