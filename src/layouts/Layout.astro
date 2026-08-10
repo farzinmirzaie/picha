@@ -4,6 +4,7 @@ import '@fontsource-variable/nunito';
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import Nav from '../components/Nav.astro';
+import LangPicker from '../components/LangPicker.astro';
 import IconButton from '../components/ui/IconButton.astro';
 import { supabaseClient } from '../data/supabase';
 import { nextDueHealth } from '../lib/health';
@@ -114,6 +115,7 @@ const appTitle = appTitleProp ?? tabTitles[current] ?? 'Picha';
           {appTitle}
         </span>
         <div class="-mr-2 ml-auto flex items-center">
+          <IconButton icon="ph:translate" label="Language" data-lang-open />
           <slot name="app-action" />
           {
             current === 'home' && (
@@ -129,6 +131,8 @@ const appTitle = appTitleProp ?? tabTitles[current] ?? 'Picha';
     <main id="main">
       <slot />
     </main>
+
+    <LangPicker />
 
     <script>
       import { ageLabel } from '../data/picha';

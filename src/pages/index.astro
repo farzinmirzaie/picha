@@ -87,7 +87,7 @@ const slides = Object.entries(slideModules)
       Picha
     </h1>
     <p class="font-display mt-2 text-lg italic text-ink-600 sm:text-xl dark:text-ink-400">
-      {identity.tagline}
+      <span data-i18n="hero.tagline">{identity.tagline}</span>
     </p>
     <p class="mt-2 text-sm font-bold text-amber-700 dark:text-amber-300">
       {identity.breed} · <span data-age>{age}</span>
@@ -100,7 +100,7 @@ const slides = Object.entries(slideModules)
       data-share-open
       class="mt-6 max-md:hidden"
     >
-      Share
+      <span data-i18n="hero.share">Share</span>
     </Button>
   </header>
 
@@ -117,7 +117,7 @@ const slides = Object.entries(slideModules)
 
   <!-- Get to know her -->
   <section class="mx-auto w-full max-w-2xl px-5 pt-14" aria-label="Get to know her">
-    <SectionLabel class="reveal">Get to know her</SectionLabel>
+    <SectionLabel class="reveal"><span data-i18n="home.getToKnow">Get to know her</span></SectionLabel>
     <ul
       class="mt-2 divide-y divide-paper-300/70 md:grid md:grid-cols-2 md:gap-x-10 md:divide-y-0 dark:divide-plum-800"
     >

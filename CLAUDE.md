@@ -47,12 +47,17 @@ src/
                        # tab badge, and the PWA app-icon badge
   lib/weight-viz.ts    # weight chart/stats renderers (build + client, no drift)
   lib/sb.ts            # Supabase REST/RPC helpers for client scripts
+  i18n/ui.ts           # i18n POC dictionary: LOCALES + per-language strings
+                       # keyed for the client swap engine. See § Languages
   layouts/Layout.astro # <html> shell, fonts, PWA, ClientRouter, shared scripts
   components/          # feature blocks + page chrome (design primitives in ui/)
     Nav.astro          # tab nav: desktop pill bar + mobile bottom tab bar (TABS array)
     PageHeader.astro   # sub-page header (kicker, serif title, blurb; avatar md+ only)
     PassportDialog.astro # the pet-passport <dialog> + opener script — include once
                        # per page; any [data-passport-open] element opens it (Tools)
+    LangPicker.astro   # i18n POC: language picker (shown every visit) + the
+                       # client swap engine; any [data-lang-open] opens it. See
+                       # § Languages. Include once (already in Layout)
     ShareDialog.astro  # share sheet: custom QR image (assets/qr.png) + Web Share /
                        # copy-link; any [data-share-open] element opens it (Home)
     TrainingRules.astro # the Academy's session-rules card (hub + course pages)
@@ -429,6 +434,27 @@ sips -s format png --resampleWidth 180 /tmp/picha-square.jpg --out public/apple-
 The favicon stays the drawn cat (`public/favicon.svg`) — a photo of a white cat
 is unreadable at 16 px. After changing icons, bump the SW `CACHE` version so
 installed clients pick them up.
+
+## Languages (i18n) — proof of concept
+
+Multi-language is scaffolded but partial. Pages render in **English** at build
+time; a small client engine in `components/LangPicker.astro` swaps every element
+tagged **`data-i18n="<key>"`** to the visitor's chosen language (from
+`src/i18n/ui.ts`), sets `<html lang>`, and remembers the choice in localStorage
+(`picha-lang`). The picker opens on **every visit** for now (later: first visit
+only, then the globe switcher — `[data-lang-open]`, in the nav + mobile app bar
+— takes over). Currently translated: the **nav** and the **Home hero**
+(tagline / Share / "Get to know her") + the picker UI; everything else falls
+back to English until its strings are tagged + added to the dictionary.
+
+- **Add a language** (e.g. Chinese): add its code to `LOCALES`, an endonym to
+  `localeLabels`, and a block to `ui` with the same keys in `src/i18n/ui.ts`.
+  Nothing else changes. Keep the playful voice in every language.
+- **Translate more of the app**: wrap each string in `<span data-i18n="key">…</span>`
+  (or add the attr to an existing element) and add `key` to every locale block.
+- This is the POC delivery mechanism (client swap). For production/SEO the same
+  dictionaries drop into **Astro native i18n** (locale-prefixed static routes);
+  only the swap engine would be replaced. No-JS visitors get English.
 
 ## Conventions
 
