@@ -4,11 +4,14 @@
  * there) — pass `showOnMobile` where a page should keep it (Tools).
  */
 import { Icon } from 'astro-icon/components';
+import { footerCopy } from '../i18n/content';
 
 interface Props {
   showOnMobile?: boolean;
 }
 const { showOnMobile = false } = Astro.props;
+const locale = Astro.currentLocale ?? 'en';
+const credit = footerCopy[locale] ?? footerCopy.en;
 ---
 
 <footer
@@ -26,6 +29,6 @@ const { showOnMobile = false } = Astro.props;
     <span class="h-px w-16 bg-current opacity-50"></span>
   </div>
   <p class="text-xs text-ink-400">
-    Built by the staff, under close supervision. Approved with a slow blink.
+    {credit}
   </p>
 </footer>

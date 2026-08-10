@@ -9,9 +9,12 @@ import {
   ageInMonths,
   ageLabel,
   catYears,
-  humanAgeLine,
   felineStages,
 } from '../data/picha';
+import { getCatYearsCopy, humanAgeLineI18n } from '../i18n/content';
+
+const locale = Astro.currentLocale ?? 'en';
+const c = getCatYearsCopy(locale);
 
 // Build-time values are the no-JS fallback; the page script recomputes them
 // against the visitor's clock (same functions, imported from picha.ts).
@@ -24,27 +27,24 @@ const stageIndex = felineStages.findIndex(
 // Floor, don't round: keeps the converter's default answer in agreement with
 // the fractional hero conversion above it (7.8 months reads as ~12 either way).
 const sliderStart = Math.max(1, Math.floor(months));
-const presets = [
-  { label: '2 m', months: 2 },
-  { label: '6 m', months: 6 },
-  { label: '1 y', months: 12 },
-  { label: '5 y', months: 60 },
-  { label: '10 y', months: 120 },
-  { label: '15 y', months: 180 },
-];
+// Preset months are facts (in months); labels come from the locale copy.
+const presetMonths = [2, 6, 12, 60, 120, 180];
+const presets = presetMonths.map((m, i) => ({ months: m, label: c.presetLabels[i] }));
+// Life-stage display: bounds are facts (picha.ts), prose comes from the copy.
+const stages = felineStages.map((s, i) => ({
+  minMonths: s.minMonths,
+  maxMonths: s.maxMonths,
+  ...c.stages[i],
+}));
 ---
 
 <Layout
-  title="Cat years · Picha 🐾"
-  description="How old is Picha in human years? Live conversion, feline life stages and a converter for any cat."
+  title={c.metaTitle}
+  description={c.metaDescription}
   current="tools"
-  appTitle="Cat years"
+  appTitle={c.title}
 >
-  <PageHeader
-    kicker="Tools · In service"
-    title="The cat-years converter"
-    blurb="Cat time runs fast at first, then settles to about four human years per birthday. Here is where Her Fluffiness stands, plus a converter for any cat you know."
-  />
+  <PageHeader kicker={c.kicker} title={c.title} blurb={c.blurb} />
 
   <!-- Her Fluffiness, converted -->
   <section class="mx-auto w-full max-w-2xl px-5 pt-5" aria-label="Picha in human years">
@@ -54,33 +54,32 @@ const presets = [
       <p
         class="text-[10px] font-bold tracking-[0.3em] text-blush-400 uppercase dark:text-blush-300/70"
       >
-        · Official conversion ·
+        {c.officialConversion}
       </p>
       <p class="font-display mt-3 text-6xl font-semibold tracking-tight text-blush-600 sm:text-7xl dark:text-blush-300">
         ~<span data-cy-human>{human}</span>
       </p>
       <p class="mt-1 text-sm font-bold text-ink-600 dark:text-ink-400">
-        human years old
+        {c.humanYearsOld}
       </p>
       <p class="mt-3 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-        <span data-age>{ageLabel()}</span> in cat time, which makes
-        {identity.name}
-        <span class="font-semibold text-ink-900 dark:text-paper-100" data-cy-line
-          >{humanAgeLine(human)}</span
-        >.
+        <span data-age>{ageLabel()}</span>{c.inCatTimePre}{identity.name} <span
+          class="font-semibold text-ink-900 dark:text-paper-100"
+          data-cy-line>{humanAgeLineI18n(human, locale)}</span
+        >{c.inCatTimePost}
       </p>
     </div>
   </section>
 
   <!-- Life stages -->
   <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Life stages">
-    <SectionLabel class="reveal mb-2">The nine-lives itinerary</SectionLabel>
+    <SectionLabel class="reveal mb-2">{c.stagesLabel}</SectionLabel>
     <div
       class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
     >
       <ol class="divide-y divide-paper-200 dark:divide-plum-800">
         {
-          felineStages.map((s, i) => (
+          stages.map((s, i) => (
             <li
               class:list={[
                 'flex items-start gap-4 px-5 py-4 transition-colors',
@@ -108,7 +107,7 @@ const presets = [
                     data-stage-here
                   >
                     <Icon name="ph:paw-print" class="h-3 w-3" aria-hidden="true" />
-                    she is here
+                    {c.sheIsHere}
                   </span>
                 </div>
                 <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
@@ -121,7 +120,7 @@ const presets = [
       </ol>
     </div>
     <p class="mt-2 px-1 text-[11px] leading-relaxed text-ink-400">
-      The official route for life number one. The other eight are expected to reuse the itinerary.
+      {c.stagesFootnote}
     </p>
   </section>
 
@@ -130,12 +129,12 @@ const presets = [
     class="mx-auto w-full max-w-2xl px-5 pt-10 pb-8 md:pb-0"
     aria-label="Converter"
   >
-    <SectionLabel class="reveal mb-2">Convert any cat</SectionLabel>
+    <SectionLabel class="reveal mb-2">{c.convertLabel}</SectionLabel>
     <div
       class="reveal rounded-3xl border border-blush-200/70 bg-paper-50 p-6 dark:border-plum-700 dark:bg-plum-900"
     >
       <label for="cy-slider" class="text-sm font-bold text-ink-600 dark:text-ink-400">
-        Slide to their age in cat time
+        {c.convertHint}
       </label>
       <input
         id="cy-slider"
@@ -164,7 +163,7 @@ const presets = [
           data-cy-preset="picha"
           class="rounded-full bg-blush-100 px-3 py-1 text-[11px] font-bold text-blush-700 transition-colors hover:bg-blush-200 dark:bg-plum-800 dark:text-blush-300"
         >
-          Picha, now
+          {c.pichaNow}
         </button>
       </div>
 
@@ -173,14 +172,14 @@ const presets = [
            centred on the value line -->
       <div class="mt-6 grid grid-cols-[1fr_auto_1fr] gap-x-4 gap-y-1">
         <p class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
-          Cat time
+          {c.catTime}
         </p>
         <span aria-hidden="true" />
         <p class="text-right text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
-          Human time
+          {c.humanTime}
         </p>
         <p class="font-display min-w-0 self-center text-2xl font-semibold" data-cy-conv-cat>
-          {sliderStart} months
+          {sliderStart} {c.unit.months}
         </p>
         <Icon
           name="ph:arrow-right"
@@ -188,21 +187,18 @@ const presets = [
           aria-hidden="true"
         />
         <p class="font-display min-w-0 self-center text-right text-2xl font-semibold">
-          ~<span data-cy-conv-human>{human}</span> years
+          ~<span data-cy-conv-human>{human}</span> {c.years}
         </p>
       </div>
       <p
         class="mt-3 border-t border-paper-200 pt-3 text-sm leading-relaxed text-ink-600 dark:border-plum-800 dark:text-ink-400"
         aria-live="polite"
       >
-        That cat is <span data-cy-conv-line>{humanAgeLine(human)}</span>.
+        {c.thatCatIsPre}<span data-cy-conv-line>{humanAgeLineI18n(human, locale)}</span>{c.thatCatIsPost}
       </p>
     </div>
     <p class="mt-2 px-1 text-[11px] leading-relaxed text-ink-400">
-      The common veterinary rule of thumb: year one counts as 15, year two
-      brings it to 24, and every year after adds about four. Kitten months are
-      interpolated from the standard chart. For bragging rights, not for
-      medical decisions.
+      {c.converterFootnote}
     </p>
   </section>
 
@@ -210,20 +206,24 @@ const presets = [
   <Footer />
 
   <script>
-    import { ageInMonths, catYears, humanAgeLine } from '../data/picha';
-
-    function fmtCatAge(months: number): string {
-      if (months < 12) return `${months} month${months === 1 ? '' : 's'}`;
-      const y = Math.floor(months / 12);
-      const m = months % 12;
-      const years = `${y} year${y === 1 ? '' : 's'}`;
-      return m ? `${years} ${m} month${m === 1 ? '' : 's'}` : years;
-    }
+    import { ageInMonths, catYears } from '../data/picha';
+    import { getCatYearsCopy, humanAgeLineI18n } from '../i18n/content';
 
     function setupCatYears() {
       const slider = document.querySelector<HTMLInputElement>('[data-cy-slider]');
       if (!slider || slider.dataset.bound) return;
       slider.dataset.bound = '1';
+
+      // Active locale drives the client-side strings (units, age lines).
+      const locale = document.documentElement.lang || 'en';
+      const c = getCatYearsCopy(locale);
+      const fmtCatAge = (months: number): string => {
+        if (months < 12) return `${months} ${months === 1 ? c.unit.month : c.unit.months}`;
+        const y = Math.floor(months / 12);
+        const m = months % 12;
+        const years = `${y} ${y === 1 ? c.unit.year : c.unit.years}`;
+        return m ? `${years} ${m} ${m === 1 ? c.unit.month : c.unit.months}` : years;
+      };
 
       // Her card + stage list, recomputed against the visitor's clock.
       const months = ageInMonths();
@@ -233,7 +233,7 @@ const presets = [
           el.textContent = text;
         });
       set('[data-cy-human]', String(human));
-      set('[data-cy-line]', humanAgeLine(human));
+      set('[data-cy-line]', humanAgeLineI18n(human, locale));
       document.querySelectorAll<HTMLElement>('[data-stage-row]').forEach((row) => {
         const active =
           months >= Number(row.dataset.min) && months < Number(row.dataset.max);
@@ -252,10 +252,10 @@ const presets = [
       const update = () => {
         const m = Number(slider.value);
         const h = Math.round(catYears(m));
-        slider.setAttribute('aria-valuetext', `${fmtCatAge(m)} in cat time`);
+        slider.setAttribute('aria-valuetext', `${fmtCatAge(m)}`);
         set('[data-cy-conv-cat]', fmtCatAge(m));
         set('[data-cy-conv-human]', String(h));
-        set('[data-cy-conv-line]', humanAgeLine(h));
+        set('[data-cy-conv-line]', humanAgeLineI18n(h, locale));
         // light up the preset that matches the current position
         presets.forEach((p) => {
           const val = p.dataset.cyPreset === 'picha' ? pichaMonths() : p.dataset.cyPreset;

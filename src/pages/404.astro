@@ -2,27 +2,29 @@
 import { Icon } from 'astro-icon/components';
 import Layout from '../layouts/Layout.astro';
 import SectionLabel from '../components/ui/SectionLabel.astro';
+import { getNotFoundCopy } from '../i18n/content';
+
+const c = getNotFoundCopy(Astro.currentLocale);
 ---
 
 <Layout
-  title="Lost · Picha 🐾"
-  description="This page has wandered off."
+  title={c.metaTitle}
+  description={c.metaDescription}
   current="none"
   appTitle="Picha"
 >
-  <section class="mx-auto w-full max-w-2xl px-5 pt-16 text-center sm:pt-24" aria-label="Page not found">
+  <section class="mx-auto w-full max-w-2xl px-5 pt-16 text-center sm:pt-24" aria-label={c.kicker}>
     <Icon
       name="ph:cat"
       class="float-slow mx-auto h-16 w-16 text-blush-400"
       aria-hidden="true"
     />
-    <SectionLabel tag="p" class="mt-6">404 · Not found</SectionLabel>
+    <SectionLabel tag="p" class="mt-6">{c.kicker}</SectionLabel>
     <h1 class="font-display mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
-      This page has wandered off
+      {c.heading}
     </h1>
     <p class="mx-auto mt-4 max-w-md leading-relaxed text-ink-600 dark:text-ink-400">
-      Even the hide-and-seek grandmaster cannot find it. It may have been
-      moved, renamed, or batted off a shelf.
+      {c.body}
     </p>
   </section>
 </Layout>

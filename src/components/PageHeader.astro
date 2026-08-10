@@ -9,12 +9,17 @@ interface Props {
   blurb?: string;
 }
 const { title, kicker, blurb } = Astro.props;
+
+// Back-link to the profile in the active locale (English at root, others prefixed).
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const locale = Astro.currentLocale ?? 'en';
+const homeHref = locale === 'en' ? `${base}/` : `${base}/${locale}/`;
 ---
 
 <header class="mx-auto w-full max-w-2xl px-5 pt-6 pb-2 md:pt-14">
   <div class="hero-pop flex items-center gap-4">
     <a
-      href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/`}
+      href={homeHref}
       class="wiggle-hover hidden h-14 w-14 shrink-0 overflow-hidden rounded-full ring-2 ring-blush-200 md:block dark:ring-plum-700"
       aria-label="Back to Picha's profile"
     >

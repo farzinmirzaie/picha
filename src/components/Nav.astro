@@ -21,12 +21,14 @@ const locale = Astro.currentLocale ?? 'en';
 const healthDueSoon = isHealthDueSoon();
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+// Locale-prefixed base: English at root, other locales under /<code>/.
+const lb = locale === 'en' ? base : `${base}/${locale}`;
 // The active tab renders the -fill variant of its icon (native tab-bar feel).
 const TABS = [
-  { id: 'home', href: `${base}/`, icon: 'ph:paw-print', label: 'Home' },
-  { id: 'health', href: `${base}/health/`, icon: 'ph:heartbeat', label: 'Health' },
-  { id: 'care', href: `${base}/care/`, icon: 'ph:hand-heart', label: 'Care' },
-  { id: 'tools', href: `${base}/tools/`, icon: 'ph:toolbox', label: 'Tools' },
+  { id: 'home', href: `${lb}/`, icon: 'ph:paw-print', label: 'Home' },
+  { id: 'health', href: `${lb}/health/`, icon: 'ph:heartbeat', label: 'Health' },
+  { id: 'care', href: `${lb}/care/`, icon: 'ph:hand-heart', label: 'Care' },
+  { id: 'tools', href: `${lb}/tools/`, icon: 'ph:toolbox', label: 'Tools' },
 ].map((t) => ({ ...t, iconActive: `${t.icon}-fill` }));
 ---
 
