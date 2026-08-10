@@ -2,7 +2,8 @@
 
 // Map our locale codes to BCP-47 tags for Intl. Node 22 ships full ICU, so
 // Malay month names ("Julai", "Jul") come for free.
-const intlTag = (locale?: string) => (locale === 'ms' ? 'ms-MY' : 'en-GB');
+const intlTag = (locale?: string) =>
+  locale === 'ms' ? 'ms-MY' : locale === 'zh' ? 'zh-CN' : 'en-GB';
 
 // Cache one formatter per (kind, locale) — Intl formatters are not free.
 const longCache: Record<string, Intl.DateTimeFormat> = {};
@@ -38,6 +39,13 @@ export function inDaysLabel(days: number, locale?: string): string {
   const abs = Math.abs(days);
   const months = Math.floor(abs / 30);
   const rem = abs % 30;
+  if (locale === 'zh') {
+    if (days === 0) return '今天';
+    if (days === 1) return '明天';
+    if (days === -1) return '昨天';
+    const span = months >= 1 ? `${months}个月${rem ? `零${rem}天` : ''}` : `${abs}天`;
+    return days > 0 ? `${span}后` : `${span}前`;
+  }
   if (locale === 'ms') {
     if (days === 0) return 'hari ini';
     if (days === 1) return 'esok';

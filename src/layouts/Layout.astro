@@ -132,15 +132,15 @@ const appTitle =
     <LangPicker />
 
     <script>
-      import { ageLabel } from '../data/picha';
       import { inDaysLabel } from '../lib/dates';
       import { t as tr } from '../i18n/ui';
+      import { ageLabelI18n } from '../i18n/content';
 
       // Everything here re-runs after ClientRouter page swaps (astro:page-load).
       function hydrate() {
         const locale = document.documentElement.lang || 'en';
         // Age computed against the visitor's date, never the build date.
-        const label = ageLabel();
+        const label = ageLabelI18n(locale);
         document.querySelectorAll<HTMLElement>('[data-age]').forEach((el) => {
           el.textContent = label;
         });

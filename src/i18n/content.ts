@@ -7,9 +7,29 @@
  * Personality entries align 1:1 with `personality` in picha.ts (same order),
  * so the page zips each translated {title, detail} with that item's icon.
  */
-import { identity, personality, lullaby, humanAgeLine } from '../data/picha';
+import { identity, personality, lullaby, humanAgeLine, ageInMonths, ageLabel } from '../data/picha';
 import type { BodySignal, TrainingCourse } from '../data/picha';
 import { dateLabel } from '../lib/dates';
+
+/**
+ * Locale-aware age label ("~7.7 months old"). English delegates to picha.ts;
+ * ms/zh are translated. Facts (the month maths) stay in picha.ts. Used at
+ * build time and by the Layout [data-age] client script (reads html lang).
+ */
+export function ageLabelI18n(locale?: string, from: Date = new Date()): string {
+  if (!locale || locale === 'en') return ageLabel(from);
+  const months = Math.round(ageInMonths(from) * 10) / 10;
+  const whole = Math.floor(months / 12);
+  const rem = Math.floor(months % 12);
+  const m = Number.isInteger(months) ? String(months) : months.toFixed(1);
+  if (locale === 'zh') {
+    if (months < 12) return `约 ${m} 个月大`;
+    return rem === 0 ? `约 ${whole} 岁大` : `约 ${whole} 岁 ${rem} 个月大`;
+  }
+  // ms
+  if (months < 12) return `~${m} bulan`;
+  return rem === 0 ? `~${whole} tahun` : `~${whole} tahun ${rem} bulan`;
+}
 
 export interface HomeCopy {
   tagline: string;
@@ -112,7 +132,38 @@ const ms: HomeCopy = {
   call: 'Hubungi',
 };
 
-export const homeCopy: Record<string, HomeCopy> = { en, ms };
+const zh: HomeCopy = {
+  tagline: '雪白绒毛 · 琥珀色眼睛 · 粉红项圈',
+  story:
+    'Picha 在吉隆坡拥有一间公寓，在那里她雇用了两名人类，Farah 和 Farzin，担任全职员工。他们的职责包括操作逗猫棒、随传随到的下巴挠痒，以及按她喵叫的精确频率拆开零食包装。报酬是：呼噜声、头顶蹭蹭，以及陪伴在她身边的荣幸。这并不是一份公平的安排。没有人有怨言。',
+  looks:
+    '一身雪白长毛，粉红的耳朵和鼻子，琥珀色的眼睛。戴着一个系铃铛的粉红项圈，好让员工随时知道管理层在哪里。',
+  getToKnow: '认识她',
+  share: '分享',
+  personality: [
+    { title: '专业猎手', detail: '一听到自己的名字，逗猫棒就会颤抖。每天的狩猎时段必不可少、不容商量；规矩由她来定。' },
+    { title: '睡眠运动员', detail: '每天 16 小时以上。这不是懒惰，是训练，而且对她这个年纪来说完全正常。' },
+    { title: '雷声评论家', detail: '暴风雨得零分，并立即撤退到秘密堡垒。随她去：黑暗安静的藏身处加上平和的气氛就能解决一切。千万别把她拽出来。' },
+    { title: '永远一丝不苟', detail: '打理仪容是一项 24 小时的工程。雪白的毛发靠她自己不停努力保持洁白；员工只是打下手。' },
+    { title: '首席索求官', detail: '关注不是请求来的，是召唤来的。理论上可以忽略她，大约能撑十一秒。' },
+    { title: '据点守护者', detail: '她轮流守着几个官方指定的最爱据点。如果她“不见了”，她就在其中之一，正好待在她想待的地方。' },
+    { title: '亲近，但有距离', detail: '想要人在身边，而不是黏着她。坐或躺在她旁边，保持礼貌的距离，就当自己走运了。' },
+    { title: '首席检查官', detail: '任何新东西一到就得检查。杂货在每个袋子通过她鼻子的审核之前都不得动用。' },
+    { title: '撒娇（需预约）', detail: '拥抱是恩赐，不是有求必应。她和员工极为亲近；一旦心满意足，又极为独立。' },
+    { title: '捉迷藏冠军', detail: '员工跑去躲起来；她来找他们。每一次都如此。从来没有人成功躲过她，将来也不会有。' },
+    { title: '衔回，按她的条件', detail: '她的铃铛球是镇店之宝：她把它踢开、追上并叼住，然后带回员工手中，等着再扔。你还回去，她就再衔回来。锦标赛在睡前于卧室举行，声势浩大，而且没有人要求过。' },
+  ],
+  lullaby: {
+    title: '她的摇篮曲',
+    detail:
+      '有一首特定的歌，她还没听完就睡着了。员工总在睡前备好它；效果好得可疑。当她怎么都不肯安静时，这就是作弊密码。',
+    cta: '播放她的摇篮曲',
+  },
+  ifFound: '发现她在未经授权的独自冒险？她的员工想跟你说两句：',
+  call: '致电',
+};
+
+export const homeCopy: Record<string, HomeCopy> = { en, ms, zh };
 export const getHomeCopy = (locale?: string): HomeCopy => homeCopy[locale ?? 'en'] ?? en;
 
 // ---------------------------------------------------------------------------
@@ -121,6 +172,7 @@ export const getHomeCopy = (locale?: string): HomeCopy => homeCopy[locale ?? 'en
 export const footerCopy: Record<string, string> = {
   en: 'Built by the staff, under close supervision. Approved with a slow blink.',
   ms: 'Dibina oleh kakitangan, di bawah penyeliaan rapi. Diluluskan dengan kenyitan mata perlahan.',
+  zh: '由员工在严密监督下打造。以一个缓慢的眨眼获得批准。',
 };
 
 // ---------------------------------------------------------------------------
@@ -147,6 +199,13 @@ export const notFoundCopy: Record<string, NotFoundCopy> = {
     kicker: '404 · Tidak dijumpai',
     heading: 'Halaman ini telah merayau entah ke mana',
     body: 'Jaguh sorok-sorok pun tidak dapat mencarinya. Mungkin ia telah dipindahkan, ditukar nama, atau ditepis jatuh dari rak.',
+  },
+  zh: {
+    metaTitle: '迷路了 · Picha 🐾',
+    metaDescription: '这个页面走丢了。',
+    kicker: '404 · 找不到',
+    heading: '这个页面走丢了',
+    body: '连捉迷藏冠军都找不到它。它可能被移动、改名，或从架子上被拍了下去。',
   },
 };
 export const getNotFoundCopy = (locale?: string): NotFoundCopy =>
@@ -242,6 +301,26 @@ export const toolsCopy: Record<string, ToolsCopy> = {
     ],
     note: 'Lebih banyak alatan sedang dalam pembikinan. Idea disemak setiap malam, ketika zoomies pukul 3 pagi, dan diutamakan oleh Tuan Puteri Gebu.',
   },
+  zh: {
+    metaTitle: '工具 · Picha 🐾',
+    metaDescription: 'Picha 的工具箱：宠物护照、体重追踪器、猫龄换算器、皇家学院和肢体语言解读器。',
+    kicker: '她的小装置',
+    title: '皇家工坊',
+    blurb: '由员工发明、用来更好地服侍绒毛殿下的小装置。每一件只有通过她的亲自检验后才能投入使用。',
+    inServiceLabel: '使用中',
+    passport: {
+      title: '宠物护照',
+      detail: '她的官方证件：个人资料、芯片，以及登记员的爪印。',
+    },
+    cards: [
+      { title: '员工室', detail: '人类存放零食和登记员 PIN 的地方。仅限会员。' },
+      { title: '体重追踪器', detail: '每一次称重都绘成图表，让皇家腰围永远不会悄悄失控。' },
+      { title: '猫龄换算器', detail: '她换算成人类年龄的岁数，外加适用于你认识的任何猫的算法。' },
+      { title: '皇家学院', detail: '员工在这里一门课一门课地修炼猫咪合作之道。' },
+      { title: '解读 Picha', detail: '一份关于她情绪以及她想告诉你什么的实地指南。' },
+    ],
+    note: '更多小装置正在筹备中。点子每晚在凌晨 3 点的暴冲时段接受审阅，并由绒毛殿下排定优先次序。',
+  },
 };
 export const getToolsCopy = (locale?: string): ToolsCopy => toolsCopy[locale ?? 'en'] ?? toolsCopy.en;
 
@@ -292,9 +371,25 @@ function humanAgeLineMs(y: number): string {
   return 'warga emas terhormat yang telah melihat segala-galanya';
 }
 
+// Chinese lines are phrased to follow a copula-less prefix ("这只猫" / name),
+// so each begins with 是.
+function humanAgeLineZh(y: number): string {
+  if (y < 1) return '是一个巴掌大的婴儿';
+  if (y < 5) return '是一个带爪子的幼儿';
+  if (y < 10) return '是一个作息严格的小学生';
+  if (y < 13) return '是一个对就寝时间很有主见的初中生';
+  if (y < 18) return '是一个青少年（这解释了很多事情）';
+  if (y < 26) return '是一个把大家已读不回的年轻人';
+  if (y < 40) return '是一个有着五年小睡计划的成年人';
+  if (y < 60) return '是一个安然步入中年、不再容忍胡闹的人';
+  return '是一位见多识广的尊贵长者';
+}
+
 /** Locale-aware human-age line (English from picha.ts, others translated). */
 export function humanAgeLineI18n(years: number, locale?: string): string {
-  return locale === 'ms' ? humanAgeLineMs(years) : humanAgeLine(years);
+  if (locale === 'ms') return humanAgeLineMs(years);
+  if (locale === 'zh') return humanAgeLineZh(years);
+  return humanAgeLine(years);
 }
 
 export const catYearsCopy: Record<string, CatYearsCopy> = {
@@ -372,6 +467,40 @@ export const catYearsCopy: Record<string, CatYearsCopy> = {
       'Petua umum veterinar: tahun pertama dikira sebagai 15, tahun kedua menjadikannya 24, dan setiap tahun selepas itu menambah kira-kira empat. Bulan anak kucing diinterpolasi daripada carta standard. Untuk berbangga, bukan untuk keputusan perubatan.',
     unit: { month: 'bulan', months: 'bulan', year: 'tahun', years: 'tahun' },
   },
+  zh: {
+    metaTitle: '猫龄 · Picha 🐾',
+    metaDescription: 'Picha 换算成人类年龄是几岁？实时换算、猫咪生命阶段，以及适用于任何猫的换算器。',
+    kicker: '工具 · 使用中',
+    title: '猫龄换算器',
+    blurb: '猫的时间起初过得飞快，之后稳定在每个生日约四个人类年。这是绒毛殿下目前所处的位置，外加一个适用于你认识的任何猫的换算器。',
+    officialConversion: '· 官方换算 ·',
+    humanYearsOld: '岁（人类年龄）',
+    inCatTimePre: '（换算成猫龄），也就是说 ',
+    inCatTimePost: '。',
+    stagesLabel: '九条命行程表',
+    stages: [
+      { name: '幼猫', range: '0 至 6 个月', blurb: '最纯粹形态的混乱。一切都是猎物，包括脚。' },
+      { name: '少年', range: '6 个月至 2 岁', blurb: '体型已成年，判断力却像青少年。每条家规都要被试探两遍。' },
+      { name: '壮年', range: '2 至 6 岁', blurb: '猫生巅峰：魅力最大，忍耐最少。' },
+      { name: '成熟', range: '6 至 10 岁', blurb: '高管岁月。小睡就是开会；开会就是小睡。' },
+      { name: '年长', range: '10 至 14 岁', blurb: '优雅而不为所动。员工继续待命。' },
+      { name: '高龄', range: '14 岁以上', blurb: '传奇级别。家里的每一缕阳光都已被预订。' },
+    ],
+    sheIsHere: '她在这里',
+    stagesFootnote: '这是第一条命的官方路线。其余八条预计沿用同一份行程表。',
+    convertLabel: '换算任意猫',
+    convertHint: '滑动到它的猫龄',
+    presetLabels: ['2个月', '6个月', '1岁', '5岁', '10岁', '15岁'],
+    pichaNow: 'Picha，现在',
+    catTime: '猫的时间',
+    humanTime: '人类时间',
+    years: '岁',
+    thatCatIsPre: '这只猫',
+    thatCatIsPost: '。',
+    converterFootnote:
+      '常见的兽医经验法则：第一年算 15，第二年到 24，之后每年增加约四。幼猫的月份是根据标准图表插值得出的。仅供炫耀，不作医疗决定之用。',
+    unit: { month: '个月', months: '个月', year: '岁', years: '岁' },
+  },
 };
 export const getCatYearsCopy = (locale?: string): CatYearsCopy =>
   catYearsCopy[locale ?? 'en'] ?? catYearsCopy.en;
@@ -431,10 +560,53 @@ const signalMs: Record<string, SignalText> = {
   'tail-thumping': { title: 'Menghentak', mood: 'Berundur', detail: 'Ekor menghentak lantai. Sangat kesal dan memberi amaran supaya anda berundur. Berhenti, dan beri dia ruang.' },
 };
 
+const signalZh: Record<string, SignalText> = {
+  // Ears
+  'ear-forward': { title: '朝前', mood: '好奇又友好', detail: '耳朵竖起并朝前转。她投入而感兴趣；正是打招呼的好时机。' },
+  'ear-neutral': { title: '放松／自然', mood: '平静又满足', detail: '耳朵直立放松，松松地朝前。王国一切安好：舒适、平静、自在。' },
+  'ear-swiveling': { title: '转动', mood: '正在聆听', detail: '耳朵像小卫星天线一样转动，追踪声音。警觉地观察四周，并非不悦。' },
+  'ear-sideways': { title: '侧向（飞机模式）', mood: '过度刺激', detail: '耳朵朝两侧转开，像小翅膀。不确定、恼火或受够了；温和的信号，该退一步了。' },
+  'ear-slightly-back': { title: '略微后倒', mood: '被惹恼', detail: '耳朵稍稍后倒。谨慎且有点恼火，正在权衡要不要反应。给她一点时间。' },
+  'ear-flat': { title: '紧贴头部', mood: '给她空间', detail: '耳朵紧贴头部以保护它们。真正压力下的恐惧或防御性攻击。别伸手过去；让她自己冷静下来。' },
+  'ear-one-ear-back': { title: '一只耳朵后转', mood: '一心多用', detail: '一只耳朵朝前，一只后转，同时追踪两件事（常是她身后的动静）。略微戒备。' },
+  'ear-high-tall': { title: '又高又直', mood: '高度警戒', detail: '耳朵竖到最高，笔直向上。非常警觉、紧绷，锁定在她认定重要的东西上。' },
+  'ear-low-wide': { title: '低而外张', mood: '焦虑', detail: '耳朵放低并向两侧张开。担忧、感到受威胁，但并不想打架。安抚她，别围堵。' },
+  'ear-predatory': { title: '猎手专注', mood: '正在狩猎', detail: '耳朵朝前锁定，整张脸都在专注。全狩猎模式：高度集中，随时准备扑（最好扑向玩具）。' },
+  'ear-sleepy': { title: '满足又困倦', mood: '幸福陶醉', detail: '打盹时耳朵松弛、微微转动。深度放松、舒适又安全。满足的巅峰。' },
+  'ear-hissing': { title: '攻击性／嘶叫', mood: '退后', detail: '张着嘴，耳朵后倒，警告已发出。她感到受威胁，正叫你走开。尊重它，给她空间。' },
+  // Eyes
+  'eye-neutral': { title: '放松／自然', mood: '平静又满足', detail: '眼睛睁开放松，瞳孔是正常的杏仁形。一切安好：舒适、满足、自在。打招呼的好时机。' },
+  'eye-sleepy': { title: '柔和／困倦', mood: '困倦又安心', detail: '眼皮低垂柔和，休息时半闭。深度放松并感到安全。让她慢慢睡去；这是真正的信任。' },
+  'eye-dilated': { title: '瞳孔放大／兴奋', mood: '兴奋／亢奋', detail: '瞳孔又大又圆。兴奋、爱玩或亢奋，不过瞳孔放大也可能表示害怕，所以也要看她的耳朵和身体。只要气氛轻松，玩耍无妨。' },
+  'eye-alert': { title: '感兴趣／警觉', mood: '好奇又投入', detail: '眼睛睁开，瞳孔中等大小，目光盯着某物。好奇且全神贯注，把一切都收入眼底。' },
+  'eye-narrowed': { title: '眯起／专注', mood: '锁定专注', detail: '瞳孔收成专注的一条线，目光稳定。在权衡局势时坚定而自信。让她自己想清楚。' },
+  'eye-very-narrow': { title: '非常细／烦躁', mood: '过度刺激', detail: '瞳孔收成细缝。恼火、过度刺激，或者只是身处强光下。若气氛紧张，就少些打扰，给她喘息的空间。' },
+  'eye-suspicious': { title: '怀疑／谨慎', mood: '警惕观察', detail: '眼睛半眯，仔细观察。不确定，正在确认是否安全。慢慢来，让她自己拿主意。' },
+  'eye-round': { title: '圆睁／惊讶', mood: '受惊', detail: '眼睛突然睁得又大又圆。有突发状况让她措手不及，现在处于警戒。给她一点时间看清没事。' },
+  'eye-unequal': { title: '瞳孔不等大', mood: '留意她', detail: '一只瞳孔比另一只大。在昏暗或变化的光线下可能正常，但若持续，或伴随眯眼、用爪抓眼，或她看起来不对劲，请联系兽医。' },
+  'eye-slow-blink': { title: '缓慢眨眼', mood: '我信任你', detail: '一个缓慢慵懒、停顿片刻的眨眼。她在表示信任你、感到安全。回她一个缓慢眨眼；这是猫给出的最高赞美。' },
+  'eye-wide-eyed': { title: '睁大／恐惧', mood: '害怕', detail: '眼睛睁得极大，通常瞳孔放大，身体紧绷。害怕、感到受威胁，在找出路。别围堵或逼到角落；给她空间和一条明确的退路。' },
+  'eye-closed': { title: '眨眼／闭眼', mood: '深度放松', detail: '眼睛闭上，脸部柔和平顺。非常放松而信任，或在把世界屏蔽掉休息。别打扰她。' },
+  // Tail
+  'tail-held-high': { title: '高高竖起', mood: '自信', detail: '尾巴像旗杆一样笔直竖起。自信、快乐、对世界很满意。打招呼的好时机。' },
+  'tail-upright-curved': { title: '竖起而尖端弯曲', mood: '友好问候', detail: '尾巴竖起，尖端带一个小钩，就像友好的问号。她最热情的问候：她很高兴见到你。' },
+  'tail-gentle-curve': { title: '轻柔弯曲', mood: '满足', detail: '尾巴竖起，呈柔和轻松的弧线。满足又舒适，悠闲地度过一天。' },
+  'tail-horizontal': { title: '水平', mood: '好奇', detail: '尾巴笔直伸在身后。警觉又好奇，在决定行动前先掂量一下。' },
+  'tail-low-relaxed': { title: '低垂／放松', mood: '自在', detail: '尾巴放得低而松。平静而中性。尾巴低垂也可能表示谨慎，所以要结合她的耳朵和身体一起看。' },
+  'tail-tucked': { title: '收拢', mood: '不安', detail: '尾巴向下卷起、紧紧收拢。焦虑、不确定或感到渺小。别围堵她；慢慢来，让她安定下来。' },
+  'tail-puffed-up': { title: '炸毛', mood: '受惊', detail: '尾巴炸成瓶刷状。害怕并试图让自己显得更大。有东西惊吓了她；给她空间直到她冷静。' },
+  'tail-puffed-curve': { title: '炸毛并弓背', mood: '防御', detail: '瓶刷尾配上拱起的背，就是万圣节猫的姿势。高度亢奋且防御。退后，让这一刻过去。' },
+  'tail-flicking': { title: '甩动', mood: '被惹恼', detail: '尾巴左右摆动。恼火、被惹恼或受够了。明确的信号，在她真正受不了之前退一步。' },
+  'tail-tip-twitching': { title: '尖端抽动', mood: '专注', detail: '只有尾尖抽动，其余保持不动。专注而集中，常在狩猎中。投入，并非不悦。' },
+  'tail-wrapped': { title: '缠绕身体', mood: '惬意', detail: '尾巴整齐地缠绕在自己身上。放松又惬意，保暖且自成一体。满足的巅峰。' },
+  'tail-thumping': { title: '拍打', mood: '退后', detail: '尾巴拍打地面。非常恼火，警告你退后。停下，给她空间。' },
+};
+
+const signalTr: Record<string, Record<string, SignalText>> = { ms: signalMs, zh: signalZh };
+
 /** Return a signal with prose in the active locale (English passes through). */
 export function localizeSignal(part: string, s: BodySignal, locale?: string): BodySignal {
-  if (locale !== 'ms') return s;
-  const o = signalMs[`${part}-${s.id}`];
+  const o = locale ? signalTr[locale]?.[`${part}-${s.id}`] : undefined;
   return o ? { ...s, ...o } : s;
 }
 
@@ -527,6 +699,43 @@ export const bodyLanguageCopy: Record<string, BodyLanguageCopy> = {
         notes: [
           'Gambar pegun tidak dapat menunjukkan pergerakan, dan pergerakan ialah separuh daripada mesejnya: libasan pantas bermakna jauh lebih daripada ayunan perlahan. Ekor rendah boleh dibaca sebagai tenang atau berhati-hati, jadi sentiasa semaknya bersama telinga, mata dan postur badannya.',
           'Apabila ekornya berkata berundur (menggembung, menghentak, libasan keras), terimalah seadanya: berhenti apa yang anda lakukan, beri dia ruang, dan biar dia bertenang semula.',
+        ],
+      },
+    ],
+  },
+  zh: {
+    metaTitle: '解读 Picha · Picha 🐾',
+    metaDescription: 'Picha 肢体语言实地指南：她的信号意味着什么，以及该如何回应。',
+    kicker: '猫对人',
+    title: '解读 Picha',
+    blurb: '她不出声也能说很多。这里教你如何解读绒毛殿下，以及如何在她不得不重复之前就回应。',
+    bodyPartLabel: '身体部位',
+    segments: [
+      {
+        id: 'ears',
+        label: '耳朵',
+        noun: '耳朵',
+        notes: [
+          '一张照片留不住的：耳朵快速抖动或抽动。通常只是单纯的烦躁（或有只苍蝇飞过）；若伴随甩头或抓挠，检查一下她的耳朵。',
+          '当信号说该退一步或给她空间时，善意的做法正是如此：不伸手、不抱起。让她自己回到你身边。',
+        ],
+      },
+      {
+        id: 'eyes',
+        label: '眼睛',
+        noun: '眼睛',
+        notes: [
+          '两件静态照片无法呈现的：坚定不眨的凝视（一种挑战，所以移开视线，别回瞪）以及第三眼睑滑过内眼角（常是疲倦，有时是生病）。',
+          '眼睛也是健康的信号。瞳孔不等大且无法恢复、突然浑浊、发红或流泪的眼睛、持续眯眼，或用爪抓某只眼睛，这些要看兽医，而不是情绪。',
+        ],
+      },
+      {
+        id: 'tails',
+        label: '尾巴',
+        noun: '尾巴',
+        notes: [
+          '静态照片无法呈现动作，而动作是信息的一半：快速抽打的含义远超缓慢摆动。尾巴低垂可以理解为平静或谨慎，所以务必结合她的耳朵、眼睛和姿势一起看。',
+          '当她的尾巴说退后（炸毛、拍打、用力甩动），就照字面理解：停下手中的动作，给她空间，让她重新平复。',
         ],
       },
     ],
@@ -681,7 +890,64 @@ const careMs: CareCopy = {
     savedLocal: 'Disimpan pada peranti ini; awan tidak menjawab.',
   },
 };
-export const careCopy: Record<string, CareCopy> = { en: careEn, ms: careMs };
+const careZh: CareCopy = {
+  metaTitle: '照护 · Picha 🐾',
+  metaDescription: 'Picha 的日常照护指南：她的例行任务和梳理。',
+  kicker: '日常照护',
+  title: '与 Picha 的一天',
+  blurb:
+    '服侍 Picha 是一份全职工作：周末无休，福利以呼噜声支付。从上到下完成今天的例行任务；她在记分。',
+  roundsLabel: '今日例行',
+  praise: '所有例行任务已完成。管理层很满意，将据此安排小睡。',
+  checklist: {
+    water: { label: '加满饮水机', hint: '添满水箱；饮水机会自己运转' },
+    'meals-1': { label: '湿粮服务', hint: '第一餐，约上午 10 点；把她剩下的猫粮拌进去' },
+    'litter-1': { label: '铲猫砂', hint: '早班；她有她的标准' },
+    combing: { label: '每日梳毛', hint: '两侧都要；她会自己转身' },
+    eyes: { label: '擦眼睛和脸', hint: '用宠物湿巾擦拭眼睛和下巴周围' },
+    'play-hunt': { label: '狩猎时段', hint: '10–15 分钟逗猫棒值勤' },
+    academy: { label: '学院时段', hint: '一次简短的训练练习；见皇家学院' },
+    'litter-mid': { label: '铲猫砂', hint: '午间检查，只有在有东西要清理时才做' },
+    treat: { label: '零食，如果她赢得了', hint: '约下午 4 点，只有在赢得时才给；上限为她食物的 10%' },
+    'meals-2': { label: '湿粮服务', hint: '第二餐，约晚上 9:30 熄灯前' },
+    'play-ball': { label: '球类时段', hint: '扔球；让她追逐和扑抓' },
+    'litter-2': { label: '铲猫砂', hint: '晚班，保持五星水准' },
+    cuddle: { label: '腿上撒娇时间', hint: '强制性的关爱审核；何时结束由她决定' },
+    lockup: { label: '夜间锁门', hint: '关好窗户和阳台，别留下任何危险物品' },
+  },
+  menuLabel: '菜单',
+  feeder: '喂食器',
+  byHand: '手喂',
+  meals: [
+    { title: '早晨猫粮', detail: '喂食器按时投放她的第一餐；她看心情慢慢吃。' },
+    { title: '湿粮，第一餐', detail: '她的五星大餐，手工奉上。早上剩下的猫粮会拌进去。' },
+    { title: '午间猫粮', detail: '第二次自动投放，让一天的进食均匀。' },
+    { title: '零食或奖励', detail: '下午的谈判，无论那双眼睛多有说服力，都控制在 10% 零食上限内。' },
+    { title: '傍晚猫粮', detail: '一天中最后一次自动投放。' },
+    { title: '湿粮，第二餐', detail: '睡前的宵夜，熄灯前奉上。之后不再进食，她睡个好觉。' },
+  ],
+  groomingLabel: '梳理',
+  grooming: [
+    { title: '每日梳毛', cadence: '每日', detail: '记录在案的工具是一把不锈钢梳，两侧都梳一遍，她像烤肉一样自己转身。长毛全靠它：防止打结，维持华丽。' },
+    { title: '面部修整', cadence: '按需', detail: '用于眼睛和脸部的宠物湿巾，放在触手可及处，随时刷新造型。' },
+    { title: '局部清洁', cadence: '按需', detail: 'YEGBONG 宠物干洗慕斯（免水），揉进毛发再刷开，主要用于下巴下方和任何胆敢弄脏的地方。' },
+    { title: '洗澡', cadence: '很少', detail: '很少需要；每日梳毛已挑起大梁。偶尔洗一次澡或做一次专业水疗，需预约。' },
+    { title: '指甲', cadence: '每 2–4 周', detail: '每 2–4 周用猫用指甲剪修一次：先前爪，后爪看她允许。最好趁她昏昏欲睡、最不想提出投诉时进行。' },
+    { title: '牙齿', cadence: '每日', detail: '每天用 Histo Tree 猫用安全牙膏（牛肉味）刷一次，沿牙龈线每侧刷几秒。勉强被接受，换来随后的奖励。' },
+  ],
+  notes: {
+    loading: '正在载入今天的例行任务…',
+    offline: '离线：显示此设备保存的例行任务。',
+    resetsNightly: '勾选每晚午夜重置。',
+    sharedResets: '在员工的设备间共享；每晚午夜重置。',
+    staffOnlyPre: '例行任务仅限员工。',
+    signIn: '以员工身份登录',
+    staffOnlyPost: '后即可勾选。',
+    pinRejected: 'PIN 被拒绝。打开员工室重新输入。',
+    savedLocal: '已保存在此设备；云端未响应。',
+  },
+};
+export const careCopy: Record<string, CareCopy> = { en: careEn, ms: careMs, zh: careZh };
 export const getCareCopy = (locale?: string): CareCopy => careCopy[locale ?? 'en'] ?? careEn;
 
 // ---------------------------------------------------------------------------
@@ -799,6 +1065,43 @@ export const healthCopy: Record<string, HealthCopy> = {
       'Core vaccines': { label: 'Vaksin teras', value: 'FVRCP', sub: 'siri lengkap' },
     },
   },
+  zh: {
+    metaTitle: '健康 · Picha 🐾',
+    metaDescription: 'Picha 的健康档案：体征、疫苗、看诊记录以及即将进行的事项。',
+    kicker: '兽医与健康',
+    title: '皇家健康档案',
+    blurb:
+      '从生日到加强针：每一次注射、称重和看诊，都由员工以强迫症般的细心归档。管理层审阅文书；管理层不做文书。',
+    nextDue: '下一项',
+    weight: '体重',
+    targetPrefix: '目标',
+    age: '年龄',
+    ageSub: '约 1.5–2 岁成年',
+    doctorsOrders: '医嘱',
+    dueSoon: '即将到期',
+    dueApprox: '预计 ~',
+    overdue: '已逾期',
+    segments: { upcoming: '即将进行', done: '记录', tobook: '待办清单' },
+    timelineFilter: '时间线筛选',
+    nextUp: '下一个',
+    notStarted: '尚未开始',
+    callVetIfTitle: '出现以下情况请联系兽医…',
+    recentClinic: '最近的诊所',
+    directions: '前往诊所的路线',
+    recentCarePre: '最近的护理：',
+    vetStatus: '正在面试兽医；尚未正式录用',
+    callVetIf: [
+      '约 24 小时不进食，或反复呕吐。',
+      '在猫砂盆里用力却排不出，或一整天没有排尿。',
+      '持续躲藏 + 弓背姿势 + 不吃东西（相对于她平时的进进出出）。',
+      '呼吸费力或突然萎靡。',
+    ],
+    clinicalStatus: {
+      Spayed: { label: '已绝育', value: '是', sub: '11 Jul 2026' },
+      Microchip: { label: '芯片', value: '是', sub: '11 Jul 2026' },
+      'Core vaccines': { label: '核心疫苗', value: 'FVRCP', sub: '系列已完成' },
+    },
+  },
 };
 export const getHealthCopy = (locale?: string): HealthCopy =>
   healthCopy[locale ?? 'en'] ?? healthCopy.en;
@@ -861,17 +1164,81 @@ const whereMs: Record<string, string> = {
   'at the salon': 'di salun',
 };
 
+const healthTextZh: Record<string, { title: string; detail: string }> = {
+  'One tiny white cloud arrives, opens her amber eyes, and starts planning her staff structure.':
+    { title: '一颗星诞生', detail: '一小朵白云降临，睁开她的琥珀色眼睛，开始筹划她的员工架构。' },
+  'Felocell 4, first dose. Taken like a champ (allegedly).':
+    { title: 'FVRCP 疫苗，第 1 剂', detail: 'Felocell 4，第一剂。据称打得像个冠军。' },
+  'Felocell 4, second dose. Series complete.':
+    { title: 'FVRCP 疫苗，第 2 剂', detail: 'Felocell 4，第二剂。系列完成。' },
+  'Interviewed Farah & Farzin at the pet shop and hired both on the spot. No probation period; she does not do trial runs.':
+    { title: '盛大的员工招聘', detail: '在宠物店面试了 Farah 和 Farzin，当场录用两人。没有试用期；她不搞试运行。' },
+  'Revolution Plus applied. Fleas, ticks and worms: evicted.':
+    { title: '寄生虫防治', detail: '已使用 Revolution Plus。跳蚤、蜱虫和蠕虫：驱逐出境。' },
+  'Interior pest control, completed.':
+    { title: '已驱虫', detail: '内部害虫防治，完成。' },
+  'Both done in one visit. She billed the recovery time as spa leave.':
+    { title: '绝育 + 芯片', detail: '一次看诊全部完成。她把恢复期记作水疗假。' },
+  'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':
+    { title: '耳部疗程开始', detail: '每日 ORI-EAR + Oridermyl 的常规开始。被接受了，但明显不满。' },
+  'Full ORI-EAR + Oridermyl course done; ears cleared. Daily disapproval may now cease.':
+    { title: '耳部疗程完成', detail: '完整的 ORI-EAR + Oridermyl 疗程结束；耳朵已康复。每日的不满现在可以停止了。' },
+  'NexGard Combo spot-on applied at the base of the skull, her new monthly flea and tick guard. Revolution Plus retired.':
+    { title: '寄生虫防治', detail: 'NexGard Combo 滴剂已滴于颅骨底部，是她新的每月跳蚤和蜱虫防护。Revolution Plus 已退役。' },
+  'Required before any travel plans Her Fluffiness may approve.':
+    { title: '狂犬病疫苗', detail: '在绒毛殿下可能批准的任何旅行计划之前都需要。' },
+  'Optional. To discuss with whichever vet wins the job.':
+    { title: 'FeLV 疫苗', detail: '可选。待与最终获聘的兽医讨论。' },
+  'The official pet passport, still to be sorted for any future travel.':
+    { title: '宠物护照', detail: '正式的宠物护照，仍待为将来的旅行办理。' },
+  'NexGard Combo spot-on, parted onto the skin at the base of the skull (the back of the head), where she cannot lick it off. Fleas, ticks and ear mites, evicted. Monthly with a few days of grace, but never sooner than a month apart; a bit late is fine, too early risks a double dose.':
+    { title: '寄生虫防治', detail: 'NexGard Combo 滴剂，拨开毛发滴在颅骨底部（后脑勺）的皮肤上，那里她舔不到。跳蚤、蜱虫和耳螨，驱逐出境。每月一次，可宽限几天，但绝不早于一个月；稍晚无妨，太早有双倍剂量的风险。' },
+  'A separate dewormer on the standard adult schedule (the spot-on does not replace it): a pill, smuggled in inside something delicious and served without ceremony.':
+    { title: '驱虫', detail: '按标准成年计划单独驱虫（滴剂不能替代它）：一粒药丸，藏在某种美味里，不动声色地奉上。' },
+  'The full salon treatment: bath, blow-dry and a top-to-tail tidy-up, so the resident cloud stays soft and photogenic.':
+    { title: '梳理与水疗日', detail: '全套沙龙护理：洗澡、吹干和从头到尾的整理，让这朵常驻的云保持柔软上镜。' },
+  'A full scrub and a complete change of litter; the royal facilities restored to five stars.':
+    { title: '猫砂盆深度清洁', detail: '彻底刷洗并全部更换猫砂；皇家设施恢复五星水准。' },
+  'The once-a-year, nose-to-tail service: full exam, weight check and an audience with the royal teeth.':
+    { title: '年度全面检查', detail: '一年一度、从鼻到尾的服务：全面检查、称重，以及觐见皇家牙齿。' },
+  'Felocell 4, the yearly top-up that keeps the core feline viruses on their side of the palace gates.':
+    { title: 'FVRCP 加强针', detail: 'Felocell 4，每年一次的补充，把核心猫病毒挡在宫门之外。' },
+  'Front paws first, back paws only with royal consent. Management files a formal complaint every time, then submits to the clippers.':
+    { title: '修剪指甲', detail: '先前爪，后爪只有在获得皇家同意时。管理层每次都正式投诉，然后向指甲剪屈服。' },
+};
+const everyLabelZh: Record<string, string> = {
+  'Every month': '每月',
+  'Every 3 months': '每 3 个月',
+  'Every 2 months': '每 2 个月',
+  'Every year': '每年',
+  'Every 2–4 weeks': '每 2–4 周',
+};
+const whereZh: Record<string, string> = {
+  'at home': '在家',
+  'at the vet': '在诊所',
+  'at the salon': '在美容院',
+};
+
+const healthTextTr: Record<string, Record<string, { title: string; detail: string }>> = {
+  ms: healthTextMs,
+  zh: healthTextZh,
+};
+const everyLabelTr: Record<string, Record<string, string>> = { ms: everyLabelMs, zh: everyLabelZh };
+const whereTr: Record<string, Record<string, string>> = { ms: whereMs, zh: whereZh };
+
 /** Localize a timeline / upcoming item's prose (English passes through). */
 export function localizeHealthItem<
   T extends { title: string; detail: string; everyLabel?: string; where?: string },
 >(item: T, locale?: string): T {
-  if (locale !== 'ms') return item;
-  const o = healthTextMs[item.detail];
+  if (!locale || locale === 'en') return item;
+  const o = healthTextTr[locale]?.[item.detail];
+  const el = everyLabelTr[locale] ?? {};
+  const wh = whereTr[locale] ?? {};
   return {
     ...item,
     ...(o ? { title: o.title, detail: o.detail } : {}),
-    ...(item.everyLabel ? { everyLabel: everyLabelMs[item.everyLabel] ?? item.everyLabel } : {}),
-    ...(item.where ? { where: whereMs[item.where] ?? item.where } : {}),
+    ...(item.everyLabel ? { everyLabel: el[item.everyLabel] ?? item.everyLabel } : {}),
+    ...(item.where ? { where: wh[item.where] ?? item.where } : {}),
   };
 }
 
@@ -1006,6 +1373,48 @@ export const weightCopy: Record<string, WeightCopy> = {
       recorded: 'Direkod. Pihak pengurusan telah ditimbang.',
       signExpired: 'Log masuk tamat tempoh. Masukkan semula PIN di Bilik Kakitangan.',
       couldNotRecord: 'Tidak dapat merekodnya. Semak sambungan dan cuba lagi.',
+    },
+  },
+  zh: {
+    metaTitle: '体重 · Picha 🐾',
+    metaDescription: 'Picha 的体重追踪器：每一次称重都绘成图表，附带统计数据和完整记录。',
+    appTitle: '体重',
+    kicker: '工具 · 使用中',
+    title: '皇家腰围',
+    blurb: '账上的每一次审核，都绘成图表。计量的饭食让趋势诚实；这个页面让员工诚实。',
+    note: '约 1.5–2 岁前仍在成长。',
+    statCurrent: '当前',
+    statHeaviest: '最重',
+    statLightest: '最轻',
+    statAverage: '平均',
+    weighedPre: '称重于',
+    peakFloofPre: '绒毛巅峰，',
+    featherweightPre: '轻如鸿毛，',
+    acrossPre: '横跨',
+    auditWord: '次审核',
+    auditWordPlural: '次审核',
+    trend: '趋势',
+    bandFootnotePre: '琥珀色区间是健康成猫范围（',
+    bandFootnotePost: '）。',
+    bandNote: {
+      under: '目前处于其下方，完全是有意为之。',
+      in: '她已达标。腰围委员会很满意。',
+      over: '她高于此范围；食量政策正在正式审查中。',
+    },
+    ledgerLabel: '记录',
+    auditNoPre: '审核编号',
+    latest: '最新',
+    logWeighIn: '记录一次称重',
+    staffOnly: '仅限员工',
+    form: {
+      date: '日期',
+      weightKg: '体重（kg）',
+      record: '记录审核',
+      sameDateNote: '同一日期的记录会更新现有条目。',
+      filing: '正在归档…',
+      recorded: '已记录。管理层已被称重。',
+      signExpired: '登录已过期。请在员工室重新输入 PIN。',
+      couldNotRecord: '无法记录。请检查连接后重试。',
     },
   },
 };
@@ -1175,35 +1584,94 @@ export const trainingCopy: Record<string, TrainingCopy> = {
       'Satu langkah pada satu masa; ulang satu langkah beberapa hari sebelum meneruskan.',
     ],
   },
+  zh: {
+    metaTitle: '训练 · Picha 🐾',
+    metaDescription: '皇家学院：Picha 的训练课程，附带分步课程大纲和实时进度。',
+    appTitle: '学院',
+    kicker: '工具 · 使用中',
+    title: '皇家学院',
+    blurb: '高阶猫咪合作课程。官方说法是员工在接受训练与认证；绒毛殿下只是负责给课业打分。',
+    staffProgress: '员工进度',
+    stepsWord: '步',
+    groups: { active: '进行中', syllabus: '课程大纲', graduated: '已毕业' },
+    inSessionWord: '进行中',
+    graduatedWord: '已毕业',
+    onSyllabusWord: '在大纲中',
+    stepWord: '第',
+    ofWord: '／共',
+    allWord: '全部',
+    passedWord: '步已通过',
+    notStarted: '未开始',
+    registrarNoteHub: '各项里程碑由持 PIN 的员工在每门课程页面上记录，直接存入她的云端档案。',
+    allCourses: '所有课程',
+    statusGraduated: '已毕业',
+    statusActive: '进行中',
+    statusSyllabus: '在课程大纲中',
+    inSessionSincePre: '自',
+    gradBanner: '以优异成绩毕业。员工正式获得认证。',
+    resistanceWord: '抗拒度',
+    upNext: '下一步',
+    curriculum: '课程大纲',
+    registrarControls: '登记员控制',
+    begin: '开始课程',
+    markStepPre: '标记第',
+    markStepPost: '步通过',
+    graduatedBtn: '已毕业',
+    undo: '撤销',
+    registrarNoteCourse: '里程碑会记录到她的云端档案。当她在多个不同日子里都能保持放松地完成某一步时，该步才算通过。',
+    practiceMark: '标记今天的训练已完成',
+    practiceDone: '今天的训练已记录',
+    filing: '正在归档…',
+    gradRecorded: '毕业了。学院深感自豪。',
+    recorded: '已记录到她的档案。',
+    signExpired: '登录已过期。请在员工室重新输入 PIN。',
+    couldNotRecord: '无法记录。请检查连接后重试。',
+    rulesLabel: '训练守则',
+    rules: [
+      '短时段：2–5 分钟，每天一到两次。',
+      '始终以成功收尾，哪怕只是微小的成功。',
+      '零食就是薪水；控制在每天 10% 的预算内。',
+      '绝不强迫。如果她走开，下课。',
+      '一次只练一步；一步重复练几天再进入下一步。',
+    ],
+  },
 };
 export const getTrainingCopy = (locale?: string): TrainingCopy =>
   trainingCopy[locale ?? 'en'] ?? trainingCopy.en;
 
-// Composed status strings (shared by build + client). ---------------------
+// Composed status strings (shared by build + client). Chinese grammar differs
+// enough from the en/ms fragment order that it gets its own branch.
 export function stepOfLabel(done: number, total: number, locale?: string): string {
+  if (locale === 'zh') return `第 ${done + 1} 步／共 ${total} 步`;
   const c = getTrainingCopy(locale);
   return `${c.stepWord} ${done + 1} ${c.ofWord} ${total}`;
 }
 export function allStepsPassedLabel(total: number, locale?: string): string {
+  if (locale === 'zh') return `全部 ${total} 步已通过`;
   const c = getTrainingCopy(locale);
   return `${c.allWord} ${total} ${c.passedWord}`;
 }
 export function stepsNotStartedLabel(total: number, locale?: string): string {
+  if (locale === 'zh') return `${total} 步 · 未开始`;
   const c = getTrainingCopy(locale);
   return `${total} ${c.stepsWord} · ${c.notStarted}`;
 }
 export function stepsCountLabel(done: number, total: number, locale?: string): string {
+  if (locale === 'zh') return `${done}/${total} 步`;
   const c = getTrainingCopy(locale);
   return `${done}/${total} ${c.stepsWord}`;
 }
 export function academyCaption(a: number, g: number, s: number, locale?: string): string {
+  if (locale === 'zh') return `${a} 进行中 · ${g} 已毕业 · ${s} 在大纲中`;
   const c = getTrainingCopy(locale);
   return `${a} ${c.inSessionWord} · ${g} ${c.graduatedWord} · ${s} ${c.onSyllabusWord}`;
 }
 export function inSessionSinceLabel(iso: string, locale?: string): string {
+  if (locale === 'zh') return `自 ${dateLabel(iso, locale)} 起进行中`;
   return `${getTrainingCopy(locale).inSessionSincePre} ${dateLabel(iso, locale)}`;
 }
 export function markStepPassedLabel(done: number, locale?: string): string {
+  if (locale === 'zh') return `标记第 ${done + 1} 步通过`;
   const c = getTrainingCopy(locale);
   return `${c.markStepPre} ${done + 1} ${c.markStepPost}`;
 }
@@ -1311,10 +1779,112 @@ const courseMs: Record<string, CourseText> = {
   },
 };
 
+const courseZh: Record<string, CourseText> = {
+  toothbrushing: {
+    title: '刷牙 101',
+    tagline: '刷牙时代开启，尚待她的正式批准。',
+    why: '猫会把牙病藏到疼起来为止。每天刷牙是最好的单一预防措施，而牛肉味的 Histo Tree 牙膏已经买好了。',
+    steps: [
+      { title: '试味', detail: '在手指上蘸一点牙膏，当作零食递上。连续几天，直到她把它当成食物。' },
+      { title: '下巴和脸颊', detail: '趁她舔牙膏时，碰碰她的嘴唇和脸颊。只需几秒，然后松手并表扬。' },
+      { title: '手指碰牙龈', detail: '手指蘸牙膏，轻轻沿门牙和牙龈线摩擦。在她抗议之前停下。' },
+      { title: '牙刷登场', detail: '猫牙刷出现。她闻一闻并舔掉上面的牙膏。暂不刷牙。' },
+      { title: '第一次刷', detail: '在门牙一侧实际刷几秒。以一份零食收尾。' },
+      { title: '完整流程', detail: '两侧加后牙，不到一分钟，每天进行。毕业。' },
+    ],
+  },
+  manicure: {
+    title: '修甲计划',
+    tagline: '先从前爪开始。管理层现已获悉。',
+    why: '室内猫的爪子会长过头并勾住东西。定期修剪能保护她的爪子、家具和员工。',
+    steps: [
+      { title: '爪子外交', detail: '在轻松的拥抱中，握住一只爪子一秒，松开，给零食。逐步过渡到轻轻一捏。' },
+      { title: '轻按', detail: '轻轻按压一个趾垫让一只爪子伸出，欣赏一下，松开，给零食。' },
+      { title: '认识指甲剪', detail: '拥抱时把指甲剪放在旁边，在空中咔哒作响。她什么事也没有。零食如雨。' },
+      { title: '只剪一只指甲', detail: '趁她平静时剪掉一只前爪的尖端。立刻停下并庆祝。' },
+      { title: '一次一只爪', detail: '每次剪几只指甲，先前爪，每 2–4 周一次。毕业。' },
+    ],
+  },
+  carrier: {
+    title: '猫包外交',
+    tagline: '从便携地牢到头等舱。',
+    why: '每次看诊都从猫包开始。愿意自愿进包的猫会让每次出行都更平静、更快捷。',
+    steps: [
+      { title: '家具身份', detail: '猫包敞开放在客厅里，里面铺一条柔软的毯子，仿佛一直都在那儿。' },
+      { title: '零食场所', detail: '零食和偶尔的一餐出现在猫包附近，然后是门口内侧，然后是最里面。' },
+      { title: '关门游戏', detail: '在她于包内吃零食时把门关上几秒，并在她在意之前打开。' },
+      { title: '短途搬运', detail: '在公寓里短暂地抱着走一圈，然后放下并给一大堆零食。' },
+      { title: '预演', detail: '下到大堂或短程驾车后直接回家。终点没有兽医。毕业。' },
+    ],
+  },
+  holding: {
+    title: '进阶抱持耐受',
+    tagline: '在员工怀里平静十秒，就算一次外交突破。',
+    why: '兽医检查、梳理和偶尔的从架上解救，对能耐受被抱的猫都会更顺利。',
+    steps: [
+      { title: '双手，不抱起', detail: '拥抱时双手在她身侧停一会儿，然后松开，再给零食。' },
+      { title: '十秒抱起', detail: '短暂、低幅度地抱起。在她想扭动之前把她的脚放回地面。' },
+      { title: '落到腿上', detail: '抱起并放到腿上；立即给予自由。腿于是成了一个不错的去处。' },
+      { title: '半分钟', detail: '轻松地抱 30 秒并缓慢抚摸，在她开口之前结束。' },
+      { title: '诊所式', detail: '以温和的兽医式抱姿抱最多一分钟，全程平静。毕业。' },
+    ],
+  },
+  recall: {
+    title: '召唤，需预约',
+    tagline: '叫她她就来。前提是她认同这个前提。',
+    why: '可靠的名字反应能迅速找到躲起来的猫，这在家里有位捉迷藏冠军时尤其重要。',
+    steps: [
+      { title: '名字等于零食', detail: '说“Picha”，一份零食就落下。连续几天，直到一听到这个词她的头就猛地转过来。' },
+      { title: '跨房间召唤', detail: '从房间另一头叫她，并奖励她的到来，每一次都如此。' },
+      { title: '视线外召唤', detail: '从另一个房间叫她。到来即得大奖。' },
+      { title: '随机演练', detail: '每天在随机时刻召唤；奖励在食物、玩耍和爱抚之间变化。毕业。' },
+    ],
+  },
+  'talking-buttons': {
+    title: '会说话的按钮',
+    tagline: '四个按钮、一只猫，以及你听得见的诉求就此开始。',
+    why: '可录音的发声按钮让她能有意识地提出要求，而不是照旧靠猜。做法得当（员工示范按压、没有人掰她的爪子、奖励立即到位）时，它是真正的丰容，也是一条真实的沟通渠道。先从一个按钮开始，等她掌握了再逐步添加其余的。',
+    steps: [
+      { title: '录制并放置一个', detail: '录一个她已经喜爱、清晰而高价值的词；“玩”或“零食”都是不错的第一个词。把那个按钮放在对应事物所在之处：玩耍按钮放在玩具旁，零食按钮放在罐子旁。' },
+      { title: '每一次都示范', detail: '在事情发生之前，一名员工按下按钮、说出那个词，然后立即兑现。两名员工，同一个词，每天多次。绝不替她按爪子；她靠观察学习。' },
+      { title: '尊重第一次按压', detail: '奖励任何在按钮附近的嗅闻或触碰，而她一旦自己按下，就立即兑现，哪怕时机糟糕透顶。第一次真正的按压可能要好几周。把它当作一次毕业来对待。' },
+      { title: '加入第二个按钮', detail: '当她有意识地按下第一个按钮后，加入第二个明显不同的词（“吃饭”或“喝水”都很合适），放得稍远一些，好让两者不会混淆。继续示范两者。' },
+      { title: '加入第三个', detail: '当她能在情境中区分前两个、而不只是乱按时，再引入第三个词。像“抚摸”这样的社交词是不错的选择。奖励那些真正合乎情理的按压。' },
+      { title: '完整发声板', detail: '加入第四个按钮，并把四个都固定在防滑垫上。她现在拥有一套可用的词汇，能正式提出请求。毕业，也是一场终生谈判的开始。' },
+    ],
+  },
+  'party-tricks': {
+    title: '派对才艺',
+    tagline: '击掌、转圈，以及其他让员工鼓掌的方式。',
+    why: '才艺是纯粹的丰容：动脑、消耗精力，把训练变成全家都乐在其中的游戏。它们还能培养其他每门课程都依赖的专注与合作。用引诱和奖励，绝不用手摆姿势。',
+    steps: [
+      { title: '标记与目标', detail: '选一个标记（响片，或干脆利落的一声“好”），把它和零食配对，直到这个声音本身就意味着“做得好”。然后教鼻子触碰：伸出一根手指，她一碰就立刻奖励。这一项技能是每个才艺的动力。' },
+      { title: '坐下', detail: '把零食举在她鼻子前，向上并越过她头顶往后滑；当她的鼻子跟随、屁股落下时，标记并奖励。熟练后，在她做出动作前加上“坐”这个词。' },
+      { title: '击掌', detail: '把零食松松地攥在拳里，靠近她的胸口。爪子一抬起来查看，就标记并奖励。用几个训练时段逐步抬高，直到爪子碰到你摊开的手掌，然后命名为“击掌”。' },
+      { title: '转圈', detail: '用零食引着她的鼻子画一个慢圈，让她原地转身；标记整圈并奖励。每天把圈画小一点，缩到用手指一转，并加上“转圈”这个词。' },
+      { title: '淡出引诱', detail: '现在做同样的手势，但手里不拿零食，等她完成后用另一只手给奖励。口令说一次，给她一点时间，奖励的是口令，而不是举在她鼻子前的食物。' },
+      { title: '压轴', detail: '加一个惊艳动作（“作揖”坐姿，或跳过手持的呼啦圈），然后把两个才艺串成一个小套路，听口令表演。她现在应邀为全家观众表演。毕业，全场起立鼓掌。' },
+    ],
+  },
+  harness: {
+    title: '胸背带与牵绳（选修）',
+    tagline: '为绒毛殿下可能委派的假想未来远征做准备。',
+    why: '选修。只有在将来打算旅行或有人看管的户外时间时才有用，所以它排在课程大纲的最后。',
+    steps: [
+      { title: '胸背带的存在', detail: '它躺在地上被嗅探。零食在它附近发生。' },
+      { title: '穿上，不扣紧', detail: '每次搭在她肩上几秒，随后给零食。' },
+      { title: '室内扣紧', detail: '扣上几分钟，同时用玩耍分散她对这身装备的注意。' },
+      { title: '牵绳跟随', detail: '牵绳系上，她在公寓里游荡，员工像侍臣一样跟随。' },
+      { title: '走廊远征', detail: '在前门外做一次简短的、有陪同的散步。毕业。' },
+    ],
+  },
+};
+
+const courseTr: Record<string, Record<string, CourseText>> = { ms: courseMs, zh: courseZh };
+
 /** Return a course with prose in the active locale (English passes through). */
 export function localizeCourse(course: TrainingCourse, locale?: string): TrainingCourse {
-  if (locale !== 'ms') return course;
-  const o = courseMs[course.slug];
+  const o = locale ? courseTr[locale]?.[course.slug] : undefined;
   if (!o) return course;
   return {
     ...course,
@@ -1452,6 +2022,42 @@ export const staffCopy: Record<string, StaffCopy> = {
       couldNotUpdate: 'Tidak dapat mengemas kini peringatan.',
     },
   },
+  zh: {
+    metaTitle: '员工 · Picha 🐾',
+    metaDescription: '员工宿舍：登记员 PIN 存放在这里，供在编的人类使用。',
+    appTitle: '员工',
+    kicker: '仅限会员',
+    title: '员工室',
+    blurb: '人类存放零食、咖啡和登记员 PIN 的地方。登录以进入管理层绝不会随便交给外人的员工专用控制。',
+    staffOnly: '仅限员工',
+    pinPrompt: '请输入登记员 PIN。零食柜仅限员工。输入一次，本设备就会记住你。',
+    pinLabel: '登记员 PIN',
+    pinPlaceholder: '员工 PIN',
+    unlock: '解锁',
+    checking: '正在检查…',
+    pinNotRecognised: '未能识别该 PIN。请重试。',
+    unlockedBanner: '你进来了；零食在最上面的抽屉里。本设备现在可以记录称重、学院进度和每日例行任务。',
+    remindersLabel: '提醒',
+    reminderTitle: '本设备上的提醒',
+    reminderSub: '在每日例行任务尚未完成时，每隔几小时提醒一次。',
+    on: '开',
+    off: '关',
+    deviceLabel: '本设备',
+    forgetTitle: '忘记本设备上的 PIN',
+    forgetSub: '清除此处保存的 PIN。其他设备不受影响，PIN 本身也不会改变。',
+    moreControlsNote: '更多员工控制会陆续加入。目前主要是一个零食罐、一个水壶和一个衣帽架。',
+    push: {
+      unsupported: '此浏览器无法在应用关闭时发送提醒。',
+      denied: '本站点的通知已被屏蔽。请在浏览器设置中开启，然后再点一次。',
+      subscribed: '开。在例行任务尚未完成时每隔几小时提醒一次（夜间静默）；清单一旦清空即静默。',
+      off: '关。点击即可在每日例行任务尚未完成时获得提醒。',
+      working: '处理中…',
+      pinRejected: 'PIN 被拒绝。请退出后重新登录，然后再试。',
+      cloudNotConfigured: '云端未配置。',
+      signInFirst: '请先登录。',
+      couldNotUpdate: '无法更新提醒。',
+    },
+  },
 };
 export const getStaffCopy = (locale?: string): StaffCopy => staffCopy[locale ?? 'en'] ?? staffCopy.en;
 
@@ -1540,6 +2146,33 @@ export const passportCopy: Record<string, PassportCopy> = {
     registeredAt: 'Didaftarkan di',
     petPhoto: 'Foto Haiwan',
   },
+  zh: {
+    sheetTitle: '宠物护照',
+    closeLabel: '关闭护照',
+    particularsHeading: '宠物资料',
+    identityHeading: '宠物身份',
+    labels: {
+      name: '宠物姓名',
+      species: '物种',
+      breed: '品种',
+      sex: '性别',
+      neutered: '已绝育',
+      colour: '颜色',
+      dob: '出生日期',
+      passportNo: '护照编号',
+    },
+    species: '猫',
+    sexFemale: '雌性',
+    yes: '是',
+    pending: '待定',
+    household: 'Picha 皇家宅邸',
+    signature: '签名：爪印在案',
+    microchipNo: '芯片编号',
+    siteOfImplant: '植入部位',
+    betweenShoulders: '两肩之间',
+    registeredAt: '登记于',
+    petPhoto: '宠物照片',
+  },
 };
 export const getPassportCopy = (locale?: string): PassportCopy =>
   passportCopy[locale ?? 'en'] ?? passportCopy.en;
@@ -1573,6 +2206,15 @@ export const shareCopy: Record<string, ShareCopy> = {
     copyLink: 'Salin pautan',
     copied: 'Disalin',
     shareText: 'Picha si kucing: profil, rekod kesihatan dan panduan penjagaan.',
+  },
+  zh: {
+    sheetTitle: '分享她的档案',
+    closeLabel: '关闭分享面板',
+    blurb: '给兽医、日托、家人：扫码或发送链接。关于 Picha 的一切，一页搞定。',
+    share: '分享',
+    copyLink: '复制链接',
+    copied: '已复制',
+    shareText: 'Picha 这只猫：档案、健康记录和照护指南。',
   },
 };
 export const getShareCopy = (locale?: string): ShareCopy => shareCopy[locale ?? 'en'] ?? shareCopy.en;

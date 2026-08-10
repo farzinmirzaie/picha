@@ -461,16 +461,18 @@ in every change from now on.
   translated carefully and **confirmed by the owners** before shipping — the
   "jokes end where the vet begins" rule holds in every language. Flag these for
   review rather than assuming a translation is safe.
-- **Languages:** English (default), Bahasa Malaysia; Chinese (`zh`) planned.
-  Add one by adding its code to `LOCALES`, an endonym to `localeLabels`, and a
-  full locale block with the same keys; the picker/switcher (`LangPicker`) picks
-  it up automatically.
+- **Languages:** English (default), Bahasa Malaysia, Chinese (`zh`) — all live.
+  Add one by adding its code to `LOCALES` + `astro.config` `i18n` (locale +
+  `fallback`), an endonym to `localeLabels`, and a full locale block with the
+  same keys in every dictionary (plus a branch in the `localize*` helpers and
+  `lib/dates`/`lib/weight-viz` if its grammar differs); the picker
+  (`LangPicker`) picks it up automatically.
 
 **Mechanism (live — this is how it works now).** **Astro native i18n**:
-locale-prefixed static routes (`/picha/` = English, `/picha/ms/` = Malay) via
-`astro.config` `i18n` (`locales: ['en','ms']`, `prefixDefaultLocale: false`,
-`fallbackType: 'rewrite'`, `fallback: { ms: 'en' }`). SEO-friendly, English
-served with no JS.
+locale-prefixed static routes (`/picha/` = English, `/picha/ms/` = Malay,
+`/picha/zh/` = Chinese) via `astro.config` `i18n` (`locales: ['en','ms','zh']`,
+`prefixDefaultLocale: false`, `fallbackType: 'rewrite'`,
+`fallback: { ms: 'en', zh: 'en' }`). SEO-friendly, English served with no JS.
 
 - **One locale-aware page file per route — NO per-locale route files.** Each
   page/component reads `Astro.currentLocale` and pulls prose from the
@@ -498,15 +500,17 @@ served with no JS.
   (`LangPicker`) links between locale routes and stores the choice
   (localStorage `picha-lang`) for the future first-visit gate.
 
-**Status:** every rendered page + shared component is fully localized (en + ms).
-`/llms.txt` is intentionally English only (canonical machine-readable doc). When
-you add a page/string, add its keys to **both** locale blocks in the same change.
+**Status:** every rendered page + shared component is fully localized (en + ms
++ zh). The language picker no longer opens on load; it's reached from the globe
+in the desktop nav + the mobile app-bar translate button. `/llms.txt` is
+intentionally English only (canonical machine-readable doc). When you add a
+page/string, add its keys to **every** locale block in the same change.
 
-**⚠️ Owner-verify the medical/safety Malay** before trusting it as final:
-`callVetIf`, the health timeline/recurring/clinical details, `toxicItems`, and
-the body-language danger/eye-health states were translated carefully and kept
-plain, but must be confirmed by the owners (jokes end where the vet begins, in
-every language).
+**⚠️ Owner-verify the medical/safety Malay AND Chinese** before trusting it as
+final: `callVetIf`, the health timeline/recurring/clinical details,
+`toxicItems`, and the body-language danger/eye-health states were translated
+carefully and kept plain, but must be confirmed by the owners (jokes end where
+the vet begins, in every language).
 
 ## Conventions
 

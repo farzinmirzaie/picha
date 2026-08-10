@@ -1,11 +1,11 @@
 ---
 /**
  * Language picker (Astro native i18n). Include once (in Layout). Any
- * `[data-lang-open]` element opens it, and it also opens on every visit for now
- * (later: first visit only, then the switcher takes over). Each option is a
- * link to the current page in that locale (English at root, others prefixed),
- * so picking a language navigates — no client-side text swap. The choice is
- * also stored in localStorage for the future first-visit gate.
+ * `[data-lang-open]` element opens it (the globe in the desktop nav + the
+ * mobile app-bar translate button). Each option is a link to the current page
+ * in that locale (English at root, others prefixed), so picking a language
+ * navigates — no client-side text swap. The choice is stored in localStorage
+ * (`picha-lang`); it no longer opens automatically on load.
  */
 import { Icon } from 'astro-icon/components';
 import { LOCALES, localeLabels, t } from '../i18n/ui';
@@ -94,9 +94,4 @@ const urlFor = (loc: string) => (loc === 'en' ? `${base}${rest}` : `${base}/${lo
 
   setup();
   document.addEventListener('astro:page-load', setup);
-  // Ask on every visit: open on each hard load (in-app navigations don't fire
-  // `load`). Later: gate on a first-visit flag so it appears only once.
-  window.addEventListener('load', () => {
-    (document.getElementById('lang') as HTMLDialogElement | null)?.showModal();
-  });
 </script>

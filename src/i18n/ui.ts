@@ -13,7 +13,7 @@
  * astro.config `i18n`. Keep the playful "staff of the cat" voice in every
  * language; a literal translation that loses the humour is wrong.
  */
-export const LOCALES = ['en', 'ms'] as const; // 'zh' coming next
+export const LOCALES = ['en', 'ms', 'zh'] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 
@@ -21,7 +21,7 @@ export const DEFAULT_LOCALE: Locale = 'en';
 export const localeLabels: Record<string, string> = {
   en: 'English',
   ms: 'Bahasa Malaysia',
-  // zh: '中文',
+  zh: '中文',
 };
 
 /** Look up a UI string for a locale, falling back to the default locale. */
@@ -57,5 +57,18 @@ export const ui: Record<string, Dict> = {
     'lang.sub': 'Boleh tukar bila-bila melalui ikon glob dalam menu.',
     'lang.action': 'Bahasa',
     'date.confirmVet': 'melepasi anggaran, sahkan dengan doktor haiwan',
+  },
+  zh: {
+    'nav.home': '主页',
+    'nav.health': '健康',
+    'nav.care': '照护',
+    'nav.tools': '工具',
+    'hero.tagline': '雪白绒毛 · 琥珀色眼睛 · 粉红项圈',
+    'hero.share': '分享',
+    'home.getToKnow': '认识她',
+    'lang.title': '选择你的语言',
+    'lang.sub': '随时可以从菜单里的地球图标切换。',
+    'lang.action': '语言',
+    'date.confirmVet': '已过预计日期，请向兽医确认',
   },
 };

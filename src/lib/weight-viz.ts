@@ -13,6 +13,10 @@ const PAD = { top: 26, right: 18, bottom: 40, left: 46 };
 
 /** Chart/stats delta-chip phrasing; "no change" when the weight held steady. */
 export function deltaLabel(g: number, locale?: string): string {
+  if (locale === 'zh') {
+    if (g === 0) return '较上次称重没有变化';
+    return `较上次称重${g > 0 ? '增加' : '减少'} ${Math.abs(g)} g`;
+  }
   if (locale === 'ms') {
     if (g === 0) return 'tiada perubahan sejak audit lepas';
     return `${Math.abs(g)} g ${g > 0 ? 'naik' : 'turun'} sejak audit lepas`;
@@ -23,6 +27,11 @@ export function deltaLabel(g: number, locale?: string): string {
 
 /** Ledger-row delta phrasing: opening entry, no change, or "N g". */
 export function rowDeltaLabel(g: number | undefined, locale?: string): string {
+  if (locale === 'zh') {
+    if (g === undefined) return '首次记录';
+    if (g === 0) return '无变化';
+    return `${Math.abs(g)} g`;
+  }
   if (locale === 'ms') {
     if (g === undefined) return 'catatan pembukaan';
     if (g === 0) return 'tiada perubahan';
@@ -55,7 +64,8 @@ export function chartSvg(
   target: { min: number; max: number },
   locale?: string,
 ): string {
-  const bandLabel = locale === 'ms' ? 'julat dewasa sihat' : 'healthy adult range';
+  const bandLabel =
+    locale === 'ms' ? 'julat dewasa sihat' : locale === 'zh' ? '健康成猫范围' : 'healthy adult range';
   const { entries, kgs, heaviest, lightest, latest } = weightStats(history);
   const { W, H } = CHART;
   const innerW = W - PAD.left - PAD.right;
@@ -151,6 +161,9 @@ export function chartSvg(
 
 export function chartAriaLabel(history: WeightEntry[], locale?: string): string {
   const { entries, latest } = weightStats(history);
+  if (locale === 'zh') {
+    return `Picha 体重折线图：${entries.length} 次称重，从 ${dateLabel(entries[0].date, locale)} 到 ${dateLabel(latest.date, locale)}，目前 ${latest.kg} kg。完整数据见下方记录。`;
+  }
   if (locale === 'ms') {
     return `Carta garis berat Picha: ${entries.length} timbangan dari ${dateLabel(entries[0].date, locale)} hingga ${dateLabel(latest.date, locale)}, kini ${latest.kg} kg. Angka penuh ada dalam lejar di bawah.`;
   }

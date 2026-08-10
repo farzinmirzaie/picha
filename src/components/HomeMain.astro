@@ -13,12 +13,12 @@ import ShareDialog from './ShareDialog.astro';
 import SectionLabel from './ui/SectionLabel.astro';
 import IconBadge from './ui/IconBadge.astro';
 import Button from './ui/Button.astro';
-import { identity, contact, personality, lullaby, ageLabel } from '../data/picha';
-import { getHomeCopy } from '../i18n/content';
+import { identity, contact, personality, lullaby } from '../data/picha';
+import { getHomeCopy, ageLabelI18n } from '../i18n/content';
 
 const locale = Astro.currentLocale ?? 'en';
 const c = getHomeCopy(locale);
-const age = ageLabel();
+const age = ageLabelI18n(locale);
 
 // Highlight the household names in the story (works in any language: the names
 // don't translate).
