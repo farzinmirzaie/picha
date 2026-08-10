@@ -14,16 +14,19 @@ import SectionLabel from './ui/SectionLabel.astro';
 import IconBadge from './ui/IconBadge.astro';
 import Button from './ui/Button.astro';
 import { identity, contact, personality, lullaby } from '../data/picha';
-import { getHomeCopy, ageLabelI18n } from '../i18n/content';
+import { getHomeCopy, ageLabelI18n, localizeName } from '../i18n/content';
 
 const locale = Astro.currentLocale ?? 'en';
 const c = getHomeCopy(locale);
 const age = ageLabelI18n(locale);
+const heroName = localizeName(identity.name, locale);
 
-// Highlight the household names in the story (works in any language: the names
-// don't translate).
+// Highlight the household names in the story, in the active locale's script.
+// A Unicode-aware boundary (no ASCII \b) so Persian names match too.
+const storyNames = ['Picha', 'Farah', 'Farzin'].map((n) => localizeName(n, locale));
+const storyRe = new RegExp(`(?<!\\p{L})(${storyNames.join('|')})(?!\\p{L})`, 'gu');
 const storyHtml = c.story.replace(
-  /\b(Picha|Farah|Farzin)\b/g,
+  storyRe,
   '<span class="font-semibold text-blush-600 dark:text-blush-300">$1</span>',
 );
 
@@ -81,7 +84,7 @@ const slides = Object.entries(slideModules)
   <h1
     class="font-display mt-6 text-6xl font-semibold tracking-tight text-blush-600 sm:text-7xl dark:text-blush-300"
   >
-    Picha
+    {heroName}
   </h1>
   <p class="font-display mt-2 text-lg italic text-ink-600 sm:text-xl dark:text-ink-400">
     {c.tagline}
@@ -165,7 +168,7 @@ const slides = Object.entries(slideModules)
     {
       contact.owners.map((o) => (
         <Button variant="outline" icon="ph:phone" href={`tel:${o.phone.replace(/\s/g, '')}`}>
-          {`${c.call} ${o.name}`}
+          {`${c.call} ${localizeName(o.name, locale)}`}
         </Button>
       ))
     }

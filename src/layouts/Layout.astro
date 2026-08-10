@@ -8,6 +8,7 @@ import Nav from '../components/Nav.astro';
 import LangPicker from '../components/LangPicker.astro';
 import IconButton from '../components/ui/IconButton.astro';
 import { t as tr, isRtl } from '../i18n/ui';
+import { localizeName } from '../i18n/content';
 import { supabaseClient } from '../data/supabase';
 import { nextDueHealth } from '../lib/health';
 
@@ -40,7 +41,10 @@ const ogUrl = new URL(Astro.url.pathname, Astro.site);
 const locale = Astro.currentLocale ?? 'en';
 const dir = isRtl(locale) ? 'rtl' : 'ltr';
 const appTitle =
-  appTitleProp ?? (current === 'home' || current === 'none' ? 'Picha' : tr(locale, `nav.${current}`));
+  appTitleProp ??
+  (current === 'home' || current === 'none'
+    ? localizeName('Picha', locale)
+    : tr(locale, `nav.${current}`));
 ---
 
 <!doctype html>

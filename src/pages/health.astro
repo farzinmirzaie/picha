@@ -22,7 +22,7 @@ import { currentWeight } from '../data/weights';
 import { supabaseClient } from '../data/supabase';
 import { dateLabel, shortLabel, inDaysLabel } from '../lib/dates';
 import { upcomingHealth, nextDueHealth, isHealthDueSoon } from '../lib/health';
-import { getHealthCopy, localizeHealthItem, ageLabelI18n } from '../i18n/content';
+import { getHealthCopy, localizeHealthItem, ageLabelI18n, localizeName } from '../i18n/content';
 
 const locale = Astro.currentLocale ?? 'en';
 const c = getHealthCopy(locale);
@@ -319,7 +319,7 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
             >
               <Icon name="ph:phone" class="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
               <span class="flex-1">
-                {o.name} <span class="font-semibold opacity-70">· {o.phone}</span>
+                {localizeName(o.name, locale)} <span class="font-semibold opacity-70">· {o.phone}</span>
               </span>
               <Icon name="ph:caret-right" class="h-4 w-4 opacity-50 rtl:-scale-x-100" aria-hidden="true" />
             </a>

@@ -453,11 +453,13 @@ in every change from now on.
   **prose** is per-locale. So a weight/date/product change is still made once,
   and translations never drift from the facts. When you touch `picha.ts`, move
   the prose into the locale dictionaries and leave the facts in place.
-  - The owners' contact labels `contact.owners[].name` ("Mommy" / "Daddy") are
-    **intentionally kept in English in every locale** — they're her fixed
-    nicknames (proper names), not role words. Don't translate them (owner
-    decision); the if-found buttons read "Hubungi Mommy" / "致电 Daddy" on
-    purpose.
+  - Proper names + owner nicknames (`Picha`, `Farah`, `Farzin`, `Daddy`,
+    `Mommy`) go through `localizeName(name, locale)` (i18n/content.ts). They
+    stay Latin/English for en/ms/zh (owner decision — "Hubungi Mommy",
+    "致电 Daddy" on purpose), and render in Persian script for `fa`
+    (پیچا / فرح / فرزین / بابا / مامان) since a Latin name inside an RTL Persian
+    page reads badly. Add a name to the `fa` block of `nameTr` to localize it;
+    other locales fall through to the passed-in value.
 - **Translate the voice, not the words.** Keep the playful "staff of the cat"
   register in every language (Malay, Chinese, …); a literal translation that
   loses the humour is wrong.

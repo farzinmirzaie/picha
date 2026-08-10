@@ -172,7 +172,7 @@ const zh: HomeCopy = {
 const fa: HomeCopy = {
   tagline: 'پشمالوی سفیدبرفی · چشمان کهربایی · قلاده صورتی',
   story:
-    'Picha صاحب یک آپارتمان در کوالالامپور است، جایی که دو انسان، Farah و Farzin، را به‌عنوان کارکنان تمام‌وقت استخدام کرده. وظایف آن‌ها شامل کار با اسباب‌بازی چوبی، خاراندن چانه به‌محض درخواست، و باز کردن بسته‌های تنقلات با فرکانس دقیق میو کردن اوست. دستمزد: خرخر، سُر دادن سر، و افتخار بودن در کنار او. این معامله‌ی منصفانه‌ای نیست. هیچ‌کس شکایتی ندارد.',
+    'پیچا صاحب یک آپارتمان در کوالالامپور است، جایی که دو انسان، فرح و فرزین، را به‌عنوان کارکنان تمام‌وقت استخدام کرده. وظایف آن‌ها شامل کار با اسباب‌بازی چوبی، خاراندن چانه به‌محض درخواست، و باز کردن بسته‌های تنقلات با فرکانس دقیق میو کردن اوست. دستمزد: خرخر، سُر دادن سر، و افتخار بودن در کنار او. این معامله‌ی منصفانه‌ای نیست. هیچ‌کس شکایتی ندارد.',
   looks:
     'پوشش بلند و کاملاً سفید، گوش‌ها و بینی صورتی، چشمان کهربایی. قلاده‌ای صورتی با زنگوله می‌بندد تا کارکنان همیشه بدانند مدیریت کجاست.',
   getToKnow: 'با او آشنا شوید',
@@ -464,6 +464,17 @@ function humanAgeLineFa(y: number): string {
   return 'یک سالمند محترم که همه‌چیز را دیده';
 }
 
+// Proper names + owner nicknames. English/Malay/Chinese keep the Latin names
+// (fall through to the passed-in value); Persian renders them in Persian
+// script. Owner decision per language: nicknames were kept English for ms/zh,
+// but Persian pages read better with بابا / مامان etc.
+const nameTr: Record<string, Record<string, string>> = {
+  fa: { Picha: 'پیچا', Farah: 'فرح', Farzin: 'فرزین', Daddy: 'بابا', Mommy: 'مامان' },
+};
+export function localizeName(name: string, locale?: string): string {
+  return (locale ? nameTr[locale]?.[name] : undefined) ?? name;
+}
+
 /** Locale-aware human-age line (English from picha.ts, others translated). */
 export function humanAgeLineI18n(years: number, locale?: string): string {
   if (locale === 'ms') return humanAgeLineMs(years);
@@ -605,7 +616,7 @@ export const catYearsCopy: Record<string, CatYearsCopy> = {
     convertLabel: 'تبدیل هر گربه',
     convertHint: 'برای سنِ او به سال گربه بلغزانید',
     presetLabels: ['۲ ماه', '۶ ماه', '۱ سال', '۵ سال', '۱۰ سال', '۱۵ سال'],
-    pichaNow: 'Picha، اکنون',
+    pichaNow: 'پیچا، اکنون',
     catTime: 'زمان گربه',
     humanTime: 'زمان انسان',
     years: 'سال',
@@ -1514,7 +1525,7 @@ const healthTextFa: Record<string, { title: string; detail: string }> = {
   'Felocell 4, second dose. Series complete.':
     { title: 'واکسن FVRCP، دوز ۲', detail: 'Felocell 4، دوز دوم. سری کامل شد.' },
   'Interviewed Farah & Farzin at the pet shop and hired both on the spot. No probation period; she does not do trial runs.':
-    { title: 'استخدام بزرگِ کارکنان', detail: 'در فروشگاه حیوانات با Farah و Farzin مصاحبه کرد و هر دو را همان‌جا استخدام کرد. بدون دوره‌ی آزمایشی؛ او دوره‌ی آزمایشی ندارد.' },
+    { title: 'استخدام بزرگِ کارکنان', detail: 'در فروشگاه حیوانات با فرح و فرزین مصاحبه کرد و هر دو را همان‌جا استخدام کرد. بدون دوره‌ی آزمایشی؛ او دوره‌ی آزمایشی ندارد.' },
   'Revolution Plus applied. Fleas, ticks and worms: evicted.':
     { title: 'کنترل انگل', detail: 'Revolution Plus استفاده شد. کک، کنه و کرم‌ها: اخراج شدند.' },
   'Interior pest control, completed.':
@@ -2777,7 +2788,7 @@ export const passportCopy: Record<string, PassportCopy> = {
     sexFemale: 'ماده',
     yes: 'بله',
     pending: 'در انتظار',
-    household: 'دربارِ سلطنتیِ Picha',
+    household: 'دربارِ سلطنتیِ پیچا',
     signature: 'امضا: پنجه در پرونده',
     microchipNo: 'شماره‌ی میکروچیپ',
     siteOfImplant: 'محلِ کاشت',
@@ -2835,7 +2846,7 @@ export const shareCopy: Record<string, ShareCopy> = {
     share: 'هم‌رسانی',
     copyLink: 'کپیِ لینک',
     copied: 'کپی شد',
-    shareText: 'Picha گربه: پروفایل، پرونده‌ی سلامت و راهنمای مراقبت.',
+    shareText: 'پیچا گربه: پروفایل، پرونده‌ی سلامت و راهنمای مراقبت.',
   },
 };
 export const getShareCopy = (locale?: string): ShareCopy => shareCopy[locale ?? 'en'] ?? shareCopy.en;

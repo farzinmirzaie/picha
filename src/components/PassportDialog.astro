@@ -8,13 +8,14 @@ import { Icon } from 'astro-icon/components';
 import SheetHeader from './ui/SheetHeader.astro';
 import pichaPhoto from '../assets/picha.jpg';
 import { identity, microchip, microchipRegistry } from '../data/picha';
-import { getPassportCopy } from '../i18n/content';
+import { getPassportCopy, localizeName } from '../i18n/content';
 
-const c = getPassportCopy(Astro.currentLocale);
+const locale = Astro.currentLocale ?? 'en';
+const c = getPassportCopy(locale);
 
 // Layout modelled on the official pet passport: dotted fields, pen-blue values.
 const particulars = [
-  { label: c.labels.name, value: identity.name },
+  { label: c.labels.name, value: localizeName(identity.name, locale) },
   { label: c.labels.species, value: c.species },
   { label: c.labels.breed, value: identity.breed },
   { label: c.labels.sex, value: c.sexFemale },
