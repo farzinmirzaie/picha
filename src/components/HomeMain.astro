@@ -1,0 +1,249 @@
+---
+/**
+ * The Home page body, locale-aware. Rendered by both `pages/index.astro` (en)
+ * and `pages/ms/index.astro` (ms); it reads `Astro.currentLocale` and pulls
+ * prose from src/i18n/content.ts while keeping facts (icons, photos, the
+ * lullaby URL, phone numbers) sourced from picha.ts.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { Icon } from 'astro-icon/components';
+import Footer from './Footer.astro';
+import ShareDialog from './ShareDialog.astro';
+import SectionLabel from './ui/SectionLabel.astro';
+import IconBadge from './ui/IconBadge.astro';
+import Button from './ui/Button.astro';
+import { identity, contact, personality, lullaby, ageLabel } from '../data/picha';
+import { getHomeCopy } from '../i18n/content';
+
+const locale = Astro.currentLocale ?? 'en';
+const c = getHomeCopy(locale);
+const age = ageLabel();
+
+// Highlight the household names in the story (works in any language: the names
+// don't translate).
+const storyHtml = c.story.replace(
+  /\b(Picha|Farah|Farzin)\b/g,
+  '<span class="font-semibold text-blush-600 dark:text-blush-300">$1</span>',
+);
+
+// Personality: translated copy zipped with each item's icon (a fact) by order.
+const traits = personality.map((p, i) => ({
+  icon: p.icon,
+  title: c.personality[i]?.title ?? p.title,
+  detail: c.personality[i]?.detail ?? p.detail,
+}));
+
+// Hero slideshow: every picha*.jpg in assets, picha.jpg first then numerically.
+const slideModules = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/picha*.jpg',
+  { eager: true },
+);
+const slideNo = (path: string) => parseInt(path.match(/picha-(\d+)/)?.[1] ?? '0', 10);
+const slides = Object.entries(slideModules)
+  .sort(([a], [b]) => slideNo(a) - slideNo(b))
+  .map(([, m]) => m.default);
+---
+
+<!-- Hero -->
+<header class="mx-auto w-full max-w-2xl px-5 pt-10 text-center sm:pt-14">
+  <div class="hero-pop relative mx-auto w-52 sm:w-64">
+    <div
+      class="wiggle-hover relative aspect-[4/5] overflow-hidden rounded-t-full rounded-b-[2.5rem] shadow-xl ring-4 ring-white dark:ring-plum-800"
+      role="img"
+      aria-label="Photos of Picha, an all-white cat with amber eyes and a pink collar"
+    >
+      {
+        slides.map((s, i) => (
+          <Image
+            src={s}
+            alt=""
+            width={512}
+            densities={[1, 2]}
+            class:list={[
+              'absolute inset-0 h-full w-full object-cover transition-opacity duration-1000',
+              i === 0 ? 'opacity-100' : 'opacity-0',
+            ]}
+            style="object-position: 50% 30%"
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : undefined}
+            data-hero-slide
+          />
+        ))
+      }
+    </div>
+    <Icon name="ph:paw-print" class="float-slow absolute -right-8 top-6 h-7 w-7 rotate-12 text-blush-400/70" aria-hidden="true" />
+    <Icon name="ph:paw-print" class="float-slow absolute -left-7 bottom-10 h-5 w-5 -rotate-12 text-blush-400/50 [animation-delay:1.2s]" aria-hidden="true" />
+    <Icon name="ph:cat" class="float-slow absolute -left-9 top-10 h-6 w-6 -rotate-6 text-blush-400/60 [animation-delay:0.6s]" aria-hidden="true" />
+    <Icon name="ph:cat" class="float-slow absolute -right-7 bottom-6 h-5 w-5 rotate-6 text-blush-400/40 [animation-delay:1.8s]" aria-hidden="true" />
+  </div>
+
+  <h1
+    class="font-display mt-6 text-6xl font-semibold tracking-tight text-blush-600 sm:text-7xl dark:text-blush-300"
+  >
+    Picha
+  </h1>
+  <p class="font-display mt-2 text-lg italic text-ink-600 sm:text-xl dark:text-ink-400">
+    {c.tagline}
+  </p>
+  <p class="mt-2 text-sm font-bold text-amber-700 dark:text-amber-300">
+    {identity.breed} · <span data-age>{age}</span>
+  </p>
+
+  <!-- desktop only; on mobile the app bar carries this action -->
+  <Button variant="outline" icon="ph:share-network" data-share-open class="mt-6 max-md:hidden">
+    {c.share}
+  </Button>
+</header>
+
+<!-- Story -->
+<section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="Her story">
+  <p
+    class="reveal font-display text-xl leading-relaxed font-medium text-ink-900 sm:text-2xl sm:leading-relaxed dark:text-paper-100"
+    set:html={storyHtml}
+  />
+  <p class="reveal mt-5 leading-relaxed text-ink-600 dark:text-ink-400">{c.looks}</p>
+</section>
+
+<!-- Get to know her -->
+<section class="mx-auto w-full max-w-2xl px-5 pt-14" aria-label="Get to know her">
+  <SectionLabel class="reveal">{c.getToKnow}</SectionLabel>
+  <ul
+    class="mt-2 divide-y divide-paper-300/70 md:grid md:grid-cols-2 md:gap-x-10 md:divide-y-0 dark:divide-plum-800"
+  >
+    {
+      traits.map((p, i) => (
+        <li
+          class:list={[
+            'reveal flex items-start gap-4 py-5',
+            i === traits.length - 1 && traits.length % 2 === 1 ? 'md:col-span-2' : '',
+          ]}
+        >
+          <IconBadge icon={p.icon} />
+          <div>
+            <h3 class="font-display text-lg font-semibold">{p.title}</h3>
+            <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+              {p.detail}
+            </p>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<!-- Her lullaby -->
+<section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="Her lullaby">
+  <div
+    class="reveal flex items-start gap-4 rounded-3xl border border-blush-200/70 bg-gradient-to-br from-blush-100/60 to-transparent p-6 dark:border-plum-700 dark:from-plum-800/60"
+  >
+    <IconBadge icon="ph:music-notes" />
+    <div class="min-w-0">
+      <h2 class="font-display text-lg font-semibold">{c.lullaby.title}</h2>
+      <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+        {c.lullaby.detail}
+      </p>
+      <Button
+        href={lullaby.url}
+        target="_blank"
+        rel="noopener"
+        icon="ph:play"
+        data-lullaby
+        data-video-id={lullaby.videoId}
+        class="mt-3"
+      >
+        {c.lullaby.cta}
+      </Button>
+    </div>
+  </div>
+</section>
+
+<!-- If found (home only) -->
+<section class="mx-auto w-full max-w-2xl px-5 pt-12 pb-8 text-center md:pb-0" aria-label="Contact">
+  <p class="text-sm text-ink-600 dark:text-ink-400">{c.ifFound}</p>
+  <div class="mt-4 flex flex-wrap items-center justify-center gap-2.5">
+    {
+      contact.owners.map((o) => (
+        <Button variant="outline" icon="ph:phone" href={`tel:${o.phone.replace(/\s/g, '')}`}>
+          {`${c.call} ${o.name}`}
+        </Button>
+      ))
+    }
+  </div>
+</section>
+
+<Footer />
+
+<ShareDialog />
+
+<script>
+  // Hero slideshow: crossfade through her photos, shuffled per visit.
+  let slideTimer: ReturnType<typeof setInterval> | undefined;
+  let slideOrder: number[] = [];
+  let slidePos = 0;
+
+  function setupSlideshow() {
+    clearInterval(slideTimer);
+    const slides = Array.from(
+      document.querySelectorAll<HTMLImageElement>('[data-hero-slide]'),
+    );
+    if (slides.length < 2) return;
+
+    slideOrder = slides.map((_, i) => i);
+    for (let i = slideOrder.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [slideOrder[i], slideOrder[j]] = [slideOrder[j], slideOrder[i]];
+    }
+    slidePos = 0;
+
+    const show = (idx: number) =>
+      slides.forEach((s, i) => {
+        s.classList.toggle('opacity-100', i === idx);
+        s.classList.toggle('opacity-0', i !== idx);
+      });
+
+    const start = slides[slideOrder[0]];
+    if (start.complete) show(slideOrder[0]);
+    else start.addEventListener('load', () => show(slideOrder[0]), { once: true });
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    slideTimer = setInterval(() => {
+      slides[slideOrder[slidePos]]?.classList.replace('opacity-100', 'opacity-0');
+      slidePos = (slidePos + 1) % slideOrder.length;
+      slides[slideOrder[slidePos]]?.classList.replace('opacity-0', 'opacity-100');
+    }, 4000);
+  }
+
+  setupSlideshow();
+  document.addEventListener('astro:page-load', setupSlideshow);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) clearInterval(slideTimer);
+    else setupSlideshow();
+  });
+
+  // "Play her lullaby": deep-link into the YouTube app on mobile, web fallback.
+  function setupLullaby() {
+    const link = document.querySelector<HTMLAnchorElement>('[data-lullaby]');
+    if (!link || link.dataset.bound) return;
+    link.dataset.bound = '1';
+    link.addEventListener('click', (e) => {
+      if (!matchMedia('(pointer: coarse)').matches) return;
+      const id = link.dataset.videoId;
+      if (!id) return;
+      e.preventDefault();
+      const web = link.href;
+      let left = false;
+      const onHide = () => {
+        left = true;
+      };
+      document.addEventListener('visibilitychange', onHide, { once: true });
+      window.location.href = `vnd.youtube://watch?v=${id}`;
+      setTimeout(() => {
+        document.removeEventListener('visibilitychange', onHide);
+        if (!left && !document.hidden) window.location.href = web;
+      }, 600);
+    });
+  }
+  setupLullaby();
+  document.addEventListener('astro:page-load', setupLullaby);
+</script>

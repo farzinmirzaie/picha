@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import HomeMain from '../../components/HomeMain.astro';
+import { identity } from '../../data/picha';
+import { getHomeCopy } from '../../i18n/content';
+
+const c = getHomeCopy(Astro.currentLocale);
+---
+
+<Layout title="Picha 🐾" description={`Picha: ${identity.breed}. ${c.tagline}`} current="home">
+  <HomeMain />
+</Layout>

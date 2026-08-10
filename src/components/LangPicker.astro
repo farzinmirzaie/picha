@@ -1,28 +1,32 @@
 ---
 /**
- * Language picker + the client i18n engine (proof of concept). Include once
- * (in Layout). Any `[data-lang-open]` element opens it, and it also opens on
- * every visit for now (later: first visit only, then the switcher takes over).
- * Picking a language swaps every `[data-i18n]` element via src/i18n/ui.ts,
- * sets <html lang>, and remembers the choice in localStorage (`picha-lang`).
- * Options render from LOCALES, so adding a language is a data-only change.
+ * Language picker (Astro native i18n). Include once (in Layout). Any
+ * `[data-lang-open]` element opens it, and it also opens on every visit for now
+ * (later: first visit only, then the switcher takes over). Each option is a
+ * link to the current page in that locale (English at root, others prefixed),
+ * so picking a language navigates — no client-side text swap. The choice is
+ * also stored in localStorage for the future first-visit gate.
  */
 import { Icon } from 'astro-icon/components';
-import { LOCALES, localeLabels } from '../i18n/ui';
+import { LOCALES, localeLabels, t } from '../i18n/ui';
+
+const current = Astro.currentLocale ?? 'en';
+const base = import.meta.env.BASE_URL.replace(/\/$/, ''); // "/picha"
+// Logical path after the base, with any locale prefix stripped.
+let rest = Astro.url.pathname.slice(base.length) || '/';
+const m = rest.match(/^\/ms(?=\/|$)/);
+if (m) rest = rest.slice(m[0].length) || '/';
+if (!rest.startsWith('/')) rest = '/' + rest;
+const urlFor = (loc: string) => (loc === 'en' ? `${base}${rest}` : `${base}/${loc}${rest}`);
 ---
 
 <dialog id="lang" class="sheet" aria-labelledby="lang-title">
   <div
     class="rounded-2xl bg-paper-50 shadow-2xl max-md:rounded-b-none max-md:pb-[env(safe-area-inset-bottom)] dark:bg-plum-900"
   >
-    <!-- header inline (not SheetHeader) so the title itself can translate -->
     <div class="sticky top-0 z-10 flex items-center justify-between bg-blush-600 px-5 py-3">
-      <h2
-        id="lang-title"
-        data-i18n="lang.title"
-        class="text-[11px] font-bold tracking-[0.22em] text-white uppercase sm:text-xs"
-      >
-        Choose your language
+      <h2 id="lang-title" class="text-[11px] font-bold tracking-[0.22em] text-white uppercase sm:text-xs">
+        {t(current, 'lang.title')}
       </h2>
       <button
         type="button"
@@ -35,30 +39,25 @@ import { LOCALES, localeLabels } from '../i18n/ui';
     </div>
 
     <div class="p-6">
-      <p
-        data-i18n="lang.sub"
-        class="mx-auto max-w-xs text-center text-sm leading-relaxed text-ink-600 dark:text-ink-400"
-      >
-        You can switch anytime from the globe in the menu.
+      <p class="mx-auto max-w-xs text-center text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+        {t(current, 'lang.sub')}
       </p>
       <ul class="mt-5 space-y-2.5">
         {
           LOCALES.map((l) => (
             <li>
-              <button
-                type="button"
+              <a
+                href={urlFor(l)}
                 data-lang-pick={l}
+                aria-current={l === current ? 'true' : undefined}
                 class="flex w-full items-center gap-3 rounded-2xl border border-blush-200/70 bg-white px-4 py-3.5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-950"
               >
                 <Icon name="ph:translate" class="h-5 w-5 shrink-0 text-blush-500" aria-hidden="true" />
                 <span class="flex-1 font-display text-lg font-semibold">{localeLabels[l]}</span>
-                <Icon
-                  name="ph:check-circle"
-                  data-lang-active
-                  class="hidden h-5 w-5 shrink-0 text-blush-600 dark:text-blush-300"
-                  aria-hidden="true"
-                />
-              </button>
+                {l === current && (
+                  <Icon name="ph:check-circle" class="h-5 w-5 shrink-0 text-blush-600 dark:text-blush-300" aria-hidden="true" />
+                )}
+              </a>
             </li>
           ))
         }
@@ -69,32 +68,8 @@ import { LOCALES, localeLabels } from '../i18n/ui';
 
 <script>
   import { bindDialog } from '../lib/dialog';
-  import { ui, DEFAULT_LOCALE, LOCALES } from '../i18n/ui';
-
-  const KEY = 'picha-lang';
-  const getLang = () => {
-    const v = localStorage.getItem(KEY);
-    return v && (LOCALES as readonly string[]).includes(v) ? v : DEFAULT_LOCALE;
-  };
-
-  // Swap every tagged element to `lang`, set <html lang>, and mark the active
-  // option. Falls back to the default locale for any missing key.
-  function apply(lang: string) {
-    const dict = ui[lang] ?? ui[DEFAULT_LOCALE];
-    document.documentElement.lang = lang;
-    document.querySelectorAll<HTMLElement>('[data-i18n]').forEach((el) => {
-      const key = el.dataset.i18n!;
-      const val = dict[key] ?? ui[DEFAULT_LOCALE][key];
-      if (val != null) el.textContent = val;
-    });
-    document.querySelectorAll<HTMLElement>('[data-lang-pick]').forEach((btn) => {
-      const on = btn.dataset.langPick === lang;
-      btn.querySelector('[data-lang-active]')?.classList.toggle('hidden', !on);
-    });
-  }
 
   function setup() {
-    apply(getLang()); // re-apply on every page, including after ClientRouter swaps
     const dialog = document.getElementById('lang') as HTMLDialogElement | null;
     if (!dialog) return;
     document.querySelectorAll<HTMLElement>('[data-lang-open]').forEach((btn) => {
@@ -105,22 +80,22 @@ import { LOCALES, localeLabels } from '../i18n/ui';
     if (dialog.dataset.wired) return;
     dialog.dataset.wired = '1';
     bindDialog(dialog);
-    dialog.querySelectorAll<HTMLButtonElement>('[data-lang-pick]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const lang = btn.dataset.langPick!;
-        localStorage.setItem(KEY, lang);
-        apply(lang);
-        dialog.close();
+    // Remember the choice (the link itself navigates to the locale route).
+    dialog.querySelectorAll<HTMLAnchorElement>('[data-lang-pick]').forEach((a) => {
+      a.addEventListener('click', () => {
+        try {
+          localStorage.setItem('picha-lang', a.dataset.langPick!);
+        } catch {
+          /* private mode */
+        }
       });
     });
   }
 
   setup();
   document.addEventListener('astro:page-load', setup);
-
-  // Ask on every visit: open on each hard load (in-app ClientRouter navigations
-  // don't fire `load`, so it won't nag between pages). Later: gate on a
-  // first-visit flag so it appears only once, then the switcher takes over.
+  // Ask on every visit: open on each hard load (in-app navigations don't fire
+  // `load`). Later: gate on a first-visit flag so it appears only once.
   window.addEventListener('load', () => {
     (document.getElementById('lang') as HTMLDialogElement | null)?.showModal();
   });

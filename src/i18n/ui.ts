@@ -1,19 +1,17 @@
 /**
- * i18n dictionary for the "Reading Picha" site (proof of concept).
+ * i18n UI-string dictionary — short chrome strings (nav labels, buttons, the
+ * language picker). Longer prose lives in i18n/content.ts.
  *
- * HOW IT WORKS (for now): the pages render in English at build time; a small
- * client engine (see components/LangPicker.astro) swaps every element tagged
- * `data-i18n="<key>"` to the visitor's chosen language and sets <html lang>.
- * The choice lives in localStorage (`picha-lang`); a picker is shown on every
- * visit (later: first visit only, then the globe switcher takes over).
+ * HOW IT WORKS: Astro native i18n serves locale-prefixed static routes (`/` =
+ * English, `/ms/` = Malay). Components read `Astro.currentLocale` and call
+ * `t(locale, key)` to render the active locale's string at build time (no
+ * client swap, SEO-friendly). The picker (components/LangPicker.astro) links
+ * between the locale routes.
  *
  * TO ADD A LANGUAGE (e.g. Chinese): add its code to LOCALES, an endonym to
- * localeLabels, and a block to `ui` with the SAME keys. Nothing else changes.
- * Keep the playful "staff of the cat" voice in every language.
- *
- * NOTE: this is the POC delivery mechanism. For production/SEO the same
- * dictionaries drop into Astro's native i18n (locale-prefixed static routes);
- * only the swap engine would be replaced.
+ * localeLabels, a block to `ui` with the SAME keys, and the matching locale in
+ * astro.config `i18n`. Keep the playful "staff of the cat" voice in every
+ * language; a literal translation that loses the humour is wrong.
  */
 export const LOCALES = ['en', 'ms'] as const; // 'zh' coming next
 export type Locale = (typeof LOCALES)[number];
@@ -25,6 +23,11 @@ export const localeLabels: Record<string, string> = {
   ms: 'Bahasa Malaysia',
   // zh: '中文',
 };
+
+/** Look up a UI string for a locale, falling back to the default locale. */
+export function t(locale: string | undefined, key: string): string {
+  return ui[locale ?? DEFAULT_LOCALE]?.[key] ?? ui[DEFAULT_LOCALE][key] ?? key;
+}
 
 type Dict = Record<string, string>;
 

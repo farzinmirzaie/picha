@@ -6,6 +6,7 @@ import { ClientRouter } from 'astro:transitions';
 import Nav from '../components/Nav.astro';
 import LangPicker from '../components/LangPicker.astro';
 import IconButton from '../components/ui/IconButton.astro';
+import { t as tr } from '../i18n/ui';
 import { supabaseClient } from '../data/supabase';
 import { nextDueHealth } from '../lib/health';
 
@@ -34,18 +35,14 @@ const asset = (p: string) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${p
 const ogImage = new URL(asset('icon-512.png'), Astro.site);
 const ogUrl = new URL(Astro.url.pathname, Astro.site);
 
-// Mobile app-bar label: the tab name, unless the page names itself.
-const tabTitles: Record<string, string> = {
-  home: 'Picha',
-  health: 'Health',
-  care: 'Care',
-  tools: 'Tools',
-};
-const appTitle = appTitleProp ?? tabTitles[current] ?? 'Picha';
+// Mobile app-bar label: the tab name (localized), unless the page names itself.
+const locale = Astro.currentLocale ?? 'en';
+const appTitle =
+  appTitleProp ?? (current === 'home' || current === 'none' ? 'Picha' : tr(locale, `nav.${current}`));
 ---
 
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang={locale} class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <!-- zoom intentionally disabled for a native PWA feel; viewport-fit=cover for the notch -->

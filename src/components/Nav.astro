@@ -6,11 +6,13 @@
  */
 import { Icon } from 'astro-icon/components';
 import { isHealthDueSoon } from '../lib/health';
+import { t as tr } from '../i18n/ui';
 
 interface Props {
   current: string;
 }
 const { current } = Astro.props;
+const locale = Astro.currentLocale ?? 'en';
 
 // The Health tab shows a dot when a health item is due soon / overdue. The dot
 // is always rendered (with `data-health-badge`); its initial visibility is the
@@ -63,7 +65,7 @@ const TABS = [
             />
           )}
         </span>
-        <span data-i18n={`nav.${t.id}`}>{t.label}</span>
+        <span>{tr(locale, `nav.${t.id}`)}</span>
         {t.id === 'health' && (
           <span data-health-badge class:list={['sr-only', healthDueSoon ? '' : 'hidden']}>
             , item due soon
@@ -124,7 +126,7 @@ const TABS = [
               />
             )}
           </span>
-          <span data-i18n={`nav.${t.id}`}>{t.label}</span>
+          <span>{tr(locale, `nav.${t.id}`)}</span>
           {t.id === 'health' && (
             <span data-health-badge class:list={['sr-only', healthDueSoon ? '' : 'hidden']}>
               , item due soon
