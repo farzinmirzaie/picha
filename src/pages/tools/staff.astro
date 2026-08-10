@@ -40,7 +40,7 @@ const c = getStaffCopy(Astro.currentLocale);
         <p class="mt-1.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
           {c.pinPrompt}
         </p>
-        <label class="mt-5 block text-left">
+        <label class="mt-5 block text-start">
           <span class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
             {c.pinLabel}
           </span>
@@ -55,7 +55,7 @@ const c = getStaffCopy(Astro.currentLocale);
           />
         </label>
         <p
-          class="mt-2 hidden text-left text-xs font-bold text-red-500"
+          class="mt-2 hidden text-start text-xs font-bold text-red-500"
           data-staff-error
           aria-live="polite"
         >
@@ -88,7 +88,7 @@ const c = getStaffCopy(Astro.currentLocale);
         <button
           type="button"
           data-push-toggle
-          class="flex w-full items-center gap-3.5 px-5 py-4 text-left transition-colors active:bg-blush-100/50 disabled:cursor-default disabled:active:bg-transparent dark:active:bg-plum-800/50"
+          class="flex w-full items-center gap-3.5 px-5 py-4 text-start transition-colors active:bg-blush-100/50 disabled:cursor-default disabled:active:bg-transparent dark:active:bg-plum-800/50"
         >
           <IconBadge icon="ph:bell" size="sm" />
           <span class="min-w-0 flex-1">
@@ -121,7 +121,7 @@ const c = getStaffCopy(Astro.currentLocale);
         <button
           type="button"
           data-staff-forget
-          class="flex w-full items-center gap-3.5 px-5 py-4 text-left transition-colors active:bg-blush-100/50 dark:active:bg-plum-800/50"
+          class="flex w-full items-center gap-3.5 px-5 py-4 text-start transition-colors active:bg-blush-100/50 dark:active:bg-plum-800/50"
         >
           <IconBadge icon="ph:sign-out" size="sm" tone="red" />
           <span class="min-w-0 flex-1">
@@ -134,7 +134,7 @@ const c = getStaffCopy(Astro.currentLocale);
           </span>
           <Icon
             name="ph:caret-right"
-            class="h-4 w-4 shrink-0 text-ink-400"
+            class="h-4 w-4 shrink-0 text-ink-400 rtl:-scale-x-100"
             aria-hidden="true"
           />
         </button>

@@ -9,7 +9,7 @@
  */
 import { identity, personality, lullaby, humanAgeLine, ageInMonths, ageLabel } from '../data/picha';
 import type { BodySignal, TrainingCourse } from '../data/picha';
-import { dateLabel } from '../lib/dates';
+import { dateLabel, faDigits } from '../lib/dates';
 
 /**
  * Locale-aware age label ("~7.7 months old"). English delegates to picha.ts;
@@ -25,6 +25,12 @@ export function ageLabelI18n(locale?: string, from: Date = new Date()): string {
   if (locale === 'zh') {
     if (months < 12) return `约 ${m} 个月大`;
     return rem === 0 ? `约 ${whole} 岁大` : `约 ${whole} 岁 ${rem} 个月大`;
+  }
+  if (locale === 'fa') {
+    if (months < 12) return `حدود ${faDigits(m)} ماهه`;
+    return rem === 0
+      ? `حدود ${faDigits(whole)} ساله`
+      : `حدود ${faDigits(whole)} ساله و ${faDigits(rem)} ماه`;
   }
   // ms
   if (months < 12) return `~${m} bulan`;
@@ -163,7 +169,38 @@ const zh: HomeCopy = {
   call: '致电',
 };
 
-export const homeCopy: Record<string, HomeCopy> = { en, ms, zh };
+const fa: HomeCopy = {
+  tagline: 'پشمالوی سفیدبرفی · چشمان کهربایی · قلاده صورتی',
+  story:
+    'Picha صاحب یک آپارتمان در کوالالامپور است، جایی که دو انسان، Farah و Farzin، را به‌عنوان کارکنان تمام‌وقت استخدام کرده. وظایف آن‌ها شامل کار با اسباب‌بازی چوبی، خاراندن چانه به‌محض درخواست، و باز کردن بسته‌های تنقلات با فرکانس دقیق میو کردن اوست. دستمزد: خرخر، سُر دادن سر، و افتخار بودن در کنار او. این معامله‌ی منصفانه‌ای نیست. هیچ‌کس شکایتی ندارد.',
+  looks:
+    'پوشش بلند و کاملاً سفید، گوش‌ها و بینی صورتی، چشمان کهربایی. قلاده‌ای صورتی با زنگوله می‌بندد تا کارکنان همیشه بدانند مدیریت کجاست.',
+  getToKnow: 'با او آشنا شوید',
+  share: 'هم‌رسانی',
+  personality: [
+    { title: 'شکارچی حرفه‌ای', detail: 'اسباب‌بازی چوبی با شنیدن نامش می‌لرزد. جلسه‌ی روزانه‌ی شکار الزامی و غیرقابل‌مذاکره است؛ قوانین را او می‌گذارد.' },
+    { title: 'ورزشکار خواب', detail: 'بیش از ۱۶ ساعت در روز. این تنبلی نیست، تمرین است، و برای سنش کاملاً طبیعی.' },
+    { title: 'منتقد رعدوبرق', detail: 'طوفان صفر ستاره می‌گیرد و باعث عقب‌نشینی فوری به دژ مخفی می‌شود. بگذارید باشد: پناهگاهی تاریک و ساکت به‌همراه فضایی آرام همه‌چیز را حل می‌کند. هرگز او را بیرون نکشید.' },
+    { title: 'همیشه آراسته', detail: 'مرتب بودن یک عملیات ۲۴ساعته است. پوشش سفید با تلاش شخصی بی‌وقفه‌ی او سفید می‌ماند؛ کارکنان فقط کمک می‌کنند.' },
+    { title: 'مدیر ارشد مطالبات', detail: 'توجه درخواست نمی‌شود، احضار می‌شود. نادیده گرفتنش از نظر فنی ممکن است، برای حدود یازده ثانیه.' },
+    { title: 'نگهبان جاهای موردعلاقه', detail: 'او به‌نوبت از چند مکان رسمیِ موردعلاقه نگهبانی می‌کند. اگر «گم» شده، در یکی از آن‌هاست، دقیقاً همان‌جا که می‌خواهد.' },
+    { title: 'نزدیک، اما با فاصله', detail: 'آدم‌هایش را نزدیک می‌خواهد، نه چسبیده. کنارش بنشینید یا دراز بکشید، فاصله‌ی مؤدبانه را حفظ کنید، و خود را خوش‌شانس بدانید.' },
+    { title: 'بازرس ارشد', detail: 'هر چیز تازه به‌محض رسیدن بازرسی می‌شود. خرید تا وقتی هر کیسه از ممیزیِ بینی او رد نشود قابل‌استفاده نیست.' },
+    { title: 'نازپرورده (با وقت قبلی)', detail: 'بغل عطا می‌شود، درخواست نمی‌شود. با کارکنانش بی‌نهایت نزدیک؛ به‌محض رضایت، بی‌نهایت مستقل.' },
+    { title: 'قهرمان قایم‌باشک', detail: 'کارکنان فرار می‌کنند و قایم می‌شوند؛ او پیدایشان می‌کند. هر بار. هیچ‌کس تا به حال موفق نشده از او پنهان شود، و نخواهد شد.' },
+    { title: 'برگردان، به شرط او', detail: 'توپ زنگوله‌دارش جواهر تاج است: شوتش می‌کند، دنبالش می‌دود و می‌گیردش، بعد به دست کارکنان برمی‌گرداند و منتظر پرتاب می‌ماند. برگردانید، او هم برمی‌گرداند. مسابقات قهرمانی موقع خواب در اتاق‌خواب برگزار می‌شود، با صدای بلند، و هیچ‌کس درخواستش نکرده.' },
+  ],
+  lullaby: {
+    title: 'لالایی‌اش',
+    detail:
+      'یک آهنگ خاص هست، و او پیش از تمام شدنش خوابش می‌برد. کارکنان همیشه آن را برای وقت خواب آماده دارند؛ اثرش مشکوک است. وقتی به‌هیچ‌وجه ساکت نمی‌شود، این رمز تقلب است.',
+    cta: 'پخش لالایی‌اش',
+  },
+  ifFound: 'او را در یک ماجراجویی انفرادیِ بدون اجازه دیدید؟ کارکنانش می‌خواهند چند کلمه با شما حرف بزنند:',
+  call: 'تماس با',
+};
+
+export const homeCopy: Record<string, HomeCopy> = { en, ms, zh, fa };
 export const getHomeCopy = (locale?: string): HomeCopy => homeCopy[locale ?? 'en'] ?? en;
 
 // ---------------------------------------------------------------------------
@@ -173,6 +210,7 @@ export const footerCopy: Record<string, string> = {
   en: 'Built by the staff, under close supervision. Approved with a slow blink.',
   ms: 'Dibina oleh kakitangan, di bawah penyeliaan rapi. Diluluskan dengan kenyitan mata perlahan.',
   zh: '由员工在严密监督下打造。以一个缓慢的眨眼获得批准。',
+  fa: 'ساخته‌ی کارکنان، زیر نظارت دقیق. با یک پلک آهسته تأیید شد.',
 };
 
 // ---------------------------------------------------------------------------
@@ -206,6 +244,13 @@ export const notFoundCopy: Record<string, NotFoundCopy> = {
     kicker: '404 · 找不到',
     heading: '这个页面走丢了',
     body: '连捉迷藏冠军都找不到它。它可能被移动、改名，或从架子上被拍了下去。',
+  },
+  fa: {
+    metaTitle: 'گم شد · Picha 🐾',
+    metaDescription: 'این صفحه سرگردان شده و رفته.',
+    kicker: '۴۰۴ · پیدا نشد',
+    heading: 'این صفحه سرگردان شده و رفته',
+    body: 'حتی استاد بزرگ قایم‌باشک هم نمی‌تواند پیدایش کند. شاید جابه‌جا، تغییرِ نام، یا از روی قفسه به پایین پرت شده باشد.',
   },
 };
 export const getNotFoundCopy = (locale?: string): NotFoundCopy =>
@@ -321,6 +366,26 @@ export const toolsCopy: Record<string, ToolsCopy> = {
     ],
     note: '更多小装置正在筹备中。点子每晚在凌晨 3 点的暴冲时段接受审阅，并由绒毛殿下排定优先次序。',
   },
+  fa: {
+    metaTitle: 'ابزارها · Picha 🐾',
+    metaDescription: 'جعبه‌ابزار Picha: پاسپورت حیوان، ردیاب وزن، مبدل سال گربه، آکادمی سلطنتی و بازخوان زبان بدن.',
+    kicker: 'ابزارهای او',
+    title: 'کارگاه سلطنتی',
+    blurb: 'ابزارهایی که کارکنان اختراع کرده‌اند تا بهتر به علیاحضرت پشمالو خدمت کنند. هر کدام تنها پس از گذراندن بازرسی شخصی او وارد خدمت می‌شود.',
+    inServiceLabel: 'در حال خدمت',
+    passport: {
+      title: 'پاسپورت حیوان',
+      detail: 'سند رسمی او: مشخصات، میکروچیپ و پنجه‌ی ثبت‌کننده.',
+    },
+    cards: [
+      { title: 'اتاق کارکنان', detail: 'جایی که انسان‌ها تنقلات و پینِ ثبت‌کننده را نگه می‌دارند. فقط اعضا.' },
+      { title: 'ردیاب وزن', detail: 'هر وزن‌کشی، روی نمودار، تا دور کمر سلطنتی هرگز بی‌خبر بالا نرود.' },
+      { title: 'مبدل سال گربه', detail: 'سن او به سال انسانی، به‌همراه محاسبه برای هر گربه‌ای که می‌شناسید.' },
+      { title: 'آکادمی سلطنتی', detail: 'جایی که کارکنان در همکاری گربه‌ای خبره می‌شوند، یک دوره در هر بار.' },
+      { title: 'خواندنِ Picha', detail: 'راهنمای میدانیِ حال‌وهوای او و اینکه چه چیزی به شما می‌گوید.' },
+    ],
+    note: 'ابزارهای بیشتری در دست ساخت است. ایده‌ها هر شب، هنگام زومی‌های ساعت ۳ بامداد، بررسی و توسط علیاحضرت پشمالو اولویت‌بندی می‌شوند.',
+  },
 };
 export const getToolsCopy = (locale?: string): ToolsCopy => toolsCopy[locale ?? 'en'] ?? toolsCopy.en;
 
@@ -385,10 +450,25 @@ function humanAgeLineZh(y: number): string {
   return '是一位见多识广的尊贵长者';
 }
 
+// Persian lines are noun phrases; the copula (است) is supplied by the copy's
+// trailing part (inCatTimePost / thatCatIsPost), matching the English "makes X …".
+function humanAgeLineFa(y: number): string {
+  if (y < 1) return 'یک نوزاد به‌اندازهٔ بغل';
+  if (y < 5) return 'یک نوپای پنجه‌دار';
+  if (y < 10) return 'یک بچه‌دبستانی با برنامهٔ چرت سخت‌گیرانه';
+  if (y < 13) return 'یک دانش‌آموز راهنمایی با عقاید محکم دربارهٔ وقت خواب';
+  if (y < 18) return 'یک نوجوان (این خیلی چیزها را توضیح می‌دهد)';
+  if (y < 26) return 'یک جوان که پیام‌ها را بی‌جواب می‌گذارد';
+  if (y < 40) return 'یک بزرگسال با برنامهٔ پنج‌سالهٔ چرت زدن';
+  if (y < 60) return 'یک میان‌سال راحت که دیگر حوصلهٔ مزخرفات را ندارد';
+  return 'یک سالمند محترم که همه‌چیز را دیده';
+}
+
 /** Locale-aware human-age line (English from picha.ts, others translated). */
 export function humanAgeLineI18n(years: number, locale?: string): string {
   if (locale === 'ms') return humanAgeLineMs(years);
   if (locale === 'zh') return humanAgeLineZh(years);
+  if (locale === 'fa') return humanAgeLineFa(years);
   return humanAgeLine(years);
 }
 
@@ -501,6 +581,40 @@ export const catYearsCopy: Record<string, CatYearsCopy> = {
       '常见的兽医经验法则：第一年算 15，第二年到 24，之后每年增加约四。幼猫的月份是根据标准图表插值得出的。仅供炫耀，不作医疗决定之用。',
     unit: { month: '个月', months: '个月', year: '岁', years: '岁' },
   },
+  fa: {
+    metaTitle: 'سال گربه · Picha 🐾',
+    metaDescription: 'Picha به سال انسانی چند ساله است؟ تبدیل زنده، مراحل زندگی گربه، و مبدلی برای هر گربه.',
+    kicker: 'ابزارها · در حال خدمت',
+    title: 'مبدل سال گربه',
+    blurb: 'زمان گربه اول سریع می‌گذرد، بعد روی حدود چهار سال انسانی در هر تولد ثابت می‌شود. اینجا جایگاه علیاحضرت پشمالوست، به‌همراه مبدلی برای هر گربه‌ای که می‌شناسید.',
+    officialConversion: '· تبدیل رسمی ·',
+    humanYearsOld: 'ساله (به سال انسانی)',
+    inCatTimePre: '؛ یعنی ',
+    inCatTimePost: ' است.',
+    stagesLabel: 'برنامه‌ی سفرِ نه‌جان',
+    stages: [
+      { name: 'بچه‌گربه', range: '۰ تا ۶ ماه', blurb: 'آشوب در ناب‌ترین شکلش. همه‌چیز طعمه است، از جمله پاها.' },
+      { name: 'نوجوان', range: '۶ ماه تا ۲ سال', blurb: 'اندازه‌ی کامل، قضاوت نوجوانانه. هر قانون خانه دو بار آزمایش می‌شود.' },
+      { name: 'اوج', range: '۲ تا ۶ سال', blurb: 'گربه در اوج: بیشترین جذابیت، کمترین تحمل.' },
+      { name: 'پخته', range: '۶ تا ۱۰ سال', blurb: 'سال‌های مدیریتی. چرت‌ها جلسه‌اند؛ جلسه‌ها چرت.' },
+      { name: 'سالخورده', range: '۱۰ تا ۱۴ سال', blurb: 'باوقار و بی‌خیال. کارکنان همچنان در خدمت‌اند.' },
+      { name: 'کهنسال', range: '۱۴ سال به بالا', blurb: 'در حد افسانه. هر نور آفتابِ خانه رزرو شده است.' },
+    ],
+    sheIsHere: 'او اینجاست',
+    stagesFootnote: 'مسیر رسمی برای جانِ اول. انتظار می‌رود هشت جانِ دیگر از همین برنامه استفاده کنند.',
+    convertLabel: 'تبدیل هر گربه',
+    convertHint: 'برای سنِ او به سال گربه بلغزانید',
+    presetLabels: ['۲ ماه', '۶ ماه', '۱ سال', '۵ سال', '۱۰ سال', '۱۵ سال'],
+    pichaNow: 'Picha، اکنون',
+    catTime: 'زمان گربه',
+    humanTime: 'زمان انسان',
+    years: 'سال',
+    thatCatIsPre: 'این گربه ',
+    thatCatIsPost: ' است.',
+    converterFootnote:
+      'قاعده‌ی سرانگشتیِ رایج دامپزشکی: سال اول ۱۵ حساب می‌شود، سال دوم به ۲۴ می‌رسد، و هر سال بعد حدود چهار اضافه می‌کند. ماه‌های بچه‌گربگی از روی نمودار استاندارد درون‌یابی می‌شود. برای فخرفروشی، نه برای تصمیم‌های پزشکی.',
+    unit: { month: 'ماه', months: 'ماه', year: 'سال', years: 'سال' },
+  },
 };
 export const getCatYearsCopy = (locale?: string): CatYearsCopy =>
   catYearsCopy[locale ?? 'en'] ?? catYearsCopy.en;
@@ -602,7 +716,49 @@ const signalZh: Record<string, SignalText> = {
   'tail-thumping': { title: '拍打', mood: '退后', detail: '尾巴拍打地面。非常恼火，警告你退后。停下，给她空间。' },
 };
 
-const signalTr: Record<string, Record<string, SignalText>> = { ms: signalMs, zh: signalZh };
+const signalFa: Record<string, SignalText> = {
+  // Ears
+  'ear-forward': { title: 'رو به جلو', mood: 'کنجکاو و دوستانه', detail: 'گوش‌ها بالا و رو به جلو چرخیده. درگیر و علاقه‌مند است؛ لحظه‌ی خوبی برای سلام.' },
+  'ear-neutral': { title: 'آرام / معمولی', mood: 'آرام و راضی', detail: 'گوش‌ها راست و رها، شل رو به جلو. در قلمرو همه‌چیز خوب است: راحت، آرام و آسوده.' },
+  'ear-swiveling': { title: 'در حال چرخش', mood: 'در حال گوش دادن', detail: 'گوش‌ها مثل بشقاب‌های ماهواره‌ی کوچک می‌چرخند تا صدایی را دنبال کنند. هوشیار و در حال رصد، نه ناراحت.' },
+  'ear-sideways': { title: 'به پهلو (حالت هواپیما)', mood: 'بیش‌ازحد تحریک‌شده', detail: 'گوش‌ها مثل بال‌های کوچک به طرفین چرخیده. مردد، دلخور یا خسته؛ نشانه‌ای ملایم برای عقب کشیدن.' },
+  'ear-slightly-back': { title: 'کمی به عقب', mood: 'دلخور', detail: 'گوش‌ها کمی به عقب خم شده. محتاط و کمی دلخور، در حال سنجش واکنش. کمی به او مهلت دهید.' },
+  'ear-flat': { title: 'صاف چسبیده به سر', mood: 'به او فضا بدهید', detail: 'گوش‌ها برای محافظت صاف به سر چسبیده‌اند. ترس یا پرخاشگری تدافعی زیر فشار واقعی. دست نزنید؛ بگذارید خودش آرام شود.' },
+  'ear-one-ear-back': { title: 'یک گوش به عقب', mood: 'چندکاره', detail: 'یک گوش جلو، یک گوش به عقب، هم‌زمان دو چیز را دنبال می‌کند (اغلب چیزی پشت سرش). کمی گوش‌به‌زنگ.' },
+  'ear-high-tall': { title: 'بلند و راست', mood: 'کاملاً گوش‌به‌زنگ', detail: 'گوش‌ها در بیشترین ارتفاع، کاملاً راست. بسیار هوشیار و تیز، قفل‌شده روی چیزی که مهم تشخیص داده.' },
+  'ear-low-wide': { title: 'پایین و باز', mood: 'مضطرب', detail: 'گوش‌ها پایین و به طرفین باز. نگران و احساس تهدید، اما دنبال دعوا نیست. آرامش دهید، شلوغ نکنید.' },
+  'ear-predatory': { title: 'تمرکز شکاری', mood: 'در حال شکار', detail: 'گوش‌ها جلو و قفل، تمام صورت متمرکز. حالت شکار کامل: تمرکز شدید، آماده‌ی پرش (ترجیحاً روی اسباب‌بازی).' },
+  'ear-sleepy': { title: 'راضی و خواب‌آلود', mood: 'غرق در سعادت', detail: 'گوش‌ها هنگام چرت رها و کمی چرخیده. عمیقاً آرام، راحت و امن. اوج رضایت.' },
+  'ear-hissing': { title: 'پرخاشگر / فش‌فش', mood: 'عقب بایست', detail: 'دهان باز، گوش‌ها به عقب، هشدار صادر شد. احساس تهدید می‌کند و می‌گوید دور بمان. احترام بگذارید و فضا بدهید.' },
+  // Eyes
+  'eye-neutral': { title: 'آرام / معمولی', mood: 'آرام و راضی', detail: 'چشم‌ها باز و رها، مردمک به‌شکل بادامی عادی. همه‌چیز خوب است: راحت، راضی و آسوده. لحظه‌ی خوبی برای سلام.' },
+  'eye-sleepy': { title: 'نرم / خواب‌آلود', mood: 'خواب‌آلود و امن', detail: 'پلک‌ها پایین و نرم، چشم‌ها هنگام استراحت نیمه‌بسته. عمیقاً آرام و در امنیت. بگذارید بخوابد؛ این اعتماد واقعی است.' },
+  'eye-dilated': { title: 'گشاد / هیجان‌زده', mood: 'هیجان‌زده / برانگیخته', detail: 'مردمک‌ها کاملاً گشاد و گرد. هیجان‌زده، بازیگوش یا برانگیخته، هرچند مردمک گشاد می‌تواند نشان ترس هم باشد، پس گوش‌ها و بدنش را هم بخوانید. تا وقتی حال‌وهوا سبک است، بازی اشکالی ندارد.' },
+  'eye-alert': { title: 'علاقه‌مند / هوشیار', mood: 'کنجکاو و درگیر', detail: 'چشم‌ها باز، مردمک متوسط، نگاه خیره روی چیزی. کنجکاو و ذهناً درگیر، همه‌چیز را می‌گیرد.' },
+  'eye-narrowed': { title: 'باریک / متمرکز', mood: 'قفل روی هدف', detail: 'مردمک‌ها به خطی متمرکز کشیده، نگاه ثابت. مصمم و مطمئن در حین سنجش. بگذارید خودش حلش کند.' },
+  'eye-very-narrow': { title: 'بسیار باریک / بی‌قرار', mood: 'بیش‌ازحد تحریک‌شده', detail: 'مردمک‌ها به شکافی نازک. دلخور، بیش‌ازحد تحریک‌شده، یا فقط زیر نور شدید. اگر حال‌وهوا تنش دارد، از سروصدا کم کنید و به او فرصت نفس دهید.' },
+  'eye-suspicious': { title: 'مشکوک / محتاط', mood: 'محتاط و در حال تماشا', detail: 'چشم‌ها نیمه‌باریک، با دقت تماشا می‌کند. مطمئن نیست و در حال بررسیِ امن بودن اوضاع. آهسته حرکت کنید و بگذارید خودش تصمیم بگیرد.' },
+  'eye-round': { title: 'گرد / غافلگیر', mood: 'یکه‌خورده', detail: 'چشم‌ها ناگهان گشاد و گرد. چیزی ناگهانی غافلگیرش کرده و حالا گوش‌به‌زنگ است. کمی مهلت دهید تا ببیند چیزی نیست.' },
+  'eye-unequal': { title: 'مردمک‌های نابرابر', mood: 'حواستان به او باشد', detail: 'یک مردمک بزرگ‌تر از دیگری. در نور کم یا در حال تغییر می‌تواند طبیعی باشد، اما اگر ادامه یافت، یا با تنگی چشم، پنجه کشیدن به چشم، یا بدحالی همراه شد، با دامپزشک تماس بگیرید.' },
+  'eye-slow-blink': { title: 'پلک آهسته', mood: 'به تو اعتماد دارم', detail: 'یک پلک آهسته و تنبل که لحظه‌ای نگه‌داشته می‌شود. طرز گفتنش که به شما اعتماد دارد و احساس امنیت می‌کند. با پلک آهسته پاسخ دهید؛ بالاترین تعریفی است که یک گربه می‌کند.' },
+  'eye-wide-eyed': { title: 'چشم‌گشاد / ترسیده', mood: 'ترسیده', detail: 'چشم‌ها کاملاً گشاد، معمولاً با مردمک بزرگ، بدن منقبض. ترسیده و احساس تهدید، دنبال راه فرار. شلوغش نکنید و در تنگنا قرارش ندهید؛ فضا و یک راه خروجِ روشن بدهید.' },
+  'eye-closed': { title: 'پلک / چشم بسته', mood: 'عمیقاً آرام', detail: 'چشم‌ها بسته، صورت نرم و آرام. بسیار آرام و بااعتماد، یا در حال کنار گذاشتن دنیا برای استراحت. تنهایش بگذارید.' },
+  // Tail
+  'tail-held-high': { title: 'بالا نگه‌داشته', mood: 'مطمئن', detail: 'دم مثل میله‌ی پرچم صاف بالا. مطمئن، شاد و راضی از دنیا. لحظه‌ی خوبی برای سلام.' },
+  'tail-upright-curved': { title: 'راست با نوکِ خمیده', mood: 'سلام دوستانه', detail: 'دم بالا با قلابی کوچک در نوک، علامت سؤالِ دوستانه. گرم‌ترین سلامش: از دیدن شما خوشحال است.' },
+  'tail-gentle-curve': { title: 'خمِ ملایم', mood: 'راضی', detail: 'دم بالا در قوسی نرم و آرام. راضی و راحت، در حال گذراندن روزش.' },
+  'tail-horizontal': { title: 'افقی', mood: 'کنجکاو', detail: 'دم صاف پشت سرش کشیده. هوشیار و کنجکاو، پیش از اقدام در حال سنجش.' },
+  'tail-low-relaxed': { title: 'پایین / آرام', mood: 'آسوده', detail: 'دم پایین و رها. آرام و خنثی. دمِ پایین می‌تواند احتیاط هم باشد، پس با گوش‌ها و بدنش بخوانید.' },
+  'tail-tucked': { title: 'جمع‌شده', mood: 'ناامن', detail: 'دم به پایین خمیده و محکم جمع‌شده. مضطرب، مردد یا احساس کوچکی. شلوغش نکنید؛ آهسته پیش بروید و بگذارید آرام بگیرد.' },
+  'tail-puffed-up': { title: 'باد‌کرده', mood: 'وحشت‌زده', detail: 'دم مثل بُرسِ شیشه باد کرده. ترسیده و در تلاش برای بزرگ‌تر دیده شدن. چیزی ترساندش؛ تا آرام شود فضا بدهید.' },
+  'tail-puffed-curve': { title: 'باد‌کرده با قوس', mood: 'تدافعی', detail: 'دمِ بُرس‌مانند روی پشتِ قوس‌دار، ژست گربه‌ی هالووین. به‌شدت برانگیخته و تدافعی. عقب بکشید و بگذارید این لحظه بگذرد.' },
+  'tail-flicking': { title: 'تکان تند', mood: 'دلخور', detail: 'دم از این‌طرف به آن‌طرف تکان می‌خورد. دلخور، عصبی یا خسته. نشانه‌ای روشن برای عقب کشیدن پیش از آنکه واقعاً تمام کند.' },
+  'tail-tip-twitching': { title: 'لرزشِ نوک', mood: 'متمرکز', detail: 'فقط نوک دم می‌جنبد و بقیه بی‌حرکت است. متمرکز و در حال تمرکز، اغلب وسط شکار. درگیر، نه ناراحت.' },
+  'tail-wrapped': { title: 'پیچیده دورِ خود', mood: 'دنج', detail: 'دم مرتب دور خودش پیچیده. آرام و دنج، گرم و خودکفا. اوج رضایت.' },
+  'tail-thumping': { title: 'کوبیدن', mood: 'عقب بایست', detail: 'دم به زمین می‌کوبد. بسیار دلخور و هشدار می‌دهد که عقب بکشید. بایستید و به او فضا بدهید.' },
+};
+
+const signalTr: Record<string, Record<string, SignalText>> = { ms: signalMs, zh: signalZh, fa: signalFa };
 
 /** Return a signal with prose in the active locale (English passes through). */
 export function localizeSignal(part: string, s: BodySignal, locale?: string): BodySignal {
@@ -736,6 +892,43 @@ export const bodyLanguageCopy: Record<string, BodyLanguageCopy> = {
         notes: [
           '静态照片无法呈现动作，而动作是信息的一半：快速抽打的含义远超缓慢摆动。尾巴低垂可以理解为平静或谨慎，所以务必结合她的耳朵、眼睛和姿势一起看。',
           '当她的尾巴说退后（炸毛、拍打、用力甩动），就照字面理解：停下手中的动作，给她空间，让她重新平复。',
+        ],
+      },
+    ],
+  },
+  fa: {
+    metaTitle: 'خواندنِ Picha · Picha 🐾',
+    metaDescription: 'راهنمای میدانیِ زبان بدن Picha: نشانه‌هایش چه معنایی دارند و چطور پاسخ دهید.',
+    kicker: 'گربه به انسان',
+    title: 'خواندنِ Picha',
+    blurb: 'او بی هیچ صدایی حرف‌های زیادی می‌زند. اینجا یاد می‌گیرید چطور علیاحضرت پشمالو را بخوانید، و چطور پیش از آنکه مجبور به تکرار شود پاسخ دهید.',
+    bodyPartLabel: 'بخش بدن',
+    segments: [
+      {
+        id: 'ears',
+        label: 'گوش‌ها',
+        noun: 'گوش‌ها',
+        notes: [
+          'چیزی که عکس ثبتش نمی‌کند: تکان یا لرزش سریع گوش. معمولاً فقط کلافگی است (یا مگسی که رد می‌شود)؛ اگر با تکان دادن سر یا خاراندن همراه شد، گوش‌هایش را بررسی کنید.',
+          'وقتی نشانه‌ها می‌گویند عقب بکش یا فضا بده، کار مهربانانه دقیقاً همان است: دست نزنید، بغل نکنید. بگذارید خودش به‌سویتان برگردد.',
+        ],
+      },
+      {
+        id: 'eyes',
+        label: 'چشم‌ها',
+        noun: 'چشم‌ها',
+        notes: [
+          'دو چیزی که عکس ثابت نشان نمی‌دهد: خیره‌ی سفت و بی‌پلک (یک چالش، پس نگاه بردارید و متقابلاً خیره نشوید) و پلک سوم که از گوشه‌ی داخلی چشم رد می‌شود (اغلب خستگی، گاهی بیماری).',
+          'چشم‌ها نشانه‌ی سلامت هم هستند. مردمک‌های نابرابر که برطرف نمی‌شوند، چشمِ ناگهان کدر، قرمز یا اشک‌ریز، تنگیِ مداوم چشم، یا پنجه کشیدن به یک چشم یعنی تماس با دامپزشک، نه یک حال‌وهوا.',
+        ],
+      },
+      {
+        id: 'tails',
+        label: 'دم',
+        noun: 'دم',
+        notes: [
+          'عکس ثابت حرکت را نشان نمی‌دهد، و حرکت نیمی از پیام است: تکانِ تند بسیار بیشتر از تابِ آهسته معنا دارد. دمِ پایین می‌تواند آرام یا محتاط خوانده شود، پس همیشه آن را با گوش‌ها، چشم‌ها و حالت بدنش بسنجید.',
+          'وقتی دمش می‌گوید عقب بایست (باد‌کرده، کوبیدن، تکانِ محکم)، همان را باور کنید: کاری که می‌کنید متوقف کنید، فضا بدهید، و بگذارید دوباره آرام بگیرد.',
         ],
       },
     ],
@@ -947,7 +1140,64 @@ const careZh: CareCopy = {
     savedLocal: '已保存在此设备；云端未响应。',
   },
 };
-export const careCopy: Record<string, CareCopy> = { en: careEn, ms: careMs, zh: careZh };
+const careFa: CareCopy = {
+  metaTitle: 'مراقبت · Picha 🐾',
+  metaDescription: 'راهنمای مراقبت روزانه‌ی Picha: کارهای روزمره و آراستنش.',
+  kicker: 'مراقبت روزانه',
+  title: 'یک روز با Picha',
+  blurb:
+    'خدمت به Picha یک شغل تمام‌وقت است: بدون تعطیلی آخر هفته، مزایا با خرخر پرداخت می‌شود. کارهای امروز را از بالا به پایین انجام دهید؛ او در حال امتیازدهی است.',
+  roundsLabel: 'کارهای امروز',
+  praise: 'همه‌ی کارها تمام شد. مدیریت راضی است و طبق آن چرت خواهد زد.',
+  checklist: {
+    water: { label: 'پر کردن آبشخور', hint: 'مخزن را پر کنید؛ آبشخور خودش کار می‌کند' },
+    'meals-1': { label: 'سرو غذای مرطوب', hint: 'وعده‌ی اول، حدود ۱۰ صبح؛ هر خشکباری که مانده را مخلوط کنید' },
+    'litter-1': { label: 'تمیز کردن خاک‌گربه', hint: 'نوبت صبح؛ او استانداردهایی دارد' },
+    combing: { label: 'شانه‌ی روزانه', hint: 'هر دو طرف؛ خودش می‌چرخد' },
+    eyes: { label: 'تمیز کردن چشم و صورت', hint: 'دستمال مرطوب حیوان دور چشم‌ها و چانه' },
+    'play-hunt': { label: 'جلسه‌ی شکار', hint: '۱۰ تا ۱۵ دقیقه کار با اسباب‌بازی چوبی' },
+    academy: { label: 'جلسه‌ی آکادمی', hint: 'یک تمرین کوتاه؛ به آکادمی سلطنتی مراجعه کنید' },
+    'litter-mid': { label: 'تمیز کردن خاک‌گربه', hint: 'بررسی ظهر، فقط اگر چیزی برای تمیز کردن هست' },
+    treat: { label: 'تنقلات، در صورت استحقاق', hint: 'حدود ۴ عصر، فقط وقتی سزاوار شد؛ سقف ۱۰٪ غذایش' },
+    'meals-2': { label: 'سرو غذای مرطوب', hint: 'وعده‌ی دوم، حدود ۹:۳۰ شب پیش از خاموشیِ چراغ‌ها' },
+    'play-ball': { label: 'جلسه‌ی توپ', hint: 'توپ را پرتاب کنید؛ بگذارید دنبال کند و بپرد' },
+    'litter-2': { label: 'تمیز کردن خاک‌گربه', hint: 'نوبت شب برای حفظ کیفیت پنج‌ستاره' },
+    cuddle: { label: 'وقتِ بغل و نوازش', hint: 'ممیزیِ اجباریِ محبت؛ پایانش را او تعیین می‌کند' },
+    lockup: { label: 'قفل شبانه', hint: 'پنجره‌ها و بالکن بسته، هیچ چیز خطرناکی بیرون نمانده' },
+  },
+  menuLabel: 'منو',
+  feeder: 'خودکار',
+  byHand: 'با دست',
+  meals: [
+    { title: 'خشکبارِ صبح', detail: 'دستگاه وعده‌ی اولش را سرِ وقت می‌ریزد؛ هر وقت دلش خواست کم‌کم می‌خورد.' },
+    { title: 'غذای مرطوب، وعده‌ی اول', detail: 'وعده‌ی پنج‌ستاره‌اش، با دست سرو می‌شود. هر خشکباری که از صبح مانده مخلوط می‌شود.' },
+    { title: 'خشکبارِ ظهر', detail: 'دومین ریزشِ خودکار، که روز را یکنواخت سیر نگه می‌دارد.' },
+    { title: 'تنقلات یا جایزه', detail: 'چانه‌زنیِ بعدازظهر، که هرچقدر آن چشم‌ها متقاعدکننده باشند در سقف ۱۰٪ تنقلات می‌ماند.' },
+    { title: 'خشکبارِ عصر', detail: 'آخرین ریزشِ خودکارِ روز.' },
+    { title: 'غذای مرطوب، وعده‌ی دوم', detail: 'آخرین وعده، پیش از خاموشیِ چراغ‌ها سرو می‌شود. بعد از آن چیزی نیست، می‌خوابد.' },
+  ],
+  groomingLabel: 'آراستن',
+  grooming: [
+    { title: 'شانه‌ی روزانه', cadence: 'روزانه', detail: 'ابزار رسمی یک شانه‌ی فولاد ضدزنگ است که هر دو طرف کشیده می‌شود در حالی که او مثل کباب می‌چرخد. پوشش بلندش به آن وابسته است: از گره جلوگیری می‌کند و شکوه را حفظ.' },
+    { title: 'اصلاح صورت', cadence: 'در صورت نیاز', detail: 'دستمال مرطوب حیوان برای چشم‌ها و صورت، در دسترس برای هر وقت که ظاهر نیاز به تازگی داشت.' },
+    { title: 'تمیزکاری موضعی', cadence: 'در صورت نیاز', detail: 'موس خشکشوییِ حیوان YEGBONG (بدون آب)، به پوست مالیده و شانه می‌شود، عمدتاً زیر چانه و هر جایی که جرئت کرده کثیف شود.' },
+    { title: 'حمام', cadence: 'به‌ندرت', detail: 'به‌ندرت لازم است؛ شانه‌ی روزانه بار اصلی را می‌کشد. گاهی یک حمام یا یک روز اسپای حرفه‌ای، با وقت قبلی.' },
+    { title: 'ناخن‌ها', cadence: 'هر ۲ تا ۴ هفته', detail: 'مانیکور هر ۲ تا ۴ هفته با ناخن‌گیر گربه: اول پنجه‌های جلو، پنجه‌های عقب به‌اندازه‌ای که اجازه دهد. بهترین زمان وقتی است که خواب‌آلود است و کمترین تمایل به ثبت شکایت را دارد.' },
+    { title: 'دندان‌ها', cadence: 'روزانه', detail: 'مسواک روزانه با ژل دندان مخصوص گربه‌ی Histo Tree (طعم گوشت گاو)، چند ثانیه در هر طرف در امتداد خط لثه. به‌زور تحمل می‌شود، در ازای جایزه‌ای که در پی می‌آید.' },
+  ],
+  notes: {
+    loading: 'در حال بارگذاری کارهای امروز…',
+    offline: 'آفلاین: کارهای ذخیره‌شده‌ی این دستگاه نمایش داده می‌شود.',
+    resetsNightly: 'تیک‌ها هر شب نیمه‌شب بازنشانی می‌شوند.',
+    sharedResets: 'میان دستگاه‌های کارکنان به‌اشتراک گذاشته می‌شود؛ هر شب نیمه‌شب بازنشانی می‌شود.',
+    staffOnlyPre: 'کارهای روزانه فقط برای کارکنان است. ',
+    signIn: 'به‌عنوان کارمند وارد شوید',
+    staffOnlyPost: ' تا آن‌ها را تیک بزنید.',
+    pinRejected: 'آن پین رد شد. اتاق کارکنان را باز کنید و دوباره وارد کنید.',
+    savedLocal: 'روی این دستگاه ذخیره شد؛ ابر پاسخ نداد.',
+  },
+};
+export const careCopy: Record<string, CareCopy> = { en: careEn, ms: careMs, zh: careZh, fa: careFa };
 export const getCareCopy = (locale?: string): CareCopy => careCopy[locale ?? 'en'] ?? careEn;
 
 // ---------------------------------------------------------------------------
@@ -1102,6 +1352,43 @@ export const healthCopy: Record<string, HealthCopy> = {
       'Core vaccines': { label: '核心疫苗', value: 'FVRCP', sub: '系列已完成' },
     },
   },
+  fa: {
+    metaTitle: 'سلامتی · Picha 🐾',
+    metaDescription: 'پرونده‌ی سلامت Picha: علائم حیاتی، واکسن‌ها، ویزیت‌های دامپزشکی و آنچه در پیش است.',
+    kicker: 'دامپزشک و سلامت',
+    title: 'پرونده‌ی سلامت سلطنتی',
+    blurb:
+      'از تولد تا واکسن‌های یادآور: هر تزریق، وزن‌کشی و ویزیت، با وسواس توسط کارکنان بایگانی شده. مدیریت کاغذبازی را بازبینی می‌کند؛ مدیریت کاغذبازی نمی‌کند.',
+    nextDue: 'بعدی',
+    weight: 'وزن',
+    targetPrefix: 'هدف',
+    age: 'سن',
+    ageSub: 'بلوغ حدود ۱.۵ تا ۲ سالگی',
+    doctorsOrders: 'دستور دکتر',
+    dueSoon: 'به‌زودی موعد',
+    dueApprox: 'حدود ',
+    overdue: 'عقب‌افتاده',
+    segments: { upcoming: 'در پیش', done: 'سوابق', tobook: 'فهرست کارها' },
+    timelineFilter: 'فیلتر خط زمانی',
+    nextUp: 'بعدی',
+    notStarted: 'هنوز شروع نشده',
+    callVetIfTitle: 'در این موارد با دامپزشک تماس بگیرید…',
+    recentClinic: 'کلینیک اخیر',
+    directions: 'مسیر به کلینیک',
+    recentCarePre: 'مراقبت اخیر: ',
+    vetStatus: 'در حال مصاحبه با دامپزشکان؛ هنوز استخدام دائم نشده',
+    callVetIf: [
+      'حدود ۲۴ ساعت غذا نخوردن، یا استفراغ مکرر.',
+      'زور زدن در جعبه‌ی خاک، یا نبودِ ادرار در یک روز.',
+      'پنهان شدنِ مداوم + حالتِ قوزکرده + بی‌اشتهایی (در مقایسه با رفت‌وآمد عادی‌اش).',
+      'تنفس دشوار یا بی‌حالیِ ناگهانی.',
+    ],
+    clinicalStatus: {
+      Spayed: { label: 'عقیم‌شده', value: 'بله', sub: '11 Jul 2026' },
+      Microchip: { label: 'میکروچیپ', value: 'بله', sub: '11 Jul 2026' },
+      'Core vaccines': { label: 'واکسن‌های اصلی', value: 'FVRCP', sub: 'سری کامل' },
+    },
+  },
 };
 export const getHealthCopy = (locale?: string): HealthCopy =>
   healthCopy[locale ?? 'en'] ?? healthCopy.en;
@@ -1219,12 +1506,72 @@ const whereZh: Record<string, string> = {
   'at the salon': '在美容院',
 };
 
+const healthTextFa: Record<string, { title: string; detail: string }> = {
+  'One tiny white cloud arrives, opens her amber eyes, and starts planning her staff structure.':
+    { title: 'یک ستاره متولد شد', detail: 'یک ابر کوچک سفید از راه می‌رسد، چشمان کهربایی‌اش را باز می‌کند، و شروع به برنامه‌ریزیِ ساختار کارکنانش می‌کند.' },
+  'Felocell 4, first dose. Taken like a champ (allegedly).':
+    { title: 'واکسن FVRCP، دوز ۱', detail: 'Felocell 4، دوز اول. مثل یک قهرمان تحمل کرد (ظاهراً).' },
+  'Felocell 4, second dose. Series complete.':
+    { title: 'واکسن FVRCP، دوز ۲', detail: 'Felocell 4، دوز دوم. سری کامل شد.' },
+  'Interviewed Farah & Farzin at the pet shop and hired both on the spot. No probation period; she does not do trial runs.':
+    { title: 'استخدام بزرگِ کارکنان', detail: 'در فروشگاه حیوانات با Farah و Farzin مصاحبه کرد و هر دو را همان‌جا استخدام کرد. بدون دوره‌ی آزمایشی؛ او دوره‌ی آزمایشی ندارد.' },
+  'Revolution Plus applied. Fleas, ticks and worms: evicted.':
+    { title: 'کنترل انگل', detail: 'Revolution Plus استفاده شد. کک، کنه و کرم‌ها: اخراج شدند.' },
+  'Interior pest control, completed.':
+    { title: 'کرم‌زدایی شد', detail: 'کنترل آفات داخلی، انجام شد.' },
+  'Both done in one visit. She billed the recovery time as spa leave.':
+    { title: 'عقیم‌سازی + میکروچیپ', detail: 'هر دو در یک ویزیت انجام شد. او زمان بهبودی را به‌عنوان مرخصیِ اسپا حساب کرد.' },
+  'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':
+    { title: 'شروع دوره‌ی درمان گوش', detail: 'روال روزانه‌ی ORI-EAR + Oridermyl آغاز می‌شود. با نارضایتیِ آشکار تحمل شد.' },
+  'Full ORI-EAR + Oridermyl course done; ears cleared. Daily disapproval may now cease.':
+    { title: 'پایان دوره‌ی درمان گوش', detail: 'دوره‌ی کامل ORI-EAR + Oridermyl تمام شد؛ گوش‌ها بهبود یافت. نارضایتیِ روزانه اکنون می‌تواند متوقف شود.' },
+  'NexGard Combo spot-on applied at the base of the skull, her new monthly flea and tick guard. Revolution Plus retired.':
+    { title: 'کنترل انگل', detail: 'قطره‌ی موضعی NexGard Combo روی پایه‌ی جمجمه استفاده شد، محافظِ ماهانه‌ی جدیدِ کک و کنه‌اش. Revolution Plus بازنشسته شد.' },
+  'Required before any travel plans Her Fluffiness may approve.':
+    { title: 'واکسن هاری', detail: 'پیش از هر برنامه‌ی سفری که علیاحضرت پشمالو تأیید کند لازم است.' },
+  'Optional. To discuss with whichever vet wins the job.':
+    { title: 'واکسن FeLV', detail: 'اختیاری. برای بحث با دامپزشکی که کار را می‌گیرد.' },
+  'The official pet passport, still to be sorted for any future travel.':
+    { title: 'پاسپورت حیوان', detail: 'پاسپورت رسمیِ حیوان، هنوز برای هر سفرِ آینده باید سروسامان بگیرد.' },
+  'NexGard Combo spot-on, parted onto the skin at the base of the skull (the back of the head), where she cannot lick it off. Fleas, ticks and ear mites, evicted. Monthly with a few days of grace, but never sooner than a month apart; a bit late is fine, too early risks a double dose.':
+    { title: 'کنترل انگل', detail: 'قطره‌ی موضعی NexGard Combo، روی پوستِ پایه‌ی جمجمه (پشت سر) که نمی‌تواند بلیسدش، جدا و مالیده می‌شود. کک، کنه و جربِ گوش، اخراج. ماهانه با چند روز ارفاق، اما هرگز زودتر از یک ماه؛ کمی دیر اشکالی ندارد، خیلی زود خطرِ دوز مضاعف دارد.' },
+  'A separate dewormer on the standard adult schedule (the spot-on does not replace it): a pill, smuggled in inside something delicious and served without ceremony.':
+    { title: 'کرم‌زدایی', detail: 'یک کرم‌زدای جداگانه طبق برنامه‌ی استاندارد بزرگسال (قطره‌ی موضعی جایگزینش نمی‌شود): یک قرص، پنهان‌شده داخل چیزی خوشمزه و بی‌سروصدا سرو می‌شود.' },
+  'The full salon treatment: bath, blow-dry and a top-to-tail tidy-up, so the resident cloud stays soft and photogenic.':
+    { title: 'آراستن و روز اسپا', detail: 'درمان کامل سالن: حمام، سشوار و مرتب‌سازی از سر تا دم، تا ابرِ ساکن نرم و عکاسی‌پسند بماند.' },
+  'A full scrub and a complete change of litter; the royal facilities restored to five stars.':
+    { title: 'نظافت کاملِ جعبه‌ی خاک', detail: 'شست‌وشوی کامل و تعویض کاملِ خاک؛ تأسیسات سلطنتی به پنج ستاره بازگردانده می‌شود.' },
+  'The once-a-year, nose-to-tail service: full exam, weight check and an audience with the royal teeth.':
+    { title: 'معاینه‌ی کاملِ سالانه', detail: 'سرویسِ سالی‌یک‌بار، از سر تا دم: معاینه‌ی کامل، وزن‌کشی و ملاقات با دندان‌های سلطنتی.' },
+  'Felocell 4, the yearly top-up that keeps the core feline viruses on their side of the palace gates.':
+    { title: 'یادآورِ FVRCP', detail: 'Felocell 4، تقویتِ سالانه که ویروس‌های اصلیِ گربه را پشت دروازه‌های قصر نگه می‌دارد.' },
+  'Front paws first, back paws only with royal consent. Management files a formal complaint every time, then submits to the clippers.':
+    { title: 'کوتاه کردن ناخن', detail: 'اول پنجه‌های جلو، پنجه‌های عقب فقط با رضایتِ سلطنتی. مدیریت هر بار شکایتی رسمی ثبت می‌کند، سپس تسلیم ناخن‌گیر می‌شود.' },
+};
+const everyLabelFa: Record<string, string> = {
+  'Every month': 'هر ماه',
+  'Every 3 months': 'هر ۳ ماه',
+  'Every 2 months': 'هر ۲ ماه',
+  'Every year': 'هر سال',
+  'Every 2–4 weeks': 'هر ۲ تا ۴ هفته',
+};
+const whereFa: Record<string, string> = {
+  'at home': 'در خانه',
+  'at the vet': 'در کلینیک',
+  'at the salon': 'در سالن',
+};
+
 const healthTextTr: Record<string, Record<string, { title: string; detail: string }>> = {
   ms: healthTextMs,
   zh: healthTextZh,
+  fa: healthTextFa,
 };
-const everyLabelTr: Record<string, Record<string, string>> = { ms: everyLabelMs, zh: everyLabelZh };
-const whereTr: Record<string, Record<string, string>> = { ms: whereMs, zh: whereZh };
+const everyLabelTr: Record<string, Record<string, string>> = {
+  ms: everyLabelMs,
+  zh: everyLabelZh,
+  fa: everyLabelFa,
+};
+const whereTr: Record<string, Record<string, string>> = { ms: whereMs, zh: whereZh, fa: whereFa };
 
 /** Localize a timeline / upcoming item's prose (English passes through). */
 export function localizeHealthItem<
@@ -1415,6 +1762,48 @@ export const weightCopy: Record<string, WeightCopy> = {
       recorded: '已记录。管理层已被称重。',
       signExpired: '登录已过期。请在员工室重新输入 PIN。',
       couldNotRecord: '无法记录。请检查连接后重试。',
+    },
+  },
+  fa: {
+    metaTitle: 'وزن · Picha 🐾',
+    metaDescription: 'ردیاب وزن Picha: هر وزن‌کشی روی نمودار، به‌همراه آمار و دفترِ کامل.',
+    appTitle: 'وزن',
+    kicker: 'ابزارها · در حال خدمت',
+    title: 'دور کمرِ سلطنتی',
+    blurb: 'هر ممیزیِ ثبت‌شده، روی نمودار. وعده‌های اندازه‌گیری‌شده روند را صادق نگه می‌دارند؛ این صفحه کارکنان را صادق نگه می‌دارد.',
+    note: 'تا حدود ۱.۵ تا ۲ سالگی هنوز در حال رشد است.',
+    statCurrent: 'فعلی',
+    statHeaviest: 'سنگین‌ترین',
+    statLightest: 'سبک‌ترین',
+    statAverage: 'میانگین',
+    weighedPre: 'وزن‌کشی در',
+    peakFloofPre: 'اوجِ پشمالویی،',
+    featherweightPre: 'پرِ کاه،',
+    acrossPre: 'در طولِ',
+    auditWord: 'ممیزی',
+    auditWordPlural: 'ممیزی',
+    trend: 'روند',
+    bandFootnotePre: 'نوار کهربایی محدوده‌ی سالمِ بلوغ است (',
+    bandFootnotePost: ').',
+    bandNote: {
+      under: 'اینکه فعلاً زیرِ آن است، کاملاً طبق برنامه است.',
+      in: 'او رسیده. کمیته‌ی دور کمر راضی است.',
+      over: 'او بالای آن است؛ سیاستِ اندازه‌ی وعده‌ها در حال بازبینیِ رسمی است.',
+    },
+    ledgerLabel: 'دفتر',
+    auditNoPre: 'ممیزی شماره',
+    latest: 'آخرین',
+    logWeighIn: 'ثبت وزن‌کشی',
+    staffOnly: 'فقط کارکنان',
+    form: {
+      date: 'تاریخ',
+      weightKg: 'وزن (kg)',
+      record: 'ثبت ممیزی',
+      sameDateNote: 'ثبت‌های با تاریخِ یکسان ردیف موجود را به‌روزرسانی می‌کنند.',
+      filing: 'در حال بایگانی…',
+      recorded: 'ثبت شد. مدیریت وزن شد.',
+      signExpired: 'ورود منقضی شد. پین را در اتاق کارکنان دوباره وارد کنید.',
+      couldNotRecord: 'ثبت نشد. اتصال را بررسی و دوباره تلاش کنید.',
     },
   },
 };
@@ -1635,6 +2024,57 @@ export const trainingCopy: Record<string, TrainingCopy> = {
       '一次只练一步；一步重复练几天再进入下一步。',
     ],
   },
+  fa: {
+    metaTitle: 'آموزش · Picha 🐾',
+    metaDescription: 'آکادمی سلطنتی: دوره‌های آموزشی Picha با برنامه‌ی درسیِ گام‌به‌گام و پیشرفتِ زنده.',
+    appTitle: 'آکادمی',
+    kicker: 'ابزارها · در حال خدمت',
+    title: 'آکادمی سلطنتی',
+    blurb: 'دوره‌هایی در همکاریِ پیشرفته‌ی گربه‌ای. رسماً این کارکنان‌اند که آموزش می‌بینند و گواهی می‌گیرند؛ علیاحضرت پشمالو صرفاً تکالیف را نمره می‌دهد.',
+    staffProgress: 'پیشرفتِ کارکنان',
+    stepsWord: 'مرحله',
+    groups: { active: 'در حال انجام', syllabus: 'برنامه‌ی درسی', graduated: 'فارغ‌التحصیل' },
+    inSessionWord: 'در حال انجام',
+    graduatedWord: 'فارغ‌التحصیل',
+    onSyllabusWord: 'در برنامه',
+    stepWord: 'مرحله',
+    ofWord: 'از',
+    allWord: 'همه',
+    passedWord: 'مرحله گذرانده شد',
+    notStarted: 'شروع‌نشده',
+    registrarNoteHub: 'نقاط عطف در هر صفحه‌ی دوره توسط کارکنانِ دارای پین ثبت می‌شود و مستقیم در پرونده‌ی ابری‌اش می‌نشیند.',
+    allCourses: 'همه‌ی دوره‌ها',
+    statusGraduated: 'فارغ‌التحصیل',
+    statusActive: 'در حال انجام',
+    statusSyllabus: 'در برنامه‌ی درسی',
+    inSessionSincePre: 'در جلسه از',
+    gradBanner: 'با افتخار فارغ‌التحصیل شد. کارکنان رسماً گواهی گرفتند.',
+    resistanceWord: 'مقاومت',
+    upNext: 'بعدی',
+    curriculum: 'برنامه‌ی درسی',
+    registrarControls: 'کنترل‌های ثبت‌کننده',
+    begin: 'شروع دوره',
+    markStepPre: 'ثبت قبولی مرحله',
+    markStepPost: '',
+    graduatedBtn: 'فارغ‌التحصیل',
+    undo: 'واگرد',
+    registrarNoteCourse: 'نقاط عطف در پرونده‌ی ابری‌اش ثبت می‌شود. یک مرحله وقتی گذرانده حساب می‌شود که او در چند روزِ جداگانه آرام از پسش برآید.',
+    practiceMark: 'ثبت تمرین امروز',
+    practiceDone: 'تمرین امروز ثبت شد',
+    filing: 'در حال بایگانی…',
+    gradRecorded: 'فارغ‌التحصیل شد. آکادمی بسیار افتخار می‌کند.',
+    recorded: 'در پرونده‌اش ثبت شد.',
+    signExpired: 'ورود منقضی شد. پین را در اتاق کارکنان دوباره وارد کنید.',
+    couldNotRecord: 'ثبت نشد. اتصال را بررسی و دوباره تلاش کنید.',
+    rulesLabel: 'قواعد جلسه',
+    rules: [
+      'جلسات کوتاه: ۲ تا ۵ دقیقه، روزی یک یا دو بار.',
+      'همیشه با یک موفقیت تمام کنید، حتی کوچک.',
+      'تنقلات حقوق اوست؛ در بودجه‌ی روزانه‌ی ۱۰٪ نگه دارید.',
+      'هرگز اجبار نکنید. اگر رفت، کلاس تمام است.',
+      'یک مرحله در هر بار؛ یک مرحله را چند روز تکرار کنید و بعد جلو بروید.',
+    ],
+  },
 };
 export const getTrainingCopy = (locale?: string): TrainingCopy =>
   trainingCopy[locale ?? 'en'] ?? trainingCopy.en;
@@ -1643,35 +2083,43 @@ export const getTrainingCopy = (locale?: string): TrainingCopy =>
 // enough from the en/ms fragment order that it gets its own branch.
 export function stepOfLabel(done: number, total: number, locale?: string): string {
   if (locale === 'zh') return `第 ${done + 1} 步／共 ${total} 步`;
+  if (locale === 'fa') return `مرحلهٔ ${faDigits(done + 1)} از ${faDigits(total)}`;
   const c = getTrainingCopy(locale);
   return `${c.stepWord} ${done + 1} ${c.ofWord} ${total}`;
 }
 export function allStepsPassedLabel(total: number, locale?: string): string {
   if (locale === 'zh') return `全部 ${total} 步已通过`;
+  if (locale === 'fa') return `همهٔ ${faDigits(total)} مرحله گذرانده شد`;
   const c = getTrainingCopy(locale);
   return `${c.allWord} ${total} ${c.passedWord}`;
 }
 export function stepsNotStartedLabel(total: number, locale?: string): string {
   if (locale === 'zh') return `${total} 步 · 未开始`;
+  if (locale === 'fa') return `${faDigits(total)} مرحله · شروع‌نشده`;
   const c = getTrainingCopy(locale);
   return `${total} ${c.stepsWord} · ${c.notStarted}`;
 }
 export function stepsCountLabel(done: number, total: number, locale?: string): string {
   if (locale === 'zh') return `${done}/${total} 步`;
+  if (locale === 'fa') return `${faDigits(done)}/${faDigits(total)} مرحله`;
   const c = getTrainingCopy(locale);
   return `${done}/${total} ${c.stepsWord}`;
 }
 export function academyCaption(a: number, g: number, s: number, locale?: string): string {
   if (locale === 'zh') return `${a} 进行中 · ${g} 已毕业 · ${s} 在大纲中`;
+  if (locale === 'fa')
+    return `${faDigits(a)} در حال انجام · ${faDigits(g)} فارغ‌التحصیل · ${faDigits(s)} در برنامه`;
   const c = getTrainingCopy(locale);
   return `${a} ${c.inSessionWord} · ${g} ${c.graduatedWord} · ${s} ${c.onSyllabusWord}`;
 }
 export function inSessionSinceLabel(iso: string, locale?: string): string {
   if (locale === 'zh') return `自 ${dateLabel(iso, locale)} 起进行中`;
+  if (locale === 'fa') return `در جلسه از ${dateLabel(iso, locale)}`;
   return `${getTrainingCopy(locale).inSessionSincePre} ${dateLabel(iso, locale)}`;
 }
 export function markStepPassedLabel(done: number, locale?: string): string {
   if (locale === 'zh') return `标记第 ${done + 1} 步通过`;
+  if (locale === 'fa') return `ثبت قبولی مرحلهٔ ${faDigits(done + 1)}`;
   const c = getTrainingCopy(locale);
   return `${c.markStepPre} ${done + 1} ${c.markStepPost}`;
 }
@@ -1880,7 +2328,108 @@ const courseZh: Record<string, CourseText> = {
   },
 };
 
-const courseTr: Record<string, Record<string, CourseText>> = { ms: courseMs, zh: courseZh };
+const courseFa: Record<string, CourseText> = {
+  toothbrushing: {
+    title: 'مسواک ۱۰۱',
+    tagline: 'عصرِ مسواک آغاز می‌شود، به‌شرطِ تأیید رسمیِ او.',
+    why: 'گربه‌ها بیماریِ دندان را تا وقتی درد بگیرد پنهان می‌کنند. مسواکِ روزانه بهترین پیشگیریِ یگانه است، و ژلِ طعم‌گوشتِ Histo Tree هم قبلاً خریده شده.',
+    steps: [
+      { title: 'آزمونِ مزه', detail: 'کمی ژل دندان روی انگشت، به‌عنوان تنقلات تعارف می‌شود. چند روز تکرار کنید تا آن را غذا بداند.' },
+      { title: 'چانه و گونه', detail: 'وقتی ژل را می‌لیسد، لب‌ها و گونه‌هایش را لمس کنید. فقط چند ثانیه، بعد رها کنید و تعریف.' },
+      { title: 'انگشت روی لثه', detail: 'ژل روی انگشت، به‌آرامی در امتداد دندان‌های جلو و خط لثه مالیده می‌شود. پیش از اعتراض متوقف شوید.' },
+      { title: 'ورودِ مسواک', detail: 'مسواکِ گربه ظاهر می‌شود. آن را بو می‌کند و ژلش را می‌لیسد. هنوز مسواک نه.' },
+      { title: 'اولین حرکت‌ها', detail: 'چند ثانیه مسواکِ واقعی روی دندان‌های جلو، یک طرف. با یک تنقلات تمام کنید.' },
+      { title: 'روالِ کامل', detail: 'هر دو طرف و دندان‌های عقب، زیرِ یک دقیقه، روزانه. فارغ‌التحصیلی.' },
+    ],
+  },
+  manicure: {
+    title: 'برنامه‌ی مانیکور',
+    tagline: 'اول پنجه‌های جلو. مدیریت اکنون مطلع شد.',
+    why: 'ناخنِ گربه‌ی خانگی بیش‌ازحد رشد می‌کند و گیر می‌کند. کوتاه کردنِ منظم پنجه‌ها، مبلمان و کارکنان را حفظ می‌کند.',
+    steps: [
+      { title: 'دیپلماسیِ پنجه', detail: 'در بغل‌های آرام، یک پنجه را یک ثانیه بگیرید، رها کنید، تنقلات. کم‌کم تا یک فشارِ ملایم پیش بروید.' },
+      { title: 'فشار', detail: 'به‌آرامی یک بالشتکِ انگشت را فشار دهید تا یک ناخن بیرون بیاید، تحسینش کنید، رها کنید، تنقلات.' },
+      { title: 'آشنایی با ناخن‌گیر', detail: 'ناخن‌گیر هنگام بغل نزدیک است و در هوا کلیک می‌کند. اتفاقی برایش نمی‌افتد. تنقلات می‌بارد.' },
+      { title: 'فقط یک ناخن', detail: 'نوکِ یک ناخنِ جلو را وقتی آرام است بگیرید. فوراً متوقف شوید و جشن بگیرید.' },
+      { title: 'هر جلسه یک پنجه', detail: 'چند ناخن در هر جلسه، اول پنجه‌های جلو، هر ۲ تا ۴ هفته. فارغ‌التحصیلی.' },
+    ],
+  },
+  carrier: {
+    title: 'دیپلماسیِ باکس',
+    tagline: 'از سیاه‌چالِ قابل‌حمل تا کابینِ درجه‌یک.',
+    why: 'هر ویزیتِ دامپزشکی با باکس شروع می‌شود. گربه‌ای که داوطلبانه واردش می‌شود هر سفر را آرام‌تر و سریع‌تر می‌کند.',
+    steps: [
+      { title: 'وضعیتِ مبلمان', detail: 'باکسِ باز در پذیرایی می‌ماند با یک پتوی نرم داخلش، انگار همیشه آنجا بوده.' },
+      { title: 'محلِ تنقلات', detail: 'تنقلات و گاهی یک وعده نزدیکِ باکس ظاهر می‌شود، بعد درست داخلِ در، بعد تهِ باکس.' },
+      { title: 'بازیِ در', detail: 'در چند ثانیه بسته می‌شود در حالی که داخل تنقلات می‌خورد، و پیش از آنکه اهمیت دهد باز می‌شود.' },
+      { title: 'حملِ کوتاه', detail: 'یک حملِ کوتاه دورِ آپارتمان، بعد رها کردن و جایزه‌ی بزرگِ تنقلات.' },
+      { title: 'پیش‌آزمایش', detail: 'تا لابی یا یک رانندگیِ کوتاه و مستقیم به خانه. آخرش دامپزشک نیست. فارغ‌التحصیلی.' },
+    ],
+  },
+  holding: {
+    title: 'تحملِ پیشرفته‌ی بغل',
+    tagline: 'ده ثانیه آرامش در آغوشِ کارکنان یک پیشرفتِ دیپلماتیک حساب می‌شود.',
+    why: 'معاینه‌ی دامپزشکی، آراستن و گاه نجات از روی قفسه، همه برای گربه‌ای که تحملِ بغل دارد بهتر پیش می‌رود.',
+    steps: [
+      { title: 'دست‌ها، بدون بلند کردن', detail: 'هر دو دست هنگام بغل لحظه‌ای روی پهلوهایش می‌ماند، بعد رها، بعد تنقلات.' },
+      { title: 'بلند کردنِ ده‌ثانیه‌ای', detail: 'یک بلند کردنِ کوتاه و کم‌ارتفاع. پیش از آنکه به وول خوردن فکر کند، پاها روی زمین.' },
+      { title: 'فرود روی پا', detail: 'بلندش کنید و روی پا بگذارید؛ آزادی فوراً داده می‌شود. پا به مقصدی خوب تبدیل می‌شود.' },
+      { title: 'نیم‌دقیقه', detail: 'یک بغلِ آرامِ ۳۰ثانیه‌ای با نوازشِ آهسته، پیش از آنکه بخواهد تمام می‌شود.' },
+      { title: 'به‌سبکِ کلینیک', detail: 'یک بغلِ ملایمِ سبکِ دامپزشکی تا یک دقیقه، تمام‌مدت آرام. فارغ‌التحصیلی.' },
+    ],
+  },
+  recall: {
+    title: 'فراخوان، با وقتِ قبلی',
+    tagline: 'وقتی صدایش کنی می‌آید. وقتی با اصلِ ماجرا موافق باشد.',
+    why: 'واکنشِ قابل‌اعتماد به نام، گربه‌ی پنهان‌شده را سریع پیدا می‌کند، که با یک استاد بزرگِ قایم‌باشک در خانه مهم است.',
+    steps: [
+      { title: 'نام یعنی تنقلات', detail: '«Picha» بگویید، یک تنقلات فرود می‌آید. چند روز تکرار کنید تا با شنیدنِ کلمه سرش سریع بچرخد.' },
+      { title: 'فراخوانِ آن‌سرِ اتاق', detail: 'از آن‌سرِ اتاق صدایش کنید و ورودش را پاداش دهید، هر بار بدون استثنا.' },
+      { title: 'فراخوانِ خارج از دید', detail: 'از اتاقی دیگر صدا کنید. ورود، جایزه‌ی بزرگ می‌گیرد.' },
+      { title: 'تمرین‌های تصادفی', detail: 'فراخوان در لحظه‌های تصادفیِ روزانه؛ پاداش بین غذا، بازی و محبت متغیر است. فارغ‌التحصیلی.' },
+    ],
+  },
+  'talking-buttons': {
+    title: 'دکمه‌های سخنگو',
+    tagline: 'چهار دکمه، یک گربه، و طلوعِ درخواست‌هایی که می‌توانی بشنوی.',
+    why: 'دکمه‌های صوتیِ قابل‌ضبط به او اجازه می‌دهند به‌عمد چیزی بخواهد به‌جای بازیِ حدس‌زدنِ همیشگی. اگر درست انجام شود (کارکنان فشردن را نشان دهند، کسی پنجه‌اش را مجبور نکند، و پاداش فوراً برسد) یک غنی‌سازیِ واقعی و خطِ ارتباطیِ اصیل است. با یک دکمه شروع کنید و بقیه را فقط وقتی یاد گرفت اضافه کنید.',
+    steps: [
+      { title: 'ضبط و گذاشتنِ یکی', detail: 'یک کلمه‌ی روشن و پرارزش که همین حالا دوستش دارد ضبط کنید؛ «بازی» یا «تنقلات» کلمه‌های اولِ خوبی‌اند. آن دکمه را جایی بگذارید که آن چیز هست: دکمه‌ی بازی کنارِ اسباب‌بازی‌ها، دکمه‌ی تنقلات کنارِ شیشه.' },
+      { title: 'هر بار نشان دهید', detail: 'درست پیش از آنکه اتفاق بیفتد، یک کارمند دکمه را می‌فشارد، کلمه را می‌گوید، و بلافاصله تحویلش می‌دهد. هر دو کارمند، همان کلمه، روزی چند بار. هرگز پنجه‌اش را به‌جایش نفشارید؛ او با تماشا یاد می‌گیرد.' },
+      { title: 'اولین فشار را ارج بگذارید', detail: 'هر بو کشیدن یا پنجه‌ی نزدیکِ دکمه را پاداش دهید، و لحظه‌ای که خودش فشارش داد، فوراً تحویل دهید، حتی اگر زمان‌بندی افتضاح باشد. اولین فشارِ واقعی ممکن است هفته‌ها طول بکشد. مثل یک فارغ‌التحصیلی با آن رفتار کنید.' },
+      { title: 'افزودنِ دکمه‌ی دوم', detail: 'وقتی دکمه‌ی اول را به‌عمد فشار داد، یک دکمه‌ی دوم با کلمه‌ای واضحاً متفاوت («غذا» یا «آب» خوب‌اند) کمی دورتر بگذارید تا دو تا قاطی نشوند. نشان دادنِ هر دو را ادامه دهید.' },
+      { title: 'افزودنِ سومی', detail: 'وقتی دو تای اول را در بافت از هم تشخیص داد نه فقط بی‌هدف زد، کلمه‌ی سوم را بیاورید. یک کلمه‌ی اجتماعی مثل «نوازش» انتخابِ خوبی است. فشارهایی را که واقعاً معنا دارند پاداش دهید.' },
+      { title: 'تخته‌صدای کامل', detail: 'دکمه‌ی چهارم را اضافه کنید و هر چهار را روی پدِ ضدلغزش ثابت کنید. او حالا واژگانی کاربردی دارد و می‌تواند رسماً درخواست ثبت کند. فارغ‌التحصیلی، و آغازِ یک مذاکره‌ی مادام‌العمر.' },
+    ],
+  },
+  'party-tricks': {
+    title: 'نمایش‌های مهمانی',
+    tagline: 'های‌فایو، چرخش، و راه‌های دیگرِ به‌تشویق‌واداشتنِ کارکنان.',
+    why: 'نمایش‌ها غنی‌سازیِ ناب‌اند: مغزش را به کار می‌گیرند، انرژی می‌سوزانند و آموزش را به بازی‌ای تبدیل می‌کنند که کلِ خانه از آن لذت می‌برد. تمرکز و همکاری‌ای را هم می‌سازند که هر دوره‌ی دیگر به آن تکیه دارد. با طعمه و پاداش، نه با دست ژست دادن.',
+    steps: [
+      { title: 'نشانگر و هدف', detail: 'یک نشانگر (کلیکر یا یک «آفرینِ» قاطع) انتخاب کنید و آن را با تنقلات جفت کنید تا خودِ صدا یعنی «آفرین». بعد لمسِ بینی را یاد دهید: انگشتی جلو بگیرید و لحظه‌ای که زد پاداش دهید. همین یک مهارت موتورِ هر نمایش است.' },
+      { title: 'نشستن', detail: 'تنقلات را جلوِ بینی‌اش بگیرید و بالا و به‌عقب روی سرش بلغزانید؛ همین‌که بینی دنبال کرد و باسن پایین آمد، نشانه بزنید و پاداش دهید. وقتی روان شد، درست پیش از انجامش کلمه‌ی «بشین» را اضافه کنید.' },
+      { title: 'های‌فایو', detail: 'تنقلات را در مشتی شل نزدیکِ سینه‌اش نگه دارید. لحظه‌ای که پنجه برای بررسی بالا آمد، نشانه بزنید و پاداش دهید. طیِ چند جلسه بالاتر ببرید تا پنجه به کفِ دستِ بازِ شما برسد، بعد نامش را «های‌فایو» بگذارید.' },
+      { title: 'چرخش', detail: 'بینی‌اش را با تنقلات در دایره‌ای آهسته هدایت کنید تا در جا بچرخد؛ چرخشِ کامل را نشانه بزنید و پاداش دهید. هر روز دایره را کوچک‌تر کنید، تا یک چرخشِ انگشت کوچکش کنید، و کلمه‌ی «بچرخ» را اضافه کنید.' },
+      { title: 'محوِ طعمه', detail: 'حالا همان حرکتِ دست را بدونِ تنقلات انجام دهید، و بعد از اجرا با دستِ دیگر پاداش دهید. اشاره را یک بار بگویید، لحظه‌ای مهلت دهید، و به‌جای غذایِ جلوِ بینی، خودِ اشاره را پاداش دهید.' },
+      { title: 'فینال', detail: 'یک حرکتِ چشمگیر اضافه کنید (ژستِ «تعظیمِ نشسته»، یا پرش از داخلِ حلقه‌ی نگه‌داشته)، بعد دو نمایش را به یک روالِ کوچک روی اشاره وصل کنید. او حالا برای تماشاگرانِ خانه به‌درخواست اجرا می‌کند. فارغ‌التحصیلی، و یک تشویقِ ایستاده.' },
+    ],
+  },
+  harness: {
+    title: 'قلاده و بند (اختیاری)',
+    tagline: 'برای اکتشاف‌های فرضیِ آینده که علیاحضرت پشمالو شاید سفارش دهد.',
+    why: 'اختیاری. فقط اگر روزی سفر یا وقتِ بیرونِ زیرِنظر در برنامه باشد به کار می‌آید، پس تهِ برنامه‌ی درسی منتظر می‌ماند.',
+    steps: [
+      { title: 'قلاده وجود دارد', detail: 'روی زمین می‌افتد و بو می‌شود. تنقلات نزدیکش رخ می‌دهد.' },
+      { title: 'پوشیده، بی‌بست', detail: 'چند ثانیه روی شانه‌هایش انداخته می‌شود، بعد تنقلات.' },
+      { title: 'بسته، در خانه', detail: 'چند دقیقه بسته می‌شود در حالی که بازی حواسش را از لباس پرت می‌کند.' },
+      { title: 'سایه‌به‌سایه با بند', detail: 'بند وصل، او در آپارتمان می‌گردد، کارکنان مثل درباریان دنبال می‌کنند.' },
+      { title: 'اکتشافِ راهرو', detail: 'یک قدم‌زنیِ کوتاهِ همراهی‌شده بیرونِ درِ ورودی. فارغ‌التحصیلی.' },
+    ],
+  },
+};
+
+const courseTr: Record<string, Record<string, CourseText>> = { ms: courseMs, zh: courseZh, fa: courseFa };
 
 /** Return a course with prose in the active locale (English passes through). */
 export function localizeCourse(course: TrainingCourse, locale?: string): TrainingCourse {
@@ -2058,6 +2607,42 @@ export const staffCopy: Record<string, StaffCopy> = {
       couldNotUpdate: '无法更新提醒。',
     },
   },
+  fa: {
+    metaTitle: 'کارکنان · Picha 🐾',
+    metaDescription: 'خوابگاهِ کارکنان: پینِ ثبت‌کننده اینجاست، برای انسان‌های استخدامی.',
+    appTitle: 'کارکنان',
+    kicker: 'فقط اعضا',
+    title: 'اتاق کارکنان',
+    blurb: 'جایی که انسان‌ها تنقلات، قهوه و پینِ ثبت‌کننده را نگه می‌دارند. وارد شوید تا به کنترل‌های ویژه‌ی کارکنان برسید که مدیریت هرگز به هر کسی نمی‌سپارد.',
+    staffOnly: 'فقط کارکنان',
+    pinPrompt: 'پینِ ثبت‌کننده، لطفاً. کمدِ تنقلات فقط برای کارکنان است. یک بار واردش کنید و این دستگاه شما را به‌خاطر می‌سپارد.',
+    pinLabel: 'پینِ ثبت‌کننده',
+    pinPlaceholder: 'پینِ کارکنان',
+    unlock: 'باز کردن',
+    checking: 'در حال بررسی…',
+    pinNotRecognised: 'آن پین شناخته نشد. دوباره تلاش کنید.',
+    unlockedBanner: 'وارد شدید؛ تنقلات در کشوی بالاست. این دستگاه اکنون می‌تواند وزن‌کشی، پیشرفتِ آکادمی و کارهای روزانه را ثبت کند.',
+    remindersLabel: 'یادآورها',
+    reminderTitle: 'یادآورها روی این دستگاه',
+    reminderSub: 'هر چند ساعت یک تلنگر، تا وقتی کارهای روزانه هنوز مانده.',
+    on: 'روشن',
+    off: 'خاموش',
+    deviceLabel: 'این دستگاه',
+    forgetTitle: 'فراموش کردنِ پین روی این دستگاه',
+    forgetSub: 'پینِ ذخیره‌شده در اینجا را پاک می‌کند. دستگاه‌های دیگر دست‌نخورده می‌مانند، و خودِ پین هرگز تغییر نمی‌کند.',
+    moreControlsNote: 'کنترل‌های بیشترِ کارکنان به‌مرور اضافه می‌شوند. فعلاً بیشتر یک شیشه‌ی تنقلات، یک کتری و یک جالباسی است.',
+    push: {
+      unsupported: 'این مرورگر نمی‌تواند وقتی اپ بسته است یادآور بفرستد.',
+      denied: 'اعلان‌ها برای این سایت مسدود شده‌اند. آن‌ها را در تنظیمات مرورگر روشن کنید، بعد دوباره بزنید.',
+      subscribed: 'روشن. هر چند ساعت یک تلنگر تا وقتی کارها مانده (شب‌ها ساکت)؛ به‌محضِ خالی شدنِ فهرست، ساکت.',
+      off: 'خاموش. برای گرفتنِ تلنگر تا وقتی کارهای روزانه مانده، بزنید.',
+      working: 'در حال انجام…',
+      pinRejected: 'آن پین رد شد. خارج شوید و دوباره وارد شوید، بعد امتحان کنید.',
+      cloudNotConfigured: 'ابر پیکربندی نشده.',
+      signInFirst: 'اول وارد شوید.',
+      couldNotUpdate: 'به‌روزرسانیِ یادآورها ناموفق بود.',
+    },
+  },
 };
 export const getStaffCopy = (locale?: string): StaffCopy => staffCopy[locale ?? 'en'] ?? staffCopy.en;
 
@@ -2173,6 +2758,33 @@ export const passportCopy: Record<string, PassportCopy> = {
     registeredAt: '登记于',
     petPhoto: '宠物照片',
   },
+  fa: {
+    sheetTitle: 'پاسپورت حیوان',
+    closeLabel: 'بستن پاسپورت',
+    particularsHeading: 'مشخصاتِ حیوان',
+    identityHeading: 'هویتِ حیوان',
+    labels: {
+      name: 'نامِ حیوان',
+      species: 'گونه',
+      breed: 'نژاد',
+      sex: 'جنسیت',
+      neutered: 'عقیم‌شده',
+      colour: 'رنگ',
+      dob: 'تاریخ تولد',
+      passportNo: 'شماره‌ی پاسپورت',
+    },
+    species: 'گربه',
+    sexFemale: 'ماده',
+    yes: 'بله',
+    pending: 'در انتظار',
+    household: 'دربارِ سلطنتیِ Picha',
+    signature: 'امضا: پنجه در پرونده',
+    microchipNo: 'شماره‌ی میکروچیپ',
+    siteOfImplant: 'محلِ کاشت',
+    betweenShoulders: 'میانِ شانه‌ها',
+    registeredAt: 'ثبت‌شده در',
+    petPhoto: 'عکسِ حیوان',
+  },
 };
 export const getPassportCopy = (locale?: string): PassportCopy =>
   passportCopy[locale ?? 'en'] ?? passportCopy.en;
@@ -2216,6 +2828,15 @@ export const shareCopy: Record<string, ShareCopy> = {
     copied: '已复制',
     shareText: 'Picha 这只猫：档案、健康记录和照护指南。',
   },
+  fa: {
+    sheetTitle: 'هم‌رسانیِ پرونده‌اش',
+    closeLabel: 'بستنِ برگه‌ی هم‌رسانی',
+    blurb: 'برای دامپزشک، مهدِ روزانه، خانواده: کد را اسکن کنید یا لینک را بفرستید. همه‌چیز درباره‌ی Picha، در یک صفحه.',
+    share: 'هم‌رسانی',
+    copyLink: 'کپیِ لینک',
+    copied: 'کپی شد',
+    shareText: 'Picha گربه: پروفایل، پرونده‌ی سلامت و راهنمای مراقبت.',
+  },
 };
 export const getShareCopy = (locale?: string): ShareCopy => shareCopy[locale ?? 'en'] ?? shareCopy.en;
 
@@ -2244,6 +2865,12 @@ export function notifyChecklistMessage(
       body: 'Picha 注意到有些例行任务还没完成。她很失望，但并不意外。',
     };
   }
+  if (locale === 'fa') {
+    return {
+      title: `Picha ${faDigits(remaining)} شکایت ثبت کرده`,
+      body: 'Picha متوجه شده چند کار روزانه هنوز انجام نشده. ناامید است، اما تعجب نکرده.',
+    };
+  }
   if (locale === 'ms') {
     return {
       title: `Picha telah memfailkan ${remaining} aduan`,
@@ -2263,6 +2890,12 @@ export function dueSoonTitle(itemTitle: string, days: number, locale?: string): 
     if (days === 0) return `今天到期：${itemTitle}`;
     if (days === 1) return `明天到期：${itemTitle}`;
     return `${days} 天后到期：${itemTitle}`;
+  }
+  if (locale === 'fa') {
+    if (days < 0) return `عقب‌افتاده: ${itemTitle}`;
+    if (days === 0) return `امروز موعد: ${itemTitle}`;
+    if (days === 1) return `فردا موعد: ${itemTitle}`;
+    return `${faDigits(days)} روز دیگر موعد: ${itemTitle}`;
   }
   if (locale === 'ms') {
     if (days < 0) return `Lewat tempoh: ${itemTitle}`;

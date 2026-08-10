@@ -13,15 +13,20 @@
  * astro.config `i18n`. Keep the playful "staff of the cat" voice in every
  * language; a literal translation that loses the humour is wrong.
  */
-export const LOCALES = ['en', 'ms', 'zh'] as const;
+export const LOCALES = ['en', 'ms', 'zh', 'fa'] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
+
+/** Locales that read right-to-left (drive <html dir> + rtl: styles). */
+export const RTL_LOCALES = new Set(['fa']);
+export const isRtl = (locale?: string): boolean => RTL_LOCALES.has(locale ?? '');
 
 /** Endonyms: each language named in its own language, shown in the picker. */
 export const localeLabels: Record<string, string> = {
   en: 'English',
   ms: 'Bahasa Malaysia',
   zh: '中文',
+  fa: 'فارسی',
 };
 
 /** Look up a UI string for a locale, falling back to the default locale. */
@@ -70,5 +75,18 @@ export const ui: Record<string, Dict> = {
     'lang.sub': '随时可以从菜单里的地球图标切换。',
     'lang.action': '语言',
     'date.confirmVet': '已过预计日期，请向兽医确认',
+  },
+  fa: {
+    'nav.home': 'خانه',
+    'nav.health': 'سلامتی',
+    'nav.care': 'مراقبت',
+    'nav.tools': 'ابزارها',
+    'hero.tagline': 'پشمالوی سفیدبرفی · چشمان کهربایی · قلاده صورتی',
+    'hero.share': 'هم‌رسانی',
+    'home.getToKnow': 'با او آشنا شوید',
+    'lang.title': 'زبان خود را انتخاب کنید',
+    'lang.sub': 'هر زمان می‌توانید از نماد کره در منو تغییر دهید.',
+    'lang.action': 'زبان',
+    'date.confirmVet': 'از تاریخ تخمینی گذشته؛ با دامپزشک تأیید کنید',
   },
 };

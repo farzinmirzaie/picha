@@ -2,8 +2,15 @@
 
 // Map our locale codes to BCP-47 tags for Intl. Node 22 ships full ICU, so
 // Malay month names ("Julai", "Jul") come for free.
+// fa-IR defaults to the Persian (Jalali) calendar + Persian digits, so vet
+// dates render as e.g. "۲۴ مرداد ۱۴۰۵" — same instant, Persian calendar.
 const intlTag = (locale?: string) =>
-  locale === 'ms' ? 'ms-MY' : locale === 'zh' ? 'zh-CN' : 'en-GB';
+  locale === 'ms' ? 'ms-MY' : locale === 'zh' ? 'zh-CN' : locale === 'fa' ? 'fa-IR' : 'en-GB';
+
+/** ASCII digits → Persian digits (۰-۹). Used for counts in Persian prose. */
+export function faDigits(s: string | number): string {
+  return String(s).replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[+d]);
+}
 
 // Cache one formatter per (kind, locale) — Intl formatters are not free.
 const longCache: Record<string, Intl.DateTimeFormat> = {};
@@ -45,6 +52,16 @@ export function inDaysLabel(days: number, locale?: string): string {
     if (days === -1) return '昨天';
     const span = months >= 1 ? `${months}个月${rem ? `零${rem}天` : ''}` : `${abs}天`;
     return days > 0 ? `${span}后` : `${span}前`;
+  }
+  if (locale === 'fa') {
+    if (days === 0) return 'امروز';
+    if (days === 1) return 'فردا';
+    if (days === -1) return 'دیروز';
+    const span =
+      months >= 1
+        ? `${faDigits(months)} ماه${rem ? ` و ${faDigits(rem)} روز` : ''}`
+        : `${faDigits(abs)} روز`;
+    return days > 0 ? `${span} دیگر` : `${span} پیش`;
   }
   if (locale === 'ms') {
     if (days === 0) return 'hari ini';

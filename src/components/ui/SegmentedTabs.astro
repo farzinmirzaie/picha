@@ -33,7 +33,7 @@ const { tabs, label = 'Filter', class: cls = '' } = Astro.props;
   data-seg
 >
   <span
-    class="pointer-events-none absolute inset-y-1 left-1 rounded-full bg-paper-50 shadow-sm transition-transform duration-300 ease-out dark:bg-plum-950"
+    class="pointer-events-none absolute inset-y-1 start-1 rounded-full bg-paper-50 shadow-sm transition-transform duration-300 ease-out dark:bg-plum-950"
     style={`width: calc((100% - 0.5rem) / ${tabs.length})`}
     data-seg-thumb
     aria-hidden="true"
@@ -83,9 +83,12 @@ const { tabs, label = 'Filter', class: cls = '' } = Astro.props;
         });
       };
 
+      // In RTL the thumb sits at the inline-start (right) and slides the other
+      // way, since CSS transforms are not mirrored by `dir`.
+      const rtl = getComputedStyle(seg).direction === 'rtl';
       const select = (i: number) => {
         const tab = tabs[i];
-        thumb.style.transform = `translateX(${i * 100}%)`;
+        thumb.style.transform = `translateX(${i * 100 * (rtl ? -1 : 1)}%)`;
         tabs.forEach((t) => {
           const active = t === tab;
           t.setAttribute('aria-selected', String(active));
@@ -106,8 +109,9 @@ const { tabs, label = 'Filter', class: cls = '' } = Astro.props;
       seg.addEventListener('keydown', (e) => {
         if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
         const current = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
-        const nextIdx =
-          (current + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+        // In RTL, ArrowRight moves toward the start (lower index).
+        const forward = e.key === 'ArrowRight' ? (rtl ? -1 : 1) : rtl ? 1 : -1;
+        const nextIdx = (current + forward + tabs.length) % tabs.length;
         select(nextIdx);
         tabs[nextIdx].focus();
         e.preventDefault();

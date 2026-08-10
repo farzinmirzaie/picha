@@ -1,12 +1,13 @@
 ---
 import '@fontsource-variable/fraunces';
 import '@fontsource-variable/nunito';
+import '@fontsource-variable/vazirmatn';
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import Nav from '../components/Nav.astro';
 import LangPicker from '../components/LangPicker.astro';
 import IconButton from '../components/ui/IconButton.astro';
-import { t as tr } from '../i18n/ui';
+import { t as tr, isRtl } from '../i18n/ui';
 import { supabaseClient } from '../data/supabase';
 import { nextDueHealth } from '../lib/health';
 
@@ -37,12 +38,13 @@ const ogUrl = new URL(Astro.url.pathname, Astro.site);
 
 // Mobile app-bar label: the tab name (localized), unless the page names itself.
 const locale = Astro.currentLocale ?? 'en';
+const dir = isRtl(locale) ? 'rtl' : 'ltr';
 const appTitle =
   appTitleProp ?? (current === 'home' || current === 'none' ? 'Picha' : tr(locale, `nav.${current}`));
 ---
 
 <!doctype html>
-<html lang={locale} class="scroll-smooth">
+<html lang={locale} dir={dir} class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <!-- zoom intentionally disabled for a native PWA feel; viewport-fit=cover for the notch -->
@@ -91,7 +93,7 @@ const appTitle =
   >
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-blush-600 focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-50 focus:rounded-full focus:bg-blush-600 focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white"
     >
       Skip to content
     </a>
@@ -111,7 +113,7 @@ const appTitle =
         >
           {appTitle}
         </span>
-        <div class="-mr-2 ml-auto flex items-center">
+        <div class="-me-2 ms-auto flex items-center">
           <IconButton icon="ph:translate" label="Language" data-lang-open />
           <slot name="app-action" />
           {

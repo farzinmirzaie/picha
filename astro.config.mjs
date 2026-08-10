@@ -14,10 +14,10 @@ export default defineConfig({
   // `fallback` auto-generates locale routes from the default for pages not yet
   // translated, so nothing 404s during the rollout.
   i18n: {
-    locales: ['en', 'ms', 'zh'],
+    locales: ['en', 'ms', 'zh', 'fa'],
     defaultLocale: 'en',
     routing: { prefixDefaultLocale: false, fallbackType: 'rewrite' },
-    fallback: { ms: 'en', zh: 'en' },
+    fallback: { ms: 'en', zh: 'en', fa: 'en' },
   },
   integrations: [
     icon(),

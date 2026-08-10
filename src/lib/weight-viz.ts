@@ -13,6 +13,10 @@ const PAD = { top: 26, right: 18, bottom: 40, left: 46 };
 
 /** Chart/stats delta-chip phrasing; "no change" when the weight held steady. */
 export function deltaLabel(g: number, locale?: string): string {
+  if (locale === 'fa') {
+    if (g === 0) return 'بدون تغییر از آخرین وزن‌کشی';
+    return `${Math.abs(g)} گرم ${g > 0 ? 'افزایش' : 'کاهش'} از آخرین وزن‌کشی`;
+  }
   if (locale === 'zh') {
     if (g === 0) return '较上次称重没有变化';
     return `较上次称重${g > 0 ? '增加' : '减少'} ${Math.abs(g)} g`;
@@ -27,6 +31,11 @@ export function deltaLabel(g: number, locale?: string): string {
 
 /** Ledger-row delta phrasing: opening entry, no change, or "N g". */
 export function rowDeltaLabel(g: number | undefined, locale?: string): string {
+  if (locale === 'fa') {
+    if (g === undefined) return 'اولین ثبت';
+    if (g === 0) return 'بدون تغییر';
+    return `${Math.abs(g)} گرم`;
+  }
   if (locale === 'zh') {
     if (g === undefined) return '首次记录';
     if (g === 0) return '无变化';
@@ -65,7 +74,13 @@ export function chartSvg(
   locale?: string,
 ): string {
   const bandLabel =
-    locale === 'ms' ? 'julat dewasa sihat' : locale === 'zh' ? '健康成猫范围' : 'healthy adult range';
+    locale === 'ms'
+      ? 'julat dewasa sihat'
+      : locale === 'zh'
+        ? '健康成猫范围'
+        : locale === 'fa'
+          ? 'محدوده سالم بلوغ'
+          : 'healthy adult range';
   const { entries, kgs, heaviest, lightest, latest } = weightStats(history);
   const { W, H } = CHART;
   const innerW = W - PAD.left - PAD.right;
@@ -163,6 +178,9 @@ export function chartAriaLabel(history: WeightEntry[], locale?: string): string 
   const { entries, latest } = weightStats(history);
   if (locale === 'zh') {
     return `Picha 体重折线图：${entries.length} 次称重，从 ${dateLabel(entries[0].date, locale)} 到 ${dateLabel(latest.date, locale)}，目前 ${latest.kg} kg。完整数据见下方记录。`;
+  }
+  if (locale === 'fa') {
+    return `نمودار خطی وزن Picha: ${entries.length} وزن‌کشی از ${dateLabel(entries[0].date, locale)} تا ${dateLabel(latest.date, locale)}، اکنون ${latest.kg} kg. ارقام کامل در دفتر پایین.`;
   }
   if (locale === 'ms') {
     return `Carta garis berat Picha: ${entries.length} timbangan dari ${dateLabel(entries[0].date, locale)} hingga ${dateLabel(latest.date, locale)}, kini ${latest.kg} kg. Angka penuh ada dalam lejar di bawah.`;

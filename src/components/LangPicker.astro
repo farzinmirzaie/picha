@@ -12,9 +12,12 @@ import { LOCALES, localeLabels, t } from '../i18n/ui';
 
 const current = Astro.currentLocale ?? 'en';
 const base = import.meta.env.BASE_URL.replace(/\/$/, ''); // "/picha"
-// Logical path after the base, with any locale prefix stripped.
+// Logical path after the base, with ANY non-default locale prefix stripped, so
+// switching language from e.g. /zh/health/ links to /fa/health/ (not
+// /fa/zh/health/). Built from LOCALES so new locales need no change here.
 let rest = Astro.url.pathname.slice(base.length) || '/';
-const m = rest.match(/^\/ms(?=\/|$)/);
+const prefixes = LOCALES.filter((l) => l !== 'en');
+const m = rest.match(new RegExp(`^/(${prefixes.join('|')})(?=/|$)`));
 if (m) rest = rest.slice(m[0].length) || '/';
 if (!rest.startsWith('/')) rest = '/' + rest;
 const urlFor = (loc: string) => (loc === 'en' ? `${base}${rest}` : `${base}/${loc}${rest}`);
@@ -50,7 +53,7 @@ const urlFor = (loc: string) => (loc === 'en' ? `${base}${rest}` : `${base}/${lo
                 href={urlFor(l)}
                 data-lang-pick={l}
                 aria-current={l === current ? 'true' : undefined}
-                class="flex w-full items-center gap-3 rounded-2xl border border-blush-200/70 bg-white px-4 py-3.5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-950"
+                class="flex w-full items-center gap-3 rounded-2xl border border-blush-200/70 bg-white px-4 py-3.5 text-start shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-950"
               >
                 <Icon name="ph:translate" class="h-5 w-5 shrink-0 text-blush-500" aria-hidden="true" />
                 <span class="flex-1 font-display text-lg font-semibold">{localeLabels[l]}</span>

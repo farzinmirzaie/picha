@@ -113,7 +113,7 @@ const countOf = (id: string) => groups.find((g) => g.id === id)!.courses.length;
                 data-astro-prefetch
                 data-course-card={c.slug}
                 data-total={c.steps.length}
-                class="reveal group flex w-full items-center gap-4 rounded-3xl border border-blush-200/70 bg-paper-50 p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-900"
+                class="reveal group flex w-full items-center gap-4 rounded-3xl border border-blush-200/70 bg-paper-50 p-5 text-start shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 dark:border-plum-700 dark:bg-plum-900"
               >
                 <IconBadge icon={c.icon} />
                 <span class="min-w-0 flex-1">
@@ -153,7 +153,7 @@ const countOf = (id: string) => groups.find((g) => g.id === id)!.courses.length;
                 </span>
                 <Icon
                   name="ph:caret-right"
-                  class="h-4 w-4 shrink-0 text-ink-400 transition-transform duration-200 group-hover:translate-x-1"
+                  class="h-4 w-4 shrink-0 text-ink-400 transition-transform duration-200 group-hover:translate-x-1 rtl:-scale-x-100"
                   aria-hidden="true"
                 />
               </a>

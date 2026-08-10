@@ -48,6 +48,15 @@ html {
   scroll-padding-top: 4.5rem;
 }
 
+/* Persian (RTL): Fraunces + Nunito have no Persian glyphs, so on /fa/ swap both
+   the display and body faces to Vazirmatn (one clean Persian variable font).
+   Redefining the CSS variables cascades to every font-family: var(--font-*)
+   usage, so headings and body both switch without touching component markup. */
+html[lang='fa'] {
+  --font-display: 'Vazirmatn Variable', 'Nunito Variable', system-ui, sans-serif;
+  --font-sans: 'Vazirmatn Variable', ui-rounded, system-ui, sans-serif;
+}
+
 /* Tell the browser to theme native controls (date/number inputs, spinners,
    scrollbars) with the page — without this their text renders in light theme
    on our dark surfaces and reads as blank. `accent-color` tints the native

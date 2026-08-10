@@ -466,18 +466,35 @@ in every change from now on.
   translated carefully and **confirmed by the owners** before shipping — the
   "jokes end where the vet begins" rule holds in every language. Flag these for
   review rather than assuming a translation is safe.
-- **Languages:** English (default), Bahasa Malaysia, Chinese (`zh`) — all live.
-  Add one by adding its code to `LOCALES` + `astro.config` `i18n` (locale +
-  `fallback`), an endonym to `localeLabels`, and a full locale block with the
-  same keys in every dictionary (plus a branch in the `localize*` helpers and
-  `lib/dates`/`lib/weight-viz` if its grammar differs); the picker
-  (`LangPicker`) picks it up automatically.
+- **Languages:** English (default), Bahasa Malaysia, Chinese (`zh`), Persian
+  (`fa`, RTL) — all live. Add one by adding its code to `LOCALES` +
+  `astro.config` `i18n` (locale + `fallback`), an endonym to `localeLabels`,
+  and a full locale block with the same keys in every dictionary (plus a branch
+  in the `localize*` helpers and `lib/dates`/`lib/weight-viz` if its grammar
+  differs); the picker (`LangPicker`) picks it up automatically.
+- **RTL (Persian, and any future RTL locale).** Add the code to `RTL_LOCALES`
+  in `i18n/ui.ts`; `Layout` then sets `<html dir="rtl">` and swaps the font to
+  Vazirmatn via a `html[lang='fa']` rule in `global.css` (Fraunces/Nunito have
+  no Persian glyphs). **Never use physical-direction utilities** (`ml-`/`mr-`/
+  `pl-`/`pr-`/`left-`/`right-`/`text-left`/`text-right`) for reading-flow — use
+  logical ones (`ms-`/`me-`/`ps-`/`pe-`/`start-`/`end-`/`text-start`/`text-end`)
+  so they flip with `dir`. Directional icons (caret/arrow) get `rtl:-scale-x-100`.
+  Interactive JS that positions by axis (SegmentedTabs thumb transform,
+  StatStrip scroll fades) branches on `direction === 'rtl'`.
+- **Persian digits + Jalali calendar.** `lib/dates` uses `fa-IR` (Intl gives
+  Jalali dates + Persian digits automatically — vet dates show as e.g.
+  `۲۴ مرداد ۱۴۰۵`, the same instant in the Persian calendar). Use `faDigits()`
+  for calendar-ish counts (days/months/years/step numbers) in generated prose;
+  **kg / gram measurements stay Latin** (measurement clarity — the weight chart
+  and ledger keep Western numerals). Clinical-status date subs
+  (`11 Jul 2026`) are static labels and stay Gregorian in every locale.
 
 **Mechanism (live — this is how it works now).** **Astro native i18n**:
 locale-prefixed static routes (`/picha/` = English, `/picha/ms/` = Malay,
-`/picha/zh/` = Chinese) via `astro.config` `i18n` (`locales: ['en','ms','zh']`,
-`prefixDefaultLocale: false`, `fallbackType: 'rewrite'`,
-`fallback: { ms: 'en', zh: 'en' }`). SEO-friendly, English served with no JS.
+`/picha/zh/` = Chinese, `/picha/fa/` = Persian/RTL) via `astro.config` `i18n`
+(`locales: ['en','ms','zh','fa']`, `prefixDefaultLocale: false`,
+`fallbackType: 'rewrite'`, `fallback: { ms:'en', zh:'en', fa:'en' }`).
+SEO-friendly, English served with no JS.
 
 - **One locale-aware page file per route — NO per-locale route files.** Each
   page/component reads `Astro.currentLocale` and pulls prose from the
@@ -506,16 +523,16 @@ locale-prefixed static routes (`/picha/` = English, `/picha/ms/` = Malay,
   (localStorage `picha-lang`) for the future first-visit gate.
 
 **Status:** every rendered page + shared component is fully localized (en + ms
-+ zh). The language picker no longer opens on load; it's reached from the globe
-in the desktop nav + the mobile app-bar translate button. `/llms.txt` is
++ zh + fa). The language picker no longer opens on load; it's reached from the
+globe in the desktop nav + the mobile app-bar translate button. `/llms.txt` is
 intentionally English only (canonical machine-readable doc). When you add a
 page/string, add its keys to **every** locale block in the same change.
 
-**⚠️ Owner-verify the medical/safety Malay AND Chinese** before trusting it as
-final: `callVetIf`, the health timeline/recurring/clinical details,
-`toxicItems`, and the body-language danger/eye-health states were translated
-carefully and kept plain, but must be confirmed by the owners (jokes end where
-the vet begins, in every language).
+**⚠️ Owner-verify the medical/safety Malay, Chinese AND Persian** before
+trusting it as final: `callVetIf`, the health timeline/recurring/clinical
+details, `toxicItems`, and the body-language danger/eye-health states were
+translated carefully and kept plain, but must be confirmed by the owners (jokes
+end where the vet begins, in every language).
 
 ## Conventions
 

@@ -47,9 +47,14 @@ const { label, class: cls = '' } = Astro.props;
     const left = section?.querySelector<HTMLElement>('[data-strip-fade="left"]');
     const right = section?.querySelector<HTMLElement>('[data-strip-fade="right"]');
     const max = strip.scrollWidth - strip.clientWidth;
-    const x = strip.scrollLeft;
-    left?.classList.toggle('opacity-0', x <= 1);
-    right?.classList.toggle('opacity-0', x >= max - 1);
+    // RTL horizontal scroll reports scrollLeft as negative (modern spec); use
+    // its magnitude, and swap which physical edge "start"/"end" map to.
+    const x = Math.abs(strip.scrollLeft);
+    const rtl = getComputedStyle(strip).direction === 'rtl';
+    const nearStart = x <= 1;
+    const nearEnd = x >= max - 1;
+    left?.classList.toggle('opacity-0', rtl ? nearEnd : nearStart);
+    right?.classList.toggle('opacity-0', rtl ? nearStart : nearEnd);
   }
 
   function setupStrips() {

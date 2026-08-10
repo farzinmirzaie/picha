@@ -11,9 +11,12 @@ import {
   felineStages,
 } from '../data/picha';
 import { getCatYearsCopy, humanAgeLineI18n, ageLabelI18n } from '../i18n/content';
+import { faDigits } from '../lib/dates';
 
 const locale = Astro.currentLocale ?? 'en';
 const c = getCatYearsCopy(locale);
+// Persian shows counts in Persian digits; other locales stay Latin.
+const d = (n: number | string) => (locale === 'fa' ? faDigits(n) : String(n));
 
 // Build-time values are the no-JS fallback; the page script recomputes them
 // against the visitor's clock (same functions, imported from picha.ts).
@@ -56,7 +59,7 @@ const stages = felineStages.map((s, i) => ({
         {c.officialConversion}
       </p>
       <p class="font-display mt-3 text-6xl font-semibold tracking-tight text-blush-600 sm:text-7xl dark:text-blush-300">
-        ~<span data-cy-human>{human}</span>
+        ~<span data-cy-human>{d(human)}</span>
       </p>
       <p class="mt-1 text-sm font-bold text-ink-600 dark:text-ink-400">
         {c.humanYearsOld}
@@ -89,7 +92,7 @@ const stages = felineStages.map((s, i) => ({
               data-max={s.maxMonths}
             >
               <span
-                class="font-display mt-0.5 w-7 shrink-0 text-right text-sm font-semibold tracking-[0.04em] text-blush-600 italic dark:text-blush-300"
+                class="font-display mt-0.5 w-7 shrink-0 text-end text-sm font-semibold tracking-[0.04em] text-blush-600 italic dark:text-blush-300"
                 aria-hidden="true"
               >
                 {String(i + 1).padStart(2, '0')}
@@ -174,19 +177,19 @@ const stages = felineStages.map((s, i) => ({
           {c.catTime}
         </p>
         <span aria-hidden="true" />
-        <p class="text-right text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
+        <p class="text-end text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
           {c.humanTime}
         </p>
         <p class="font-display min-w-0 self-center text-2xl font-semibold" data-cy-conv-cat>
-          {sliderStart} {c.unit.months}
+          {d(sliderStart)} {c.unit.months}
         </p>
         <Icon
           name="ph:arrow-right"
-          class="h-5 w-5 shrink-0 self-center text-blush-400"
+          class="h-5 w-5 shrink-0 self-center text-blush-400 rtl:-scale-x-100"
           aria-hidden="true"
         />
-        <p class="font-display min-w-0 self-center text-right text-2xl font-semibold">
-          ~<span data-cy-conv-human>{human}</span> {c.years}
+        <p class="font-display min-w-0 self-center text-end text-2xl font-semibold">
+          ~<span data-cy-conv-human>{d(human)}</span> {c.years}
         </p>
       </div>
       <p
@@ -207,6 +210,7 @@ const stages = felineStages.map((s, i) => ({
   <script>
     import { ageInMonths, catYears } from '../data/picha';
     import { getCatYearsCopy, humanAgeLineI18n } from '../i18n/content';
+    import { faDigits } from '../lib/dates';
 
     function setupCatYears() {
       const slider = document.querySelector<HTMLInputElement>('[data-cy-slider]');
@@ -216,12 +220,13 @@ const stages = felineStages.map((s, i) => ({
       // Active locale drives the client-side strings (units, age lines).
       const locale = document.documentElement.lang || 'en';
       const c = getCatYearsCopy(locale);
+      const d = (n: number | string) => (locale === 'fa' ? faDigits(n) : String(n));
       const fmtCatAge = (months: number): string => {
-        if (months < 12) return `${months} ${months === 1 ? c.unit.month : c.unit.months}`;
+        if (months < 12) return `${d(months)} ${months === 1 ? c.unit.month : c.unit.months}`;
         const y = Math.floor(months / 12);
         const m = months % 12;
-        const years = `${y} ${y === 1 ? c.unit.year : c.unit.years}`;
-        return m ? `${years} ${m} ${m === 1 ? c.unit.month : c.unit.months}` : years;
+        const years = `${d(y)} ${y === 1 ? c.unit.year : c.unit.years}`;
+        return m ? `${years} ${d(m)} ${m === 1 ? c.unit.month : c.unit.months}` : years;
       };
 
       // Her card + stage list, recomputed against the visitor's clock.
@@ -231,7 +236,7 @@ const stages = felineStages.map((s, i) => ({
         document.querySelectorAll<HTMLElement>(sel).forEach((el) => {
           el.textContent = text;
         });
-      set('[data-cy-human]', String(human));
+      set('[data-cy-human]', d(human));
       set('[data-cy-line]', humanAgeLineI18n(human, locale));
       document.querySelectorAll<HTMLElement>('[data-stage-row]').forEach((row) => {
         const active =
@@ -253,7 +258,7 @@ const stages = felineStages.map((s, i) => ({
         const h = Math.round(catYears(m));
         slider.setAttribute('aria-valuetext', `${fmtCatAge(m)}`);
         set('[data-cy-conv-cat]', fmtCatAge(m));
-        set('[data-cy-conv-human]', String(h));
+        set('[data-cy-conv-human]', d(h));
         set('[data-cy-conv-line]', humanAgeLineI18n(h, locale));
         // light up the preset that matches the current position
         presets.forEach((p) => {

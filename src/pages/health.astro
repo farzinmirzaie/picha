@@ -185,17 +185,17 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
 
     <!-- Coming up -->
     <div id="seg-panel-upcoming" role="tabpanel" aria-labelledby="seg-tab-upcoming" data-seg-panel="upcoming" class="pt-6">
-      <ol class="ml-3 pl-7">
+      <ol class="ms-3 ps-7">
         {
           upcoming.map((e, i) => (
             <li class="reveal group relative pb-8 last:pb-2">
               <span
-                class="absolute -left-[27px] top-0 bottom-0 w-0.5 bg-amber-300/60 group-first:top-8 group-last:bottom-auto group-last:h-4 group-only:hidden dark:bg-amber-700/40"
+                class="absolute -start-[27px] top-0 bottom-0 w-0.5 bg-amber-300/60 group-first:top-8 group-last:bottom-auto group-last:h-4 group-only:hidden dark:bg-amber-700/40"
                 aria-hidden="true"
               />
               <span
                 class:list={[
-                  'absolute -left-[42px] flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-paper-100 dark:ring-plum-950',
+                  'absolute -start-[42px] flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-paper-100 dark:ring-plum-950',
                   i === 0
                     ? 'bg-amber-300/60 text-amber-800 dark:bg-amber-700/50 dark:text-amber-200'
                     : 'bg-paper-200 text-ink-600 dark:bg-plum-800 dark:text-ink-400',
@@ -238,16 +238,16 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
 
     <!-- The record -->
     <div id="seg-panel-done" role="tabpanel" aria-labelledby="seg-tab-done" data-seg-panel="done" class="hidden pt-6">
-      <ol class="ml-3 pl-7">
+      <ol class="ms-3 ps-7">
         {
           done.map((e) => (
             <li class="group relative pb-8 last:pb-2">
               <span
-                class="absolute -left-[27px] top-0 h-full w-0.5 bg-blush-200 group-last:h-4 dark:bg-plum-700"
+                class="absolute -start-[27px] top-0 h-full w-0.5 bg-blush-200 group-last:h-4 dark:bg-plum-700"
                 aria-hidden="true"
               />
               <span
-                class="absolute -left-[42px] flex h-8 w-8 items-center justify-center rounded-full bg-blush-100 text-blush-600 ring-4 ring-paper-100 dark:bg-plum-800 dark:text-blush-300 dark:ring-plum-950"
+                class="absolute -start-[42px] flex h-8 w-8 items-center justify-center rounded-full bg-blush-100 text-blush-600 ring-4 ring-paper-100 dark:bg-plum-800 dark:text-blush-300 dark:ring-plum-950"
                 aria-hidden="true"
               >
                 <Icon name={e.icon} class="h-4 w-4" />
@@ -321,7 +321,7 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
               <span class="flex-1">
                 {o.name} <span class="font-semibold opacity-70">· {o.phone}</span>
               </span>
-              <Icon name="ph:caret-right" class="h-4 w-4 opacity-50" aria-hidden="true" />
+              <Icon name="ph:caret-right" class="h-4 w-4 opacity-50 rtl:-scale-x-100" aria-hidden="true" />
             </a>
           ))
         }
@@ -333,7 +333,7 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
           <span class="flex-1">
             {c.recentClinic} <span class="font-semibold opacity-70">· {vet.recentPhone}</span>
           </span>
-          <Icon name="ph:caret-right" class="h-4 w-4 opacity-50" aria-hidden="true" />
+          <Icon name="ph:caret-right" class="h-4 w-4 opacity-50 rtl:-scale-x-100" aria-hidden="true" />
         </a>
         <a
           href={vetMapsUrl}
@@ -343,7 +343,7 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
         >
           <Icon name="ph:navigation-arrow" class="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
           <span class="flex-1">{c.directions}</span>
-          <Icon name="ph:caret-right" class="h-4 w-4 opacity-50" aria-hidden="true" />
+          <Icon name="ph:caret-right" class="h-4 w-4 opacity-50 rtl:-scale-x-100" aria-hidden="true" />
         </a>
       </div>
     </div>
