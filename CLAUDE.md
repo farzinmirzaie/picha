@@ -47,8 +47,10 @@ src/
                        # tab badge, and the PWA app-icon badge
   lib/weight-viz.ts    # weight chart/stats renderers (build + client, no drift)
   lib/sb.ts            # Supabase REST/RPC helpers for client scripts
-  i18n/ui.ts           # i18n POC dictionary: LOCALES + per-language strings
-                       # keyed for the client swap engine. See § Languages
+  i18n/ui.ts           # i18n chrome dictionary: LOCALES + short per-language
+                       # strings (nav, picker) via t(locale, key). See § Languages
+  i18n/content.ts      # i18n page prose: get<Page>Copy(locale) + localize*()
+                       # helpers (client-safe). All translated copy lives here
   layouts/Layout.astro # <html> shell, fonts, PWA, ClientRouter, shared scripts
   components/          # feature blocks + page chrome (design primitives in ui/)
     Nav.astro          # tab nav: desktop pill bar + mobile bottom tab bar (TABS array)
@@ -464,12 +466,47 @@ in every change from now on.
   full locale block with the same keys; the picker/switcher (`LangPicker`) picks
   it up automatically.
 
-**Mechanism.** Target is **Astro native i18n**: locale-prefixed static routes
-(`/picha/`, `/picha/ms/`, …) via `astro.config` `i18n`, `Astro.currentLocale`,
-SEO-friendly, English served with no JS. Locale choice is remembered
-(localStorage `picha-lang`) and the picker/switcher navigate between locale
-routes. Dictionaries live in `src/i18n/`. (Migration from the earlier
-client-swap POC is in progress — update this line as pages move over.)
+**Mechanism (live — this is how it works now).** **Astro native i18n**:
+locale-prefixed static routes (`/picha/` = English, `/picha/ms/` = Malay) via
+`astro.config` `i18n` (`locales: ['en','ms']`, `prefixDefaultLocale: false`,
+`fallbackType: 'rewrite'`, `fallback: { ms: 'en' }`). SEO-friendly, English
+served with no JS.
+
+- **One locale-aware page file per route — NO per-locale route files.** Each
+  page/component reads `Astro.currentLocale` and pulls prose from the
+  dictionaries; the `rewrite` fallback *re-renders* that same page with
+  `currentLocale = 'ms'` to produce every `/ms/*` route automatically. Do NOT
+  create `src/pages/ms/*` files. (The `/ms/404` fallback isn't generated, but
+  GitHub Pages only serves the root English `404.html` anyway.)
+- **Dictionaries.** `src/i18n/ui.ts` holds short chrome strings (nav, picker)
+  via `t(locale, key)`. `src/i18n/content.ts` holds the larger per-page prose
+  as `Record<locale, …>` objects with `get<Page>Copy(locale)` getters, plus
+  `localize*()` helpers that overlay Malay prose onto a facts object keyed by a
+  stable id (signals by `<part>-<id>`, health items by English `detail`,
+  courses by `slug`, checklist by id). content.ts is **client-safe** (only
+  imports facts from picha.ts + lib/dates), so client scripts import it too.
+- **Client-side strings** (checklist notes, the weight/cat-years/training live
+  UIs) read the active locale from `document.documentElement.lang` and call the
+  same getters/helpers — build and client never drift.
+- **Dates.** `lib/dates` (`dateLabel`/`shortLabel`/`inDaysLabel`) take an
+  optional `locale` (`ms` → `ms-MY` month names + Malay phrasing). Pass the
+  active locale wherever a date is rendered. `lib/weight-viz` string functions
+  (`deltaLabel`/`rowDeltaLabel`/`chartAriaLabel`/`chartSvg`) take a `locale`
+  too (inline Malay, kept dependency-free).
+- **Nav/links** build locale-prefixed hrefs (`Nav`, `PageHeader`, per-page
+  `lb`) so in-locale navigation stays in the locale. The picker
+  (`LangPicker`) links between locale routes and stores the choice
+  (localStorage `picha-lang`) for the future first-visit gate.
+
+**Status:** every rendered page + shared component is fully localized (en + ms).
+`/llms.txt` is intentionally English only (canonical machine-readable doc). When
+you add a page/string, add its keys to **both** locale blocks in the same change.
+
+**⚠️ Owner-verify the medical/safety Malay** before trusting it as final:
+`callVetIf`, the health timeline/recurring/clinical details, `toxicItems`, and
+the body-language danger/eye-health states were translated carefully and kept
+plain, but must be confirmed by the owners (jokes end where the vet begins, in
+every language).
 
 ## Conventions
 
