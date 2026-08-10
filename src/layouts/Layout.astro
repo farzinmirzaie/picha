@@ -134,9 +134,11 @@ const appTitle =
     <script>
       import { ageLabel } from '../data/picha';
       import { inDaysLabel } from '../lib/dates';
+      import { t as tr } from '../i18n/ui';
 
       // Everything here re-runs after ClientRouter page swaps (astro:page-load).
       function hydrate() {
+        const locale = document.documentElement.lang || 'en';
         // Age computed against the visitor's date, never the build date.
         const label = ageLabel();
         document.querySelectorAll<HTMLElement>('[data-age]').forEach((el) => {
@@ -157,10 +159,10 @@ const appTitle =
             days > 60
               ? ''
               : days >= 0
-                ? ` (${inDaysLabel(days)})`
+                ? ` (${inDaysLabel(days, locale)})`
                 : el.dataset.overdue
                   ? ` (${el.dataset.overdue})`
-                  : ' (past the estimate, confirm with the vet)';
+                  : ` (${tr(locale, 'date.confirmVet')})`;
         });
 
         // Scroll-reveal: elements arriving in the same intersection batch get

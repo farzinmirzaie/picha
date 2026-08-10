@@ -23,6 +23,12 @@ import { currentWeight } from '../data/weights';
 import { supabaseClient } from '../data/supabase';
 import { dateLabel, shortLabel, inDaysLabel } from '../lib/dates';
 import { upcomingHealth, nextDueHealth, isHealthDueSoon } from '../lib/health';
+import { getHealthCopy, localizeHealthItem } from '../i18n/content';
+
+const locale = Astro.currentLocale ?? 'en';
+const c = getHealthCopy(locale);
+const loc = <T extends { title: string; detail: string; everyLabel?: string; where?: string }>(x: T) =>
+  localizeHealthItem(x, locale);
 
 // Split the timeline by date: past = done, undated = still to book. The
 // "coming up" list (one-time + recurring, merged) comes from lib/health so the
@@ -31,11 +37,13 @@ import { upcomingHealth, nextDueHealth, isHealthDueSoon } from '../lib/health';
 const today = new Date().toISOString().slice(0, 10);
 const done = healthTimeline
   .filter((e) => e.date && e.date <= today)
-  .sort((a, b) => b.date!.localeCompare(a.date!));
-const toBook = healthTimeline.filter((e) => !e.date);
+  .sort((a, b) => b.date!.localeCompare(a.date!))
+  .map(loc);
+const toBook = healthTimeline.filter((e) => !e.date).map(loc);
 
-const upcoming = upcomingHealth(today);
+const upcoming = upcomingHealth(today).map(loc);
 const next = nextDueHealth(today)?.item;
+const nextLoc = next ? loc(next) : undefined;
 
 // Near-term alert: surface the single next item only when it's due within 2
 // days, or already overdue. Build-time gate, kept fresh by the nightly rebuild;
@@ -47,66 +55,59 @@ const showDueSoon = isHealthDueSoon(today);
 const untilLabel = (iso: string) => {
   const days = Math.round((Date.parse(iso) - Date.parse(today)) / 86_400_000);
   if (days > 60) return '';
-  if (days < 0) return ' (overdue)';
-  return ` (${inDaysLabel(days)})`;
+  if (days < 0) return ` (${c.overdue})`;
+  return ` (${inDaysLabel(days, locale)})`;
 };
 
 const segments = [
-  { id: 'upcoming', label: 'Coming up' },
-  { id: 'done', label: 'The record' },
-  { id: 'tobook', label: 'On the list' },
+  { id: 'upcoming', label: c.segments.upcoming },
+  { id: 'done', label: c.segments.done },
+  { id: 'tobook', label: c.segments.tobook },
 ];
 
 // Directions to the most recent clinic (opens the visitor's maps app).
 const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(vet.mapsQuery)}`;
 ---
 
-<Layout
-  title="Health · Picha 🐾"
-  description="Picha's health record: vitals, vaccinations, vet visits and what is coming up."
-  current="health"
->
-  <PageHeader
-    kicker="Vet & Health"
-    title="The royal health record"
-    blurb="From birthday to boosters: every jab, weigh-in and vet visit, filed with obsessive care by the staff. Management reviews the paperwork; management does not do the paperwork."
-  />
+<Layout title={c.metaTitle} description={c.metaDescription} current="health">
+  <PageHeader kicker={c.kicker} title={c.title} blurb={c.blurb} />
 
   <!-- Vitals strip: horizontally snap-scrolling stat tiles -->
   <StatStrip label="Vitals" class="pt-5">
     {
-      next && (
+      nextLoc && (
         <StatTile
           icon="ph:calendar-check"
-          label="Next due"
-          value={shortLabel(next.date!)}
-          sub={next.title}
+          label={c.nextDue}
+          value={shortLabel(nextLoc.date!, locale)}
+          sub={nextLoc.title}
           truncateSub
         />
       )
     }
     <StatTile
       icon="ph:scales"
-      label="Weight"
+      label={c.weight}
       value={currentWeight.label}
       valueAttrs={{
         'data-weight-live': true,
         'data-supabase-url': supabaseClient?.url,
         'data-supabase-key': supabaseClient?.key,
       }}
-      sub={`target ${weight.healthyTarget}`}
+      sub={`${c.targetPrefix} ${weight.healthyTarget}`}
     />
     <StatTile
       icon="ph:cake"
-      label="Age"
+      label={c.age}
       value={ageLabel()}
       valueAttrs={{ 'data-age': true }}
-      sub="adult at ~1.5–2 years"
+      sub={c.ageSub}
     />
     {
-      clinicalStatus.map((s) => (
-        <StatTile icon={s.icon} label={s.label} value={s.value} sub={s.sub} truncateSub />
-      ))
+      clinicalStatus.map((s) => {
+        const t = c.clinicalStatus[s.label] ?? s;
+        return <StatTile icon={s.icon} label={t.label} value={t.value} sub={t.sub} truncateSub />;
+      })
     }
   </StatStrip>
 
@@ -116,7 +117,7 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
     treatment.length > 0 && (
       <section class="mx-auto w-full max-w-2xl px-5 pt-8" aria-label="Doctor's orders">
         <SectionLabel tone="amber" icon="ph:stethoscope" class="reveal mb-2">
-          Doctor's orders
+          {c.doctorsOrders}
         </SectionLabel>
         <div class="space-y-3">
           {treatment.map((t) => (
@@ -145,7 +146,7 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
        `.reveal` here — it can be revealed from hidden, where the observer never
        fires. Countdown text updates via [data-until]. -->
   {
-    next && (
+    nextLoc && (
       <section
         class="mx-auto w-full max-w-2xl px-5 pt-8"
         aria-label="Due soon"
@@ -153,25 +154,25 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
         hidden={!showDueSoon}
       >
         <SectionLabel tone="amber" icon="ph:bell-ringing" class="mb-2">
-          Due soon
+          {c.dueSoon}
         </SectionLabel>
         <div class="flex items-start gap-4 rounded-3xl border border-amber-300/60 bg-paper-50 p-6 dark:border-amber-700/40 dark:bg-plum-900">
-          <IconBadge icon={next.icon} tone="amber" />
+          <IconBadge icon={nextLoc.icon} tone="amber" />
           <div class="min-w-0">
             <div class="flex flex-wrap items-center gap-2">
-              <h3 class="font-display text-lg font-semibold">{next.title}</h3>
-              {next.everyLabel && <Chip tone="amber">{next.everyLabel}</Chip>}
-              {next.where && <Chip icon="ph:map-pin">{next.where}</Chip>}
+              <h3 class="font-display text-lg font-semibold">{nextLoc.title}</h3>
+              {nextLoc.everyLabel && <Chip tone="amber">{nextLoc.everyLabel}</Chip>}
+              {nextLoc.where && <Chip icon="ph:map-pin">{nextLoc.where}</Chip>}
             </div>
             <p class="mt-1 text-xs font-bold text-amber-700 dark:text-amber-300">
-              {next.everyLabel && 'due ~'}
-              {dateLabel(next.date!)}
-              <span data-until={next.date} data-overdue="overdue">
-                {untilLabel(next.date!)}
+              {nextLoc.everyLabel && c.dueApprox}
+              {dateLabel(nextLoc.date!, locale)}
+              <span data-until={nextLoc.date} data-overdue={c.overdue}>
+                {untilLabel(nextLoc.date!)}
               </span>
             </p>
             <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-              {next.detail}
+              {nextLoc.detail}
             </p>
           </div>
         </div>
@@ -207,7 +208,7 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
               <h3 class="font-display pt-1 text-lg font-semibold">{e.title}</h3>
               {(i === 0 || e.everyLabel || e.where) && (
                 <div class="mt-1 mb-0.5 flex flex-wrap items-center gap-1.5">
-                  {i === 0 && <Chip tone="amber">Next up</Chip>}
+                  {i === 0 && <Chip tone="amber">{c.nextUp}</Chip>}
                   {e.everyLabel && (
                     <Chip icon="ph:arrow-clockwise">{e.everyLabel}</Chip>
                   )}
@@ -217,14 +218,14 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
               <p class="text-xs font-bold text-amber-700/80 dark:text-amber-300/80">
                 {e.date ? (
                   <>
-                    {e.everyLabel && 'due ~'}
-                    {dateLabel(e.date)}
-                    <span data-until={e.date} data-overdue="overdue">
+                    {e.everyLabel && c.dueApprox}
+                    {dateLabel(e.date, locale)}
+                    <span data-until={e.date} data-overdue={c.overdue}>
                       {untilLabel(e.date)}
                     </span>
                   </>
                 ) : (
-                  'not started yet'
+                  c.notStarted
                 )}
               </p>
               <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
@@ -295,16 +296,16 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
     >
       <div class="p-6 pb-4">
         <h2 class="font-display flex items-center gap-2 text-lg font-semibold text-red-600 dark:text-red-300">
-          <Icon name="ph:warning" class="h-4.5 w-4.5 shrink-0" aria-hidden="true" /> Call the vet if…
+          <Icon name="ph:warning" class="h-4.5 w-4.5 shrink-0" aria-hidden="true" /> {c.callVetIfTitle}
         </h2>
         <ul class="mt-3 space-y-2 text-sm text-red-900/80 dark:text-red-100/80">
           {
-            callVetIf.map((c) => (
+            (c.callVetIf.length === callVetIf.length ? c.callVetIf : callVetIf).map((line) => (
               <li class="flex gap-2.5">
                 <span class="text-red-400" aria-hidden="true">
                   •
                 </span>
-                {c}
+                {line}
               </li>
             ))
           }
@@ -331,7 +332,7 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
         >
           <Icon name="ph:buildings" class="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
           <span class="flex-1">
-            Recent clinic <span class="font-semibold opacity-70">· {vet.recentPhone}</span>
+            {c.recentClinic} <span class="font-semibold opacity-70">· {vet.recentPhone}</span>
           </span>
           <Icon name="ph:caret-right" class="h-4 w-4 opacity-50" aria-hidden="true" />
         </a>
@@ -342,13 +343,13 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
           class="flex items-center gap-3 px-6 py-3.5 text-sm font-bold text-red-700 transition-colors hover:bg-red-100/60 active:bg-red-100/60 dark:text-red-300 dark:hover:bg-red-900/30 dark:active:bg-red-900/30"
         >
           <Icon name="ph:navigation-arrow" class="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
-          <span class="flex-1">Directions to the clinic</span>
+          <span class="flex-1">{c.directions}</span>
           <Icon name="ph:caret-right" class="h-4 w-4 opacity-50" aria-hidden="true" />
         </a>
       </div>
     </div>
     <p class="mt-3 px-1 text-xs text-ink-400">
-      Recent care: {vet.recentClinic}. {vet.status}.
+      {c.recentCarePre}{vet.recentClinic}. {c.vetStatus}.
     </p>
   </section>
 

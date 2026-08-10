@@ -682,3 +682,194 @@ const careMs: CareCopy = {
 };
 export const careCopy: Record<string, CareCopy> = { en: careEn, ms: careMs };
 export const getCareCopy = (locale?: string): CareCopy => careCopy[locale ?? 'en'] ?? careEn;
+
+// ---------------------------------------------------------------------------
+// Health page. The heaviest medical/safety surface. Facts (dates, doses,
+// product names, phone numbers, kg targets, intervals) stay in picha.ts;
+// prose is translated here.
+//
+// ⚠️ OWNER VERIFICATION REQUIRED: the Malay for `callVetIf` (red-flag
+// symptoms), the parasite/deworming/vaccine timeline + recurring details, and
+// the clinical-status lines is medical/safety copy. It has been translated
+// carefully and kept plain, but MUST be confirmed by the owners before it is
+// treated as final ("jokes end where the vet begins", in every language).
+// ---------------------------------------------------------------------------
+export interface HealthCopy {
+  metaTitle: string;
+  metaDescription: string;
+  kicker: string;
+  title: string;
+  blurb: string;
+  nextDue: string;
+  weight: string;
+  targetPrefix: string; // "target" → "target ~3–4.5 kg"
+  age: string;
+  ageSub: string;
+  doctorsOrders: string;
+  dueSoon: string;
+  dueApprox: string; // "due ~" before a date
+  overdue: string; // also used as the [data-overdue] value
+  segments: { upcoming: string; done: string; tobook: string };
+  timelineFilter: string;
+  nextUp: string;
+  notStarted: string;
+  callVetIfTitle: string;
+  recentClinic: string;
+  directions: string;
+  recentCarePre: string; // "Recent care: " (clinic name is a fact)
+  vetStatus: string;
+  callVetIf: string[]; // aligned with picha.ts callVetIf
+  clinicalStatus: Record<string, { label: string; value: string; sub: string }>; // keyed by EN label
+}
+export const healthCopy: Record<string, HealthCopy> = {
+  en: {
+    metaTitle: 'Health · Picha 🐾',
+    metaDescription:
+      "Picha's health record: vitals, vaccinations, vet visits and what is coming up.",
+    kicker: 'Vet & Health',
+    title: 'The royal health record',
+    blurb:
+      'From birthday to boosters: every jab, weigh-in and vet visit, filed with obsessive care by the staff. Management reviews the paperwork; management does not do the paperwork.',
+    nextDue: 'Next due',
+    weight: 'Weight',
+    targetPrefix: 'target',
+    age: 'Age',
+    ageSub: 'adult at ~1.5–2 years',
+    doctorsOrders: "Doctor's orders",
+    dueSoon: 'Due soon',
+    dueApprox: 'due ~',
+    overdue: 'overdue',
+    segments: { upcoming: 'Coming up', done: 'The record', tobook: 'On the list' },
+    timelineFilter: 'Timeline filter',
+    nextUp: 'Next up',
+    notStarted: 'not started yet',
+    callVetIfTitle: 'Call the vet if…',
+    recentClinic: 'Recent clinic',
+    directions: 'Directions to the clinic',
+    recentCarePre: 'Recent care: ',
+    vetStatus: 'Auditioning vets; no permanent hire yet',
+    callVetIf: [
+      'Not eating for ~24h, or repeated vomiting.',
+      'Straining in the litter box, or no urination in a day.',
+      'Persistent hiding + hunched posture + off food (vs. her normal come-and-go).',
+      'Laboured breathing or sudden lethargy.',
+    ],
+    clinicalStatus: {
+      Spayed: { label: 'Spayed', value: 'Yes', sub: '11 Jul 2026' },
+      Microchip: { label: 'Microchip', value: 'Yes', sub: '11 Jul 2026' },
+      'Core vaccines': { label: 'Core vaccines', value: 'FVRCP', sub: 'series complete' },
+    },
+  },
+  ms: {
+    metaTitle: 'Kesihatan · Picha 🐾',
+    metaDescription:
+      'Rekod kesihatan Picha: tanda vital, vaksinasi, lawatan doktor haiwan dan apa yang mendatang.',
+    kicker: 'Doktor & Kesihatan',
+    title: 'Rekod kesihatan diraja',
+    blurb:
+      'Dari hari lahir hingga suntikan penggalak: setiap suntikan, timbangan dan lawatan doktor haiwan, difailkan dengan teliti oleh kakitangan. Pihak pengurusan menyemak dokumen; pihak pengurusan tidak membuat dokumen.',
+    nextDue: 'Seterusnya',
+    weight: 'Berat',
+    targetPrefix: 'sasaran',
+    age: 'Umur',
+    ageSub: 'dewasa pada ~1.5–2 tahun',
+    doctorsOrders: 'Arahan doktor',
+    dueSoon: 'Hampir tiba tempoh',
+    dueApprox: 'dijangka ~',
+    overdue: 'lewat tempoh',
+    segments: { upcoming: 'Akan datang', done: 'Rekod', tobook: 'Dalam senarai' },
+    timelineFilter: 'Penapis garis masa',
+    nextUp: 'Seterusnya',
+    notStarted: 'belum bermula',
+    callVetIfTitle: 'Hubungi doktor haiwan jika…',
+    recentClinic: 'Klinik terkini',
+    directions: 'Arah ke klinik',
+    recentCarePre: 'Penjagaan terkini: ',
+    vetStatus: 'Sedang menemuduga doktor haiwan; belum ada lantikan tetap',
+    callVetIf: [
+      'Tidak makan selama ~24 jam, atau muntah berulang kali.',
+      'Meneran di dalam bekas pasir, atau tidak kencing dalam sehari.',
+      'Terus-menerus bersembunyi + badan meringkuk + hilang selera (berbanding kebiasaannya yang keluar-masuk).',
+      'Sukar bernafas atau tiba-tiba lesu.',
+    ],
+    clinicalStatus: {
+      Spayed: { label: 'Dikembiri', value: 'Ya', sub: '11 Jul 2026' },
+      Microchip: { label: 'Mikrocip', value: 'Ya', sub: '11 Jul 2026' },
+      'Core vaccines': { label: 'Vaksin teras', value: 'FVRCP', sub: 'siri lengkap' },
+    },
+  },
+};
+export const getHealthCopy = (locale?: string): HealthCopy =>
+  healthCopy[locale ?? 'en'] ?? healthCopy.en;
+
+// Malay prose for timeline + recurring items, keyed by the English `detail`
+// (unique across both lists). everyLabel/where use small finite maps.
+const healthTextMs: Record<string, { title: string; detail: string }> = {
+  'One tiny white cloud arrives, opens her amber eyes, and starts planning her staff structure.':
+    { title: 'Sebuah bintang dilahirkan', detail: 'Seketul awan putih kecil tiba, membuka mata ambernya, dan mula merancang struktur kakitangannya.' },
+  'Felocell 4, first dose. Taken like a champ (allegedly).':
+    { title: 'Vaksin FVRCP, dos 1', detail: 'Felocell 4, dos pertama. Diterima seperti juara (kononnya).' },
+  'Felocell 4, second dose. Series complete.':
+    { title: 'Vaksin FVRCP, dos 2', detail: 'Felocell 4, dos kedua. Siri lengkap.' },
+  'Interviewed Farah & Farzin at the pet shop and hired both on the spot. No probation period; she does not do trial runs.':
+    { title: 'Pengambilan kakitangan agung', detail: 'Menemuduga Farah & Farzin di kedai haiwan dan mengambil kedua-duanya serta-merta. Tiada tempoh percubaan; dia tidak buat uji lari.' },
+  'Revolution Plus applied. Fleas, ticks and worms: evicted.':
+    { title: 'Kawalan parasit', detail: 'Revolution Plus disapu. Kutu, sengkenit dan cacing: dihalau keluar.' },
+  'Interior pest control, completed.':
+    { title: 'Nyahcacing', detail: 'Kawalan perosak dalaman, selesai.' },
+  'Both done in one visit. She billed the recovery time as spa leave.':
+    { title: 'Kembiri + mikrocip', detail: 'Kedua-duanya selesai dalam satu lawatan. Dia mengira masa pemulihan sebagai cuti spa.' },
+  'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':
+    { title: 'Kursus rawatan telinga bermula', detail: 'Rutin harian ORI-EAR + Oridermyl bermula. Diterima dengan rasa tidak setuju yang ketara.' },
+  'Full ORI-EAR + Oridermyl course done; ears cleared. Daily disapproval may now cease.':
+    { title: 'Kursus rawatan telinga selesai', detail: 'Kursus penuh ORI-EAR + Oridermyl selesai; telinga pulih. Rasa tidak setuju harian kini boleh dihentikan.' },
+  'NexGard Combo spot-on applied at the base of the skull, her new monthly flea and tick guard. Revolution Plus retired.':
+    { title: 'Kawalan parasit', detail: 'NexGard Combo spot-on disapu di pangkal tengkorak, pelindung kutu dan sengkenit bulanannya yang baharu. Revolution Plus dihentikan.' },
+  'Required before any travel plans Her Fluffiness may approve.':
+    { title: 'Vaksin rabies', detail: 'Diperlukan sebelum sebarang rancangan perjalanan yang Tuan Puteri Gebu luluskan.' },
+  'Optional. To discuss with whichever vet wins the job.':
+    { title: 'Vaksin FeLV', detail: 'Pilihan. Untuk dibincangkan dengan doktor haiwan yang memenangi jawatan.' },
+  'The official pet passport, still to be sorted for any future travel.':
+    { title: 'Pasport haiwan', detail: 'Pasport haiwan rasmi, masih perlu diuruskan untuk sebarang perjalanan masa depan.' },
+  // recurringCare
+  'NexGard Combo spot-on, parted onto the skin at the base of the skull (the back of the head), where she cannot lick it off. Fleas, ticks and ear mites, evicted. Monthly with a few days of grace, but never sooner than a month apart; a bit late is fine, too early risks a double dose.':
+    { title: 'Kawalan parasit', detail: 'NexGard Combo spot-on, dibelah ke kulit di pangkal tengkorak (belakang kepala), di tempat dia tidak boleh menjilatnya. Kutu, sengkenit dan hama telinga, dihalau keluar. Setiap bulan dengan beberapa hari kelonggaran, tetapi jangan sekali-kali kurang daripada sebulan; lewat sedikit tidak mengapa, terlalu awal berisiko dos berganda.' },
+  'A separate dewormer on the standard adult schedule (the spot-on does not replace it): a pill, smuggled in inside something delicious and served without ceremony.':
+    { title: 'Nyahcacing', detail: 'Ubat cacing berasingan mengikut jadual dewasa standard (spot-on tidak menggantikannya): sebiji pil, diselitkan di dalam sesuatu yang lazat dan dihidang tanpa upacara.' },
+  'The full salon treatment: bath, blow-dry and a top-to-tail tidy-up, so the resident cloud stays soft and photogenic.':
+    { title: 'Dandanan & hari spa', detail: 'Rawatan salun penuh: mandi, keringkan dan kemas dari kepala ke ekor, supaya awan penghuni kekal lembut dan cantik bergambar.' },
+  'A full scrub and a complete change of litter; the royal facilities restored to five stars.':
+    { title: 'Cucian mendalam bekas pasir', detail: 'Berus penuh dan tukar pasir sepenuhnya; kemudahan diraja dipulihkan ke taraf lima bintang.' },
+  'The once-a-year, nose-to-tail service: full exam, weight check and an audience with the royal teeth.':
+    { title: 'Pemeriksaan tahunan penuh', detail: 'Servis sekali setahun, dari hidung ke ekor: pemeriksaan penuh, semakan berat dan pertemuan dengan gigi diraja.' },
+  'Felocell 4, the yearly top-up that keeps the core feline viruses on their side of the palace gates.':
+    { title: 'Penggalak FVRCP', detail: 'Felocell 4, suntikan tahunan yang mengekalkan virus teras kucing di sebelah pintu istana mereka.' },
+  'Front paws first, back paws only with royal consent. Management files a formal complaint every time, then submits to the clippers.':
+    { title: 'Potong kuku', detail: 'Kaki depan dahulu, kaki belakang hanya dengan keizinan diraja. Pihak pengurusan memfailkan aduan rasmi setiap kali, kemudian menyerah kepada pemotong kuku.' },
+};
+const everyLabelMs: Record<string, string> = {
+  'Every month': 'Setiap bulan',
+  'Every 3 months': 'Setiap 3 bulan',
+  'Every 2 months': 'Setiap 2 bulan',
+  'Every year': 'Setiap tahun',
+  'Every 2–4 weeks': 'Setiap 2–4 minggu',
+};
+const whereMs: Record<string, string> = {
+  'at home': 'di rumah',
+  'at the vet': 'di klinik',
+  'at the salon': 'di salun',
+};
+
+/** Localize a timeline / upcoming item's prose (English passes through). */
+export function localizeHealthItem<
+  T extends { title: string; detail: string; everyLabel?: string; where?: string },
+>(item: T, locale?: string): T {
+  if (locale !== 'ms') return item;
+  const o = healthTextMs[item.detail];
+  return {
+    ...item,
+    ...(o ? { title: o.title, detail: o.detail } : {}),
+    ...(item.everyLabel ? { everyLabel: everyLabelMs[item.everyLabel] ?? item.everyLabel } : {}),
+    ...(item.where ? { where: whereMs[item.where] ?? item.where } : {}),
+  };
+}

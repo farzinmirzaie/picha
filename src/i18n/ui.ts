@@ -43,6 +43,7 @@ export const ui: Record<string, Dict> = {
     'lang.title': 'Choose your language',
     'lang.sub': 'You can switch anytime from the globe in the menu.',
     'lang.action': 'Language',
+    'date.confirmVet': 'past the estimate, confirm with the vet',
   },
   ms: {
     'nav.home': 'Utama',
@@ -55,5 +56,6 @@ export const ui: Record<string, Dict> = {
     'lang.title': 'Pilih bahasa anda',
     'lang.sub': 'Boleh tukar bila-bila melalui ikon glob dalam menu.',
     'lang.action': 'Bahasa',
+    'date.confirmVet': 'melepasi anggaran, sahkan dengan doktor haiwan',
   },
 };
