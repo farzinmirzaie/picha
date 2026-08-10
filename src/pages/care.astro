@@ -8,23 +8,19 @@ import IconBadge from '../components/ui/IconBadge.astro';
 import Chip from '../components/ui/Chip.astro';
 import { dailyChecklist, feedingSchedule, grooming } from '../data/picha';
 import { supabaseClient } from '../data/supabase';
+import { getCareCopy } from '../i18n/content';
+
+const locale = Astro.currentLocale ?? 'en';
+const c = getCareCopy(locale);
 ---
 
-<Layout
-  title="Care · Picha 🐾"
-  description="Picha's daily care guide: her rounds and grooming."
-  current="care"
->
-  <PageHeader
-    kicker="Daily Care"
-    title="A day with Picha"
-    blurb="Serving Picha is a full-time position: no weekends off, benefits paid in purrs. Work through today's rounds top to bottom; she is keeping score."
-  />
+<Layout title={c.metaTitle} description={c.metaDescription} current="care">
+  <PageHeader kicker={c.kicker} title={c.title} blurb={c.blurb} />
 
   <!-- Today's rounds: interactive checklist (localStorage, resets daily) -->
   <section class="mx-auto w-full max-w-2xl px-5 pt-4" aria-label="Today's rounds">
     <div class="mb-2 flex items-baseline justify-between">
-      <SectionLabel class="reveal">Today's rounds</SectionLabel>
+      <SectionLabel class="reveal">{c.roundsLabel}</SectionLabel>
       <span
         class="text-xs font-bold text-ink-400"
         data-check-count
@@ -53,9 +49,11 @@ import { supabaseClient } from '../data/supabase';
                     class="block font-bold text-ink-900 transition-colors dark:text-paper-100"
                     data-check-label
                   >
-                    {item.label}
+                    {c.checklist[item.id]?.label ?? item.label}
                   </span>
-                  <span class="block text-xs leading-snug text-ink-400">{item.hint}</span>
+                  <span class="block text-xs leading-snug text-ink-400">
+                    {c.checklist[item.id]?.hint ?? item.hint}
+                  </span>
                 </span>
                 <span
                   class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-blush-200 text-white transition-all duration-200 dark:border-plum-600"
@@ -74,7 +72,7 @@ import { supabaseClient } from '../data/supabase';
         data-check-praise
       >
         <Icon name="ph:paw-print" class="h-4 w-4 shrink-0" aria-hidden="true" />
-        All rounds complete. Management is pleased and will nap accordingly.
+        {c.praise}
       </p>
     </div>
     <p class="mt-2 px-1 text-[11px] leading-relaxed text-ink-400" data-rounds-note></p>
@@ -82,33 +80,33 @@ import { supabaseClient } from '../data/supabase';
 
   <!-- The menu: daily feeding timetable (automatic kibble + hand-served wet) -->
   <section class="mx-auto w-full max-w-2xl px-5 pt-12" aria-label="The menu">
-    <SectionLabel class="reveal mb-2">The menu</SectionLabel>
+    <SectionLabel class="reveal mb-2">{c.menuLabel}</SectionLabel>
     <div
       class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
     >
       <ul class="divide-y divide-paper-200 dark:divide-plum-800">
         {
-          feedingSchedule.map((slot) => (
+          feedingSchedule.map((slot, i) => (
             <li class="flex items-start gap-3.5 px-5 py-4">
               <IconBadge icon={slot.icon} size="sm" />
               <div class="min-w-0 flex-1">
                 <div class="flex items-baseline justify-between gap-3">
-                  <h3 class="font-display font-semibold">{slot.title}</h3>
+                  <h3 class="font-display font-semibold">{c.meals[i]?.title ?? slot.title}</h3>
                   <Chip tone="neutral" class="shrink-0 whitespace-nowrap tabular-nums">
                     {slot.time}
                   </Chip>
                 </div>
                 <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-                  {slot.detail}
+                  {c.meals[i]?.detail ?? slot.detail}
                 </p>
                 <div class="mt-1.5">
                   {slot.auto ? (
                     <Chip tone="neutral" icon="ph:timer">
-                      {slot.amount} · feeder
+                      {slot.amount} · {c.feeder}
                     </Chip>
                   ) : (
                     <Chip tone="blushSolid" icon="ph:hand-heart">
-                      By hand
+                      {c.byHand}
                     </Chip>
                   )}
                 </div>
@@ -122,29 +120,29 @@ import { supabaseClient } from '../data/supabase';
 
   <!-- Grooming -->
   <section class="mx-auto w-full max-w-2xl px-5 pt-12 pb-10 md:pb-0" aria-label="Grooming">
-    <SectionLabel class="reveal mb-2">Grooming</SectionLabel>
+    <SectionLabel class="reveal mb-2">{c.groomingLabel}</SectionLabel>
     <div
       class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
     >
       <ul class="divide-y divide-paper-200 dark:divide-plum-800">
         {
-          grooming.map((item) => (
+          grooming.map((item, i) => (
             <li class="flex items-start gap-3.5 px-5 py-4">
               <IconBadge icon={item.icon} size="sm" />
               <div class="min-w-0 flex-1">
                 <div class="flex items-baseline justify-between gap-3">
-                  <h3 class="font-display font-semibold">{item.title}</h3>
+                  <h3 class="font-display font-semibold">{c.grooming[i]?.title ?? item.title}</h3>
                   {item.cadence && (
                     <Chip
                       tone={item.planned ? 'amber' : 'neutral'}
                       class="shrink-0 whitespace-nowrap"
                     >
-                      {item.cadence}
+                      {c.grooming[i]?.cadence ?? item.cadence}
                     </Chip>
                   )}
                 </div>
                 <p class="mt-0.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-                  {item.detail}
+                  {c.grooming[i]?.detail ?? item.detail}
                 </p>
               </div>
             </li>
@@ -164,6 +162,11 @@ import { supabaseClient } from '../data/supabase';
     // adding/removing items never touches the DB. Writes are PIN-gated (the
     // shared registrar PIN); a device without the PIN just stays local.
     import { staffPin, hasStaffPin, forgetStaffPin } from '../lib/staff';
+    import { getCareCopy } from '../i18n/content';
+
+    // Note strings in the active locale (html lang is set per route + kept in
+    // sync by ClientRouter swaps), read fresh so a locale change is picked up.
+    const careNotes = () => getCareCopy(document.documentElement.lang || 'en').notes;
 
     const STORE_KEY = 'picha-rounds';
 
@@ -229,7 +232,7 @@ import { supabaseClient } from '../data/supabase';
       const firstLoad = !hydrated;
       if (firstLoad) {
         setListLoading(true);
-        updateNote('Loading today’s rounds…');
+        updateNote(careNotes().loading);
       }
       try {
         const { sbSelect } = await import('../lib/sb');
@@ -249,7 +252,7 @@ import { supabaseClient } from '../data/supabase';
         updateNote();
       } catch {
         // offline / stalled / fetch failed: the local cache stands, but say so.
-        updateNote('Offline: showing this device’s saved rounds.', 'warn');
+        updateNote(careNotes().offline, 'warn');
       } finally {
         hydrated = true;
         setListLoading(false);
@@ -260,7 +263,11 @@ import { supabaseClient } from '../data/supabase';
     // Sync-state footer: for staff it confirms the ticks are shared; for
     // everyone else it explains the list is read-only and points to the Staff
     // room to sign in (the one place the registrar PIN is entered now).
-    const staffHref = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/tools/staff/`;
+    const staffBase = import.meta.env.BASE_URL.replace(/\/$/, '');
+    const staffLoc = document.documentElement.lang && document.documentElement.lang !== 'en'
+      ? `/${document.documentElement.lang}`
+      : '';
+    const staffHref = `${staffBase}${staffLoc}/tools/staff/`;
 
     type NoteTone = 'muted' | 'warn' | 'error';
     function updateNote(override?: string, tone: NoteTone = 'muted') {
@@ -286,22 +293,23 @@ import { supabaseClient } from '../data/supabase';
         return;
       }
       setTone('muted');
+      const n = careNotes();
       if (!configured) {
-        note.textContent = 'Ticks reset each night at midnight.';
+        note.textContent = n.resetsNightly;
         return;
       }
       if (hasStaffPin()) {
-        note.textContent = "Shared across the staff's devices; resets each night at midnight.";
+        note.textContent = n.sharedResets;
         return;
       }
-      note.append('The rounds are staff-only. ');
+      note.append(n.staffOnlyPre);
       const link = document.createElement('a');
       link.href = staffHref;
       link.className =
         'font-bold text-blush-600 underline decoration-dotted dark:text-blush-300';
-      link.textContent = 'Sign in as staff';
+      link.textContent = n.signIn;
       note.append(link);
-      note.append(' to check them off.');
+      note.append(n.staffOnlyPost);
     }
 
     // Stateless: every paint reads the store fresh, so a day rollover always
@@ -383,9 +391,9 @@ import { supabaseClient } from '../data/supabase';
             // keep the optimistic local state, but tell the staff why
             if (String(err).includes('wrong pin')) {
               forgetStaffPin();
-              updateNote('That PIN was rejected. Open the Staff room to re-enter.', 'error');
+              updateNote(careNotes().pinRejected, 'error');
             } else {
-              updateNote('Saved on this device; the cloud did not answer.', 'warn');
+              updateNote(careNotes().savedLocal, 'warn');
             }
           } finally {
             setItemPending(btn, false);

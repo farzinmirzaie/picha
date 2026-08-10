@@ -533,3 +533,152 @@ export const bodyLanguageCopy: Record<string, BodyLanguageCopy> = {
 };
 export const getBodyLanguageCopy = (locale?: string): BodyLanguageCopy =>
   bodyLanguageCopy[locale ?? 'en'] ?? bodyLanguageCopy.en;
+
+// ---------------------------------------------------------------------------
+// Care page. Facts (checklist ids + icons, meal times/portions/auto flag,
+// grooming icons, product names) stay in picha.ts; prose lives here. The
+// `notes` block feeds the client-side checklist script (read via html lang).
+// ---------------------------------------------------------------------------
+export interface CareCopy {
+  metaTitle: string;
+  metaDescription: string;
+  kicker: string;
+  title: string;
+  blurb: string;
+  roundsLabel: string;
+  praise: string;
+  checklist: Record<string, { label: string; hint: string }>;
+  menuLabel: string;
+  feeder: string; // chip: "{amount} · {feeder}"
+  byHand: string; // chip for hand-served meals
+  meals: { title: string; detail: string }[]; // aligned with feedingSchedule
+  groomingLabel: string;
+  grooming: { title: string; cadence: string; detail: string }[]; // aligned with grooming
+  notes: {
+    loading: string;
+    offline: string;
+    resetsNightly: string;
+    sharedResets: string;
+    staffOnlyPre: string;
+    signIn: string;
+    staffOnlyPost: string;
+    pinRejected: string;
+    savedLocal: string;
+  };
+}
+const careEn: CareCopy = {
+  metaTitle: 'Care · Picha 🐾',
+  metaDescription: "Picha's daily care guide: her rounds and grooming.",
+  kicker: 'Daily Care',
+  title: 'A day with Picha',
+  blurb:
+    'Serving Picha is a full-time position: no weekends off, benefits paid in purrs. Work through today’s rounds top to bottom; she is keeping score.',
+  roundsLabel: "Today's rounds",
+  praise: 'All rounds complete. Management is pleased and will nap accordingly.',
+  checklist: {
+    water: { label: 'Top up the fountain', hint: 'Refill the reservoir; the fountain runs itself' },
+    'meals-1': { label: 'Wet food service', hint: 'First course, around 10am; mix in any kibble she left' },
+    'litter-1': { label: 'Scoop the litter', hint: 'Morning pass; she has standards' },
+    combing: { label: 'The daily combing', hint: 'Both sides; she will rotate herself' },
+    eyes: { label: 'Eye & face wipe', hint: 'Pet wipe around the eyes and chin' },
+    'play-hunt': { label: 'Hunt session', hint: '10–15 min of wand-toy duty' },
+    academy: { label: 'Academy session', hint: 'One short training rep; see the Royal Academy' },
+    'litter-mid': { label: 'Scoop the litter', hint: 'Midday check, only if there is anything to clear' },
+    treat: { label: 'A treat, if earned', hint: 'Around 4pm, only when earned; capped at 10% of her food' },
+    'meals-2': { label: 'Wet food service', hint: 'Second course, around 9:30pm before lights-out' },
+    'play-ball': { label: 'Ball session', hint: 'Toss the ball; let her chase and pounce' },
+    'litter-2': { label: 'Scoop the litter', hint: 'Evening pass to keep it five-star' },
+    cuddle: { label: 'Lap & cuddle time', hint: 'Mandatory affection audit; she decides when it ends' },
+    lockup: { label: 'Nightly lock-up', hint: 'Windows and balcony shut, nothing risky left out' },
+  },
+  menuLabel: 'The menu',
+  feeder: 'feeder',
+  byHand: 'By hand',
+  meals: [
+    { title: 'Morning kibble', detail: 'The feeder drops her first course on schedule; she nibbles at it when the mood strikes.' },
+    { title: 'Wet food, first course', detail: 'Her five-star course, served by hand. Any kibble she left from the morning gets mixed in.' },
+    { title: 'Midday kibble', detail: 'The second automatic drop, keeping the day evenly fed.' },
+    { title: 'Snack or treat', detail: 'The afternoon negotiation, kept within the 10% treat cap no matter how convincing the eyes get.' },
+    { title: 'Evening kibble', detail: 'The last automatic drop of the day.' },
+    { title: 'Wet food, second course', detail: 'The nightcap, served before lights-out. Nothing after, she sleeps it off.' },
+  ],
+  groomingLabel: 'Grooming',
+  grooming: [
+    { title: 'The daily combing', cadence: 'Daily', detail: 'The tool of record is a stainless steel comb, worked through both sides while she rotates herself like a rotisserie. The long coat depends on it: it prevents mats and sustains the glamour.' },
+    { title: 'Face touch-ups', cadence: 'As needed', detail: 'Pet wipes for the eyes and face, kept within reach for whenever the look needs refreshing.' },
+    { title: 'Spot cleaning', cadence: 'As needed', detail: 'YEGBONG Pet Dry Cleaning Mousse (waterless), worked into the fur and brushed through, mainly under the chin and any spots that dared get dirty.' },
+    { title: 'Bathing', cadence: 'Rarely', detail: 'Rarely required; the daily combing does the heavy lifting. An occasional bath or a professional spa day, by appointment.' },
+    { title: 'Nails', cadence: 'Every 2–4 weeks', detail: 'A manicure every 2–4 weeks with cat clippers: front paws first, back paws as she permits. Best conducted while she is drowsy and least inclined to file a complaint.' },
+    { title: 'Teeth', cadence: 'Daily', detail: 'A daily brush with Histo Tree cat-safe dental gel (beef flavour), worked along the gumline a few seconds a side. Tolerated, barely, in exchange for the treat that follows.' },
+  ],
+  notes: {
+    loading: 'Loading today’s rounds…',
+    offline: 'Offline: showing this device’s saved rounds.',
+    resetsNightly: 'Ticks reset each night at midnight.',
+    sharedResets: "Shared across the staff's devices; resets each night at midnight.",
+    staffOnlyPre: 'The rounds are staff-only. ',
+    signIn: 'Sign in as staff',
+    staffOnlyPost: ' to check them off.',
+    pinRejected: 'That PIN was rejected. Open the Staff room to re-enter.',
+    savedLocal: 'Saved on this device; the cloud did not answer.',
+  },
+};
+const careMs: CareCopy = {
+  metaTitle: 'Penjagaan · Picha 🐾',
+  metaDescription: 'Panduan penjagaan harian Picha: pusingan tugas dan dandanannya.',
+  kicker: 'Penjagaan Harian',
+  title: 'Sehari bersama Picha',
+  blurb:
+    'Melayan Picha ialah jawatan sepenuh masa: tiada cuti hujung minggu, faedah dibayar dengan dengkuran. Selesaikan pusingan hari ini dari atas ke bawah; dia sedang mengira markah.',
+  roundsLabel: 'Pusingan hari ini',
+  praise: 'Semua pusingan selesai. Pihak pengurusan berpuas hati dan akan tidur sewajarnya.',
+  checklist: {
+    water: { label: 'Isi semula pancutan air', hint: 'Isi semula takungan; pancutan berjalan sendiri' },
+    'meals-1': { label: 'Hidang makanan basah', hint: 'Hidangan pertama, sekitar 10 pagi; gaul sekali kibble yang ditinggalkannya' },
+    'litter-1': { label: 'Cedok pasir kucing', hint: 'Pusingan pagi; dia ada standard' },
+    combing: { label: 'Sikatan harian', hint: 'Kedua-dua belah; dia akan pusing sendiri' },
+    eyes: { label: 'Lap mata & muka', hint: 'Tisu haiwan di sekeliling mata dan dagu' },
+    'play-hunt': { label: 'Sesi memburu', hint: '10–15 minit bertugas dengan tongkat mainan' },
+    academy: { label: 'Sesi akademi', hint: 'Satu ulangan latihan ringkas; lihat Akademi Diraja' },
+    'litter-mid': { label: 'Cedok pasir kucing', hint: 'Semakan tengah hari, hanya jika ada apa-apa untuk dibersihkan' },
+    treat: { label: 'Snek, jika berhak', hint: 'Sekitar 4 petang, hanya apabila berhak; dihadkan pada 10% daripada makanannya' },
+    'meals-2': { label: 'Hidang makanan basah', hint: 'Hidangan kedua, sekitar 9:30 malam sebelum tidur' },
+    'play-ball': { label: 'Sesi bola', hint: 'Baling bola; biar dia mengejar dan menerkam' },
+    'litter-2': { label: 'Cedok pasir kucing', hint: 'Pusingan petang untuk kekalkan taraf lima bintang' },
+    cuddle: { label: 'Masa riba & manja', hint: 'Audit kasih sayang wajib; dia yang tentukan bila ia tamat' },
+    lockup: { label: 'Kunci malam', hint: 'Tingkap dan balkoni ditutup, tiada benda berisiko dibiarkan terdedah' },
+  },
+  menuLabel: 'Menu',
+  feeder: 'pengumpan',
+  byHand: 'Dengan tangan',
+  meals: [
+    { title: 'Kibble pagi', detail: 'Pengumpan menjatuhkan hidangan pertamanya mengikut jadual; dia menggigitnya bila terasa hati.' },
+    { title: 'Makanan basah, hidangan pertama', detail: 'Hidangan lima bintangnya, dihidang dengan tangan. Kibble yang ditinggalkannya dari pagi digaul sekali.' },
+    { title: 'Kibble tengah hari', detail: 'Jatuhan automatik kedua, memastikan pemakanan sekata sepanjang hari.' },
+    { title: 'Snek atau ganjaran', detail: 'Rundingan petang, dikekalkan dalam had snek 10% tidak kira sehebat mana renungan matanya.' },
+    { title: 'Kibble petang', detail: 'Jatuhan automatik terakhir hari itu.' },
+    { title: 'Makanan basah, hidangan kedua', detail: 'Hidangan penutup, dihidang sebelum tidur. Tiada apa-apa selepas itu, dia tidur lena.' },
+  ],
+  groomingLabel: 'Dandanan',
+  grooming: [
+    { title: 'Sikatan harian', cadence: 'Harian', detail: 'Alat rasminya ialah sikat keluli tahan karat, disikat di kedua-dua belah sambil dia berpusing seperti panggangan. Bulu panjangnya bergantung padanya: ia mencegah kekusutan dan mengekalkan kegemilangan.' },
+    { title: 'Solekan muka', cadence: 'Bila perlu', detail: 'Tisu haiwan untuk mata dan muka, disimpan berdekatan untuk bila-bila penampilan perlu disegarkan.' },
+    { title: 'Pembersihan setempat', cadence: 'Bila perlu', detail: 'YEGBONG Pet Dry Cleaning Mousse (tanpa air), disapu ke bulu dan disikat, terutamanya di bawah dagu dan mana-mana tompok yang berani menjadi kotor.' },
+    { title: 'Mandi', cadence: 'Jarang', detail: 'Jarang diperlukan; sikatan harian memikul tugas berat. Sesekali mandi atau hari spa profesional, dengan temu janji.' },
+    { title: 'Kuku', cadence: 'Setiap 2–4 minggu', detail: 'Manikur setiap 2–4 minggu dengan pemotong kuku kucing: kaki depan dahulu, kaki belakang jika dia izinkan. Paling baik dilakukan ketika dia mengantuk dan kurang berminat untuk membuat aduan.' },
+    { title: 'Gigi', cadence: 'Harian', detail: 'Berus harian dengan gel gigi selamat kucing Histo Tree (perisa daging), disapu di sepanjang garisan gusi beberapa saat sebelah. Diterima, nyaris-nyaris, sebagai pertukaran untuk ganjaran yang menyusul.' },
+  ],
+  notes: {
+    loading: 'Memuatkan pusingan hari ini…',
+    offline: 'Luar talian: menunjukkan pusingan tersimpan peranti ini.',
+    resetsNightly: 'Tanda ditetap semula setiap malam pada tengah malam.',
+    sharedResets: 'Dikongsi merentas peranti kakitangan; ditetap semula setiap malam pada tengah malam.',
+    staffOnlyPre: 'Pusingan ini untuk kakitangan sahaja. ',
+    signIn: 'Log masuk sebagai kakitangan',
+    staffOnlyPost: ' untuk menandakannya.',
+    pinRejected: 'PIN itu ditolak. Buka Bilik Kakitangan untuk masukkan semula.',
+    savedLocal: 'Disimpan pada peranti ini; awan tidak menjawab.',
+  },
+};
+export const careCopy: Record<string, CareCopy> = { en: careEn, ms: careMs };
+export const getCareCopy = (locale?: string): CareCopy => careCopy[locale ?? 'en'] ?? careEn;
