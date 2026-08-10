@@ -435,26 +435,41 @@ The favicon stays the drawn cat (`public/favicon.svg`) — a photo of a white ca
 is unreadable at 16 px. After changing icons, bump the SW `CACHE` version so
 installed clients pick them up.
 
-## Languages (i18n) — proof of concept
+## Languages (i18n) — how to handle translation
 
-Multi-language is scaffolded but partial. Pages render in **English** at build
-time; a small client engine in `components/LangPicker.astro` swaps every element
-tagged **`data-i18n="<key>"`** to the visitor's chosen language (from
-`src/i18n/ui.ts`), sets `<html lang>`, and remembers the choice in localStorage
-(`picha-lang`). The picker opens on **every visit** for now (later: first visit
-only, then the globe switcher — `[data-lang-open]`, in the nav + mobile app bar
-— takes over). Currently translated: the **nav** and the **Home hero**
-(tagline / Share / "Get to know her") + the picker UI; everything else falls
-back to English until its strings are tagged + added to the dictionary.
+The site is going **fully multilingual**. Treat i18n as a first-class concern
+in every change from now on.
 
-- **Add a language** (e.g. Chinese): add its code to `LOCALES`, an endonym to
-  `localeLabels`, and a block to `ui` with the same keys in `src/i18n/ui.ts`.
-  Nothing else changes. Keep the playful voice in every language.
-- **Translate more of the app**: wrap each string in `<span data-i18n="key">…</span>`
-  (or add the attr to an existing element) and add `key` to every locale block.
-- This is the POC delivery mechanism (client swap). For production/SEO the same
-  dictionaries drop into **Astro native i18n** (locale-prefixed static routes);
-  only the swap engine would be replaced. No-JS visitors get English.
+**Standing rules (apply to all new work):**
+
+- **No hardcoded user-facing English in markup.** Every string a visitor can
+  read is a keyed entry with one block per locale; components render the active
+  locale's string. If you add copy, add the key to **every** locale block in
+  the same change (an English-only addition is a bug).
+- **Facts vs copy.** Keep language-neutral facts (dates, weights in kg, phone
+  numbers, doses, product names, ids, icons, `intervalDays`) single-source; only
+  **prose** is per-locale. So a weight/date/product change is still made once,
+  and translations never drift from the facts. When you touch `picha.ts`, move
+  the prose into the locale dictionaries and leave the facts in place.
+- **Translate the voice, not the words.** Keep the playful "staff of the cat"
+  register in every language (Malay, Chinese, …); a literal translation that
+  loses the humour is wrong.
+- **Safety/medical copy stays exact and gets owner-verified.** `toxicItems`,
+  `callVetIf`, `treatment`, doses, `recovery`, and anything medical must be
+  translated carefully and **confirmed by the owners** before shipping — the
+  "jokes end where the vet begins" rule holds in every language. Flag these for
+  review rather than assuming a translation is safe.
+- **Languages:** English (default), Bahasa Malaysia; Chinese (`zh`) planned.
+  Add one by adding its code to `LOCALES`, an endonym to `localeLabels`, and a
+  full locale block with the same keys; the picker/switcher (`LangPicker`) picks
+  it up automatically.
+
+**Mechanism.** Target is **Astro native i18n**: locale-prefixed static routes
+(`/picha/`, `/picha/ms/`, …) via `astro.config` `i18n`, `Astro.currentLocale`,
+SEO-friendly, English served with no JS. Locale choice is remembered
+(localStorage `picha-lang`) and the picker/switcher navigate between locale
+routes. Dictionaries live in `src/i18n/`. (Migration from the earlier
+client-swap POC is in progress — update this line as pages move over.)
 
 ## Conventions
 
