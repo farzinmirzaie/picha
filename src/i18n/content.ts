@@ -8,6 +8,7 @@
  * so the page zips each translated {title, detail} with that item's icon.
  */
 import { identity, personality, lullaby, humanAgeLine } from '../data/picha';
+import type { BodySignal } from '../data/picha';
 
 export interface HomeCopy {
   tagline: string;
@@ -373,3 +374,162 @@ export const catYearsCopy: Record<string, CatYearsCopy> = {
 };
 export const getCatYearsCopy = (locale?: string): CatYearsCopy =>
   catYearsCopy[locale ?? 'en'] ?? catYearsCopy.en;
+
+// ---------------------------------------------------------------------------
+// Body-language reader ("Reading Picha"). Signal facts (id, num, tone, image
+// key) stay in picha.ts; the prose (title, mood, detail) is translated here,
+// keyed "<part>-<id>". English prose stays in picha.ts (the signals are passed
+// through untouched for `en`).
+//
+// SAFETY NOTE: the `danger`-tone states and the eye health tells (unequal
+// pupils, "call the vet") are behavioural/medical guidance — the Malay here is
+// kept plain and unambiguous and is FLAGGED FOR OWNER VERIFICATION before it
+// should be trusted as final.
+// ---------------------------------------------------------------------------
+type SignalText = { title: string; mood: string; detail: string };
+
+const signalMs: Record<string, SignalText> = {
+  // Ears
+  'ear-forward': { title: 'Ke hadapan', mood: 'Ingin tahu & mesra', detail: 'Telinga tegak dan condong ke hadapan. Dia berminat dan fokus; masa yang baik untuk menegurnya.' },
+  'ear-neutral': { title: 'Santai / biasa', mood: 'Tenang & puas hati', detail: 'Telinga tegak dan longgar, menghala longgar ke hadapan. Semuanya baik di dalam kerajaan: selesa, tenang dan senang hati.' },
+  'ear-swiveling': { title: 'Berpusing', mood: 'Sedang mendengar', detail: 'Telinga berputar seperti piring satelit kecil untuk menjejak bunyi. Waspada dan meneliti keadaan, bukan marah.' },
+  'ear-sideways': { title: 'Ke tepi (mod kapal terbang)', mood: 'Terlebih rangsangan', detail: 'Telinga terkeluar ke sisi seperti sayap kecil. Ragu-ragu, kesal atau sudah cukup; tanda halus untuk berundur sedikit.' },
+  'ear-slightly-back': { title: 'Sedikit ke belakang', mood: 'Terganggu', detail: 'Telinga terjungkit sedikit ke belakang. Berhati-hati dan agak terganggu, sedang menimbang sama ada mahu bertindak balas. Beri dia seketika.' },
+  'ear-flat': { title: 'Merapat ke kepala', mood: 'Beri dia ruang', detail: 'Telinga dirapatkan rata ke kepala untuk melindunginya. Takut atau agresif secara bertahan ketika benar-benar tertekan. Jangan hulur tangan; biar dia bertenang sendiri.' },
+  'ear-one-ear-back': { title: 'Sebelah telinga ke belakang', mood: 'Buat banyak kerja serentak', detail: 'Satu telinga ke hadapan, satu lagi ke belakang, menjejak dua perkara serentak (selalunya sesuatu di belakangnya). Berjaga-jaga sedikit.' },
+  'ear-high-tall': { title: 'Tinggi & tegak', mood: 'Berjaga-jaga sepenuhnya', detail: 'Telinga tegak setinggi mungkin, lurus ke atas. Sangat waspada dan bersedia, terkunci pada sesuatu yang dia anggap penting.' },
+  'ear-low-wide': { title: 'Rendah & terkembang', mood: 'Cemas', detail: 'Telinga direndahkan dan terkembang luas. Bimbang dan berasa terancam, tetapi tidak mahu bergaduh. Tenangkan dia, jangan sesak.' },
+  'ear-predatory': { title: 'Fokus memburu', mood: 'Sedang memburu', detail: 'Telinga ke hadapan dan terkunci, seluruh wajah tertumpu. Mod memburu penuh: tumpuan sengit, bersedia menerkam (pada mainan, sebaik-baiknya).' },
+  'ear-sleepy': { title: 'Puas & mengantuk', mood: 'Terlena bahagia', detail: 'Telinga longgar dan sedikit berputar ketika dia terlelap. Sangat santai, selesa dan selamat. Kemuncak kepuasan.' },
+  'ear-hissing': { title: 'Agresif / mendesis', mood: 'Berundur', detail: 'Mulut terbuka, telinga ke belakang, amaran dikeluarkan. Dia berasa terancam dan menyuruh anda menjauh. Hormati dan beri dia ruang.' },
+  // Eyes
+  'eye-neutral': { title: 'Santai / biasa', mood: 'Tenang & puas hati', detail: 'Mata terbuka dan tenang, anak mata bujur normal. Semuanya baik: selesa, puas hati dan senang. Masa yang baik untuk menegurnya.' },
+  'eye-sleepy': { title: 'Lembut / mengantuk', mood: 'Mengantuk & selamat', detail: 'Kelopak rendah dan lembut, mata separuh tertutup ketika berehat. Sangat santai dan berasa selamat. Biar dia terlelap; ini kepercayaan sejati.' },
+  'eye-dilated': { title: 'Membesar / teruja', mood: 'Teruja / terangsang', detail: 'Anak mata membesar bulat. Teruja, suka bermain atau terangsang, walaupun anak mata besar juga boleh bermakna takut, jadi baca telinga dan badannya sekali. Elok untuk bermain selagi suasananya ringan.' },
+  'eye-alert': { title: 'Berminat / waspada', mood: 'Ingin tahu & fokus', detail: 'Mata terbuka, anak mata sederhana, pandangan tertumpu pada sesuatu. Ingin tahu dan fokus secara mental, menyerap segalanya.' },
+  'eye-narrowed': { title: 'Menyempit / tajam', mood: 'Terkunci fokus', detail: 'Anak mata mengecil menjadi garis fokus, renungan mantap. Tekad dan yakin ketika dia menilai keadaan. Biar dia fikirkannya.' },
+  'eye-very-narrow': { title: 'Sangat sempit / resah', mood: 'Terlebih rangsangan', detail: 'Anak mata mengecil menjadi celahan nipis. Kesal, terlebih rangsangan, atau hanya berada dalam cahaya terang. Jika suasananya tegang, kurangkan gangguan dan beri dia ruang bernafas.' },
+  'eye-suspicious': { title: 'Curiga / berhati-hati', mood: 'Berwaspada & memerhati', detail: 'Mata separuh menyempit, memerhati dengan teliti. Tidak pasti dan sedang menyemak sama ada keadaan selamat. Bergerak perlahan dan biar dia buat keputusan.' },
+  'eye-round': { title: 'Bulat / terkejut', mood: 'Tersentak', detail: 'Mata tiba-tiba terbeliak bulat. Sesuatu yang mengejut menangkapnya lengah dan dia kini berjaga-jaga. Beri dia seketika untuk melihat ia tiada apa-apa.' },
+  'eye-unequal': { title: 'Anak mata tidak sama', mood: 'Periksa keadaannya', detail: 'Satu anak mata lebih besar daripada yang lain. Ia boleh jadi normal dalam cahaya malap atau berubah-ubah, tetapi jika ia berterusan, atau disertai mata terpicing, mengiris mata dengan kaki, atau dia kelihatan tidak sihat, hubungi doktor haiwan.' },
+  'eye-slow-blink': { title: 'Kelip perlahan', mood: 'Saya percaya awak', detail: 'Kelipan perlahan dan malas yang ditahan seketika. Caranya berkata dia mempercayai anda dan berasa selamat. Balas kelipan perlahan; ia pujian tertinggi yang seekor kucing berikan.' },
+  'eye-wide-eyed': { title: 'Terbeliak / ketakutan', mood: 'Takut', detail: 'Mata terbeliak luas, biasanya dengan anak mata besar, badan berkejang. Takut dan berasa terancam, mencari jalan keluar. Jangan sesak atau kepung dia; beri dia ruang dan laluan keluar yang jelas.' },
+  'eye-closed': { title: 'Kelip / mata tertutup', mood: 'Sangat santai', detail: 'Mata tertutup, wajah lembut dan tenang. Sangat santai dan mempercayai, atau melupakan dunia untuk berehat. Biarkan dia.' },
+  // Tail
+  'tail-held-high': { title: 'Diangkat tinggi', mood: 'Yakin', detail: 'Ekor lurus ke atas seperti tiang bendera. Yakin, gembira dan berpuas hati dengan dunia. Masa yang baik untuk menegurnya.' },
+  'tail-upright-curved': { title: 'Tegak dengan hujung melengkung', mood: 'Sapaan mesra', detail: 'Ekor ke atas dengan sedikit cangkuk di hujungnya, tanda soal mesra. Sapaannya yang paling mesra: dia gembira melihat anda.' },
+  'tail-gentle-curve': { title: 'Lengkungan lembut', mood: 'Puas hati', detail: 'Ekor ke atas dalam lengkungan lembut dan tenang. Puas hati dan selesa, meredah hari dengan santai.' },
+  'tail-horizontal': { title: 'Mendatar', mood: 'Ingin tahu', detail: 'Ekor terjulur lurus ke belakang. Waspada dan ingin tahu, menilai sesuatu sebelum bertindak.' },
+  'tail-low-relaxed': { title: 'Rendah / santai', mood: 'Senang hati', detail: 'Ekor dibawa rendah dan longgar. Tenang dan neutral. Ekor rendah juga boleh bermakna berhati-hati, jadi baca bersama telinga dan badannya.' },
+  'tail-tucked': { title: 'Diselitkan', mood: 'Tidak selamat', detail: 'Ekor melengkung ke bawah dan diselitkan rapat. Cemas, tidak pasti atau berasa kecil. Jangan sesak dia; bergerak perlahan dan biar dia bertenang.' },
+  'tail-puffed-up': { title: 'Menggembung', mood: 'Terperanjat', detail: 'Ekor menggembung seperti berus botol. Takut dan cuba kelihatan lebih besar. Sesuatu memperanjatkannya; beri dia ruang sehingga dia tenang.' },
+  'tail-puffed-curve': { title: 'Menggembung dengan lengkung', mood: 'Bertahan', detail: 'Ekor berus botol di atas belakang yang melengkung, gaya kucing Halloween. Sangat terangsang dan bertahan. Berundur dan biar saat itu berlalu.' },
+  'tail-flicking': { title: 'Melibas', mood: 'Terganggu', detail: 'Ekor melibas ke kiri dan kanan. Kesal, terganggu atau sudah cukup. Tanda jelas untuk berundur sebelum dia benar-benar hilang sabar.' },
+  'tail-tip-twitching': { title: 'Hujung bergerak', mood: 'Fokus', detail: 'Hanya hujung ekor melibas sementara selebihnya diam. Fokus dan menumpu, selalunya di tengah-tengah memburu. Bersungguh, bukan marah.' },
+  'tail-wrapped': { title: 'Dililit', mood: 'Selesa', detail: 'Ekor dililit kemas mengelilingi dirinya. Santai dan selesa, menjaga kehangatan dan berdikari. Kemuncak kepuasan.' },
+  'tail-thumping': { title: 'Menghentak', mood: 'Berundur', detail: 'Ekor menghentak lantai. Sangat kesal dan memberi amaran supaya anda berundur. Berhenti, dan beri dia ruang.' },
+};
+
+/** Return a signal with prose in the active locale (English passes through). */
+export function localizeSignal(part: string, s: BodySignal, locale?: string): BodySignal {
+  if (locale !== 'ms') return s;
+  const o = signalMs[`${part}-${s.id}`];
+  return o ? { ...s, ...o } : s;
+}
+
+export interface BodyLanguageCopy {
+  metaTitle: string;
+  metaDescription: string;
+  kicker: string;
+  title: string;
+  blurb: string;
+  bodyPartLabel: string;
+  segments: {
+    id: string;
+    label: string;
+    noun: string; // for alt text ("Picha's <noun>: ...")
+    notes: string[]; // aligned with the tone/icon list in body-language.astro
+  }[];
+}
+export const bodyLanguageCopy: Record<string, BodyLanguageCopy> = {
+  en: {
+    metaTitle: 'Reading Picha · Picha 🐾',
+    metaDescription:
+      "A field guide to Picha's body language: what her signals mean and how to answer.",
+    kicker: 'Cat to human',
+    title: 'Reading Picha',
+    blurb:
+      'She says plenty without a sound. Here is how to read Her Fluffiness, and how to answer before she has to repeat herself.',
+    bodyPartLabel: 'Body part',
+    segments: [
+      {
+        id: 'ears',
+        label: 'Ears',
+        noun: 'ears',
+        notes: [
+          "One a photo can't hold: quick ear-flicking or twitching. Usually plain irritation (or a passing fly); if it comes with head-shaking or scratching, check her ears.",
+          'When the signals say ease off or give space, the kind move is exactly that: no reaching, no scooping. Let her come back to you.',
+        ],
+      },
+      {
+        id: 'eyes',
+        label: 'Eyes',
+        noun: 'eyes',
+        notes: [
+          "Two things a still can't show: a hard, unblinking stare (a challenge, so look away and don't stare back) and the third eyelid sliding across the inner corner (often tiredness, sometimes illness).",
+          'Eyes are also health tells. Unequal pupils that do not settle, a suddenly cloudy, red or weepy eye, constant squinting, or pawing at one eye are a vet call, not a mood.',
+        ],
+      },
+      {
+        id: 'tails',
+        label: 'Tail',
+        noun: 'tail',
+        notes: [
+          'A still cannot show the motion, and motion is half the message: a fast lash means far more than a slow sway. A low tail can read as calm or cautious, so always check it against her ears, eyes and posture.',
+          'When her tail says back off (puffed, thumping, a hard flick), take it at its word: stop what you are doing, give her space, and let her reset.',
+        ],
+      },
+    ],
+  },
+  ms: {
+    metaTitle: 'Membaca Picha · Picha 🐾',
+    metaDescription:
+      'Panduan lapangan tentang bahasa badan Picha: apa maksud isyaratnya dan cara membalasnya.',
+    kicker: 'Kucing kepada manusia',
+    title: 'Membaca Picha',
+    blurb:
+      'Dia banyak berkata tanpa sepatah bunyi. Inilah cara membaca Tuan Puteri Gebu, dan cara membalas sebelum dia terpaksa mengulanginya.',
+    bodyPartLabel: 'Bahagian badan',
+    segments: [
+      {
+        id: 'ears',
+        label: 'Telinga',
+        noun: 'telinga',
+        notes: [
+          'Satu yang foto tidak dapat rakam: telinga melibas atau berkedut pantas. Biasanya sekadar terganggu (atau ada lalat lalu); jika ia disertai menggeleng kepala atau menggaru, periksa telinganya.',
+          'Apabila isyaratnya berkata berundur atau beri ruang, tindakan yang baik adalah tepat itu: jangan hulur tangan, jangan angkat dia. Biar dia datang semula kepada anda.',
+        ],
+      },
+      {
+        id: 'eyes',
+        label: 'Mata',
+        noun: 'mata',
+        notes: [
+          'Dua perkara yang gambar pegun tidak dapat tunjukkan: renungan tajam tanpa kelip (satu cabaran, jadi alih pandangan dan jangan balas merenung) dan kelopak mata ketiga yang melintasi sudut dalam mata (selalunya keletihan, kadangkala penyakit).',
+          'Mata juga petanda kesihatan. Anak mata yang tidak sama besar dan tidak pulih, mata yang tiba-tiba berkabus, merah atau berair, mata terpicing berterusan, atau mengiris sebelah mata dengan kaki adalah panggilan doktor haiwan, bukan sekadar perasaan.',
+        ],
+      },
+      {
+        id: 'tails',
+        label: 'Ekor',
+        noun: 'ekor',
+        notes: [
+          'Gambar pegun tidak dapat menunjukkan pergerakan, dan pergerakan ialah separuh daripada mesejnya: libasan pantas bermakna jauh lebih daripada ayunan perlahan. Ekor rendah boleh dibaca sebagai tenang atau berhati-hati, jadi sentiasa semaknya bersama telinga, mata dan postur badannya.',
+          'Apabila ekornya berkata berundur (menggembung, menghentak, libasan keras), terimalah seadanya: berhenti apa yang anda lakukan, beri dia ruang, dan biar dia bertenang semula.',
+        ],
+      },
+    ],
+  },
+};
+export const getBodyLanguageCopy = (locale?: string): BodyLanguageCopy =>
+  bodyLanguageCopy[locale ?? 'en'] ?? bodyLanguageCopy.en;

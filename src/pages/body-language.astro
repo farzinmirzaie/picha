@@ -7,6 +7,10 @@ import Footer from '../components/Footer.astro';
 import SegmentedTabs from '../components/ui/SegmentedTabs.astro';
 import SignalCard from '../components/SignalCard.astro';
 import { earSignals, eyeSignals, tailSignals } from '../data/picha';
+import { getBodyLanguageCopy, localizeSignal } from '../i18n/content';
+
+const locale = Astro.currentLocale ?? 'en';
+const c = getBodyLanguageCopy(locale);
 
 // Signal photos, cropped from the reference chart. Match each signal by id
 // (<part>-<id>.png). Each body part is a segment/panel; the same pattern
@@ -36,87 +40,69 @@ const tailImageById = imagesById(
   'tail',
 );
 
-// Segments = the tabs. Each has its noun (for alt text), signal set, image
-// lookup and its own footer notes (things a still photo can't capture).
-const segments = [
+// Segments = the tabs. Facts (signal set, image lookup, how the photo sits, and
+// each note's tone/icon) live here; the prose (label, noun, note text, and each
+// signal's title/mood/detail) comes from the locale copy, zipped by order.
+// `part` is the singular asset/copy prefix (ear/eye/tail); `id` is the plural
+// segment/panel id (ears/eyes/tails).
+const segFacts = [
   {
     id: 'ears',
-    label: 'Ears',
-    noun: 'ears',
+    part: 'ear',
     objectPosition: 'center' as const,
     signals: earSignals,
     images: earImageById,
-    notes: [
-      {
-        tone: 'info',
-        icon: 'ph:wave-sine',
-        text: "One a photo can't hold: quick ear-flicking or twitching. Usually plain irritation (or a passing fly); if it comes with head-shaking or scratching, check her ears.",
-      },
-      {
-        tone: 'danger',
-        icon: 'ph:hand-palm',
-        text: 'When the signals say ease off or give space, the kind move is exactly that: no reaching, no scooping. Let her come back to you.',
-      },
+    noteMeta: [
+      { tone: 'info', icon: 'ph:wave-sine' },
+      { tone: 'danger', icon: 'ph:hand-palm' },
     ],
   },
   {
     id: 'eyes',
-    label: 'Eyes',
-    noun: 'eyes',
+    part: 'eye',
     objectPosition: 'center' as const,
     signals: eyeSignals,
     images: eyeImageById,
-    notes: [
-      {
-        tone: 'info',
-        icon: 'ph:wave-sine',
-        text: "Two things a still can't show: a hard, unblinking stare (a challenge, so look away and don't stare back) and the third eyelid sliding across the inner corner (often tiredness, sometimes illness).",
-      },
-      {
-        tone: 'danger',
-        icon: 'ph:first-aid',
-        text: 'Eyes are also health tells. Unequal pupils that do not settle, a suddenly cloudy, red or weepy eye, constant squinting, or pawing at one eye are a vet call, not a mood.',
-      },
+    noteMeta: [
+      { tone: 'info', icon: 'ph:wave-sine' },
+      { tone: 'danger', icon: 'ph:first-aid' },
     ],
   },
   {
     id: 'tails',
-    label: 'Tail',
-    noun: 'tail',
+    part: 'tail',
     objectPosition: 'left' as const,
     signals: tailSignals,
     images: tailImageById,
-    notes: [
-      {
-        tone: 'info',
-        icon: 'ph:wave-sine',
-        text: 'A still cannot show the motion, and motion is half the message: a fast lash means far more than a slow sway. A low tail can read as calm or cautious, so always check it against her ears, eyes and posture.',
-      },
-      {
-        tone: 'danger',
-        icon: 'ph:hand-palm',
-        text: 'When her tail says back off (puffed, thumping, a hard flick), take it at its word: stop what you are doing, give her space, and let her reset.',
-      },
+    noteMeta: [
+      { tone: 'info', icon: 'ph:wave-sine' },
+      { tone: 'danger', icon: 'ph:hand-palm' },
     ],
   },
 ];
+const segments = segFacts.map((f) => {
+  const copy = c.segments.find((s) => s.id === f.id)!;
+  return {
+    ...f,
+    label: copy.label,
+    noun: copy.noun,
+    signals: f.signals.map((s) => localizeSignal(f.part, s, locale)),
+    notes: f.noteMeta.map((m, i) => ({ ...m, text: copy.notes[i] })),
+  };
+});
 ---
 
 <Layout
-  title="Reading Picha · Picha 🐾"
-  description="A field guide to Picha's body language: what her signals mean and how to answer."
+  title={c.metaTitle}
+  description={c.metaDescription}
   current="tools"
-  appTitle="Reading Picha"
+  appTitle={c.title}
 >
-  <PageHeader
-    kicker="Cat to human"
-    title="Reading Picha"
-    blurb="She says plenty without a sound. Here is how to read Her Fluffiness, and how to answer before she has to repeat herself."
-  />
+  <PageHeader kicker={c.kicker} title={c.title} blurb={c.blurb} />
 
   <section class="mx-auto w-full max-w-3xl px-5 pt-4 pb-10 md:pb-0" aria-label="Body language">
     <!-- Segmented tabs (one per body part) -->
-    <SegmentedTabs tabs={segments.map((s) => ({ id: s.id, label: s.label }))} label="Body part" />
+    <SegmentedTabs tabs={segments.map((s) => ({ id: s.id, label: s.label }))} label={c.bodyPartLabel} />
 
     {
       segments.map((seg, si) => (
