@@ -1427,6 +1427,8 @@ const healthTextMs: Record<string, { title: string; detail: string }> = {
     { title: 'Kursus rawatan telinga selesai', detail: 'Kursus penuh ORI-EAR + Oridermyl selesai; telinga pulih. Rasa tidak setuju harian kini boleh dihentikan.' },
   'NexGard Combo spot-on applied at the base of the skull, her new monthly flea and tick guard. Revolution Plus retired.':
     { title: 'Kawalan parasit', detail: 'NexGard Combo spot-on disapu di pangkal tengkorak, pelindung kutu dan sengkenit bulanannya yang baharu. Revolution Plus dihentikan.' },
+  'NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month’s flea, tick and ear-mite guard, on schedule.':
+    { title: 'Kawalan parasit', detail: 'NexGard Combo spot-on disapu semula di rumah, dibelah ke kulit di pangkal tengkorak. Pelindung kutu, sengkenit dan hama telinga bulan ini, mengikut jadual.' },
   'Required before any travel plans Her Fluffiness may approve.':
     { title: 'Vaksin rabies', detail: 'Diperlukan sebelum sebarang rancangan perjalanan yang Tuan Puteri Gebu luluskan.' },
   'Optional. To discuss with whichever vet wins the job.':
@@ -1483,6 +1485,8 @@ const healthTextZh: Record<string, { title: string; detail: string }> = {
     { title: '耳部疗程完成', detail: '完整的 ORI-EAR + Oridermyl 疗程结束；耳朵已康复。每日的不满现在可以停止了。' },
   'NexGard Combo spot-on applied at the base of the skull, her new monthly flea and tick guard. Revolution Plus retired.':
     { title: '寄生虫防治', detail: 'NexGard Combo 滴剂已滴于颅骨底部，是她新的每月跳蚤和蜱虫防护。Revolution Plus 已退役。' },
+  'NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month’s flea, tick and ear-mite guard, on schedule.':
+    { title: '寄生虫防治', detail: 'NexGard Combo 滴剂在家重新使用，拨开毛发滴在颅骨底部的皮肤上。本月的跳蚤、蜱虫和耳螨防护，按时完成。' },
   'Required before any travel plans Her Fluffiness may approve.':
     { title: '狂犬病疫苗', detail: '在绒毛殿下可能批准的任何旅行计划之前都需要。' },
   'Optional. To discuss with whichever vet wins the job.':
@@ -1538,6 +1542,8 @@ const healthTextFa: Record<string, { title: string; detail: string }> = {
     { title: 'پایان دوره‌ی درمان گوش', detail: 'دوره‌ی کامل ORI-EAR + Oridermyl تمام شد؛ گوش‌ها بهبود یافت. نارضایتیِ روزانه اکنون می‌تواند متوقف شود.' },
   'NexGard Combo spot-on applied at the base of the skull, her new monthly flea and tick guard. Revolution Plus retired.':
     { title: 'کنترل انگل', detail: 'قطره‌ی موضعی NexGard Combo روی پایه‌ی جمجمه استفاده شد، محافظِ ماهانه‌ی جدیدِ کک و کنه‌اش. Revolution Plus بازنشسته شد.' },
+  'NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month’s flea, tick and ear-mite guard, on schedule.':
+    { title: 'کنترل انگل', detail: 'قطره‌ی موضعی NexGard Combo دوباره در خانه استفاده شد، جدا و مالیده روی پوستِ پایه‌ی جمجمه. محافظِ این‌ماهِ کک، کنه و جربِ گوش، سرِ موعد.' },
   'Required before any travel plans Her Fluffiness may approve.':
     { title: 'واکسن هاری', detail: 'پیش از هر برنامه‌ی سفری که علیاحضرت پشمالو تأیید کند لازم است.' },
   'Optional. To discuss with whichever vet wins the job.':

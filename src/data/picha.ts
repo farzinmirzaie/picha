@@ -223,6 +223,13 @@ export const healthTimeline: TimelineEntry[] = [
     date: '2026-08-01',
   },
   {
+    icon: 'ph:bug',
+    title: 'Parasite control',
+    detail:
+      'NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month’s flea, tick and ear-mite guard, on schedule.',
+    date: '2026-09-05',
+  },
+  {
     icon: 'ph:syringe',
     title: 'Rabies vaccine',
     detail: 'Required before any travel plans Her Fluffiness may approve.',
@@ -253,7 +260,7 @@ export const recurringCare: RecurringItem[] = [
       'NexGard Combo spot-on, parted onto the skin at the base of the skull (the back of the head), where she cannot lick it off. Fleas, ticks and ear mites, evicted. Monthly with a few days of grace, but never sooner than a month apart; a bit late is fine, too early risks a double dose.',
     everyLabel: 'Every month',
     intervalDays: 35,
-    lastDone: '2026-08-01',
+    lastDone: '2026-09-05',
     where: 'at home',
   },
   {
