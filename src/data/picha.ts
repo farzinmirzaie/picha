@@ -346,8 +346,8 @@ export const dailyChecklist = [
   {
     id: 'meals-1',
     icon: 'ph:bowl-food',
-    label: 'Wet food service',
-    hint: 'First course, around 10am; mix in any kibble she left',
+    label: 'Wet food, morning mix',
+    hint: 'Around 10:30am: a third of the wet food, stirred into her kibble',
   },
   {
     id: 'litter-1',
@@ -388,14 +388,14 @@ export const dailyChecklist = [
   {
     id: 'treat',
     icon: 'ph:cookie',
-    label: 'A treat, if earned',
-    hint: 'Around 4pm, only when earned; capped at 10% of her food',
+    label: 'Treat-tube meal',
+    hint: 'Around 2:30pm: a treat tube mixed into her kibble; her biggest meal',
   },
   {
     id: 'meals-2',
     icon: 'ph:bowl-food',
-    label: 'Wet food service',
-    hint: 'Second course, around 9:30pm before lights-out',
+    label: 'Wet food, evening mix',
+    hint: 'Around 6:30pm: another third of the wet food, stirred in',
   },
   {
     id: 'play-ball',
@@ -414,6 +414,12 @@ export const dailyChecklist = [
     icon: 'ph:hand-heart',
     label: 'Lap & cuddle time',
     hint: 'Mandatory affection audit; she decides when it ends',
+  },
+  {
+    id: 'meals-3',
+    icon: 'ph:bowl-food',
+    label: 'Wet food, nightcap',
+    hint: 'Around 10:30pm: the last of the wet food, warmed and stirred in',
   },
   {
     id: 'lockup',
@@ -1179,7 +1185,7 @@ export const feedingSchedule: MealSlot[] = [
     title: 'Kibble + wet food',
     amount: '10 g',
     auto: true,
-    detail: 'A feeder portion, plus anything she left from the morning, with a third of the wet food stirred through: tip the kibble out, mix the wet in, set it back.',
+    detail: 'A feeder portion, plus anything she left from the morning, with a third of the wet food stirred into it and put back for her.',
   },
   {
     time: '2:30 PM',
