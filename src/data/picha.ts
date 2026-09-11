@@ -1148,10 +1148,10 @@ export const food: CareItem[] = [
 ];
 
 /**
- * Her daily feeding timetable. Kibble is automatic (`auto`) on the feeder's
- * three timed drops (20 g each, 60 g a day); the wet courses and the afternoon
- * treat are served by the staff. `time` is display-only, kept in day order.
- * Approximate hand-served times are prefixed with "~".
+ * Her daily feeding timetable. The feeder drops one 10 g kibble portion at each
+ * of five timed slots (50 g a day); the wet food (in thirds) and one treat tube
+ * are mixed into most of them by the staff. `time` is display-only, kept in day
+ * order. `amount`/`auto` describe the kibble base; the mix-ins live in `detail`.
  */
 export interface MealSlot {
   time: string;
@@ -1166,46 +1166,44 @@ export interface MealSlot {
 
 export const feedingSchedule: MealSlot[] = [
   {
-    time: '7:00 AM',
+    time: '6:30 AM',
     icon: 'ph:bowl-food',
     title: 'Morning kibble',
-    amount: '20 g',
+    amount: '10 g',
     auto: true,
-    detail: 'The feeder drops her first course on schedule; she nibbles at it when the mood strikes.',
+    detail: 'The feeder drops her first 10 g portion; she grazes on it through the morning.',
   },
   {
-    time: '~10:00 AM',
+    time: '10:30 AM',
     icon: 'ph:fork-knife',
-    title: 'Wet food, first course',
-    detail: 'Her five-star course, served by hand. Any kibble she left from the morning gets mixed in.',
-  },
-  {
-    time: '1:00 PM',
-    icon: 'ph:bowl-food',
-    title: 'Midday kibble',
-    amount: '20 g',
+    title: 'Kibble + wet food',
+    amount: '10 g',
     auto: true,
-    detail: 'The second automatic drop, keeping the day evenly fed.',
+    detail: 'A feeder portion, plus anything she left from the morning, with a third of the wet food stirred through: tip the kibble out, mix the wet in, set it back.',
   },
   {
-    time: '~4:00 PM',
+    time: '2:30 PM',
     icon: 'ph:cookie',
-    title: 'Snack or treat',
-    detail: 'The afternoon negotiation, kept within the 10% treat cap no matter how convincing the eyes get.',
-  },
-  {
-    time: '7:00 PM',
-    icon: 'ph:bowl-food',
-    title: 'Evening kibble',
-    amount: '20 g',
+    title: 'Kibble + treat tube',
+    amount: '10 g',
     auto: true,
-    detail: 'The last automatic drop of the day.',
+    detail: 'A feeder portion, plus any leftovers, mixed with one squeezy treat tube. Hold a little treat back to drizzle over the last kibbles until she licks the bowl clean. Her biggest meal, thanks to the treat.',
   },
   {
-    time: '~9:30 PM',
+    time: '6:30 PM',
     icon: 'ph:fork-knife',
-    title: 'Wet food, second course',
-    detail: 'The nightcap, served before lights-out. Nothing after, she sleeps it off.',
+    title: 'Kibble + wet food',
+    amount: '10 g',
+    auto: true,
+    detail: 'A feeder portion (rarely any leftovers by now) with another third of the wet food mixed in.',
+  },
+  {
+    time: '10:30 PM',
+    icon: 'ph:moon-stars',
+    title: 'Kibble + wet food, nightcap',
+    amount: '10 g',
+    auto: true,
+    detail: 'The last feeder portion, plus any leftovers and all the remaining wet food, usually warmed briefly in hot water and stirred through.',
   },
 ];
 

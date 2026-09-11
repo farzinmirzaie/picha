@@ -160,7 +160,7 @@ ${dailyChecklist.map((c) => `- ${c.label}: ${c.hint}`).join('\n')}
 
 ${food.map((f) => `- **${f.title}**: ${f.detail}`).join('\n')}
 
-Daily feeding schedule (kibble is automatic on the feeder, wet food and treats served by hand):
+Daily feeding schedule (the feeder drops one 10 g kibble portion at each of five slots; wet food, in thirds, and one treat tube are mixed in by the staff):
 ${feedingSchedule.map((s) => `- **${s.time} — ${s.title}**${s.amount ? ` (${s.amount})` : ''}: ${s.detail}`).join('\n')}
 
 ### Grooming
