@@ -280,7 +280,7 @@ export const recurringCare: RecurringItem[] = [
       'The full salon treatment: bath, blow-dry and a top-to-tail tidy-up, so the resident cloud stays soft and photogenic.',
     everyLabel: 'Every 2 months',
     intervalDays: 60,
-    lastDone: '2026-07-24',
+    lastDone: '2026-09-12',
     where: 'at the salon',
   },
   {
@@ -320,7 +320,7 @@ export const recurringCare: RecurringItem[] = [
       'Front paws first, back paws only with royal consent. Management files a formal complaint every time, then submits to the clippers.',
     everyLabel: 'Every 2–4 weeks',
     intervalDays: 21,
-    lastDone: '2026-08-24',
+    lastDone: '2026-09-12',
     where: 'at home',
   },
 ];
