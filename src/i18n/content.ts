@@ -1419,6 +1419,8 @@ const healthTextMs: Record<string, { title: string; detail: string }> = {
     { title: 'Kawalan parasit', detail: 'Revolution Plus disapu. Kutu, sengkenit dan cacing: dihalau keluar.' },
   'Interior pest control, completed.':
     { title: 'Nyahcacing', detail: 'Kawalan perosak dalaman, selesai.' },
+  'Routine 3-monthly dewormer, given at home on schedule. A pill, smuggled inside something tasty.':
+    { title: 'Nyahcacing', detail: 'Ubat cacing rutin 3 bulan, diberi di rumah mengikut jadual. Sebiji pil, diselitkan di dalam sesuatu yang sedap.' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: 'Kembiri + mikrocip', detail: 'Kedua-duanya selesai dalam satu lawatan. Dia mengira masa pemulihan sebagai cuti spa.' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':
@@ -1477,6 +1479,8 @@ const healthTextZh: Record<string, { title: string; detail: string }> = {
     { title: '寄生虫防治', detail: '已使用 Revolution Plus。跳蚤、蜱虫和蠕虫：驱逐出境。' },
   'Interior pest control, completed.':
     { title: '已驱虫', detail: '内部害虫防治，完成。' },
+  'Routine 3-monthly dewormer, given at home on schedule. A pill, smuggled inside something tasty.':
+    { title: '已驱虫', detail: '常规三个月驱虫，在家按时完成。一粒药丸，藏在美味里悄悄喂下。' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: '绝育 + 芯片', detail: '一次看诊全部完成。她把恢复期记作水疗假。' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':
@@ -1534,6 +1538,8 @@ const healthTextFa: Record<string, { title: string; detail: string }> = {
     { title: 'کنترل انگل', detail: 'Revolution Plus استفاده شد. کک، کنه و کرم‌ها: اخراج شدند.' },
   'Interior pest control, completed.':
     { title: 'کرم‌زدایی شد', detail: 'کنترل آفات داخلی، انجام شد.' },
+  'Routine 3-monthly dewormer, given at home on schedule. A pill, smuggled inside something tasty.':
+    { title: 'کرم‌زدایی شد', detail: 'کرم‌زدای روتینِ سه‌ماهه، در خانه سرِ موعد داده شد. یک قرص، پنهان‌شده در چیزی خوشمزه.' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: 'عقیم‌سازی + میکروچیپ', detail: 'هر دو در یک ویزیت انجام شد. او زمان بهبودی را به‌عنوان مرخصیِ اسپا حساب کرد.' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':

@@ -196,6 +196,12 @@ export const healthTimeline: TimelineEntry[] = [
     date: '2026-06-25',
   },
   {
+    icon: 'ph:pill',
+    title: 'Dewormed',
+    detail: 'Routine 3-monthly dewormer, given at home on schedule. A pill, smuggled inside something tasty.',
+    date: '2026-09-23',
+  },
+  {
     icon: 'ph:first-aid',
     title: 'Spay + microchip',
     detail: 'Both done in one visit. She billed the recovery time as spa leave.',
@@ -270,7 +276,7 @@ export const recurringCare: RecurringItem[] = [
       'A separate dewormer on the standard adult schedule (the spot-on does not replace it): a pill, smuggled in inside something delicious and served without ceremony.',
     everyLabel: 'Every 3 months',
     intervalDays: 90,
-    lastDone: '2026-06-25',
+    lastDone: '2026-09-23',
     where: 'at home',
   },
   {
