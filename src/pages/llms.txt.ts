@@ -20,6 +20,7 @@ import {
   microchipRegistry,
   clinicalStatus,
   healthTimeline,
+  labReports,
   recurringCare,
   dailyChecklist,
   treatment,
@@ -68,6 +69,13 @@ const notStarted = recurringCare.filter((r) => !r.lastDone && !r.nextDue);
 
 const item = (title: string, detail: string, date?: string) =>
   `- ${date ? `${date} (${inDaysLabel(daysFromToday(date))}): ` : ''}**${title}**: ${detail}`;
+
+const labPanelLabel = (key: string) =>
+  key === 'hematology'
+    ? 'Complete blood count (CBC)'
+    : key === 'chemistry'
+      ? 'Blood chemistry'
+      : key;
 
 const md = `# Picha
 
@@ -132,6 +140,32 @@ ${upcoming.map((e) => item(e.title, e.detail, e.date)).join('\n')}
 
 ${toBook.map((e) => `- **${e.title}**: ${e.detail}`).join('\n')}
 ${notStarted.map((r) => `- **${r.title}** (${r.everyLabel.toLowerCase()}, not started yet): ${r.detail}`).join('\n')}
+${
+  labReports.length
+    ? `
+### Lab reports
+
+Values transcribed exactly as printed (results kept as-is). "[HIGH]"/"[LOW]" mark values the report flagged out of range; interpretation is the vet's.
+
+${labReports
+  .map(
+    (r) => `#### ${r.date} — ${r.clinic}
+${r.panels
+  .map(
+    (p) => `${labPanelLabel(p.key)} — ${p.source}:
+${p.rows
+  .map(
+    (row) =>
+      `- ${row.name}: ${row.result}${row.ref ? ` (ref ${row.ref})` : ''}${row.unit ? ` ${row.unit}` : ''}${row.flag ? ` [${row.flag.toUpperCase()}]` : ''}`,
+  )
+  .join('\n')}`,
+  )
+  .join('\n\n')}`,
+  )
+  .join('\n\n')}
+`
+    : ''
+}
 
 ## Training (the Royal Academy)
 

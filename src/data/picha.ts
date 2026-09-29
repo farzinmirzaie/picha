@@ -28,6 +28,49 @@ export interface TimelineEntry {
   date?: string;
   /** Where it happens, shown as a chip: "at home", "at the vet", "at the salon". */
   where?: string;
+  /**
+   * Links this entry to a lab report in `labReports` (by id). When set, the
+   * Health record renders a "view results" action that opens the report modal
+   * (transcribed panels + the original printout photos).
+   */
+  reportId?: string;
+}
+
+/**
+ * A lab report attached to a timeline entry. The numbers are language-neutral
+ * facts (kept exactly as printed, results as strings so "<20"/"0.00" survive);
+ * only the panel headings + chrome are translated (see getLabCopy in i18n).
+ * The original printout photos live in src/assets/labs/<id>-<n>.jpg and are
+ * wired up by index in LabReportDialog.astro.
+ */
+export interface LabRow {
+  /** Analyte code as printed (universal, not translated): e.g. "WBC", "BUN". */
+  name: string;
+  /** Result exactly as printed (string keeps "<20", "0.00", "7.10"). */
+  result: string;
+  /** Reference range as printed, e.g. "3.66 - 16.31". Omit when none is given. */
+  ref?: string;
+  /** Unit as printed, e.g. "10^3/uL", "mg/dl". Omit when none is given. */
+  unit?: string;
+  /** Out-of-range flag printed on the report — tints the row + shows a chip. */
+  flag?: 'high' | 'low';
+}
+export interface LabPanel {
+  /** Heading key, localized in getLabCopy: 'hematology' | 'chemistry'. */
+  key: 'hematology' | 'chemistry';
+  /** The instrument/report line as printed (a fact, shown verbatim). */
+  source: string;
+  rows: LabRow[];
+}
+export interface LabReport {
+  id: string;
+  /** ISO date the sample was analysed. */
+  date: string;
+  /** Where it was run (a fact, shown verbatim). */
+  clinic: string;
+  panels: LabPanel[];
+  /** How many original printout photos exist (labs/<id>-1.jpg …). */
+  images: number;
 }
 
 export interface RecurringItem {
@@ -98,10 +141,10 @@ export const weight = {
 export const vet = {
   // No regular vet chosen yet — the position remains open.
   status: 'Auditioning vets; no permanent hire yet',
-  recentClinic: 'HP Vet (Pusat Veterinar Healing Pets), Damansara Utama, PJ',
-  recentPhone: '03-7732 8878',
+  recentClinic: 'Vetmed Animal Clinic, Jalan Ipoh, Kuala Lumpur',
+  recentPhone: '016-621 1225',
   /** Query for the maps directions link (clinic name + area). */
-  mapsQuery: 'Pusat Veterinar Healing Pets, Damansara Utama',
+  mapsQuery: 'Vetmed Animal Clinic, Kompleks Kantonmen Prima, Jalan Ipoh, Kuala Lumpur',
 };
 
 /** Owner contact — shown publicly so the page doubles as a "if found" tag. */
@@ -236,6 +279,15 @@ export const healthTimeline: TimelineEntry[] = [
     date: '2026-09-05',
   },
   {
+    icon: 'ph:drop',
+    title: 'Blood work: CBC + chemistry panel',
+    detail:
+      'Full wellness bloodwork at Vetmed Animal Clinic: a complete blood count and a 17-item chemistry panel. Filed here so any vet can read and compare later. Tap to see the full results and the original lab printouts.',
+    date: '2026-09-29',
+    where: 'at the vet',
+    reportId: 'bloodwork-2026-09-29',
+  },
+  {
     icon: 'ph:syringe',
     title: 'Rabies vaccine',
     detail: 'Required before any travel plans Her Fluffiness may approve.',
@@ -251,6 +303,77 @@ export const healthTimeline: TimelineEntry[] = [
     detail: 'The official pet passport, still to be sorted for any future travel.',
   },
 ];
+
+/**
+ * Lab reports, linked from a timeline entry by `reportId`. Numbers are copied
+ * exactly as printed (results as strings). Flags mark the values the report
+ * itself flagged out of range; interpretation is the vet's, not ours. The
+ * matching printout photos are src/assets/labs/<id>-1.jpg, -2.jpg, ….
+ */
+export const labReports: LabReport[] = [
+  {
+    id: 'bloodwork-2026-09-29',
+    date: '2026-09-29',
+    clinic: 'Vetmed Animal Clinic, Jalan Ipoh, Kuala Lumpur',
+    images: 2,
+    panels: [
+      {
+        key: 'hematology',
+        source: 'Hematology Analysis Report (Whole Blood)',
+        rows: [
+          { name: 'WBC', result: '9.63', ref: '3.66 - 16.31', unit: '10^3/uL' },
+          { name: 'Neu#', result: '4.39', ref: '1.84 - 11.01', unit: '10^3/uL' },
+          { name: 'Lym#', result: '4.11', ref: '0.95 - 6.83', unit: '10^3/uL' },
+          { name: 'Mon#', result: '0.11', ref: '0.04 - 0.57', unit: '10^3/uL' },
+          { name: 'Eos#', result: '1.02', ref: '0.14 - 1.86', unit: '10^3/uL' },
+          { name: 'Bas#', result: '0.00', ref: '0.00 - 0.12', unit: '10^3/uL' },
+          { name: 'Neu%', result: '45.6', unit: '%' },
+          { name: 'Lym%', result: '42.7', unit: '%' },
+          { name: 'Mon%', result: '1.1', unit: '%' },
+          { name: 'Eos%', result: '10.6', unit: '%' },
+          { name: 'Bas%', result: '0.0', unit: '%' },
+          { name: 'RBC', result: '7.10', ref: '6.71 - 11.97', unit: '10^6/uL' },
+          { name: 'HGB', result: '12.4', ref: '10.5 - 16.9', unit: 'g/dL' },
+          { name: 'HCT', result: '31.8', ref: '30.3 - 49.7', unit: '%' },
+          { name: 'MCV', result: '44.8', ref: '34.6 - 52.0', unit: 'fL' },
+          { name: 'MCH', result: '17.5', ref: '11.8 - 18.0', unit: 'pg' },
+          { name: 'MCHC', result: '39.0', ref: '32.0 - 37.9', unit: 'g/dL', flag: 'high' },
+          { name: 'RDW-CV', result: '17.3', ref: '15.7 - 20.6', unit: '%' },
+          { name: 'PLT', result: '329', ref: '100 - 518', unit: '10^3/uL' },
+          { name: 'MPV', result: '11.1', ref: '9.9 - 16.3', unit: 'fL' },
+          { name: 'PCT', result: '0.36', ref: '0.11 - 0.52', unit: '%' },
+        ],
+      },
+      {
+        key: 'chemistry',
+        source: 'Comp. Plus 17V (Element DC)',
+        rows: [
+          { name: 'GLU', result: '97', ref: '74 - 152', unit: 'mg/dl' },
+          { name: 'BUN', result: '34.8', ref: '15.0 - 37.0', unit: 'mg/dl' },
+          { name: 'CREA', result: '1.2', ref: '0.7 - 2.1', unit: 'mg/dl' },
+          { name: 'B/C', result: '29' },
+          { name: 'PHOS', result: '5.1', ref: '2.6 - 6.4', unit: 'mg/dl' },
+          { name: 'CA', result: '10.8', ref: '8.9 - 12.6', unit: 'mg/dl' },
+          { name: 'TP', result: '9.1', ref: '5.8 - 9.1', unit: 'g/dl' },
+          { name: 'ALB', result: '3.2', ref: '2.2 - 4.1', unit: 'g/dl' },
+          { name: 'GLOB', result: '5.9', ref: '3.0 - 5.7', unit: 'g/dl', flag: 'high' },
+          { name: 'A/G', result: '0.5' },
+          { name: 'ALT', result: '45', ref: '13 - 109', unit: 'U/L' },
+          { name: 'ALP', result: '88', ref: '9 - 109', unit: 'U/L' },
+          { name: 'GGT', result: '0', ref: '0 - 5', unit: 'U/L' },
+          { name: 'TBIL', result: '0.20', ref: '0.00 - 1.00', unit: 'mg/dl' },
+          { name: 'CHOL', result: '117', ref: '50 - 230', unit: 'mg/dl' },
+          { name: 'LIPA', result: '<20', ref: '0 - 32', unit: 'U/L' },
+          { name: 'AMY', result: '976', ref: '500 - 1400', unit: 'U/L' },
+        ],
+      },
+    ],
+  },
+];
+
+/** Look up a lab report by id (used by the report modal + llms.txt). */
+export const labReportById = (id: string): LabReport | undefined =>
+  labReports.find((r) => r.id === id);
 
 /**
  * Recurring health upkeep — merged into the Health "Coming up" list with a

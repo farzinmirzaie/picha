@@ -1404,6 +1404,103 @@ export const healthCopy: Record<string, HealthCopy> = {
 export const getHealthCopy = (locale?: string): HealthCopy =>
   healthCopy[locale ?? 'en'] ?? healthCopy.en;
 
+// ---------------------------------------------------------------------------
+// Lab reports (the blood-work modal). The numbers/codes/units are facts in
+// picha.ts (kept Latin for measurement clarity); only this chrome is
+// translated. Safety note: the disclaimer + panel names are plain on purpose,
+// and the medical wording should be owner-verified in every language.
+// ---------------------------------------------------------------------------
+export interface LabCopy {
+  reportChip: string; // small pill on the record card
+  viewReport: string; // the "open the modal" action
+  sheetTitle: string; // dialog title bar
+  transcribed: string; // note: typed up from the printout
+  panels: { hematology: string; chemistry: string };
+  columns: { test: string; result: string; ref: string; unit: string };
+  flags: { high: string; low: string };
+  originalHeading: string; // "Original report"
+  imageAltPrefix: string; // + " 1" / " 2"
+  viewFull: string; // link under each photo
+  disclaimer: string; // not a diagnosis
+  closeLabel: string;
+}
+export const labCopy: Record<string, LabCopy> = {
+  en: {
+    reportChip: 'Lab report',
+    viewReport: 'View full results',
+    sheetTitle: 'Blood work',
+    transcribed:
+      'Typed up from the printout so it stays clear and easy to compare. The original photos are at the bottom.',
+    panels: {
+      hematology: 'Complete blood count (CBC)',
+      chemistry: 'Blood chemistry (17 panel)',
+    },
+    columns: { test: 'Test', result: 'Result', ref: 'Reference', unit: 'Unit' },
+    flags: { high: 'High', low: 'Low' },
+    originalHeading: 'Original report',
+    imageAltPrefix: 'Original lab printout, page',
+    viewFull: 'Open full image',
+    disclaimer: 'These are raw lab values, not a diagnosis. Leave the reading to the vet.',
+    closeLabel: 'Close',
+  },
+  ms: {
+    reportChip: 'Laporan makmal',
+    viewReport: 'Lihat keputusan penuh',
+    sheetTitle: 'Ujian darah',
+    transcribed:
+      'Ditaip semula daripada cetakan supaya kekal jelas dan mudah dibandingkan. Gambar asal ada di bahagian bawah.',
+    panels: {
+      hematology: 'Kiraan darah lengkap (CBC)',
+      chemistry: 'Kimia darah (17 panel)',
+    },
+    columns: { test: 'Ujian', result: 'Keputusan', ref: 'Rujukan', unit: 'Unit' },
+    flags: { high: 'Tinggi', low: 'Rendah' },
+    originalHeading: 'Laporan asal',
+    imageAltPrefix: 'Cetakan makmal asal, muka surat',
+    viewFull: 'Buka imej penuh',
+    disclaimer:
+      'Ini nilai makmal mentah, bukan diagnosis. Biar doktor haiwan yang mentafsirkannya.',
+    closeLabel: 'Tutup',
+  },
+  zh: {
+    reportChip: '化验报告',
+    viewReport: '查看完整结果',
+    sheetTitle: '血液检查',
+    transcribed: '已从打印单誊录，方便清晰查看和比对。原始照片在底部。',
+    panels: {
+      hematology: '全血细胞计数 (CBC)',
+      chemistry: '血液生化 (17 项)',
+    },
+    columns: { test: '项目', result: '结果', ref: '参考范围', unit: '单位' },
+    flags: { high: '偏高', low: '偏低' },
+    originalHeading: '原始报告',
+    imageAltPrefix: '原始化验单，第',
+    viewFull: '查看原图',
+    disclaimer: '这些只是化验数值，并非诊断。请交由兽医解读。',
+    closeLabel: '关闭',
+  },
+  fa: {
+    reportChip: 'گزارش آزمایش',
+    viewReport: 'مشاهده‌ی نتایج کامل',
+    sheetTitle: 'آزمایش خون',
+    transcribed:
+      'برای خوانا ماندن و مقایسه‌ی آسان، از روی برگه‌ی چاپی بازنویسی شده. عکس‌های اصلی در پایین هستند.',
+    panels: {
+      hematology: 'شمارش کامل خون (CBC)',
+      chemistry: 'بیوشیمی خون (۱۷ آیتم)',
+    },
+    columns: { test: 'آزمایش', result: 'نتیجه', ref: 'محدوده مرجع', unit: 'واحد' },
+    flags: { high: 'بالا', low: 'پایین' },
+    originalHeading: 'گزارش اصلی',
+    imageAltPrefix: 'برگه‌ی اصلی آزمایشگاه، صفحه‌ی',
+    viewFull: 'باز کردن تصویر کامل',
+    disclaimer: 'این‌ها مقادیر خام آزمایش‌اند، نه تشخیص. تفسیرش را به دامپزشک بسپارید.',
+    closeLabel: 'بستن',
+  },
+};
+export const getLabCopy = (locale?: string): LabCopy =>
+  labCopy[locale ?? 'en'] ?? labCopy.en;
+
 // Malay prose for timeline + recurring items, keyed by the English `detail`
 // (unique across both lists). everyLabel/where use small finite maps.
 const healthTextMs: Record<string, { title: string; detail: string }> = {
@@ -1421,6 +1518,8 @@ const healthTextMs: Record<string, { title: string; detail: string }> = {
     { title: 'Nyahcacing', detail: 'Kawalan perosak dalaman, selesai.' },
   'Routine 3-monthly dewormer, given at home on schedule. A pill, smuggled inside something tasty.':
     { title: 'Nyahcacing', detail: 'Ubat cacing rutin 3 bulan, diberi di rumah mengikut jadual. Sebiji pil, diselitkan di dalam sesuatu yang sedap.' },
+  'Full wellness bloodwork at Vetmed Animal Clinic: a complete blood count and a 17-item chemistry panel. Filed here so any vet can read and compare later. Tap to see the full results and the original lab printouts.':
+    { title: 'Ujian darah: CBC + panel kimia', detail: 'Ujian darah kesihatan penuh di Vetmed Animal Clinic: kiraan darah lengkap dan panel kimia 17 item. Difailkan di sini supaya mana-mana doktor haiwan boleh baca dan bandingkan kemudian. Ketik untuk lihat keputusan penuh dan cetakan makmal asal.' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: 'Kembiri + mikrocip', detail: 'Kedua-duanya selesai dalam satu lawatan. Dia mengira masa pemulihan sebagai cuti spa.' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':
@@ -1481,6 +1580,8 @@ const healthTextZh: Record<string, { title: string; detail: string }> = {
     { title: '已驱虫', detail: '内部害虫防治，完成。' },
   'Routine 3-monthly dewormer, given at home on schedule. A pill, smuggled inside something tasty.':
     { title: '已驱虫', detail: '常规三个月驱虫，在家按时完成。一粒药丸，藏在美味里悄悄喂下。' },
+  'Full wellness bloodwork at Vetmed Animal Clinic: a complete blood count and a 17-item chemistry panel. Filed here so any vet can read and compare later. Tap to see the full results and the original lab printouts.':
+    { title: '血液检查：CBC + 生化检测', detail: '在 Vetmed Animal Clinic 做的全面健康血液检查：全血细胞计数和 17 项生化检测。归档在此，方便日后任何兽医查阅和比对。点按可查看完整结果和原始化验单。' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: '绝育 + 芯片', detail: '一次看诊全部完成。她把恢复期记作水疗假。' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':
@@ -1540,6 +1641,8 @@ const healthTextFa: Record<string, { title: string; detail: string }> = {
     { title: 'کرم‌زدایی شد', detail: 'کنترل آفات داخلی، انجام شد.' },
   'Routine 3-monthly dewormer, given at home on schedule. A pill, smuggled inside something tasty.':
     { title: 'کرم‌زدایی شد', detail: 'کرم‌زدای روتینِ سه‌ماهه، در خانه سرِ موعد داده شد. یک قرص، پنهان‌شده در چیزی خوشمزه.' },
+  'Full wellness bloodwork at Vetmed Animal Clinic: a complete blood count and a 17-item chemistry panel. Filed here so any vet can read and compare later. Tap to see the full results and the original lab printouts.':
+    { title: 'آزمایش خون: CBC + پنل بیوشیمی', detail: 'آزمایش خونِ کاملِ سلامت در Vetmed Animal Clinic: شمارش کامل خون و پنل بیوشیمیِ ۱۷ آیتمی. اینجا بایگانی شده تا هر دامپزشکی بعداً بتواند بخواند و مقایسه کند. برای دیدن نتایج کامل و برگه‌های اصلی آزمایشگاه ضربه بزنید.' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: 'عقیم‌سازی + میکروچیپ', detail: 'هر دو در یک ویزیت انجام شد. او زمان بهبودی را به‌عنوان مرخصیِ اسپا حساب کرد.' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':

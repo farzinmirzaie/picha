@@ -1,0 +1,180 @@
+---
+/**
+ * Lab-report modal. Include once per page; any element with
+ * `data-lab-open="<reportId>"` opens the matching report (the Health record
+ * cards). Renders one <dialog> per report in `labReports`: the transcribed
+ * panels (legible + comparable) plus the original printout photos (the source
+ * of truth a vet can zoom into). Facts come from picha.ts; chrome from i18n.
+ */
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { Icon } from 'astro-icon/components';
+import SheetHeader from './ui/SheetHeader.astro';
+import SectionLabel from './ui/SectionLabel.astro';
+import { labReports } from '../data/picha';
+import { getLabCopy } from '../i18n/content';
+import { dateLabel } from '../lib/dates';
+
+const locale = Astro.currentLocale ?? 'en';
+const c = getLabCopy(locale);
+
+// Printout photos: src/assets/labs/<id>-<n>.jpg, mapped by convention.
+const labImages = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/labs/*.{jpg,jpeg,png}',
+  { eager: true },
+);
+const metaFor = (id: string, n: number) =>
+  labImages[`../assets/labs/${id}-${n}.jpg`]?.default;
+
+// Pre-resolve a full-size (zoomable) URL alongside each thumbnail so both are
+// emitted at build time.
+const reports = await Promise.all(
+  labReports.map(async (r) => ({
+    report: r,
+    photos: await Promise.all(
+      Array.from({ length: r.images }, async (_, i) => {
+        const meta = metaFor(r.id, i + 1);
+        if (!meta) return null;
+        const full = await getImage({ src: meta, width: 1600, format: 'webp' });
+        return { meta, fullSrc: full.src, n: i + 1 };
+      }),
+    ),
+  })),
+);
+---
+
+{
+  reports.map(({ report, photos }) => (
+    <dialog id={`lab-${report.id}`} class="sheet" aria-labelledby={`lab-${report.id}-title`}>
+      <div class="bg-paper-50 text-ink-900 max-md:pb-[env(safe-area-inset-bottom)] dark:bg-plum-900 dark:text-paper-100">
+        <SheetHeader title={c.sheetTitle} titleId={`lab-${report.id}-title`} closeLabel={c.closeLabel} />
+
+        <div class="p-5 sm:p-6">
+          <p class="text-xs font-bold text-blush-500/90 dark:text-blush-300/80">
+            {dateLabel(report.date, locale)} · {report.clinic}
+          </p>
+          <p class="mt-1.5 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+            {c.transcribed}
+          </p>
+
+          {report.panels.map((panel) => (
+            <div class="mt-6">
+              <SectionLabel tag="h3" icon="ph:test-tube" class="mb-2">
+                {c.panels[panel.key]}
+              </SectionLabel>
+              <p class="mb-2 text-[11px] text-ink-400">{panel.source}</p>
+              <div class="overflow-hidden rounded-2xl border border-blush-200/70 dark:border-plum-700">
+                <table class="w-full border-collapse text-sm">
+                  <thead>
+                    <tr class="bg-blush-100/50 text-[10px] tracking-[0.08em] text-ink-500 uppercase dark:bg-plum-800/50 dark:text-ink-400">
+                      <th class="px-3 py-2 text-start font-bold">{c.columns.test}</th>
+                      <th class="px-3 py-2 text-end font-bold">{c.columns.result}</th>
+                      <th class="px-3 py-2 text-end font-bold max-sm:hidden">{c.columns.ref}</th>
+                      <th class="px-3 py-2 text-start font-bold max-sm:hidden">{c.columns.unit}</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-blush-200/60 dark:divide-plum-800">
+                    {panel.rows.map((row) => (
+                      <tr class:list={[row.flag && 'bg-amber-100/40 dark:bg-amber-900/20']}>
+                        <td class="px-3 py-2 font-mono font-semibold whitespace-nowrap">
+                          {row.name}
+                        </td>
+                        <td class="px-3 py-2 text-end font-mono font-bold whitespace-nowrap tabular-nums">
+                          <span
+                            class:list={[
+                              'inline-flex items-center gap-1',
+                              row.flag
+                                ? 'text-amber-700 dark:text-amber-300'
+                                : 'text-ink-900 dark:text-paper-100',
+                            ]}
+                          >
+                            {row.result}
+                            {row.flag && (
+                              <Icon
+                                name={row.flag === 'high' ? 'ph:arrow-up' : 'ph:arrow-down'}
+                                class="h-3 w-3"
+                                aria-label={row.flag === 'high' ? c.flags.high : c.flags.low}
+                              />
+                            )}
+                          </span>
+                          {/* ref + unit fold under the result on narrow screens */}
+                          {(row.ref || row.unit) && (
+                            <span class="mt-0.5 block text-[10px] font-normal text-ink-400 sm:hidden">
+                              {[row.ref, row.unit].filter(Boolean).join(' · ')}
+                            </span>
+                          )}
+                        </td>
+                        <td class="px-3 py-2 text-end font-mono whitespace-nowrap tabular-nums text-ink-500 max-sm:hidden dark:text-ink-400">
+                          {row.ref}
+                        </td>
+                        <td class="px-3 py-2 font-mono whitespace-nowrap text-ink-400 max-sm:hidden">
+                          {row.unit}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+
+          <p class="mt-4 flex items-start gap-2 rounded-xl bg-paper-200/60 px-3.5 py-2.5 text-xs leading-relaxed text-ink-500 dark:bg-plum-800/50 dark:text-ink-400">
+            <Icon name="ph:info" class="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>{c.disclaimer}</span>
+          </p>
+
+          {photos.some(Boolean) && (
+            <div class="mt-6">
+              <SectionLabel tag="h3" icon="ph:image" class="mb-2">
+                {c.originalHeading}
+              </SectionLabel>
+              <div class="grid grid-cols-2 gap-3">
+                {photos.filter(Boolean).map((p) => (
+                  <a
+                    href={p!.fullSrc}
+                    target="_blank"
+                    rel="noopener"
+                    class="group block overflow-hidden rounded-2xl border border-blush-200/70 bg-white transition-shadow hover:shadow-md dark:border-plum-700 dark:bg-plum-950"
+                  >
+                    <Image
+                      src={p!.meta}
+                      alt={`${c.imageAltPrefix} ${p!.n}`}
+                      width={520}
+                      densities={[1, 2]}
+                      class="h-52 w-full object-cover object-top sm:h-64"
+                    />
+                    <span class="flex items-center justify-center gap-1.5 py-2 text-[11px] font-bold text-blush-600 dark:text-blush-300">
+                      <Icon name="ph:arrow-square-out" class="h-3.5 w-3.5" aria-hidden="true" />
+                      {c.viewFull}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </dialog>
+  ))
+}
+
+<script>
+  import { bindDialog } from '../lib/dialog';
+
+  function setupLabReports() {
+    document.querySelectorAll<HTMLElement>('[data-lab-open]').forEach((btn) => {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.labOpen;
+        const dialog = document.getElementById(`lab-${id}`) as HTMLDialogElement | null;
+        dialog?.showModal();
+      });
+    });
+    document
+      .querySelectorAll<HTMLDialogElement>('dialog[id^="lab-"]')
+      .forEach((d) => bindDialog(d));
+  }
+  setupLabReports();
+  document.addEventListener('astro:page-load', setupLabReports);
+</script>

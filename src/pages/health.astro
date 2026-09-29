@@ -9,6 +9,7 @@ import SectionLabel from '../components/ui/SectionLabel.astro';
 import IconBadge from '../components/ui/IconBadge.astro';
 import Chip from '../components/ui/Chip.astro';
 import SegmentedTabs from '../components/ui/SegmentedTabs.astro';
+import LabReportDialog from '../components/LabReportDialog.astro';
 import {
   vet,
   contact,
@@ -22,10 +23,11 @@ import { currentWeight } from '../data/weights';
 import { supabaseClient } from '../data/supabase';
 import { dateLabel, shortLabel, inDaysLabel } from '../lib/dates';
 import { upcomingHealth, nextDueHealth, isHealthDueSoon } from '../lib/health';
-import { getHealthCopy, localizeHealthItem, ageLabelI18n, localizeName } from '../i18n/content';
+import { getHealthCopy, getLabCopy, localizeHealthItem, ageLabelI18n, localizeName } from '../i18n/content';
 
 const locale = Astro.currentLocale ?? 'en';
 const c = getHealthCopy(locale);
+const lc = getLabCopy(locale);
 const loc = <T extends { title: string; detail: string; everyLabel?: string; where?: string }>(x: T) =>
   localizeHealthItem(x, locale);
 
@@ -252,13 +254,26 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
               >
                 <Icon name={e.icon} class="h-4 w-4" />
               </span>
-              <h3 class="font-display pt-1 text-lg font-semibold">{e.title}</h3>
+              <div class="flex flex-wrap items-center gap-2 pt-1">
+                <h3 class="font-display text-lg font-semibold">{e.title}</h3>
+                {e.reportId && <Chip tone="blushSolid" icon="ph:flask">{lc.reportChip}</Chip>}
+              </div>
               <p class="text-xs font-bold text-blush-500/90 dark:text-blush-300/80">
                 {dateLabel(e.date!, locale)}
               </p>
               <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
                 {e.detail}
               </p>
+              {e.reportId && (
+                <button
+                  type="button"
+                  data-lab-open={e.reportId}
+                  class="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-blush-300/70 bg-blush-100/50 px-3.5 py-1.5 text-xs font-bold text-blush-700 transition-colors hover:bg-blush-100 active:bg-blush-200/60 dark:border-plum-600 dark:bg-plum-800/60 dark:text-blush-300 dark:hover:bg-plum-800"
+                >
+                  <Icon name="ph:file-magnifying-glass" class="h-4 w-4" aria-hidden="true" />
+                  {lc.viewReport}
+                </button>
+              )}
             </li>
           ))
         }
@@ -353,6 +368,8 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
   </section>
 
   <Footer />
+
+  <LabReportDialog />
 
   <script>
     // Weight tile: refresh from the live Supabase ledger (same data the
