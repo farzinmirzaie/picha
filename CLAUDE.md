@@ -41,6 +41,10 @@ src/
                        # (picha_weights) with seed fallback — server-only import
   data/training.ts     # build-time loader: training progress from Supabase
                        # (picha_training) merged into the picha.ts catalogue
+  data/care.ts         # build-time loader: recurring-care "last done" overrides
+                       # from Supabase (picha_care) merged over the picha.ts seed
+                       # (newest wins) — server-only import. lib/health reads
+                       # recurringCare from HERE, not picha.ts
   lib/dates.ts         # shared date helpers (dateLabel/shortLabel/addDays/inDaysLabel)
   lib/health.ts        # health-timeline derivations (upcoming / next / isDueSoon)
                        # — one source for the Health page, the Nav "due soon"
@@ -241,6 +245,22 @@ boundary is 00:00 MYT on every device regardless of its own timezone); the
 reset is entirely this date key (a new day queries a date with no row), not
 the build.
 
+**Recurring care "last done"** lives in `picha_care` (id + last_done), so a
+staff "mark done" tap on a routine chore resets its countdown without an edit +
+redeploy. Item definitions (cadence, copy, stable `id`) stay in `recurringCare`
+in picha.ts; only the tapped date is cloud data. `src/data/care.ts` merges the
+cloud date over the seed `lastDone` at build (newest wins — a shipped seed bump
+is never silently reverted), and `lib/health` reads recurringCare from care.ts.
+Writes go through the PIN-gated `log_care(p_id, p_date, p_pin)` RPC (same
+registrar PIN) from the "Mark done" buttons on Health (the Due soon card + each
+quick-done row in Coming up). The buttons are `[data-staff-only]` (hidden until
+the PIN is present) and appear only on items with `quickDone: true` — routine
+chores that keep NO dated record-tab entry (nail trim, grooming, litter clean).
+Between rebuilds the Health client re-applies the cloud override, re-sorts
+"Coming up", and refreshes the due-soon badges live (no reload). Medical events
+(deworming, parasite, boosters, vet visits) stay OFF the button: they are logged
+as dated `healthTimeline` record rows instead.
+
 **Push subscriptions** live in `push_subscriptions` (endpoint + keys). Unlike
 the other tables it has **no anon read** (subscriptions are device secrets):
 the client writes via the PIN-gated `save_push_subscription` /
@@ -291,7 +311,11 @@ pages/components when changing *layout or design*, not content.
   show "not started yet" at the end. If a due date passes before the next
   rebuild, the client-side countdown chip shows "(overdue)". **After doing a
   recurring task, update its `lastDone`** — the next due date and the
-  "Next due" vitals tile follow automatically.
+  "Next due" vitals tile follow automatically. Each item needs a stable `id`
+  (the cloud key). Routine chores with no record-tab log get `quickDone: true`,
+  which adds a staff "Mark done" button on Health that stamps `lastDone = today`
+  in `picha_care` (see § Supabase) — so those no longer need a manual edit.
+  Medical events keep `quickDone` off and are logged as `healthTimeline` rows.
 - **`trainingCourses`** holds course CONTENT for the Royal Academy
   (/training); PROGRESS lives in Supabase (see § Supabase). Status is
   derived: `startedOn` set → in session; `stepsDone >= steps.length` →

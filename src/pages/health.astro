@@ -73,6 +73,15 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
 <Layout title={c.metaTitle} description={c.metaDescription} current="health">
   <PageHeader kicker={c.kicker} title={c.title} blurb={c.blurb} />
 
+  {/* Supabase config for the client care-done writes (read, never shown) */}
+  <div
+    data-care-config
+    hidden
+    data-supabase-url={supabaseClient?.url}
+    data-supabase-key={supabaseClient?.key}
+  />
+
+
   <!-- Vitals strip: horizontally snap-scrolling stat tiles -->
   <StatStrip label="Vitals" class="pt-5">
     {
@@ -157,7 +166,10 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
         <SectionLabel tone="amber" icon="ph:bell-ringing" class="mb-2">
           {c.dueSoon}
         </SectionLabel>
-        <div class="flex items-start gap-4 rounded-3xl border border-amber-300/60 bg-paper-50 p-6 dark:border-amber-700/40 dark:bg-plum-900">
+        <div
+          class="flex items-start gap-4 rounded-3xl border border-amber-300/60 bg-paper-50 p-6 dark:border-amber-700/40 dark:bg-plum-900"
+          {...(nextLoc.quickDone ? { 'data-care-id': nextLoc.id, 'data-care-interval': nextLoc.intervalDays } : {})}
+        >
           <IconBadge icon={nextLoc.icon} tone="amber" />
           <div class="min-w-0">
             <div class="flex flex-wrap items-center gap-2">
@@ -167,7 +179,7 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
             </div>
             <p class="mt-1 text-xs font-bold text-amber-700 dark:text-amber-300">
               {nextLoc.everyLabel && c.dueApprox}
-              {dateLabel(nextLoc.date!, locale)}
+              <span data-date-label>{dateLabel(nextLoc.date!, locale)}</span>
               <span data-until={nextLoc.date} data-overdue={c.overdue}>
                 {untilLabel(nextLoc.date!)}
               </span>
@@ -175,6 +187,21 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
             <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
               {nextLoc.detail}
             </p>
+            {nextLoc.quickDone && (
+              <>
+                <button
+                  type="button"
+                  data-care-done
+                  data-staff-only
+                  style="display:none"
+                  class="mt-3 inline-flex items-center gap-1.5 rounded-full border border-amber-400/70 bg-amber-100/60 px-3.5 py-1.5 text-xs font-bold text-amber-800 transition-colors hover:bg-amber-100 active:bg-amber-200/70 disabled:opacity-60 dark:border-amber-600/60 dark:bg-amber-900/30 dark:text-amber-200 dark:hover:bg-amber-900/50"
+                >
+                  <Icon name="ph:check-circle" class="h-4 w-4" aria-hidden="true" />
+                  <span data-care-label>{c.careDone.action}</span>
+                </button>
+                <span data-care-note hidden aria-live="polite" class="mt-1.5 block text-xs font-bold text-red-500" />
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -185,17 +212,23 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
   <section class="mx-auto w-full max-w-2xl px-5 pt-10" aria-label="Timeline">
     <SegmentedTabs tabs={segments} label="Timeline filter" />
 
-    <!-- Coming up -->
+    <!-- Coming up. The list is re-sorted + reset client-side when a recurring
+         chore is marked done (data-care-*), so the node highlight + "Next up"
+         chip are managed as togglable hooks, not baked only onto the first. -->
     <div id="seg-panel-upcoming" role="tabpanel" aria-labelledby="seg-tab-upcoming" data-seg-panel="upcoming" class="pt-6">
-      <ol class="ms-3 ps-7">
+      <ol class="ms-3 ps-7" data-upcoming-list>
         {
           upcoming.map((e, i) => (
-            <li class="reveal group relative pb-8 last:pb-2">
+            <li
+              class="reveal group relative pb-8 last:pb-2"
+              {...(e.quickDone ? { 'data-care-id': e.id, 'data-care-interval': e.intervalDays } : {})}
+            >
               <span
                 class="absolute -start-[27px] top-0 bottom-0 w-0.5 bg-amber-300/60 group-first:top-8 group-last:bottom-auto group-last:h-4 group-only:hidden dark:bg-amber-700/40"
                 aria-hidden="true"
               />
               <span
+                data-node
                 class:list={[
                   'absolute -start-[42px] flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-paper-100 dark:ring-plum-950',
                   i === 0
@@ -207,20 +240,18 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
                 <Icon name={e.icon} class="h-4 w-4" />
               </span>
               <h3 class="font-display pt-1 text-lg font-semibold">{e.title}</h3>
-              {(i === 0 || e.everyLabel || e.where) && (
-                <div class="mt-1 mb-0.5 flex flex-wrap items-center gap-1.5">
-                  {i === 0 && <Chip tone="amber">{c.nextUp}</Chip>}
-                  {e.everyLabel && (
-                    <Chip icon="ph:arrow-clockwise">{e.everyLabel}</Chip>
-                  )}
-                  {e.where && <Chip icon="ph:map-pin">{e.where}</Chip>}
-                </div>
-              )}
+              <div class="mt-1 mb-0.5 flex flex-wrap items-center gap-1.5 empty:hidden">
+                <span data-nextup class:list={[i !== 0 && 'hidden']}>
+                  <Chip tone="amber">{c.nextUp}</Chip>
+                </span>
+                {e.everyLabel && <Chip icon="ph:arrow-clockwise">{e.everyLabel}</Chip>}
+                {e.where && <Chip icon="ph:map-pin">{e.where}</Chip>}
+              </div>
               <p class="text-xs font-bold text-amber-700/80 dark:text-amber-300/80">
                 {e.date ? (
                   <>
                     {e.everyLabel && c.dueApprox}
-                    {dateLabel(e.date, locale)}
+                    <span data-date-label>{dateLabel(e.date, locale)}</span>
                     <span data-until={e.date} data-overdue={c.overdue}>
                       {untilLabel(e.date)}
                     </span>
@@ -232,6 +263,21 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
               <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
                 {e.detail}
               </p>
+              {e.quickDone && (
+                <>
+                  <button
+                    type="button"
+                    data-care-done
+                    data-staff-only
+                    style="display:none"
+                    class="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-blush-300/70 bg-blush-100/50 px-3.5 py-1.5 text-xs font-bold text-blush-700 transition-colors hover:bg-blush-100 active:bg-blush-200/60 disabled:opacity-60 dark:border-plum-600 dark:bg-plum-800/60 dark:text-blush-300 dark:hover:bg-plum-800"
+                  >
+                    <Icon name="ph:check-circle" class="h-4 w-4" aria-hidden="true" />
+                    <span data-care-label>{c.careDone.action}</span>
+                  </button>
+                  <span data-care-note hidden aria-live="polite" class="mt-1.5 block text-xs font-bold text-red-500" />
+                </>
+              )}
             </li>
           ))
         }
@@ -402,6 +448,166 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
     });
     window.addEventListener('pageshow', (e) => {
       if ((e as PageTransitionEvent).persisted) refreshWeightTile();
+    });
+  </script>
+
+  <script>
+    // "Mark done" for routine recurring chores (nail trim, grooming, litter).
+    // Writes lastDone=today to Supabase (picha_care) via the PIN-gated log_care
+    // RPC, then resets the countdown + re-sorts "Coming up" in place — so the
+    // schedule updates without an edit + redeploy. On load it also re-applies
+    // any cloud override the static build predates. Buttons are [data-staff-only]
+    // (hidden until the registrar PIN is present on the device).
+    import { sbSelect, sbRpc } from '../lib/sb';
+    import { staffPin, hasStaffPin, applyStaffVisibility } from '../lib/staff';
+    import { addDays, dateLabel, inDaysLabel } from '../lib/dates';
+    import { getHealthCopy } from '../i18n/content';
+
+    const AMBER_NODE = ['bg-amber-300/60', 'text-amber-800', 'dark:bg-amber-700/50', 'dark:text-amber-200'];
+    const PLAIN_NODE = ['bg-paper-200', 'text-ink-600', 'dark:bg-plum-800', 'dark:text-ink-400'];
+
+    const loc = () => document.documentElement.lang || 'en';
+    const hc = () => getHealthCopy(loc());
+
+    function todayISO(): string {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function cfg() {
+      const el = document.querySelector<HTMLElement>('[data-care-config]');
+      return { url: el?.dataset.supabaseUrl, key: el?.dataset.supabaseKey };
+    }
+
+    // Rewrite a date line (the date label + its live countdown span) to an ISO.
+    function applyDate(scope: HTMLElement, iso: string) {
+      const c = hc();
+      const label = scope.querySelector<HTMLElement>('[data-date-label]');
+      if (label) label.textContent = dateLabel(iso, loc());
+      const until = scope.querySelector<HTMLElement>('[data-until]');
+      if (until) {
+        until.dataset.until = iso;
+        const days = Math.round((Date.parse(iso) - Date.parse(todayISO())) / 86_400_000);
+        until.textContent = days > 60 ? '' : days < 0 ? ` (${c.overdue})` : ` (${inDaysLabel(days, loc())})`;
+      }
+    }
+
+    // Apply a new next-due date everywhere this care id appears (coming-up row +
+    // the due-soon card), but never move a displayed date backwards.
+    function applyForId(id: string, nextIso: string) {
+      document.querySelectorAll<HTMLElement>(`[data-care-id="${id}"]`).forEach((host) => {
+        const cur = host.querySelector<HTMLElement>('[data-until]')?.dataset.until;
+        if (!cur || nextIso > cur) applyDate(host, nextIso);
+      });
+    }
+
+    // Re-sort the "Coming up" list by date and re-point the node highlight +
+    // "Next up" chip to whatever is soonest now.
+    function resort() {
+      const ol = document.querySelector<HTMLElement>('[data-upcoming-list]');
+      if (!ol) return;
+      const items = Array.from(ol.querySelectorAll<HTMLElement>(':scope > li'));
+      const dateOf = (li: HTMLElement) =>
+        li.querySelector<HTMLElement>('[data-until]')?.dataset.until ?? '9999-12-31';
+      items
+        .sort((a, b) => dateOf(a).localeCompare(dateOf(b)))
+        .forEach((li, i) => {
+          ol.appendChild(li);
+          const node = li.querySelector<HTMLElement>('[data-node]');
+          if (node) {
+            node.classList.remove(...AMBER_NODE, ...PLAIN_NODE);
+            node.classList.add(...(i === 0 ? AMBER_NODE : PLAIN_NODE));
+          }
+          li.querySelector<HTMLElement>('[data-nextup]')?.classList.toggle('hidden', i !== 0);
+        });
+    }
+
+    // Recompute the soonest due-date for the badges + due-soon card, and hand it
+    // to Layout's applyDueSoon (listens on visibilitychange).
+    function refreshBadges() {
+      const ol = document.querySelector<HTMLElement>('[data-upcoming-list]');
+      let min: string | undefined;
+      ol?.querySelectorAll<HTMLElement>('[data-until]').forEach((s) => {
+        const iso = s.dataset.until;
+        if (iso && (!min || iso < min)) min = iso;
+      });
+      if (min) document.body.dataset.healthNext = min;
+      document.dispatchEvent(new Event('visibilitychange'));
+    }
+
+    function note(host: HTMLElement, msg: string) {
+      const el = host.querySelector<HTMLElement>('[data-care-note]');
+      if (!el) return;
+      el.textContent = msg;
+      el.hidden = !msg;
+    }
+
+    async function onMarkDone(btn: HTMLButtonElement) {
+      const host = btn.closest<HTMLElement>('[data-care-id]');
+      if (!host) return;
+      const id = host.dataset.careId!;
+      const interval = Number(host.dataset.careInterval);
+      const { url, key } = cfg();
+      const pin = staffPin();
+      const label = btn.querySelector<HTMLElement>('[data-care-label]');
+      const c = hc();
+      if (!url || !key || !pin) return; // gated; button is hidden without a PIN
+      note(host, '');
+      btn.disabled = true;
+      if (label) label.textContent = c.careDone.saving;
+      const today = todayISO();
+      try {
+        await sbRpc(url, key, 'log_care', { p_id: id, p_date: today, p_pin: pin });
+        applyForId(id, addDays(today, interval));
+        resort();
+        refreshBadges();
+        if (label) label.textContent = c.careDone.done;
+        setTimeout(() => {
+          if (label) label.textContent = c.careDone.action;
+          btn.disabled = false;
+        }, 2000);
+      } catch (err) {
+        note(host, String(err).includes('wrong pin') ? c.careDone.pinError : c.careDone.error);
+        if (label) label.textContent = c.careDone.action;
+        btn.disabled = false;
+      }
+    }
+
+    async function hydrateCare() {
+      applyStaffVisibility();
+      document.querySelectorAll<HTMLButtonElement>('[data-care-done]').forEach((btn) => {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', () => onMarkDone(btn));
+      });
+
+      const { url, key } = cfg();
+      if (!url || !key) return;
+      try {
+        const rows = await sbSelect<Array<{ id: string; last_done: string }>>(
+          url,
+          key,
+          'picha_care?select=id,last_done',
+        );
+        if (!Array.isArray(rows) || !rows.length) return;
+        rows.forEach((r) => {
+          const host = document.querySelector<HTMLElement>(`[data-care-id="${r.id}"]`);
+          if (!host) return;
+          const interval = Number(host.dataset.careInterval);
+          if (r.last_done && interval) applyForId(r.id, addDays(r.last_done, interval));
+        });
+        resort();
+        refreshBadges();
+      } catch {
+        /* offline: the baked dates stand */
+      }
+    }
+
+    hydrateCare();
+    document.addEventListener('astro:page-load', hydrateCare);
+    // A PIN entered at the Staff room should reveal the buttons on return.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && hasStaffPin()) applyStaffVisibility();
     });
   </script>
 </Layout>

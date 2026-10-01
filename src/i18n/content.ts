@@ -1241,6 +1241,13 @@ export interface HealthCopy {
   timelineFilter: string;
   nextUp: string;
   notStarted: string;
+  careDone: {
+    action: string; // "Mark done" button
+    saving: string; // while the write is in flight
+    done: string; // brief success label
+    error: string; // write failed
+    pinError: string; // PIN rejected
+  };
   callVetIfTitle: string;
   recentClinic: string;
   directions: string;
@@ -1271,6 +1278,13 @@ export const healthCopy: Record<string, HealthCopy> = {
     timelineFilter: 'Timeline filter',
     nextUp: 'Next up',
     notStarted: 'not started yet',
+    careDone: {
+      action: 'Mark done',
+      saving: 'Saving…',
+      done: 'Done ✓',
+      error: 'Could not save. Try again.',
+      pinError: 'PIN not recognised. Re-enter it in the Staff room.',
+    },
     callVetIfTitle: 'Call the vet if…',
     recentClinic: 'Recent clinic',
     directions: 'Directions to the clinic',
@@ -1309,6 +1323,13 @@ export const healthCopy: Record<string, HealthCopy> = {
     timelineFilter: 'Penapis garis masa',
     nextUp: 'Seterusnya',
     notStarted: 'belum bermula',
+    careDone: {
+      action: 'Tanda selesai',
+      saving: 'Menyimpan…',
+      done: 'Selesai ✓',
+      error: 'Gagal menyimpan. Cuba lagi.',
+      pinError: 'PIN tidak dikenali. Masukkan semula di Bilik Kakitangan.',
+    },
     callVetIfTitle: 'Hubungi doktor haiwan jika…',
     recentClinic: 'Klinik terkini',
     directions: 'Arah ke klinik',
@@ -1346,6 +1367,13 @@ export const healthCopy: Record<string, HealthCopy> = {
     timelineFilter: '时间线筛选',
     nextUp: '下一个',
     notStarted: '尚未开始',
+    careDone: {
+      action: '标记完成',
+      saving: '保存中…',
+      done: '已完成 ✓',
+      error: '保存失败，请重试。',
+      pinError: 'PIN 无法识别，请在员工室重新输入。',
+    },
     callVetIfTitle: '出现以下情况请联系兽医…',
     recentClinic: '最近的诊所',
     directions: '前往诊所的路线',
@@ -1383,6 +1411,13 @@ export const healthCopy: Record<string, HealthCopy> = {
     timelineFilter: 'فیلتر خط زمانی',
     nextUp: 'بعدی',
     notStarted: 'هنوز شروع نشده',
+    careDone: {
+      action: 'انجام شد',
+      saving: 'در حال ذخیره…',
+      done: 'انجام شد ✓',
+      error: 'ذخیره نشد. دوباره تلاش کنید.',
+      pinError: 'پین شناخته نشد. آن را در اتاق کارکنان دوباره وارد کنید.',
+    },
     callVetIfTitle: 'در این موارد با دامپزشک تماس بگیرید…',
     recentClinic: 'کلینیک اخیر',
     directions: 'مسیر به کلینیک',

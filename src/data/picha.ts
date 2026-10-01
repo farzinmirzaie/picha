@@ -74,6 +74,11 @@ export interface LabReport {
 }
 
 export interface RecurringItem {
+  /**
+   * Stable id — the key for the cloud "last done" override (Supabase
+   * `picha_care`). Never change it once shipped, or the stored date is orphaned.
+   */
+  id: string;
   icon: string;
   title: string;
   detail: string;
@@ -81,6 +86,15 @@ export interface RecurringItem {
   everyLabel: string;
   /** Days between occurrences — used to compute the next due date. */
   intervalDays: number;
+  /**
+   * Show a staff "mark done" button (Health "Coming up" + the Due soon card)
+   * that stamps `lastDone = today` in the cloud and resets the countdown. Use
+   * ONLY for routine chores that do NOT keep their own dated record-tab entry
+   * (nail trim, grooming, litter clean). Medical events (deworming, parasite
+   * control, boosters, vet visits) are logged instead by adding a dated
+   * `healthTimeline` record row, so they stay off this button.
+   */
+  quickDone?: boolean;
   /** ISO date it was last done. Omit if the routine hasn't started yet. */
   lastDone?: string;
   /**
@@ -383,6 +397,7 @@ export const labReportById = (id: string): LabReport | undefined =>
  */
 export const recurringCare: RecurringItem[] = [
   {
+    id: 'parasite-control',
     icon: 'ph:bug',
     title: 'Parasite control',
     detail:
@@ -393,6 +408,7 @@ export const recurringCare: RecurringItem[] = [
     where: 'at home',
   },
   {
+    id: 'deworming',
     icon: 'ph:pill',
     title: 'Deworming',
     detail:
@@ -403,6 +419,7 @@ export const recurringCare: RecurringItem[] = [
     where: 'at home',
   },
   {
+    id: 'grooming',
     icon: 'ph:sparkle',
     title: 'Grooming & spa day',
     detail:
@@ -411,8 +428,10 @@ export const recurringCare: RecurringItem[] = [
     intervalDays: 60,
     lastDone: '2026-09-12',
     where: 'at the salon',
+    quickDone: true,
   },
   {
+    id: 'litter-deep-clean',
     icon: 'ph:broom',
     title: 'Litter box deep clean',
     detail:
@@ -421,8 +440,10 @@ export const recurringCare: RecurringItem[] = [
     intervalDays: 90,
     lastDone: '2026-07-11',
     where: 'at home',
+    quickDone: true,
   },
   {
+    id: 'annual-checkup',
     icon: 'ph:stethoscope',
     title: 'Full annual checkup',
     detail:
@@ -433,6 +454,7 @@ export const recurringCare: RecurringItem[] = [
     where: 'at the vet',
   },
   {
+    id: 'fvrcp-booster',
     icon: 'ph:syringe',
     title: 'FVRCP booster',
     detail:
@@ -443,6 +465,7 @@ export const recurringCare: RecurringItem[] = [
     where: 'at the vet',
   },
   {
+    id: 'nail-trim',
     icon: 'ph:scissors',
     title: 'Nail trim',
     detail:
@@ -451,6 +474,7 @@ export const recurringCare: RecurringItem[] = [
     intervalDays: 21,
     lastDone: '2026-09-12',
     where: 'at home',
+    quickDone: true,
   },
 ];
 

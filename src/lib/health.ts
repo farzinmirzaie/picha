@@ -7,7 +7,8 @@
  * badge flip at the right moment without waiting for a rebuild. Dates are ISO;
  * the default `today` here is the build date.
  */
-import { healthTimeline, recurringCare } from '../data/picha';
+import { healthTimeline } from '../data/picha';
+import { recurringCare } from '../data/care';
 import { addDays } from './dates';
 
 /** An item in "Coming up": a future one-time visit or a recurring due date. */
@@ -18,6 +19,10 @@ export interface UpcomingEntry {
   date?: string;
   everyLabel?: string;
   where?: string;
+  /** Present on recurring items: their stable id, cadence + quick-done flag. */
+  id?: string;
+  intervalDays?: number;
+  quickDone?: boolean;
 }
 
 /** How near (in days) an item must be to raise the "due soon" alert + badges. */
@@ -39,6 +44,9 @@ export function upcomingHealth(today: string = buildToday()): UpcomingEntry[] {
       date: r.nextDue ?? (r.lastDone ? addDays(r.lastDone, r.intervalDays) : undefined),
       everyLabel: r.everyLabel,
       where: r.where,
+      id: r.id,
+      intervalDays: r.intervalDays,
+      quickDone: r.quickDone,
     })),
   ].sort((a, b) => (a.date ?? '9999').localeCompare(b.date ?? '9999'));
 }

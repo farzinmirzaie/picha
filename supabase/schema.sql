@@ -185,6 +185,59 @@ revoke all on function public.set_round(date, text, boolean, text) from public;
 grant execute on function public.set_round(date, text, boolean, text) to anon;
 
 -- ---------------------------------------------------------------------------
+-- Recurring care "last done" overrides. The recurring items (nail trim,
+-- grooming, litter deep clean, …) live in the repo (recurringCare in
+-- src/data/picha.ts); only the staff-tapped "done today" date lives here,
+-- keyed by the item's stable id. It overrides the repo's seed `lastDone`, so
+-- the next-due countdown resets without an edit + redeploy. Rows are created
+-- lazily on first write. Same registrar PIN as the others.
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.picha_care (
+  id         text primary key check (id ~ '^[a-z0-9-]{1,40}$'),
+  last_done  date not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.picha_care enable row level security;
+
+drop policy if exists "anon read" on public.picha_care;
+create policy "anon read" on public.picha_care
+  for select to anon using (true);
+
+-- Stamp a recurring item's last-done date (defaults to today). Never moves the
+-- date backwards, so a stale device can't undo a newer "done".
+create or replace function public.log_care(
+  p_id text,
+  p_date date,
+  p_pin text
+)
+returns date
+language plpgsql
+security definer
+set search_path = public, private
+as $$
+declare
+  result date;
+begin
+  perform private.verify_staff_pin(p_pin);
+  if p_date > current_date + 1 then
+    raise exception 'date in the future';
+  end if;
+  insert into public.picha_care (id, last_done, updated_at)
+    values (p_id, p_date, now())
+  on conflict (id) do update
+    set last_done = greatest(public.picha_care.last_done, excluded.last_done),
+        updated_at = now();
+  select last_done into result from public.picha_care where id = p_id;
+  return result;
+end;
+$$;
+
+revoke all on function public.log_care(text, date, text) from public;
+grant execute on function public.log_care(text, date, text) to anon;
+
+-- ---------------------------------------------------------------------------
 -- PIN gate for the Staff tool (/tools/staff/). Verifies the registrar PIN
 -- without touching any data: raises 'wrong pin' on a mismatch (same message
 -- the write RPCs use) so the client can reuse the shared sbRpc helper. The PIN

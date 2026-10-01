@@ -21,7 +21,6 @@ import {
   clinicalStatus,
   healthTimeline,
   labReports,
-  recurringCare,
   dailyChecklist,
   treatment,
   trainingRules,
@@ -41,6 +40,7 @@ import {
   tailSignals,
 } from '../data/picha';
 
+import { recurringCare } from '../data/care';
 import { addDays, inDaysLabel } from '../lib/dates';
 
 const SITE = 'https://farzinmirzaie.github.io/picha';
