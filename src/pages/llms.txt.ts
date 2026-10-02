@@ -143,25 +143,29 @@ ${notStarted.map((r) => `- **${r.title}** (${r.everyLabel.toLowerCase()}, not st
 ${
   labReports.length
     ? `
-### Lab reports
+### Lab & imaging reports
 
-Values transcribed exactly as printed (results kept as-is). "[HIGH]"/"[LOW]" mark values the report flagged out of range; interpretation is the vet's.
+Lab values transcribed exactly as printed (results kept as-is). "[HIGH]"/"[LOW]" mark values the report flagged out of range. Imaging entries list the views on file (the films themselves are on the site). Interpretation is the vet's.
 
 ${labReports
-  .map(
-    (r) => `#### ${r.date} — ${r.clinic}
-${r.panels
-  .map(
-    (p) => `${labPanelLabel(p.key)} — ${p.source}:
+  .map((r) => {
+    const head = `#### ${r.date} — ${r.clinic}${r.kind === 'imaging' ? ' (imaging)' : ''}`;
+    const panels = (r.panels ?? [])
+      .map(
+        (p) => `${labPanelLabel(p.key)} — ${p.source}:
 ${p.rows
   .map(
     (row) =>
       `- ${row.name}: ${row.result}${row.ref ? ` (ref ${row.ref})` : ''}${row.unit ? ` ${row.unit}` : ''}${row.flag ? ` [${row.flag.toUpperCase()}]` : ''}`,
   )
   .join('\n')}`,
-  )
-  .join('\n\n')}`,
-  )
+      )
+      .join('\n\n');
+    const views = r.imageCaptions?.length
+      ? `Views on file: ${r.imageCaptions.join('; ')}.`
+      : '';
+    return [head, panels, views].filter(Boolean).join('\n');
+  })
   .join('\n\n')}
 `
     : ''

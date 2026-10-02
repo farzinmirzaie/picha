@@ -15,6 +15,7 @@ import {
   contact,
   weight,
   healthTimeline,
+  labReportById,
   treatment,
   callVetIf,
   clinicalStatus,
@@ -288,7 +289,12 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
     <div id="seg-panel-done" role="tabpanel" aria-labelledby="seg-tab-done" data-seg-panel="done" class="hidden pt-6">
       <ol class="ms-3 ps-7">
         {
-          done.map((e) => (
+          done.map((e) => {
+            const rep = e.reportId ? labReportById(e.reportId) : undefined;
+            const isImg = rep?.kind === 'imaging';
+            const chipText = isImg ? lc.imaging.reportChip : lc.reportChip;
+            const viewText = isImg ? lc.imaging.viewReport : lc.viewReport;
+            return (
             <li class="group relative pb-8 last:pb-2">
               <span
                 class="absolute -start-[27px] top-0 h-full w-0.5 bg-blush-200 group-last:h-4 dark:bg-plum-700"
@@ -302,7 +308,7 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
               </span>
               <div class="flex flex-wrap items-center gap-2 pt-1">
                 <h3 class="font-display text-lg font-semibold">{e.title}</h3>
-                {e.reportId && <Chip tone="blushSolid" icon="ph:flask">{lc.reportChip}</Chip>}
+                {rep && <Chip tone="blushSolid" icon={isImg ? 'ph:scan' : 'ph:flask'}>{chipText}</Chip>}
               </div>
               <p class="text-xs font-bold text-blush-500/90 dark:text-blush-300/80">
                 {dateLabel(e.date!, locale)}
@@ -310,18 +316,19 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
               <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
                 {e.detail}
               </p>
-              {e.reportId && (
+              {rep && (
                 <button
                   type="button"
                   data-lab-open={e.reportId}
                   class="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-blush-300/70 bg-blush-100/50 px-3.5 py-1.5 text-xs font-bold text-blush-700 transition-colors hover:bg-blush-100 active:bg-blush-200/60 dark:border-plum-600 dark:bg-plum-800/60 dark:text-blush-300 dark:hover:bg-plum-800"
                 >
-                  <Icon name="ph:file-magnifying-glass" class="h-4 w-4" aria-hidden="true" />
-                  {lc.viewReport}
+                  <Icon name={isImg ? 'ph:scan' : 'ph:file-magnifying-glass'} class="h-4 w-4" aria-hidden="true" />
+                  {viewText}
                 </button>
               )}
             </li>
-          ))
+            );
+          })
         }
       </ol>
     </div>

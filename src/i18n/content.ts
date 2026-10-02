@@ -1458,6 +1458,15 @@ export interface LabCopy {
   viewFull: string; // link under each photo
   disclaimer: string; // not a diagnosis
   closeLabel: string;
+  // Overrides for imaging reports (X-ray/ultrasound): no tables, just films.
+  imaging: {
+    reportChip: string;
+    viewReport: string;
+    sheetTitle: string;
+    intro: string;
+    originalHeading: string;
+    disclaimer: string;
+  };
 }
 export const labCopy: Record<string, LabCopy> = {
   en: {
@@ -1477,6 +1486,14 @@ export const labCopy: Record<string, LabCopy> = {
     viewFull: 'Open full image',
     disclaimer: 'These are raw lab values, not a diagnosis. Leave the reading to the vet.',
     closeLabel: 'Close',
+    imaging: {
+      reportChip: 'X-rays',
+      viewReport: 'View X-rays',
+      sheetTitle: 'X-rays',
+      intro: 'The original films, kept here so any vet can review and compare them later. Tap one to open it full size.',
+      originalHeading: 'Films',
+      disclaimer: 'These are the raw images, not a diagnosis. Leave the reading to the vet.',
+    },
   },
   ms: {
     reportChip: 'Laporan makmal',
@@ -1496,6 +1513,14 @@ export const labCopy: Record<string, LabCopy> = {
     disclaimer:
       'Ini nilai makmal mentah, bukan diagnosis. Biar doktor haiwan yang mentafsirkannya.',
     closeLabel: 'Tutup',
+    imaging: {
+      reportChip: 'X-ray',
+      viewReport: 'Lihat X-ray',
+      sheetTitle: 'X-ray',
+      intro: 'Filem asal, disimpan di sini supaya mana-mana doktor haiwan boleh menyemak dan membandingkannya kemudian. Ketik satu untuk buka saiz penuh.',
+      originalHeading: 'Filem',
+      disclaimer: 'Ini imej mentah, bukan diagnosis. Biar doktor haiwan yang mentafsirkannya.',
+    },
   },
   zh: {
     reportChip: '化验报告',
@@ -1513,6 +1538,14 @@ export const labCopy: Record<string, LabCopy> = {
     viewFull: '查看原图',
     disclaimer: '这些只是化验数值，并非诊断。请交由兽医解读。',
     closeLabel: '关闭',
+    imaging: {
+      reportChip: 'X 光',
+      viewReport: '查看 X 光片',
+      sheetTitle: 'X 光片',
+      intro: '原始胶片，存档于此，方便日后任何兽医查阅和比对。点按可查看原图。',
+      originalHeading: '胶片',
+      disclaimer: '这些只是原始影像，并非诊断。请交由兽医解读。',
+    },
   },
   fa: {
     reportChip: 'گزارش آزمایش',
@@ -1531,6 +1564,14 @@ export const labCopy: Record<string, LabCopy> = {
     viewFull: 'باز کردن تصویر کامل',
     disclaimer: 'این‌ها مقادیر خام آزمایش‌اند، نه تشخیص. تفسیرش را به دامپزشک بسپارید.',
     closeLabel: 'بستن',
+    imaging: {
+      reportChip: 'عکس رادیولوژی',
+      viewReport: 'دیدن عکس‌ها',
+      sheetTitle: 'عکس رادیولوژی',
+      intro: 'فیلم‌های اصلی، اینجا نگه داشته شده تا هر دامپزشکی بعداً بتواند آن‌ها را بررسی و مقایسه کند. برای دیدن اندازه‌ی کامل، روی هرکدام ضربه بزنید.',
+      originalHeading: 'فیلم‌ها',
+      disclaimer: 'این‌ها تصاویر خام‌اند، نه تشخیص. تفسیرش را به دامپزشک بسپارید.',
+    },
   },
 };
 export const getLabCopy = (locale?: string): LabCopy =>
@@ -1555,6 +1596,8 @@ const healthTextMs: Record<string, { title: string; detail: string }> = {
     { title: 'Nyahcacing', detail: 'Ubat cacing rutin 3 bulan, diberi di rumah mengikut jadual. Sebiji pil, diselitkan di dalam sesuatu yang sedap.' },
   'Full wellness bloodwork at Vetmed Animal Clinic: a complete blood count and a 17-item chemistry panel. Filed here so any vet can read and compare later. Tap to see the full results and the original lab printouts.':
     { title: 'Ujian darah: CBC + panel kimia', detail: 'Ujian darah kesihatan penuh di Vetmed Animal Clinic: kiraan darah lengkap dan panel kimia 17 item. Difailkan di sini supaya mana-mana doktor haiwan boleh baca dan bandingkan kemudian. Ketik untuk lihat keputusan penuh dan cetakan makmal asal.' },
+  'A full set of radiographs at Animal Central Sentul: chest (thorax) and abdomen, each in lateral and ventro-dorsal views. Filed here so any vet can review and compare later. Tap to see the films.':
+    { title: 'X-ray: dada + abdomen', detail: 'Satu set lengkap X-ray di Animal Central Sentul: dada (toraks) dan abdomen, setiap satu dalam pandangan sisi (lateral) dan ventro-dorsal. Difailkan di sini supaya mana-mana doktor haiwan boleh menyemak dan membandingkan kemudian. Ketik untuk lihat filem.' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: 'Kembiri + mikrocip', detail: 'Kedua-duanya selesai dalam satu lawatan. Dia mengira masa pemulihan sebagai cuti spa.' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':
@@ -1617,6 +1660,8 @@ const healthTextZh: Record<string, { title: string; detail: string }> = {
     { title: '已驱虫', detail: '常规三个月驱虫，在家按时完成。一粒药丸，藏在美味里悄悄喂下。' },
   'Full wellness bloodwork at Vetmed Animal Clinic: a complete blood count and a 17-item chemistry panel. Filed here so any vet can read and compare later. Tap to see the full results and the original lab printouts.':
     { title: '血液检查：CBC + 生化检测', detail: '在 Vetmed Animal Clinic 做的全面健康血液检查：全血细胞计数和 17 项生化检测。归档在此，方便日后任何兽医查阅和比对。点按可查看完整结果和原始化验单。' },
+  'A full set of radiographs at Animal Central Sentul: chest (thorax) and abdomen, each in lateral and ventro-dorsal views. Filed here so any vet can review and compare later. Tap to see the films.':
+    { title: 'X 光：胸部 + 腹部', detail: '在 Animal Central Sentul 拍摄的完整 X 光片：胸部（胸腔）和腹部，各拍侧位和腹背位。归档在此，方便日后任何兽医查阅和比对。点按可查看胶片。' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: '绝育 + 芯片', detail: '一次看诊全部完成。她把恢复期记作水疗假。' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':
@@ -1678,6 +1723,8 @@ const healthTextFa: Record<string, { title: string; detail: string }> = {
     { title: 'کرم‌زدایی شد', detail: 'کرم‌زدای روتینِ سه‌ماهه، در خانه سرِ موعد داده شد. یک قرص، پنهان‌شده در چیزی خوشمزه.' },
   'Full wellness bloodwork at Vetmed Animal Clinic: a complete blood count and a 17-item chemistry panel. Filed here so any vet can read and compare later. Tap to see the full results and the original lab printouts.':
     { title: 'آزمایش خون: CBC + پنل بیوشیمی', detail: 'آزمایش خونِ کاملِ سلامت در Vetmed Animal Clinic: شمارش کامل خون و پنل بیوشیمیِ ۱۷ آیتمی. اینجا بایگانی شده تا هر دامپزشکی بعداً بتواند بخواند و مقایسه کند. برای دیدن نتایج کامل و برگه‌های اصلی آزمایشگاه ضربه بزنید.' },
+  'A full set of radiographs at Animal Central Sentul: chest (thorax) and abdomen, each in lateral and ventro-dorsal views. Filed here so any vet can review and compare later. Tap to see the films.':
+    { title: 'عکس رادیولوژی: قفسه‌ی سینه + شکم', detail: 'یک مجموعه‌ی کامل رادیوگرافی در Animal Central Sentul: قفسه‌ی سینه (توراکس) و شکم، هرکدام در نمای جانبی (lateral) و پشتی‌شکمی (ventro-dorsal). اینجا بایگانی شده تا هر دامپزشکی بعداً بتواند بررسی و مقایسه کند. برای دیدن فیلم‌ها ضربه بزنید.' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: 'عقیم‌سازی + میکروچیپ', detail: 'هر دو در یک ویزیت انجام شد. او زمان بهبودی را به‌عنوان مرخصیِ اسپا حساب کرد.' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':

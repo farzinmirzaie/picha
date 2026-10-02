@@ -64,13 +64,25 @@ export interface LabPanel {
 }
 export interface LabReport {
   id: string;
-  /** ISO date the sample was analysed. */
+  /**
+   * What the report is — picks the modal's labels + icon. 'labs' is a panelled
+   * result (blood work, urinalysis); 'imaging' is films (X-ray, ultrasound)
+   * with captions and no tables. Defaults to 'labs'.
+   */
+  kind?: 'labs' | 'imaging';
+  /** ISO date the sample was taken / the study was done. */
   date: string;
   /** Where it was run (a fact, shown verbatim). */
   clinic: string;
-  panels: LabPanel[];
-  /** How many original printout photos exist (labs/<id>-1.jpg …). */
+  /** Result tables. Omit (or leave empty) for imaging-only reports. */
+  panels?: LabPanel[];
+  /** How many original images exist (labs/<id>-1.jpg …). */
   images: number;
+  /**
+   * Per-image captions, index-aligned with the images (labs/<id>-1.jpg → [0]).
+   * Facts shown verbatim (radiographic view names etc.), not translated.
+   */
+  imageCaptions?: string[];
 }
 
 export interface RecurringItem {
@@ -302,6 +314,15 @@ export const healthTimeline: TimelineEntry[] = [
     reportId: 'bloodwork-2026-09-29',
   },
   {
+    icon: 'ph:scan',
+    title: 'X-rays: chest + abdomen',
+    detail:
+      'A full set of radiographs at Animal Central Sentul: chest (thorax) and abdomen, each in lateral and ventro-dorsal views. Filed here so any vet can review and compare later. Tap to see the films.',
+    date: '2026-10-01',
+    where: 'at the vet',
+    reportId: 'xray-2026-10-01',
+  },
+  {
     icon: 'ph:syringe',
     title: 'Rabies vaccine',
     detail: 'Required before any travel plans Her Fluffiness may approve.',
@@ -381,6 +402,19 @@ export const labReports: LabReport[] = [
           { name: 'AMY', result: '976', ref: '500 - 1400', unit: 'U/L' },
         ],
       },
+    ],
+  },
+  {
+    id: 'xray-2026-10-01',
+    kind: 'imaging',
+    date: '2026-10-01',
+    clinic: 'Animal Central Sentul, Kuala Lumpur',
+    images: 4,
+    imageCaptions: [
+      'Thorax · lateral',
+      'Thorax · ventro-dorsal',
+      'Abdomen · lateral',
+      'Abdomen · ventro-dorsal',
     ],
   },
 ];

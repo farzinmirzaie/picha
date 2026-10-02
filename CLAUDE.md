@@ -66,10 +66,10 @@ src/
                        # § Languages. Include once (already in Layout)
     ShareDialog.astro  # share sheet: custom QR image (assets/qr.png) + Web Share /
                        # copy-link; any [data-share-open] element opens it (Home)
-    LabReportDialog.astro # lab-report modal(s): transcribed panels (tables +
-                       # out-of-range flags) + the original printout photos.
-                       # Include once on Health; any [data-lab-open="<reportId>"]
-                       # opens the matching report from `labReports` (picha.ts)
+    LabReportDialog.astro # report modal(s): labs (transcribed panels + flags +
+                       # printout photos) or imaging (captioned films, no tables)
+                       # per report `kind`. Include once on Health; any
+                       # [data-lab-open="<reportId>"] opens it from `labReports`
     TrainingRules.astro # the Academy's session-rules card (hub + course pages)
     SignalCard.astro   # one body-language signal card (photo + mood chip above
                        # the title + read) for /body-language; shared across
@@ -127,8 +127,8 @@ src/
   styles/global.css    # Tailwind @theme (paper/plum/ink/blush/amber) + animations
   assets/
     picha.jpg          # avatar photo (astro:assets; also the source for app icons)
-    labs/<id>-<n>.jpg  # original lab-report printout photos, keyed by
-                       # labReports[].id + page number (shown in LabReportDialog)
+    labs/<id>-<n>.jpg  # original report images (lab printouts + imaging films),
+                       # keyed by labReports[].id + page number (LabReportDialog)
     ears/ear-*.png     # body-language ear crops, keyed by earSignals[].id
     eyes/eye-*.png     # body-language eye crops, keyed by eyeSignals[].id
     tails/tail-*.png   # body-language tail crops, keyed by tailSignals[].id
@@ -291,14 +291,17 @@ pages/components when changing *layout or design*, not content.
   time into *done* (past dates), *coming up* (future), and *on the list*
   (no date). To record a completed visit or schedule something, just add/date
   an entry — no markup changes.
-- **`labReports`** holds structured lab results (CBC, chemistry, …), linked
-  from a `healthTimeline` entry via `reportId`. The record card then shows a
-  "view results" action that opens `LabReportDialog` (transcribed panels +
-  the original printout photos in `assets/labs/<id>-<n>.jpg`). Numbers/codes/
-  units are language-neutral facts kept exactly as printed (results as
-  strings); only the modal chrome is translated (`getLabCopy` in i18n). Set a
-  row's `flag: 'high'|'low'` only when the report itself flagged it — the site
-  never diagnoses. Also mirrored into `/llms.txt`.
+- **`labReports`** holds diagnostic reports, linked from a `healthTimeline`
+  entry via `reportId`. The record card then shows a "view" action that opens
+  `LabReportDialog`. Two `kind`s: `'labs'` (default) renders transcribed panels
+  (tables + out-of-range flags) + the original printout photos; `'imaging'`
+  (X-ray/ultrasound) skips the tables and shows captioned films on a dark tile.
+  Images live in `assets/labs/<id>-<n>.jpg`; `imageCaptions[]` (index-aligned,
+  facts shown verbatim, e.g. "Thorax · lateral") label them. Numbers/codes/
+  units/captions are language-neutral facts kept exactly as printed (results as
+  strings); only the modal chrome is translated (`getLabCopy` in i18n, with an
+  `imaging` override block). Set a row's `flag: 'high'|'low'` only when the
+  report itself flagged it — the site never diagnoses. Also in `/llms.txt`.
 - **`treatment`** is the standing "Doctor's orders" slot on Health: add an
   entry whenever the vet prescribes a medication or routine, delete it when
   the course ends. The section (and its llms.txt block) hides when the list
