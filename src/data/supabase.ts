@@ -7,10 +7,14 @@
 
 // Accept the URL with or without a trailing /rest/v1/ — normalise to the bare
 // project URL so path-building stays correct either way.
-const rawUrl = import.meta.env.SUPABASE_URL ?? process.env.SUPABASE_URL;
+// NOTE: `import.meta.env?` (optional) — under Vite/Astro it's the env object;
+// under plain Node (the `tsx` notify script, which imports this transitively
+// via lib/health → data/care) `import.meta.env` is undefined, so fall through
+// to process.env instead of throwing at module load.
+const rawUrl = import.meta.env?.SUPABASE_URL ?? process.env.SUPABASE_URL;
 const SUPABASE_URL = rawUrl?.replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '');
 const SUPABASE_ANON_KEY =
-  import.meta.env.SUPABASE_ANON_KEY ?? process.env.SUPABASE_ANON_KEY;
+  import.meta.env?.SUPABASE_ANON_KEY ?? process.env.SUPABASE_ANON_KEY;
 
 export const supabaseClient =
   SUPABASE_URL && SUPABASE_ANON_KEY
