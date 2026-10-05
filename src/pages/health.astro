@@ -291,9 +291,14 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
         {
           done.map((e) => {
             const rep = e.reportId ? labReportById(e.reportId) : undefined;
-            const isImg = rep?.kind === 'imaging';
-            const chipText = isImg ? lc.imaging.reportChip : lc.reportChip;
-            const viewText = isImg ? lc.imaging.viewReport : lc.viewReport;
+            const kind = rep?.kind ?? 'labs';
+            const sub = kind === 'imaging' ? lc.imaging : kind === 'surgery' ? lc.surgery : lc;
+            const chipText = sub.reportChip;
+            const viewText = sub.viewReport;
+            const repIcon =
+              kind === 'imaging' ? 'ph:scan' : kind === 'surgery' ? 'ph:images' : 'ph:flask';
+            const btnIcon =
+              kind === 'labs' ? 'ph:file-magnifying-glass' : repIcon;
             return (
             <li class="group relative pb-8 last:pb-2">
               <span
@@ -308,7 +313,7 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
               </span>
               <div class="flex flex-wrap items-center gap-2 pt-1">
                 <h3 class="font-display text-lg font-semibold">{e.title}</h3>
-                {rep && <Chip tone="blushSolid" icon={isImg ? 'ph:scan' : 'ph:flask'}>{chipText}</Chip>}
+                {rep && <Chip tone="blushSolid" icon={repIcon}>{chipText}</Chip>}
               </div>
               <p class="text-xs font-bold text-blush-500/90 dark:text-blush-300/80">
                 {dateLabel(e.date!, locale)}
@@ -322,7 +327,7 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
                   data-lab-open={e.reportId}
                   class="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-blush-300/70 bg-blush-100/50 px-3.5 py-1.5 text-xs font-bold text-blush-700 transition-colors hover:bg-blush-100 active:bg-blush-200/60 dark:border-plum-600 dark:bg-plum-800/60 dark:text-blush-300 dark:hover:bg-plum-800"
                 >
-                  <Icon name={isImg ? 'ph:scan' : 'ph:file-magnifying-glass'} class="h-4 w-4" aria-hidden="true" />
+                  <Icon name={btnIcon} class="h-4 w-4" aria-hidden="true" />
                   {viewText}
                 </button>
               )}

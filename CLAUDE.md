@@ -293,9 +293,11 @@ pages/components when changing *layout or design*, not content.
   an entry — no markup changes.
 - **`labReports`** holds diagnostic reports, linked from a `healthTimeline`
   entry via `reportId`. The record card then shows a "view" action that opens
-  `LabReportDialog`. Two `kind`s: `'labs'` (default) renders transcribed panels
+  `LabReportDialog`. `kind`s: `'labs'` (default) renders transcribed panels
   (tables + out-of-range flags) + the original printout photos; `'imaging'`
-  (X-ray/ultrasound) skips the tables and shows captioned films on a dark tile.
+  (X-ray/ultrasound) and `'surgery'` (clinical photo set) skip the tables and
+  show captioned, contain-fit images on a dark tile (each kind has its own
+  `getLabCopy` override block for the chip/title/intro/disclaimer).
   Images live in `assets/labs/<id>-<n>.jpg`; `imageCaptions[]` (index-aligned,
   facts shown verbatim, e.g. "Thorax · lateral") label them. Numbers/codes/
   units/captions are language-neutral facts kept exactly as printed (results as

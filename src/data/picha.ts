@@ -66,10 +66,11 @@ export interface LabReport {
   id: string;
   /**
    * What the report is — picks the modal's labels + icon. 'labs' is a panelled
-   * result (blood work, urinalysis); 'imaging' is films (X-ray, ultrasound)
-   * with captions and no tables. Defaults to 'labs'.
+   * result (blood work, urinalysis); 'imaging' is films (X-ray, ultrasound);
+   * 'surgery' is a clinical photo set. 'imaging'/'surgery' show captioned
+   * contain-fit images on a dark tile, no tables. Defaults to 'labs'.
    */
-  kind?: 'labs' | 'imaging';
+  kind?: 'labs' | 'imaging' | 'surgery';
   /** ISO date the sample was taken / the study was done. */
   date: string;
   /** Where it was run (a fact, shown verbatim). */
@@ -167,10 +168,10 @@ export const weight = {
 export const vet = {
   // No regular vet chosen yet — the position remains open.
   status: 'Auditioning vets; no permanent hire yet',
-  recentClinic: 'Vetmed Animal Clinic, Jalan Ipoh, Kuala Lumpur',
-  recentPhone: '016-621 1225',
+  recentClinic: 'Animal Central Veterinary Clinic, Sentul, Kuala Lumpur',
+  recentPhone: '012-646 5039',
   /** Query for the maps directions link (clinic name + area). */
-  mapsQuery: 'Vetmed Animal Clinic, Kompleks Kantonmen Prima, Jalan Ipoh, Kuala Lumpur',
+  mapsQuery: 'Animal Central Veterinary Clinic, Jalan Sentul Pasar, Kuala Lumpur',
 };
 
 /** Owner contact — shown publicly so the page doubles as a "if found" tag. */
@@ -329,6 +330,7 @@ export const healthTimeline: TimelineEntry[] = [
       'A lumpectomy (lump removal) at Animal Central Veterinary Clinic (Sentul), by Dr. Al-Syafiq Halim, under general anaesthetic. The lump was removed and sent for histopathology; results are pending.',
     date: '2026-10-03',
     where: 'at the vet',
+    reportId: 'surgery-2026-10-03',
   },
   {
     icon: 'ph:bed',
@@ -431,6 +433,20 @@ export const labReports: LabReport[] = [
       'Thorax · ventro-dorsal',
       'Abdomen · lateral',
       'Abdomen · ventro-dorsal',
+    ],
+  },
+  {
+    id: 'surgery-2026-10-03',
+    kind: 'surgery',
+    date: '2026-10-03',
+    clinic: 'Animal Central Veterinary Clinic, Sentul, Kuala Lumpur',
+    images: 5,
+    imageCaptions: [
+      'Before: the lump (circled)',
+      'The incision, sutured',
+      'The incision, close-up',
+      'Removed tissue, sent to the lab',
+      'Recovering, in the cone',
     ],
   },
 ];

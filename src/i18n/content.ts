@@ -1467,6 +1467,15 @@ export interface LabCopy {
     originalHeading: string;
     disclaimer: string;
   };
+  // Overrides for a surgery photo set (same shape as imaging).
+  surgery: {
+    reportChip: string;
+    viewReport: string;
+    sheetTitle: string;
+    intro: string;
+    originalHeading: string;
+    disclaimer: string;
+  };
 }
 export const labCopy: Record<string, LabCopy> = {
   en: {
@@ -1493,6 +1502,14 @@ export const labCopy: Record<string, LabCopy> = {
       intro: 'The original films, kept here so any vet can review and compare them later. Tap one to open it full size.',
       originalHeading: 'Films',
       disclaimer: 'These are the raw images, not a diagnosis. Leave the reading to the vet.',
+    },
+    surgery: {
+      reportChip: 'Surgery photos',
+      viewReport: 'View photos',
+      sheetTitle: 'Surgery photos',
+      intro: 'Photos from the procedure and recovery, kept here for the record. Heads up: a couple are graphic. Tap one to open it full size.',
+      originalHeading: 'Photos',
+      disclaimer: 'A record of the procedure, not medical advice. Questions about the wound or recovery go to the vet.',
     },
   },
   ms: {
@@ -1521,6 +1538,14 @@ export const labCopy: Record<string, LabCopy> = {
       originalHeading: 'Filem',
       disclaimer: 'Ini imej mentah, bukan diagnosis. Biar doktor haiwan yang mentafsirkannya.',
     },
+    surgery: {
+      reportChip: 'Foto pembedahan',
+      viewReport: 'Lihat foto',
+      sheetTitle: 'Foto pembedahan',
+      intro: 'Foto daripada prosedur dan pemulihan, disimpan untuk rekod. Perhatian: beberapa agak grafik. Ketik satu untuk buka saiz penuh.',
+      originalHeading: 'Foto',
+      disclaimer: 'Satu rekod prosedur, bukan nasihat perubatan. Soalan tentang luka atau pemulihan, rujuk doktor haiwan.',
+    },
   },
   zh: {
     reportChip: '化验报告',
@@ -1545,6 +1570,14 @@ export const labCopy: Record<string, LabCopy> = {
       intro: '原始胶片，存档于此，方便日后任何兽医查阅和比对。点按可查看原图。',
       originalHeading: '胶片',
       disclaimer: '这些只是原始影像，并非诊断。请交由兽医解读。',
+    },
+    surgery: {
+      reportChip: '手术照片',
+      viewReport: '查看照片',
+      sheetTitle: '手术照片',
+      intro: '手术和恢复过程的照片，留作记录。提醒：有几张画面较血腥。点按可查看原图。',
+      originalHeading: '照片',
+      disclaimer: '仅为手术记录，并非医疗建议。有关伤口或恢复的问题请咨询兽医。',
     },
   },
   fa: {
@@ -1571,6 +1604,14 @@ export const labCopy: Record<string, LabCopy> = {
       intro: 'فیلم‌های اصلی، اینجا نگه داشته شده تا هر دامپزشکی بعداً بتواند آن‌ها را بررسی و مقایسه کند. برای دیدن اندازه‌ی کامل، روی هرکدام ضربه بزنید.',
       originalHeading: 'فیلم‌ها',
       disclaimer: 'این‌ها تصاویر خام‌اند، نه تشخیص. تفسیرش را به دامپزشک بسپارید.',
+    },
+    surgery: {
+      reportChip: 'عکس‌های جراحی',
+      viewReport: 'دیدن عکس‌ها',
+      sheetTitle: 'عکس‌های جراحی',
+      intro: 'عکس‌هایی از عمل و دوره‌ی نقاهت، برای ثبت در پرونده. توجه: چند تا از آن‌ها واضح و تصویریِ زخم‌اند. برای دیدن اندازه‌ی کامل روی هرکدام ضربه بزنید.',
+      originalHeading: 'عکس‌ها',
+      disclaimer: 'این فقط ثبتِ عمل است، نه توصیه‌ی پزشکی. پرسش درباره‌ی زخم یا نقاهت را از دامپزشک بپرسید.',
     },
   },
 };

@@ -149,7 +149,7 @@ Lab values transcribed exactly as printed (results kept as-is). "[HIGH]"/"[LOW]"
 
 ${labReports
   .map((r) => {
-    const head = `#### ${r.date} — ${r.clinic}${r.kind === 'imaging' ? ' (imaging)' : ''}`;
+    const head = `#### ${r.date} — ${r.clinic}${r.kind && r.kind !== 'labs' ? ` (${r.kind})` : ''}`;
     const panels = (r.panels ?? [])
       .map(
         (p) => `${labPanelLabel(p.key)} — ${p.source}:
@@ -162,7 +162,7 @@ ${p.rows
       )
       .join('\n\n');
     const views = r.imageCaptions?.length
-      ? `Views on file: ${r.imageCaptions.join('; ')}.`
+      ? `Images on file: ${r.imageCaptions.join('; ')}.`
       : '';
     return [head, panels, views].filter(Boolean).join('\n');
   })
