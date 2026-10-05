@@ -166,8 +166,8 @@ export const weight = {
 };
 
 export const vet = {
-  // No regular vet chosen yet — the position remains open.
-  status: 'Auditioning vets; no permanent hire yet',
+  // Her regular vet now: Dr. Al-Syafiq Halim at Animal Central (Sentul).
+  status: 'Her regular vet is Dr. Al-Syafiq Halim at Animal Central.',
   recentClinic: 'Animal Central Veterinary Clinic, Sentul, Kuala Lumpur',
   recentPhone: '012-646 5039',
   /** Query for the maps directions link (clinic name + area). */
@@ -327,7 +327,7 @@ export const healthTimeline: TimelineEntry[] = [
     icon: 'ph:first-aid-kit',
     title: 'Surgery: lump removal (lumpectomy)',
     detail:
-      'A lumpectomy (lump removal) at Animal Central Veterinary Clinic (Sentul), by Dr. Al-Syafiq Halim, under general anaesthetic. The lump was removed and sent for histopathology; results are pending.',
+      'A lumpectomy at Animal Central Veterinary Clinic (Sentul), by Dr. Al-Syafiq Halim, under general anaesthetic. All of the lumps were removed (about three, along the lower mammary line) and sent for histopathology. The result will show whether they are tumours, and whether a full mammary strip (removing the remaining glands) is needed. Still pending.',
     date: '2026-10-03',
     where: 'at the vet',
     reportId: 'surgery-2026-10-03',
@@ -339,6 +339,12 @@ export const healthTimeline: TimelineEntry[] = [
       'Admitted to Animal Central Veterinary Clinic (Sentul) on the morning of the surgery for the procedure and recovery, resting in a cone under round-the-clock care. Discharge date to follow.',
     date: '2026-10-03',
     where: 'at the vet',
+  },
+  {
+    icon: 'ph:flask',
+    title: 'Histopathology result + next step',
+    detail:
+      'Waiting on the lab to say whether the removed lumps are tumours. Depending on the result, a follow-up surgery to remove the remaining mammary glands may be needed.',
   },
   {
     icon: 'ph:syringe',
@@ -442,7 +448,7 @@ export const labReports: LabReport[] = [
     clinic: 'Animal Central Veterinary Clinic, Sentul, Kuala Lumpur',
     images: 5,
     imageCaptions: [
-      'Before: the lump (circled)',
+      'Before: the lumps (one circled)',
       'The incision, sutured',
       'The incision, close-up',
       'Removed tissue, sent to the lab',
