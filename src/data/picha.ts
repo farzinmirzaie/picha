@@ -323,6 +323,22 @@ export const healthTimeline: TimelineEntry[] = [
     reportId: 'xray-2026-10-01',
   },
   {
+    icon: 'ph:first-aid-kit',
+    title: 'Surgery: lump removal (lumpectomy)',
+    detail:
+      'A lumpectomy (lump removal) at Animal Central Veterinary Clinic (Sentul), by Dr. Al-Syafiq Halim, under general anaesthetic. The lump was removed and sent for histopathology; results are pending.',
+    date: '2026-10-03',
+    where: 'at the vet',
+  },
+  {
+    icon: 'ph:bed',
+    title: 'Hospital stay began',
+    detail:
+      'Admitted to Animal Central Veterinary Clinic (Sentul) on the morning of the surgery for the procedure and recovery, resting in a cone under round-the-clock care. Discharge date to follow.',
+    date: '2026-10-03',
+    where: 'at the vet',
+  },
+  {
     icon: 'ph:syringe',
     title: 'Rabies vaccine',
     detail: 'Required before any travel plans Her Fluffiness may approve.',

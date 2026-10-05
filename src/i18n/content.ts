@@ -1598,6 +1598,10 @@ const healthTextMs: Record<string, { title: string; detail: string }> = {
     { title: 'Ujian darah: CBC + panel kimia', detail: 'Ujian darah kesihatan penuh di Vetmed Animal Clinic: kiraan darah lengkap dan panel kimia 17 item. Difailkan di sini supaya mana-mana doktor haiwan boleh baca dan bandingkan kemudian. Ketik untuk lihat keputusan penuh dan cetakan makmal asal.' },
   'A full set of radiographs at Animal Central Sentul: chest (thorax) and abdomen, each in lateral and ventro-dorsal views. Filed here so any vet can review and compare later. Tap to see the films.':
     { title: 'X-ray: dada + abdomen', detail: 'Satu set lengkap X-ray di Animal Central Sentul: dada (toraks) dan abdomen, setiap satu dalam pandangan sisi (lateral) dan ventro-dorsal. Difailkan di sini supaya mana-mana doktor haiwan boleh menyemak dan membandingkan kemudian. Ketik untuk lihat filem.' },
+  'A lumpectomy (lump removal) at Animal Central Veterinary Clinic (Sentul), by Dr. Al-Syafiq Halim, under general anaesthetic. The lump was removed and sent for histopathology; results are pending.':
+    { title: 'Pembedahan: buang ketumbuhan (lumpektomi)', detail: 'Lumpektomi (pembuangan ketumbuhan) di Animal Central Veterinary Clinic (Sentul), oleh Dr. Al-Syafiq Halim, di bawah bius penuh. Ketumbuhan itu dibuang dan dihantar untuk histopatologi; keputusan masih menunggu.' },
+  'Admitted to Animal Central Veterinary Clinic (Sentul) on the morning of the surgery for the procedure and recovery, resting in a cone under round-the-clock care. Discharge date to follow.':
+    { title: 'Mula dimasukkan ke hospital', detail: 'Dimasukkan ke Animal Central Veterinary Clinic (Sentul) pada pagi pembedahan untuk prosedur dan pemulihan, berehat berkolar sambil dijaga sepanjang masa. Tarikh discaj menyusul.' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: 'Kembiri + mikrocip', detail: 'Kedua-duanya selesai dalam satu lawatan. Dia mengira masa pemulihan sebagai cuti spa.' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':
@@ -1662,6 +1666,10 @@ const healthTextZh: Record<string, { title: string; detail: string }> = {
     { title: '血液检查：CBC + 生化检测', detail: '在 Vetmed Animal Clinic 做的全面健康血液检查：全血细胞计数和 17 项生化检测。归档在此，方便日后任何兽医查阅和比对。点按可查看完整结果和原始化验单。' },
   'A full set of radiographs at Animal Central Sentul: chest (thorax) and abdomen, each in lateral and ventro-dorsal views. Filed here so any vet can review and compare later. Tap to see the films.':
     { title: 'X 光：胸部 + 腹部', detail: '在 Animal Central Sentul 拍摄的完整 X 光片：胸部（胸腔）和腹部，各拍侧位和腹背位。归档在此，方便日后任何兽医查阅和比对。点按可查看胶片。' },
+  'A lumpectomy (lump removal) at Animal Central Veterinary Clinic (Sentul), by Dr. Al-Syafiq Halim, under general anaesthetic. The lump was removed and sent for histopathology; results are pending.':
+    { title: '手术：肿块切除（肿块切除术）', detail: '在 Animal Central Veterinary Clinic（Sentul）由 Dr. Al-Syafiq Halim 进行的肿块切除术，全身麻醉。肿块已切除并送检组织病理；结果待出。' },
+  'Admitted to Animal Central Veterinary Clinic (Sentul) on the morning of the surgery for the procedure and recovery, resting in a cone under round-the-clock care. Discharge date to follow.':
+    { title: '开始住院', detail: '手术当天上午住进 Animal Central Veterinary Clinic（Sentul），进行手术并恢复，戴着项圈休息，全天候看护。出院日期待定。' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: '绝育 + 芯片', detail: '一次看诊全部完成。她把恢复期记作水疗假。' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':
@@ -1725,6 +1733,10 @@ const healthTextFa: Record<string, { title: string; detail: string }> = {
     { title: 'آزمایش خون: CBC + پنل بیوشیمی', detail: 'آزمایش خونِ کاملِ سلامت در Vetmed Animal Clinic: شمارش کامل خون و پنل بیوشیمیِ ۱۷ آیتمی. اینجا بایگانی شده تا هر دامپزشکی بعداً بتواند بخواند و مقایسه کند. برای دیدن نتایج کامل و برگه‌های اصلی آزمایشگاه ضربه بزنید.' },
   'A full set of radiographs at Animal Central Sentul: chest (thorax) and abdomen, each in lateral and ventro-dorsal views. Filed here so any vet can review and compare later. Tap to see the films.':
     { title: 'عکس رادیولوژی: قفسه‌ی سینه + شکم', detail: 'یک مجموعه‌ی کامل رادیوگرافی در Animal Central Sentul: قفسه‌ی سینه (توراکس) و شکم، هرکدام در نمای جانبی (lateral) و پشتی‌شکمی (ventro-dorsal). اینجا بایگانی شده تا هر دامپزشکی بعداً بتواند بررسی و مقایسه کند. برای دیدن فیلم‌ها ضربه بزنید.' },
+  'A lumpectomy (lump removal) at Animal Central Veterinary Clinic (Sentul), by Dr. Al-Syafiq Halim, under general anaesthetic. The lump was removed and sent for histopathology; results are pending.':
+    { title: 'جراحی: برداشتن توده (لامپکتومی)', detail: 'لامپکتومی (برداشتن توده) در Animal Central Veterinary Clinic (سِنتول)، توسط Dr. Al-Syafiq Halim، تحت بیهوشی عمومی. توده برداشته شد و برای آسیب‌شناسیِ بافت فرستاده شد؛ نتیجه در انتظار است.' },
+  'Admitted to Animal Central Veterinary Clinic (Sentul) on the morning of the surgery for the procedure and recovery, resting in a cone under round-the-clock care. Discharge date to follow.':
+    { title: 'شروع بستری در بیمارستان', detail: 'صبح روز جراحی در Animal Central Veterinary Clinic (سِنتول) بستری شد برای عمل و دوره‌ی نقاهت، با گردن‌پوش در حال استراحت و زیر مراقبتِ شبانه‌روزی. تاریخ ترخیص متعاقباً.' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: 'عقیم‌سازی + میکروچیپ', detail: 'هر دو در یک ویزیت انجام شد. او زمان بهبودی را به‌عنوان مرخصیِ اسپا حساب کرد.' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':
