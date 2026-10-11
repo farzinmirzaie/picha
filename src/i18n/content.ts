@@ -1645,6 +1645,8 @@ const healthTextMs: Record<string, { title: string; detail: string }> = {
     { title: 'Keputusan histopatologi + langkah seterusnya', detail: 'Menunggu makmal mengesahkan sama ada ketumbuhan yang dibuang itu tumor. Bergantung pada keputusan, pembedahan susulan untuk membuang kelenjar mamari yang berbaki mungkin diperlukan.' },
   'Admitted to Animal Central Veterinary Clinic (Sentul) on the morning of the surgery for the procedure and recovery, resting in a cone under round-the-clock care. Discharge date to follow.':
     { title: 'Mula dimasukkan ke hospital', detail: 'Dimasukkan ke Animal Central Veterinary Clinic (Sentul) pada pagi pembedahan untuk prosedur dan pemulihan, berehat berkolar sambil dijaga sepanjang masa. Tarikh discaj menyusul.' },
+  'Discharged and back home after about a week in hospital, recovering in the cone while the incision heals. Resting up, with the staff on wound-watch.':
+    { title: 'Pulang dari hospital', detail: 'Discaj dan kembali ke rumah selepas kira-kira seminggu di hospital, sedang pulih berkolar sementara luka sembuh. Berehat, dengan kakitangan memantau luka.' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: 'Kembiri + mikrocip', detail: 'Kedua-duanya selesai dalam satu lawatan. Dia mengira masa pemulihan sebagai cuti spa.' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':
@@ -1715,6 +1717,8 @@ const healthTextZh: Record<string, { title: string; detail: string }> = {
     { title: '组织病理结果 + 下一步', detail: '等待化验确认切除的肿块是否为肿瘤。视结果而定，可能需要再做手术切除其余乳腺。' },
   'Admitted to Animal Central Veterinary Clinic (Sentul) on the morning of the surgery for the procedure and recovery, resting in a cone under round-the-clock care. Discharge date to follow.':
     { title: '开始住院', detail: '手术当天上午住进 Animal Central Veterinary Clinic（Sentul），进行手术并恢复，戴着项圈休息，全天候看护。出院日期待定。' },
+  'Discharged and back home after about a week in hospital, recovering in the cone while the incision heals. Resting up, with the staff on wound-watch.':
+    { title: '出院回家', detail: '住院约一周后出院回家，戴着项圈恢复，等伤口愈合。好好休息，由员工看护伤口。' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: '绝育 + 芯片', detail: '一次看诊全部完成。她把恢复期记作水疗假。' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':
@@ -1784,6 +1788,8 @@ const healthTextFa: Record<string, { title: string; detail: string }> = {
     { title: 'نتیجه‌ی آسیب‌شناسی + گام بعدی', detail: 'منتظر آزمایشگاه‌ایم تا بگوید توده‌های برداشته‌شده تومورند یا نه. بسته به نتیجه، ممکن است جراحیِ بعدی برای برداشتنِ غدد پستانیِ باقی‌مانده لازم شود.' },
   'Admitted to Animal Central Veterinary Clinic (Sentul) on the morning of the surgery for the procedure and recovery, resting in a cone under round-the-clock care. Discharge date to follow.':
     { title: 'شروع بستری در بیمارستان', detail: 'صبح روز جراحی در Animal Central Veterinary Clinic (سِنتول) بستری شد برای عمل و دوره‌ی نقاهت، با گردن‌پوش در حال استراحت و زیر مراقبتِ شبانه‌روزی. تاریخ ترخیص متعاقباً.' },
+  'Discharged and back home after about a week in hospital, recovering in the cone while the incision heals. Resting up, with the staff on wound-watch.':
+    { title: 'بازگشت از بیمارستان به خانه', detail: 'پس از حدود یک هفته بستری، مرخص شد و به خانه برگشت؛ با گردن‌پوش در حال بهبودی تا زخم خوب شود. در حال استراحت، و کارکنان مراقبِ زخم.' },
   'Both done in one visit. She billed the recovery time as spa leave.':
     { title: 'عقیم‌سازی + میکروچیپ', detail: 'هر دو در یک ویزیت انجام شد. او زمان بهبودی را به‌عنوان مرخصیِ اسپا حساب کرد.' },
   'The daily ORI-EAR + Oridermyl routine begins. Tolerated with visible disapproval.':

@@ -341,6 +341,14 @@ export const healthTimeline: TimelineEntry[] = [
     where: 'at the vet',
   },
   {
+    icon: 'ph:house',
+    title: 'Home from the hospital',
+    detail:
+      'Discharged and back home after about a week in hospital, recovering in the cone while the incision heals. Resting up, with the staff on wound-watch.',
+    date: '2026-10-10',
+    where: 'at home',
+  },
+  {
     icon: 'ph:flask',
     title: 'Histopathology result + next step',
     detail:
