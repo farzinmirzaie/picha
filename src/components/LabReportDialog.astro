@@ -35,11 +35,24 @@ const copyFor = (r: LabReport) => {
       original: c.surgery.originalHeading,
       disclaimer: c.surgery.disclaimer,
     };
+  if (r.kind === 'document')
+    return {
+      title: c.document.sheetTitle,
+      intro: c.document.intro,
+      original: c.document.originalHeading,
+      disclaimer: c.document.disclaimer,
+    };
   return { title: c.sheetTitle, intro: c.transcribed, original: c.originalHeading, disclaimer: c.disclaimer };
 };
-// imaging + surgery render captioned, contain-fit images on a dark tile.
+// imaging/surgery/document render captioned, contain-fit images (no tables).
 const galleryIconFor = (r: LabReport) =>
-  r.kind === 'surgery' ? 'ph:images' : r.kind === 'imaging' ? 'ph:scan' : 'ph:image';
+  r.kind === 'surgery'
+    ? 'ph:images'
+    : r.kind === 'document'
+      ? 'ph:file-text'
+      : r.kind === 'imaging'
+        ? 'ph:scan'
+        : 'ph:image';
 
 // Original images: src/assets/labs/<id>-<n>.jpg, mapped by convention.
 const labImages = import.meta.glob<{ default: ImageMetadata }>(
@@ -55,7 +68,8 @@ const reports = await Promise.all(
   labReports.map(async (r) => ({
     report: r,
     copy: copyFor(r),
-    contain: r.kind === 'imaging' || r.kind === 'surgery',
+    contain: r.kind === 'imaging' || r.kind === 'surgery' || r.kind === 'document',
+    darkTile: r.kind === 'imaging' || r.kind === 'surgery',
     galleryIcon: galleryIconFor(r),
     photos: await Promise.all(
       Array.from({ length: r.images }, async (_, i) => {
@@ -70,7 +84,7 @@ const reports = await Promise.all(
 ---
 
 {
-  reports.map(({ report, copy, contain, galleryIcon, photos }) => (
+  reports.map(({ report, copy, contain, darkTile, galleryIcon, photos }) => (
     <dialog id={`lab-${report.id}`} class="sheet" aria-labelledby={`lab-${report.id}-title`}>
       <div class="bg-paper-50 text-ink-900 max-md:pb-[env(safe-area-inset-bottom)] dark:bg-plum-900 dark:text-paper-100">
         <SheetHeader title={copy.title} titleId={`lab-${report.id}-title`} closeLabel={c.closeLabel} />
@@ -162,7 +176,7 @@ const reports = await Promise.all(
                     rel="noopener"
                     class:list={[
                       'group block overflow-hidden rounded-2xl border transition-shadow hover:shadow-md',
-                      contain
+                      darkTile
                         ? 'border-plum-700 bg-black dark:border-plum-700'
                         : 'border-blush-200/70 bg-white dark:border-plum-700 dark:bg-plum-950',
                     ]}
@@ -174,20 +188,21 @@ const reports = await Promise.all(
                       densities={[1, 2]}
                       class:list={[
                         'w-full',
-                        contain ? 'h-44 bg-black object-contain sm:h-56' : 'h-52 object-cover object-top sm:h-64',
+                        contain ? 'h-44 object-contain sm:h-56' : 'h-52 object-cover object-top sm:h-64',
+                        darkTile ? 'bg-black' : 'bg-white',
                       ]}
                     />
                     {p!.caption && (
                       <span class:list={[
                         'block px-2 pt-1.5 text-center text-[11px] font-bold',
-                        contain ? 'text-paper-200' : 'text-ink-600 dark:text-ink-400',
+                        darkTile ? 'text-paper-200' : 'text-ink-600 dark:text-ink-400',
                       ]}>
                         {p!.caption}
                       </span>
                     )}
                     <span class:list={[
                       'flex items-center justify-center gap-1.5 py-2 text-[11px] font-bold',
-                      contain ? 'text-blush-300' : 'text-blush-600 dark:text-blush-300',
+                      darkTile ? 'text-blush-300' : 'text-blush-600 dark:text-blush-300',
                     ]}>
                       <Icon name="ph:arrow-square-out" class="h-3.5 w-3.5" aria-hidden="true" />
                       {c.viewFull}

@@ -295,9 +295,12 @@ pages/components when changing *layout or design*, not content.
   entry via `reportId`. The record card then shows a "view" action that opens
   `LabReportDialog`. `kind`s: `'labs'` (default) renders transcribed panels
   (tables + out-of-range flags) + the original printout photos; `'imaging'`
-  (X-ray/ultrasound) and `'surgery'` (clinical photo set) skip the tables and
-  show captioned, contain-fit images on a dark tile (each kind has its own
-  `getLabCopy` override block for the chip/title/intro/disclaimer).
+  (X-ray/ultrasound) and `'surgery'` (clinical photo set) show captioned,
+  contain-fit images on a dark tile; `'document'` (scanned report pages, e.g. a
+  histopath PDF rendered to page images) shows them contain-fit on a light tile.
+  Each non-labs kind has its own `getLabCopy` override block for the
+  chip/title/intro/disclaimer; the dialog's `contain` (object-fit) and
+  `darkTile` (tile colour) flags are set per kind.
   Images live in `assets/labs/<id>-<n>.jpg`; `imageCaptions[]` (index-aligned,
   facts shown verbatim, e.g. "Thorax · lateral") label them. Numbers/codes/
   units/captions are language-neutral facts kept exactly as printed (results as

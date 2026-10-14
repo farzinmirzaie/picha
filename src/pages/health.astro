@@ -292,13 +292,20 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
           done.map((e) => {
             const rep = e.reportId ? labReportById(e.reportId) : undefined;
             const kind = rep?.kind ?? 'labs';
-            const sub = kind === 'imaging' ? lc.imaging : kind === 'surgery' ? lc.surgery : lc;
+            const sub =
+              kind === 'imaging' ? lc.imaging
+              : kind === 'surgery' ? lc.surgery
+              : kind === 'document' ? lc.document
+              : lc;
             const chipText = sub.reportChip;
             const viewText = sub.viewReport;
             const repIcon =
-              kind === 'imaging' ? 'ph:scan' : kind === 'surgery' ? 'ph:images' : 'ph:flask';
+              kind === 'imaging' ? 'ph:scan'
+              : kind === 'surgery' ? 'ph:images'
+              : kind === 'document' ? 'ph:file-text'
+              : 'ph:flask';
             const btnIcon =
-              kind === 'labs' ? 'ph:file-magnifying-glass' : repIcon;
+              kind === 'labs' || kind === 'document' ? 'ph:file-magnifying-glass' : repIcon;
             return (
             <li class="group relative pb-8 last:pb-2">
               <span

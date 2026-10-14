@@ -1476,6 +1476,15 @@ export interface LabCopy {
     originalHeading: string;
     disclaimer: string;
   };
+  // Overrides for a scanned document report (lab report pages).
+  document: {
+    reportChip: string;
+    viewReport: string;
+    sheetTitle: string;
+    intro: string;
+    originalHeading: string;
+    disclaimer: string;
+  };
 }
 export const labCopy: Record<string, LabCopy> = {
   en: {
@@ -1510,6 +1519,14 @@ export const labCopy: Record<string, LabCopy> = {
       intro: 'Photos from the procedure and recovery, kept here for the record. Heads up: a couple are graphic. Tap one to open it full size.',
       originalHeading: 'Photos',
       disclaimer: 'A record of the procedure, not medical advice. Questions about the wound or recovery go to the vet.',
+    },
+    document: {
+      reportChip: 'Lab report',
+      viewReport: 'View report',
+      sheetTitle: 'Lab report',
+      intro: 'The full report on file, so any vet can read it in context. Tap a page to open it full size.',
+      originalHeading: 'Report',
+      disclaimer: 'The report itself; the reading and the plan are the vet’s.',
     },
   },
   ms: {
@@ -1546,6 +1563,14 @@ export const labCopy: Record<string, LabCopy> = {
       originalHeading: 'Foto',
       disclaimer: 'Satu rekod prosedur, bukan nasihat perubatan. Soalan tentang luka atau pemulihan, rujuk doktor haiwan.',
     },
+    document: {
+      reportChip: 'Laporan makmal',
+      viewReport: 'Lihat laporan',
+      sheetTitle: 'Laporan makmal',
+      intro: 'Laporan penuh disimpan di sini supaya mana-mana doktor haiwan boleh membacanya. Ketik satu halaman untuk buka saiz penuh.',
+      originalHeading: 'Laporan',
+      disclaimer: 'Laporan itu sendiri; tafsiran dan rancangan adalah urusan doktor haiwan.',
+    },
   },
   zh: {
     reportChip: '化验报告',
@@ -1578,6 +1603,14 @@ export const labCopy: Record<string, LabCopy> = {
       intro: '手术和恢复过程的照片，留作记录。提醒：有几张画面较血腥。点按可查看原图。',
       originalHeading: '照片',
       disclaimer: '仅为手术记录，并非医疗建议。有关伤口或恢复的问题请咨询兽医。',
+    },
+    document: {
+      reportChip: '化验报告',
+      viewReport: '查看报告',
+      sheetTitle: '化验报告',
+      intro: '完整报告存档于此，方便任何兽医结合情况查阅。点按某页可查看原图。',
+      originalHeading: '报告',
+      disclaimer: '这只是报告本身；解读和方案由兽医决定。',
     },
   },
   fa: {
@@ -1612,6 +1645,14 @@ export const labCopy: Record<string, LabCopy> = {
       intro: 'عکس‌هایی از عمل و دوره‌ی نقاهت، برای ثبت در پرونده. توجه: چند تا از آن‌ها واضح و تصویریِ زخم‌اند. برای دیدن اندازه‌ی کامل روی هرکدام ضربه بزنید.',
       originalHeading: 'عکس‌ها',
       disclaimer: 'این فقط ثبتِ عمل است، نه توصیه‌ی پزشکی. پرسش درباره‌ی زخم یا نقاهت را از دامپزشک بپرسید.',
+    },
+    document: {
+      reportChip: 'گزارش آزمایش',
+      viewReport: 'دیدن گزارش',
+      sheetTitle: 'گزارش آزمایش',
+      intro: 'گزارشِ کامل اینجا نگه داشته شده تا هر دامپزشکی بتواند آن را بخواند. برای دیدن اندازه‌ی کامل، روی هر صفحه ضربه بزنید.',
+      originalHeading: 'گزارش',
+      disclaimer: 'خودِ گزارش است؛ تفسیر و برنامه با دامپزشک.',
     },
   },
 };

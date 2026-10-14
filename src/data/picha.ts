@@ -67,10 +67,12 @@ export interface LabReport {
   /**
    * What the report is — picks the modal's labels + icon. 'labs' is a panelled
    * result (blood work, urinalysis); 'imaging' is films (X-ray, ultrasound);
-   * 'surgery' is a clinical photo set. 'imaging'/'surgery' show captioned
-   * contain-fit images on a dark tile, no tables. Defaults to 'labs'.
+   * 'surgery' is a clinical photo set; 'document' is a scanned report (pages).
+   * 'imaging'/'surgery' show captioned contain-fit images on a dark tile;
+   * 'document' shows them contain-fit on a light tile (readable page scans).
+   * None of these three use tables. Defaults to 'labs'.
    */
-  kind?: 'labs' | 'imaging' | 'surgery';
+  kind?: 'labs' | 'imaging' | 'surgery' | 'document';
   /** ISO date the sample was taken / the study was done. */
   date: string;
   /** Where it was run (a fact, shown verbatim). */
@@ -363,6 +365,7 @@ export const healthTimeline: TimelineEntry[] = [
       'The removed lumps are benign. The lab (Dr. Mohd Khairi Hassan) read them as mammary duct ectasia with cystic dilatation and mild chronic inflammation: no malignancy, no tumour cells. Next steps to confirm with the vet.',
     date: '2026-10-12',
     where: 'at the vet',
+    reportId: 'histopath-2026-10-12',
   },
   {
     icon: 'ph:syringe',
@@ -458,6 +461,14 @@ export const labReports: LabReport[] = [
       'Abdomen · lateral',
       'Abdomen · ventro-dorsal',
     ],
+  },
+  {
+    id: 'histopath-2026-10-12',
+    kind: 'document',
+    date: '2026-10-12',
+    clinic: 'Animal Central Veterinary Clinic, Sentul, Kuala Lumpur',
+    images: 3,
+    imageCaptions: ['Page 1', 'Page 2', 'Page 3'],
   },
   {
     id: 'surgery-2026-10-03',
