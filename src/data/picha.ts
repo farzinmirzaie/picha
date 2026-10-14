@@ -349,10 +349,20 @@ export const healthTimeline: TimelineEntry[] = [
     where: 'at home',
   },
   {
-    icon: 'ph:flask',
-    title: 'Histopathology result + next step',
+    icon: 'ph:bandaids',
+    title: 'Readmitted: surgery wound reopened',
     detail:
-      'Waiting on the lab to say whether the removed lumps are tumours. Depending on the result, a follow-up surgery to remove the remaining mammary glands may be needed.',
+      'The surgical incision opened up (wound dehiscence), so she went back to Animal Central (Sentul) and was admitted again for wound care and recovery. Discharge date to follow.',
+    date: '2026-10-13',
+    where: 'at the vet',
+  },
+  {
+    icon: 'ph:flask',
+    title: 'Histopathology result: benign',
+    detail:
+      'The removed lumps are benign. The lab (Dr. Mohd Khairi Hassan) read them as mammary duct ectasia with cystic dilatation and mild chronic inflammation: no malignancy, no tumour cells. Next steps to confirm with the vet.',
+    date: '2026-10-12',
+    where: 'at the vet',
   },
   {
     icon: 'ph:syringe',
