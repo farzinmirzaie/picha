@@ -23,7 +23,7 @@ import {
 import { currentWeight } from '../data/weights';
 import { supabaseClient } from '../data/supabase';
 import { dateLabel, shortLabel, inDaysLabel } from '../lib/dates';
-import { upcomingHealth, nextDueHealth, isHealthDueSoon } from '../lib/health';
+import { upcomingHealth, nextDueHealth, isHealthDueSoon, DUE_SOON_DAYS } from '../lib/health';
 import { getHealthCopy, getLabCopy, localizeHealthItem, ageLabelI18n, localizeName } from '../i18n/content';
 
 const locale = Astro.currentLocale ?? 'en';
@@ -47,15 +47,23 @@ const upcoming = upcomingHealth(today).map(loc);
 const next = nextDueHealth(today)?.item;
 const nextLoc = next ? loc(next) : undefined;
 
-// Near-term alert: surface the single next item only when it's due within 2
-// days, or already overdue. Build-time gate, kept fresh by the nightly rebuild;
-// the countdown text itself updates live via [data-until].
+// Near-term alert: surface items due within 2 days, or already overdue, as a
+// stack of cards (so two overdue items both show). Build-time gate, kept fresh
+// by the nightly rebuild; the countdown text updates live via [data-until] and
+// each card's visibility is re-decided client-side (Layout's applyDueSoon).
 const showDueSoon = isHealthDueSoon(today);
+const daysUntil = (iso: string) => Math.round((Date.parse(iso) - Date.parse(today)) / 86_400_000);
+// Render a card for everything due within a week (or overdue); the client then
+// shows only those within DUE_SOON_DAYS. The buffer means an item crossing into
+// the threshold between daily rebuilds already has its card in the DOM.
+const DUE_CARD_WINDOW = 7;
+const dueCards = upcoming.filter((e) => e.date && daysUntil(e.date) <= DUE_CARD_WINDOW);
+const isCardDue = (iso: string) => daysUntil(iso) <= DUE_SOON_DAYS;
 
 // Build-time countdown text: the no-JS fallback inside [data-until] spans
 // (the client script recomputes it against the visitor's clock).
 const untilLabel = (iso: string) => {
-  const days = Math.round((Date.parse(iso) - Date.parse(today)) / 86_400_000);
+  const days = daysUntil(iso);
   if (days > 60) return '';
   if (days < 0) return ` (${c.overdue})`;
   return ` (${inDaysLabel(days, locale)})`;
@@ -150,14 +158,15 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
     )
   }
 
-  <!-- Due soon: the single next item, shown only within 2 days of its due date
-       (or once overdue). Always in the DOM; visibility is decided live on the
-       client (Layout's applyDueSoon, via [data-due-soon]) against the visitor's
-       clock, with the build-time state as the initial (no-JS) value. No
-       `.reveal` here — it can be revealed from hidden, where the observer never
-       fires. Countdown text updates via [data-until]. -->
+  <!-- Due soon: a STACK of cards, one per item due within 2 days (or overdue),
+       so multiple overdue items all show. Always in the DOM; the wrapper + each
+       card's visibility is decided live on the client (Layout's applyDueSoon,
+       via [data-due-soon] + [data-due-card]) against the visitor's clock, with
+       the build-time state as the no-JS fallback. No `.reveal` here — cards can
+       be revealed from hidden, where the observer never fires. Countdown text
+       updates via [data-until]. -->
   {
-    nextLoc && (
+    dueCards.length > 0 && (
       <section
         class="mx-auto w-full max-w-2xl px-5 pt-8"
         aria-label="Due soon"
@@ -167,43 +176,49 @@ const vetMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
         <SectionLabel tone="amber" icon="ph:bell-ringing" class="mb-2">
           {c.dueSoon}
         </SectionLabel>
-        <div
-          class="flex items-start gap-4 rounded-3xl border border-amber-300/60 bg-paper-50 p-6 dark:border-amber-700/40 dark:bg-plum-900"
-          {...(nextLoc.quickDone ? { 'data-care-id': nextLoc.id, 'data-care-interval': nextLoc.intervalDays } : {})}
-        >
-          <IconBadge icon={nextLoc.icon} tone="amber" />
-          <div class="min-w-0">
-            <div class="flex flex-wrap items-center gap-2">
-              <h3 class="font-display text-lg font-semibold">{nextLoc.title}</h3>
-              {nextLoc.everyLabel && <Chip tone="amber">{nextLoc.everyLabel}</Chip>}
-              {nextLoc.where && <Chip icon="ph:map-pin">{nextLoc.where}</Chip>}
+        <div class="space-y-3">
+          {dueCards.map((e) => (
+            <div
+              data-due-card
+              hidden={!isCardDue(e.date!)}
+              class="flex items-start gap-4 rounded-3xl border border-amber-300/60 bg-paper-50 p-6 dark:border-amber-700/40 dark:bg-plum-900"
+              {...(e.quickDone ? { 'data-care-id': e.id, 'data-care-interval': e.intervalDays } : {})}
+            >
+              <IconBadge icon={e.icon} tone="amber" />
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="font-display text-lg font-semibold">{e.title}</h3>
+                  {e.everyLabel && <Chip tone="amber">{e.everyLabel}</Chip>}
+                  {e.where && <Chip icon="ph:map-pin">{e.where}</Chip>}
+                </div>
+                <p class="mt-1 text-xs font-bold text-amber-700 dark:text-amber-300">
+                  {e.everyLabel && c.dueApprox}
+                  <span data-date-label>{dateLabel(e.date!, locale)}</span>
+                  <span data-until={e.date} data-overdue={c.overdue}>
+                    {untilLabel(e.date!)}
+                  </span>
+                </p>
+                <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
+                  {e.detail}
+                </p>
+                {e.quickDone && (
+                  <>
+                    <button
+                      type="button"
+                      data-care-done
+                      data-staff-only
+                      style="display:none"
+                      class="mt-3 inline-flex items-center gap-1.5 rounded-full border border-amber-400/70 bg-amber-100/60 px-3.5 py-1.5 text-xs font-bold text-amber-800 transition-colors hover:bg-amber-100 active:bg-amber-200/70 disabled:opacity-60 dark:border-amber-600/60 dark:bg-amber-900/30 dark:text-amber-200 dark:hover:bg-amber-900/50"
+                    >
+                      <Icon name="ph:check-circle" class="h-4 w-4" aria-hidden="true" />
+                      <span data-care-label>{c.careDone.action}</span>
+                    </button>
+                    <span data-care-note hidden aria-live="polite" class="mt-1.5 block text-xs font-bold text-red-500" />
+                  </>
+                )}
+              </div>
             </div>
-            <p class="mt-1 text-xs font-bold text-amber-700 dark:text-amber-300">
-              {nextLoc.everyLabel && c.dueApprox}
-              <span data-date-label>{dateLabel(nextLoc.date!, locale)}</span>
-              <span data-until={nextLoc.date} data-overdue={c.overdue}>
-                {untilLabel(nextLoc.date!)}
-              </span>
-            </p>
-            <p class="mt-1 text-sm leading-relaxed text-ink-600 dark:text-ink-400">
-              {nextLoc.detail}
-            </p>
-            {nextLoc.quickDone && (
-              <>
-                <button
-                  type="button"
-                  data-care-done
-                  data-staff-only
-                  style="display:none"
-                  class="mt-3 inline-flex items-center gap-1.5 rounded-full border border-amber-400/70 bg-amber-100/60 px-3.5 py-1.5 text-xs font-bold text-amber-800 transition-colors hover:bg-amber-100 active:bg-amber-200/70 disabled:opacity-60 dark:border-amber-600/60 dark:bg-amber-900/30 dark:text-amber-200 dark:hover:bg-amber-900/50"
-                >
-                  <Icon name="ph:check-circle" class="h-4 w-4" aria-hidden="true" />
-                  <span data-care-label>{c.careDone.action}</span>
-                </button>
-                <span data-care-note hidden aria-live="polite" class="mt-1.5 block text-xs font-bold text-red-500" />
-              </>
-            )}
-          </div>
+          ))}
         </div>
       </section>
     )

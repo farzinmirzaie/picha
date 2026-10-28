@@ -203,50 +203,58 @@ const appTitle =
       }
 
       // "Due soon" is decided here, on the client, against the visitor's own
-      // clock — so the Due soon card, the Health tab badge and the PWA app-icon
+      // clock — so the Due soon cards, the Health tab badge and the PWA app-icon
       // badge flip live (even across midnight, on refocus) without waiting for
-      // a rebuild. The soonest due-date is stamped on <body data-health-next> at
-      // build time; only the date is server-rendered, the threshold is client.
+      // a rebuild. The soonest due-date is stamped on <body data-health-next>
+      // (drives the badges); each Due soon card carries its own [data-until]
+      // date, so every overdue / imminent item shows, stacked, not just one.
       const DUE_SOON_DAYS = 2; // within 2 days, or overdue (negative)
+      const daysToDue = (iso: string) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return Math.round((new Date(iso).getTime() - today.getTime()) / 86_400_000);
+      };
       function applyDueSoon() {
-        const iso = document.body.dataset.healthNext;
-        let due = false;
-        if (iso) {
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          const days = Math.round((new Date(iso).getTime() - today.getTime()) / 86_400_000);
-          due = days <= DUE_SOON_DAYS;
-        }
-        // Health tab badge (dot + sr-only text, desktop + mobile)
+        // Badges: driven by the soonest due-date on <body data-health-next>.
+        const soonest = document.body.dataset.healthNext;
+        const badgeDue = soonest ? daysToDue(soonest) <= DUE_SOON_DAYS : false;
         document
           .querySelectorAll<HTMLElement>('[data-health-badge]')
-          .forEach((el) => el.classList.toggle('hidden', !due));
-        // Health page "Due soon" card (present only on /health/). It can't use
-        // `.reveal` in markup (the scroll observer never fires for an
-        // initially-hidden element), so play the matching fade-up KEYFRAME when
-        // it (re)appears — a keyframe fires reliably on class-add even right
-        // after un-hiding, where a transition often wouldn't.
-        const card = document.querySelector<HTMLElement>('[data-due-soon]');
-        if (card) {
-          const wasHidden = card.hidden;
-          card.hidden = !due;
-          if (due && (wasHidden || !card.dataset.shown)) {
-            card.dataset.shown = '1';
-            card.classList.remove('fade-up-in');
-            void card.offsetWidth; // restart the animation on re-show
-            card.classList.add('fade-up-in');
-          } else if (!due) {
-            delete card.dataset.shown;
-          }
-        }
+          .forEach((el) => el.classList.toggle('hidden', !badgeDue));
         // PWA app-icon badge (Badging API; installed apps only, no-op elsewhere)
         const nav = navigator as Navigator & {
           setAppBadge?: (n?: number) => Promise<void>;
           clearAppBadge?: () => Promise<void>;
         };
         if (nav.setAppBadge) {
-          if (due) nav.setAppBadge().catch(() => {});
+          if (badgeDue) nav.setAppBadge().catch(() => {});
           else nav.clearAppBadge?.().catch(() => {});
+        }
+
+        // Health page "Due soon" cards (present only on /health/): show every
+        // card whose own date is within the threshold, so multiple overdue
+        // items stack. The cards can't use `.reveal` (the scroll observer never
+        // fires for an initially-hidden element), so the wrapper plays the
+        // fade-up KEYFRAME when the stack (re)appears.
+        let anyDue = false;
+        document.querySelectorAll<HTMLElement>('[data-due-card]').forEach((card) => {
+          const iso = card.querySelector<HTMLElement>('[data-until]')?.dataset.until;
+          const due = iso ? daysToDue(iso) <= DUE_SOON_DAYS : false;
+          card.hidden = !due;
+          if (due) anyDue = true;
+        });
+        const section = document.querySelector<HTMLElement>('[data-due-soon]');
+        if (section) {
+          const wasHidden = section.hidden;
+          section.hidden = !anyDue;
+          if (anyDue && (wasHidden || !section.dataset.shown)) {
+            section.dataset.shown = '1';
+            section.classList.remove('fade-up-in');
+            void section.offsetWidth; // restart the animation on re-show
+            section.classList.add('fade-up-in');
+          } else if (!anyDue) {
+            delete section.dataset.shown;
+          }
         }
       }
 
