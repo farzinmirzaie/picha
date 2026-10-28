@@ -304,7 +304,7 @@ export const healthTimeline: TimelineEntry[] = [
     icon: 'ph:bug',
     title: 'Parasite control',
     detail:
-      'NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month’s flea, tick and ear-mite guard, on schedule.',
+      "NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month's flea, tick and ear-mite guard, on schedule.",
     date: '2026-09-05',
   },
   {
@@ -595,7 +595,7 @@ export const dailyChecklist = [
     id: 'water',
     icon: 'ph:drop',
     label: 'Top up the fountain',
-    hint: 'Refill the reservoir; the fountain runs itself',
+    hint: 'Refill the reservoir; running water is the only water she acknowledges',
   },
   {
     id: 'meals-1',
@@ -1391,7 +1391,7 @@ export const food: CareItem[] = [
     icon: 'ph:bowl-food',
     title: 'Portion control',
     detail:
-      'Measured meals only; the buffet is closed. Three 20 g kibble drops from the feeder (60 g a day), plus two hand-served wet courses and one afternoon treat. Post-spay royalty gains weight easily, and the waistline is under active management.',
+      'Measured meals only; the buffet is closed. Five 10 g kibble drops from the feeder (50 g a day), plus three hand-served wet courses and one afternoon treat. Post-spay royalty gains weight easily, and the waistline is under active management.',
   },
   {
     icon: 'ph:cookie',
@@ -1482,7 +1482,7 @@ export const grooming: CareItem[] = [
     title: 'Face touch-ups',
     cadence: 'As needed',
     detail:
-      'Pet wipes for the eyes and face, kept within reach for whenever the look needs refreshing.',
+      'Pet wipes for the eyes and face, kept within reach for whenever the look needs restoring to standard.',
   },
   {
     icon: 'ph:spray-bottle',

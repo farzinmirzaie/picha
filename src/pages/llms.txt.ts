@@ -149,10 +149,10 @@ Lab values transcribed exactly as printed (results kept as-is). "[HIGH]"/"[LOW]"
 
 ${labReports
   .map((r) => {
-    const head = `#### ${r.date} — ${r.clinic}${r.kind && r.kind !== 'labs' ? ` (${r.kind})` : ''}`;
+    const head = `#### ${r.date} · ${r.clinic}${r.kind && r.kind !== 'labs' ? ` (${r.kind})` : ''}`;
     const panels = (r.panels ?? [])
       .map(
-        (p) => `${labPanelLabel(p.key)} — ${p.source}:
+        (p) => `${labPanelLabel(p.key)} · ${p.source}:
 ${p.rows
   .map(
     (row) =>
@@ -199,7 +199,7 @@ ${dailyChecklist.map((c) => `- ${c.label}: ${c.hint}`).join('\n')}
 ${food.map((f) => `- **${f.title}**: ${f.detail}`).join('\n')}
 
 Daily feeding schedule (the feeder drops one 10 g kibble portion at each of five slots; wet food, in thirds, and one treat tube are mixed in by the staff):
-${feedingSchedule.map((s) => `- **${s.time} — ${s.title}**${s.amount ? ` (${s.amount})` : ''}: ${s.detail}`).join('\n')}
+${feedingSchedule.map((s) => `- **${s.time} · ${s.title}**${s.amount ? ` (${s.amount})` : ''}: ${s.detail}`).join('\n')}
 
 ### Grooming
 
@@ -213,7 +213,7 @@ ${litter.map((l) => `- **${l.title}**: ${l.detail}`).join('\n')}
 
 How to read her mood from her ears. Tone in brackets is how to treat it (calm = approach freely, alert = engaged, wary = ease off, danger = give space).
 
-${earSignals.map((s) => `- **${s.title}** [${s.tone}] — ${s.mood}: ${s.detail}`).join('\n')}
+${earSignals.map((s) => `- **${s.title}** [${s.tone}] · ${s.mood}: ${s.detail}`).join('\n')}
 
 Also watch for rapid ear-flicking or twitching: usually irritation (or a passing fly); if paired with head-shaking or scratching, check her ears.
 
@@ -221,7 +221,7 @@ Also watch for rapid ear-flicking or twitching: usually irritation (or a passing
 
 How to read her mood from her eyes and pupils. Pupil size shifts with light as well as emotion, so read eyes together with ears and body. Tone in brackets is how to treat it (calm = approach freely, alert = engaged, wary = ease off, danger = give space).
 
-${eyeSignals.map((s) => `- **${s.title}** [${s.tone}] — ${s.mood}: ${s.detail}`).join('\n')}
+${eyeSignals.map((s) => `- **${s.title}** [${s.tone}] · ${s.mood}: ${s.detail}`).join('\n')}
 
 Health note: a hard unblinking stare is a challenge (look away). Unequal pupils that do not settle, a suddenly cloudy, red or weepy eye, constant squinting, or pawing at one eye are a vet call, not a mood.
 
@@ -229,7 +229,7 @@ Health note: a hard unblinking stare is a challenge (look away). Unequal pupils 
 
 How to read her mood from her tail. Motion carries half the meaning (a fast lash beats a slow sway), so read the tail together with her ears, eyes and posture. Tone in brackets is how to treat it (calm = approach freely, alert = engaged, wary = ease off, danger = give space).
 
-${tailSignals.map((s) => `- **${s.title}** [${s.tone}] — ${s.mood}: ${s.detail}`).join('\n')}
+${tailSignals.map((s) => `- **${s.title}** [${s.tone}] · ${s.mood}: ${s.detail}`).join('\n')}
 
 ## Personality
 

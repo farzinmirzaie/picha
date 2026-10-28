@@ -986,11 +986,11 @@ const careEn: CareCopy = {
   kicker: 'Daily Care',
   title: 'A day with Picha',
   blurb:
-    'Serving Picha is a full-time position: no weekends off, benefits paid in purrs. Work through today’s rounds top to bottom; she is keeping score.',
+    "Serving Picha is a full-time position: no weekends off, benefits paid in purrs. Work through today's rounds top to bottom; she is keeping score.",
   roundsLabel: "Today's rounds",
   praise: 'All rounds complete. Management is pleased and will nap accordingly.',
   checklist: {
-    water: { label: 'Top up the fountain', hint: 'Refill the reservoir; the fountain runs itself' },
+    water: { label: 'Top up the fountain', hint: 'Refill the reservoir; running water is the only water she acknowledges' },
     'meals-1': { label: 'Wet food, morning mix', hint: 'Around 10:30am: a third of the wet food, stirred into her kibble' },
     'litter-1': { label: 'Scoop the litter', hint: 'Morning pass; she has standards' },
     combing: { label: 'The daily combing', hint: 'Both sides; she will rotate herself' },
@@ -1019,15 +1019,15 @@ const careEn: CareCopy = {
   groomingLabel: 'Grooming',
   grooming: [
     { title: 'The daily combing', cadence: 'Daily', detail: 'The tool of record is a stainless steel comb, worked through both sides while she rotates herself like a rotisserie. The long coat depends on it: it prevents mats and sustains the glamour.' },
-    { title: 'Face touch-ups', cadence: 'As needed', detail: 'Pet wipes for the eyes and face, kept within reach for whenever the look needs refreshing.' },
+    { title: 'Face touch-ups', cadence: 'As needed', detail: 'Pet wipes for the eyes and face, kept within reach for whenever the look needs restoring to standard.' },
     { title: 'Spot cleaning', cadence: 'As needed', detail: 'YEGBONG Pet Dry Cleaning Mousse (waterless), worked into the fur and brushed through, mainly under the chin and any spots that dared get dirty.' },
     { title: 'Bathing', cadence: 'Rarely', detail: 'Rarely required; the daily combing does the heavy lifting. An occasional bath or a professional spa day, by appointment.' },
     { title: 'Nails', cadence: 'Every 2–4 weeks', detail: 'A manicure every 2–4 weeks with cat clippers: front paws first, back paws as she permits. Best conducted while she is drowsy and least inclined to file a complaint.' },
     { title: 'Teeth', cadence: 'Daily', detail: 'A daily brush with Histo Tree cat-safe dental gel (beef flavour), worked along the gumline a few seconds a side. Tolerated, barely, in exchange for the treat that follows.' },
   ],
   notes: {
-    loading: 'Loading today’s rounds…',
-    offline: 'Offline: showing this device’s saved rounds.',
+    loading: "Loading today's rounds…",
+    offline: "Offline: showing this device's saved rounds.",
     resetsNightly: 'Ticks reset each night at midnight.',
     sharedResets: "Shared across the staff's devices; resets each night at midnight.",
     staffOnlyPre: 'The rounds are staff-only. ',
@@ -1047,7 +1047,7 @@ const careMs: CareCopy = {
   roundsLabel: 'Pusingan hari ini',
   praise: 'Semua pusingan selesai. Pihak pengurusan berpuas hati dan akan tidur sewajarnya.',
   checklist: {
-    water: { label: 'Isi semula pancutan air', hint: 'Isi semula takungan; pancutan berjalan sendiri' },
+    water: { label: 'Isi semula pancutan air', hint: 'Isi semula takungan; hanya air mengalir yang diiktirafnya' },
     'meals-1': { label: 'Makanan basah, gaulan pagi', hint: 'Sekitar 10:30 pagi: satu pertiga makanan basah, digaul ke dalam kibblenya' },
     'litter-1': { label: 'Cedok pasir kucing', hint: 'Pusingan pagi; dia ada standard' },
     combing: { label: 'Sikatan harian', hint: 'Kedua-dua belah; dia akan pusing sendiri' },
@@ -1076,7 +1076,7 @@ const careMs: CareCopy = {
   groomingLabel: 'Dandanan',
   grooming: [
     { title: 'Sikatan harian', cadence: 'Harian', detail: 'Alat rasminya ialah sikat keluli tahan karat, disikat di kedua-dua belah sambil dia berpusing seperti panggangan. Bulu panjangnya bergantung padanya: ia mencegah kekusutan dan mengekalkan kegemilangan.' },
-    { title: 'Solekan muka', cadence: 'Bila perlu', detail: 'Tisu haiwan untuk mata dan muka, disimpan berdekatan untuk bila-bila penampilan perlu disegarkan.' },
+    { title: 'Solekan muka', cadence: 'Bila perlu', detail: 'Tisu haiwan untuk mata dan muka, disimpan berdekatan untuk bila-bila penampilan perlu dikembalikan ke standard.' },
     { title: 'Pembersihan setempat', cadence: 'Bila perlu', detail: 'YEGBONG Pet Dry Cleaning Mousse (tanpa air), disapu ke bulu dan disikat, terutamanya di bawah dagu dan mana-mana tompok yang berani menjadi kotor.' },
     { title: 'Mandi', cadence: 'Jarang', detail: 'Jarang diperlukan; sikatan harian memikul tugas berat. Sesekali mandi atau hari spa profesional, dengan temu janji.' },
     { title: 'Kuku', cadence: 'Setiap 2–4 minggu', detail: 'Manikur setiap 2–4 minggu dengan pemotong kuku kucing: kaki depan dahulu, kaki belakang jika dia izinkan. Paling baik dilakukan ketika dia mengantuk dan kurang berminat untuk membuat aduan.' },
@@ -1104,7 +1104,7 @@ const careZh: CareCopy = {
   roundsLabel: '今日例行',
   praise: '所有例行任务已完成。管理层很满意，将据此安排小睡。',
   checklist: {
-    water: { label: '加满饮水机', hint: '添满水箱；饮水机会自己运转' },
+    water: { label: '加满饮水机', hint: '添满水箱；只有流动的水她才认可' },
     'meals-1': { label: '湿粮，早间拌入', hint: '约上午 10:30：三分之一湿粮，拌入她的猫粮' },
     'litter-1': { label: '铲猫砂', hint: '早班；她有她的标准' },
     combing: { label: '每日梳毛', hint: '两侧都要；她会自己转身' },
@@ -1133,7 +1133,7 @@ const careZh: CareCopy = {
   groomingLabel: '梳理',
   grooming: [
     { title: '每日梳毛', cadence: '每日', detail: '记录在案的工具是一把不锈钢梳，两侧都梳一遍，她像烤肉一样自己转身。长毛全靠它：防止打结，维持华丽。' },
-    { title: '面部修整', cadence: '按需', detail: '用于眼睛和脸部的宠物湿巾，放在触手可及处，随时刷新造型。' },
+    { title: '面部修整', cadence: '按需', detail: '用于眼睛和脸部的宠物湿巾，放在触手可及处，随时把造型恢复到标准。' },
     { title: '局部清洁', cadence: '按需', detail: 'YEGBONG 宠物干洗慕斯（免水），揉进毛发再刷开，主要用于下巴下方和任何胆敢弄脏的地方。' },
     { title: '洗澡', cadence: '很少', detail: '很少需要；每日梳毛已挑起大梁。偶尔洗一次澡或做一次专业水疗，需预约。' },
     { title: '指甲', cadence: '每 2–4 周', detail: '每 2–4 周用猫用指甲剪修一次：先前爪，后爪看她允许。最好趁她昏昏欲睡、最不想提出投诉时进行。' },
@@ -1161,7 +1161,7 @@ const careFa: CareCopy = {
   roundsLabel: 'کارهای امروز',
   praise: 'همه‌ی کارها تمام شد. مدیریت راضی است و طبق آن چرت خواهد زد.',
   checklist: {
-    water: { label: 'پر کردن آبشخور', hint: 'مخزن را پر کنید؛ آبشخور خودش کار می‌کند' },
+    water: { label: 'پر کردن آبشخور', hint: 'مخزن را پر کنید؛ تنها آبی که به رسمیت می‌شناسد آبِ روان است' },
     'meals-1': { label: 'غذای مرطوب، مخلوطِ صبح', hint: 'حدود ۱۰:۳۰ صبح: یک‌سوم غذای مرطوب، مخلوط در خشکبارش' },
     'litter-1': { label: 'تمیز کردن خاک‌گربه', hint: 'نوبت صبح؛ او استانداردهایی دارد' },
     combing: { label: 'شانه‌ی روزانه', hint: 'هر دو طرف؛ خودش می‌چرخد' },
@@ -1190,7 +1190,7 @@ const careFa: CareCopy = {
   groomingLabel: 'آراستن',
   grooming: [
     { title: 'شانه‌ی روزانه', cadence: 'روزانه', detail: 'ابزار رسمی یک شانه‌ی فولاد ضدزنگ است که هر دو طرف کشیده می‌شود در حالی که او مثل کباب می‌چرخد. پوشش بلندش به آن وابسته است: از گره جلوگیری می‌کند و شکوه را حفظ.' },
-    { title: 'اصلاح صورت', cadence: 'در صورت نیاز', detail: 'دستمال مرطوب حیوان برای چشم‌ها و صورت، در دسترس برای هر وقت که ظاهر نیاز به تازگی داشت.' },
+    { title: 'اصلاح صورت', cadence: 'در صورت نیاز', detail: 'دستمال مرطوب حیوان برای چشم‌ها و صورت، در دسترس برای هر وقت که ظاهر باید به استانداردِ همیشگی برگردد.' },
     { title: 'تمیزکاری موضعی', cadence: 'در صورت نیاز', detail: 'موس خشکشوییِ حیوان YEGBONG (بدون آب)، به پوست مالیده و شانه می‌شود، عمدتاً زیر چانه و هر جایی که جرئت کرده کثیف شود.' },
     { title: 'حمام', cadence: 'به‌ندرت', detail: 'به‌ندرت لازم است؛ شانه‌ی روزانه بار اصلی را می‌کشد. گاهی یک حمام یا یک روز اسپای حرفه‌ای، با وقت قبلی.' },
     { title: 'ناخن‌ها', cadence: 'هر ۲ تا ۴ هفته', detail: 'مانیکور هر ۲ تا ۴ هفته با ناخن‌گیر گربه: اول پنجه‌های جلو، پنجه‌های عقب به‌اندازه‌ای که اجازه دهد. بهترین زمان وقتی است که خواب‌آلود است و کمترین تمایل به ثبت شکایت را دارد.' },
@@ -1526,7 +1526,7 @@ export const labCopy: Record<string, LabCopy> = {
       sheetTitle: 'Lab report',
       intro: 'The full report on file, so any vet can read it in context. Tap a page to open it full size.',
       originalHeading: 'Report',
-      disclaimer: 'The report itself; the reading and the plan are the vet’s.',
+      disclaimer: "The report itself; the reading and the plan are the vet's.",
     },
   },
   ms: {
@@ -1698,7 +1698,7 @@ const healthTextMs: Record<string, { title: string; detail: string }> = {
     { title: 'Kursus rawatan telinga selesai', detail: 'Kursus penuh ORI-EAR + Oridermyl selesai; telinga pulih. Rasa tidak setuju harian kini boleh dihentikan.' },
   'NexGard Combo spot-on applied at the base of the skull, her new monthly flea and tick guard. Revolution Plus retired.':
     { title: 'Kawalan parasit', detail: 'NexGard Combo spot-on disapu di pangkal tengkorak, pelindung kutu dan sengkenit bulanannya yang baharu. Revolution Plus dihentikan.' },
-  'NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month’s flea, tick and ear-mite guard, on schedule.':
+  "NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month's flea, tick and ear-mite guard, on schedule.":
     { title: 'Kawalan parasit', detail: 'NexGard Combo spot-on disapu semula di rumah, dibelah ke kulit di pangkal tengkorak. Pelindung kutu, sengkenit dan hama telinga bulan ini, mengikut jadual.' },
   'Required before any travel plans Her Fluffiness may approve.':
     { title: 'Vaksin rabies', detail: 'Diperlukan sebelum sebarang rancangan perjalanan yang Tuan Puteri Gebu luluskan.' },
@@ -1772,7 +1772,7 @@ const healthTextZh: Record<string, { title: string; detail: string }> = {
     { title: '耳部疗程完成', detail: '完整的 ORI-EAR + Oridermyl 疗程结束；耳朵已康复。每日的不满现在可以停止了。' },
   'NexGard Combo spot-on applied at the base of the skull, her new monthly flea and tick guard. Revolution Plus retired.':
     { title: '寄生虫防治', detail: 'NexGard Combo 滴剂已滴于颅骨底部，是她新的每月跳蚤和蜱虫防护。Revolution Plus 已退役。' },
-  'NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month’s flea, tick and ear-mite guard, on schedule.':
+  "NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month's flea, tick and ear-mite guard, on schedule.":
     { title: '寄生虫防治', detail: 'NexGard Combo 滴剂在家重新使用，拨开毛发滴在颅骨底部的皮肤上。本月的跳蚤、蜱虫和耳螨防护，按时完成。' },
   'Required before any travel plans Her Fluffiness may approve.':
     { title: '狂犬病疫苗', detail: '在绒毛殿下可能批准的任何旅行计划之前都需要。' },
@@ -1845,7 +1845,7 @@ const healthTextFa: Record<string, { title: string; detail: string }> = {
     { title: 'پایان دوره‌ی درمان گوش', detail: 'دوره‌ی کامل ORI-EAR + Oridermyl تمام شد؛ گوش‌ها بهبود یافت. نارضایتیِ روزانه اکنون می‌تواند متوقف شود.' },
   'NexGard Combo spot-on applied at the base of the skull, her new monthly flea and tick guard. Revolution Plus retired.':
     { title: 'کنترل انگل', detail: 'قطره‌ی موضعی NexGard Combo روی پایه‌ی جمجمه استفاده شد، محافظِ ماهانه‌ی جدیدِ کک و کنه‌اش. Revolution Plus بازنشسته شد.' },
-  'NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month’s flea, tick and ear-mite guard, on schedule.':
+  "NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month's flea, tick and ear-mite guard, on schedule.":
     { title: 'کنترل انگل', detail: 'قطره‌ی موضعی NexGard Combo دوباره در خانه استفاده شد، جدا و مالیده روی پوستِ پایه‌ی جمجمه. محافظِ این‌ماهِ کک، کنه و جربِ گوش، سرِ موعد.' },
   'Required before any travel plans Her Fluffiness may approve.':
     { title: 'واکسن هاری', detail: 'پیش از هر برنامه‌ی سفری که علیاحضرت پشمالو تأیید کند لازم است.' },
