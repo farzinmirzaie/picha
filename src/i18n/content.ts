@@ -1700,6 +1700,10 @@ const healthTextMs: Record<string, { title: string; detail: string }> = {
     { title: 'Kawalan parasit', detail: 'NexGard Combo spot-on disapu di pangkal tengkorak, pelindung kutu dan sengkenit bulanannya yang baharu. Revolution Plus dihentikan.' },
   "NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month's flea, tick and ear-mite guard, on schedule.":
     { title: 'Kawalan parasit', detail: 'NexGard Combo spot-on disapu semula di rumah, dibelah ke kulit di pangkal tengkorak. Pelindung kutu, sengkenit dan hama telinga bulan ini, mengikut jadual.' },
+  'NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. Her flea, tick and ear-mite guard, back on track after running a little late.':
+    { title: 'Kawalan parasit', detail: 'NexGard Combo spot-on disapu semula di rumah, dibelah ke kulit di pangkal tengkorak. Pelindung kutu, sengkenit dan hama telinganya, kembali seperti biasa selepas lewat sedikit.' },
+  'The 3-monthly dewormer, given at home a little ahead of schedule alongside the parasite spot-on. A pill, smuggled inside something tasty.':
+    { title: 'Nyahcacing', detail: 'Ubat cacing 3 bulan, diberi di rumah lebih awal sedikit daripada jadual bersama spot-on parasit. Sebiji pil, diselitkan di dalam sesuatu yang sedap.' },
   'Required before any travel plans Her Fluffiness may approve.':
     { title: 'Vaksin rabies', detail: 'Diperlukan sebelum sebarang rancangan perjalanan yang Tuan Puteri Gebu luluskan.' },
   'Optional. To discuss with whichever vet wins the job.':
@@ -1774,6 +1778,10 @@ const healthTextZh: Record<string, { title: string; detail: string }> = {
     { title: '寄生虫防治', detail: 'NexGard Combo 滴剂已滴于颅骨底部，是她新的每月跳蚤和蜱虫防护。Revolution Plus 已退役。' },
   "NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month's flea, tick and ear-mite guard, on schedule.":
     { title: '寄生虫防治', detail: 'NexGard Combo 滴剂在家重新使用，拨开毛发滴在颅骨底部的皮肤上。本月的跳蚤、蜱虫和耳螨防护，按时完成。' },
+  'NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. Her flea, tick and ear-mite guard, back on track after running a little late.':
+    { title: '寄生虫防治', detail: 'NexGard Combo 滴剂在家重新使用，拨开毛发滴在颅骨底部的皮肤上。她的跳蚤、蜱虫和耳螨防护，稍微迟了一点后重回正轨。' },
+  'The 3-monthly dewormer, given at home a little ahead of schedule alongside the parasite spot-on. A pill, smuggled inside something tasty.':
+    { title: '已驱虫', detail: '三个月一次的驱虫药，在家比预定时间稍早一点、与体外驱虫滴剂一同给药。一粒药丸，藏在美味里悄悄喂下。' },
   'Required before any travel plans Her Fluffiness may approve.':
     { title: '狂犬病疫苗', detail: '在绒毛殿下可能批准的任何旅行计划之前都需要。' },
   'Optional. To discuss with whichever vet wins the job.':
@@ -1847,6 +1855,10 @@ const healthTextFa: Record<string, { title: string; detail: string }> = {
     { title: 'کنترل انگل', detail: 'قطره‌ی موضعی NexGard Combo روی پایه‌ی جمجمه استفاده شد، محافظِ ماهانه‌ی جدیدِ کک و کنه‌اش. Revolution Plus بازنشسته شد.' },
   "NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. This month's flea, tick and ear-mite guard, on schedule.":
     { title: 'کنترل انگل', detail: 'قطره‌ی موضعی NexGard Combo دوباره در خانه استفاده شد، جدا و مالیده روی پوستِ پایه‌ی جمجمه. محافظِ این‌ماهِ کک، کنه و جربِ گوش، سرِ موعد.' },
+  'NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. Her flea, tick and ear-mite guard, back on track after running a little late.':
+    { title: 'کنترل انگل', detail: 'قطره‌ی موضعی NexGard Combo دوباره در خانه استفاده شد، جدا و مالیده روی پوستِ پایه‌ی جمجمه. محافظِ کک، کنه و جربِ گوشش، بعد از کمی تأخیر دوباره سرِ جا.' },
+  'The 3-monthly dewormer, given at home a little ahead of schedule alongside the parasite spot-on. A pill, smuggled inside something tasty.':
+    { title: 'کرم‌زدایی شد', detail: 'کرم‌زدای سه‌ماهه، در خانه کمی زودتر از موعد و همراه با قطره‌ی ضدانگل داده شد. یک قرص، پنهان‌شده در چیزی خوشمزه.' },
   'Required before any travel plans Her Fluffiness may approve.':
     { title: 'واکسن هاری', detail: 'پیش از هر برنامه‌ی سفری که علیاحضرت پشمالو تأیید کند لازم است.' },
   'Optional. To discuss with whichever vet wins the job.':

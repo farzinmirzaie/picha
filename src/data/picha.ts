@@ -368,6 +368,20 @@ export const healthTimeline: TimelineEntry[] = [
     reportId: 'histopath-2026-10-12',
   },
   {
+    icon: 'ph:bug',
+    title: 'Parasite control',
+    detail:
+      'NexGard Combo spot-on reapplied at home, parted onto the skin at the base of the skull. Her flea, tick and ear-mite guard, back on track after running a little late.',
+    date: '2026-10-29',
+  },
+  {
+    icon: 'ph:pill',
+    title: 'Dewormed',
+    detail:
+      'The 3-monthly dewormer, given at home a little ahead of schedule alongside the parasite spot-on. A pill, smuggled inside something tasty.',
+    date: '2026-10-29',
+  },
+  {
     icon: 'ph:syringe',
     title: 'Rabies vaccine',
     detail: 'Required before any travel plans Her Fluffiness may approve.',
@@ -505,7 +519,7 @@ export const recurringCare: RecurringItem[] = [
       'NexGard Combo spot-on, parted onto the skin at the base of the skull (the back of the head), where she cannot lick it off. Fleas, ticks and ear mites, evicted. Monthly with a few days of grace, but never sooner than a month apart; a bit late is fine, too early risks a double dose.',
     everyLabel: 'Every month',
     intervalDays: 35,
-    lastDone: '2026-09-05',
+    lastDone: '2026-10-29',
     where: 'at home',
   },
   {
@@ -516,7 +530,7 @@ export const recurringCare: RecurringItem[] = [
       'A separate dewormer on the standard adult schedule (the spot-on does not replace it): a pill, smuggled in inside something delicious and served without ceremony.',
     everyLabel: 'Every 3 months',
     intervalDays: 90,
-    lastDone: '2026-09-23',
+    lastDone: '2026-10-29',
     where: 'at home',
   },
   {
