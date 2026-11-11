@@ -382,6 +382,23 @@ export const healthTimeline: TimelineEntry[] = [
     date: '2026-10-29',
   },
   {
+    icon: 'ph:wave-sine',
+    title: 'Laser therapy sessions',
+    detail:
+      "During her stay she doubled as a test patient for the clinic's new laser (photobiomodulation) therapy machine: a few sessions to nudge the stubborn wound along, goggles on and looking very professional.",
+    date: '2026-11-11',
+    where: 'at the vet',
+  },
+  {
+    icon: 'ph:house',
+    title: 'Home from the hospital, round two',
+    detail:
+      'Back home after a long stay. The reopened wound was cleaned for a couple of weeks, then re-stitched; the stitches gave way again after a few days because there was too much tension on it, though the opening is smaller now. Rather than stitch it a third time, the vet is letting it close on its own, so it is cone-and-rest for about two weeks. Tap to see how it looks tonight.',
+    date: '2026-11-11',
+    where: 'at home',
+    reportId: 'recovery-2026-11-11',
+  },
+  {
     icon: 'ph:syringe',
     title: 'Rabies vaccine',
     detail: 'Required before any travel plans Her Fluffiness may approve.',
@@ -496,6 +513,19 @@ export const labReports: LabReport[] = [
       'The incision, close-up',
       'Removed tissue, sent to the lab',
       'Recovering, in the cone',
+    ],
+  },
+  {
+    id: 'recovery-2026-11-11',
+    kind: 'surgery',
+    date: '2026-11-11',
+    clinic: 'Animal Central Veterinary Clinic, Sentul, Kuala Lumpur',
+    images: 4,
+    imageCaptions: [
+      'Laser therapy session',
+      'In her laser goggles',
+      'The wound tonight, much smaller now',
+      'Home and recovering, in the cone',
     ],
   },
 ];

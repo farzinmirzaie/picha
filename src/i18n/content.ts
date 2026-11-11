@@ -1704,6 +1704,10 @@ const healthTextMs: Record<string, { title: string; detail: string }> = {
     { title: 'Kawalan parasit', detail: 'NexGard Combo spot-on disapu semula di rumah, dibelah ke kulit di pangkal tengkorak. Pelindung kutu, sengkenit dan hama telinganya, kembali seperti biasa selepas lewat sedikit.' },
   'The 3-monthly dewormer, given at home a little ahead of schedule alongside the parasite spot-on. A pill, smuggled inside something tasty.':
     { title: 'Nyahcacing', detail: 'Ubat cacing 3 bulan, diberi di rumah lebih awal sedikit daripada jadual bersama spot-on parasit. Sebiji pil, diselitkan di dalam sesuatu yang sedap.' },
+  "During her stay she doubled as a test patient for the clinic's new laser (photobiomodulation) therapy machine: a few sessions to nudge the stubborn wound along, goggles on and looking very professional.":
+    { title: 'Sesi terapi laser', detail: 'Semasa menginap di sana, dia merangkap pesakit ujian untuk mesin terapi laser (fotobiomodulasi) baharu klinik: beberapa sesi untuk membantu luka degil itu pulih, berkaca mata dan kelihatan sangat profesional.' },
+  'Back home after a long stay. The reopened wound was cleaned for a couple of weeks, then re-stitched; the stitches gave way again after a few days because there was too much tension on it, though the opening is smaller now. Rather than stitch it a third time, the vet is letting it close on its own, so it is cone-and-rest for about two weeks. Tap to see how it looks tonight.':
+    { title: 'Pulang dari hospital, pusingan kedua', detail: 'Kembali ke rumah selepas penginapan yang panjang. Luka yang terbuka semula dibersihkan selama beberapa minggu, kemudian dijahit semula; jahitan terbuka lagi selepas beberapa hari kerana terlalu banyak tegangan padanya, walaupun bukaannya lebih kecil sekarang. Daripada menjahitnya kali ketiga, doktor membiarkannya menutup sendiri, jadi berkolar dan berehat selama kira-kira dua minggu. Ketik untuk lihat keadaannya malam ini.' },
   'Required before any travel plans Her Fluffiness may approve.':
     { title: 'Vaksin rabies', detail: 'Diperlukan sebelum sebarang rancangan perjalanan yang Tuan Puteri Gebu luluskan.' },
   'Optional. To discuss with whichever vet wins the job.':
@@ -1782,6 +1786,10 @@ const healthTextZh: Record<string, { title: string; detail: string }> = {
     { title: '寄生虫防治', detail: 'NexGard Combo 滴剂在家重新使用，拨开毛发滴在颅骨底部的皮肤上。她的跳蚤、蜱虫和耳螨防护，稍微迟了一点后重回正轨。' },
   'The 3-monthly dewormer, given at home a little ahead of schedule alongside the parasite spot-on. A pill, smuggled inside something tasty.':
     { title: '已驱虫', detail: '三个月一次的驱虫药，在家比预定时间稍早一点、与体外驱虫滴剂一同给药。一粒药丸，藏在美味里悄悄喂下。' },
+  "During her stay she doubled as a test patient for the clinic's new laser (photobiomodulation) therapy machine: a few sessions to nudge the stubborn wound along, goggles on and looking very professional.":
+    { title: '激光治疗', detail: '住院期间，她还兼任诊所新激光（光生物调节）治疗仪的试验患者：做了几次来帮助这道顽固的伤口愈合，戴着护目镜，一脸专业。' },
+  'Back home after a long stay. The reopened wound was cleaned for a couple of weeks, then re-stitched; the stitches gave way again after a few days because there was too much tension on it, though the opening is smaller now. Rather than stitch it a third time, the vet is letting it close on its own, so it is cone-and-rest for about two weeks. Tap to see how it looks tonight.':
+    { title: '出院回家，第二回', detail: '长时间住院后终于回家。重新裂开的伤口清理了大约两周，然后重新缝合；几天后缝线又因张力太大而崩开，不过这次开口小了一些。医生决定不做第三次缝合，而是让它自行愈合，所以要戴项圈休养大约两周。点按查看今晚的样子。' },
   'Required before any travel plans Her Fluffiness may approve.':
     { title: '狂犬病疫苗', detail: '在绒毛殿下可能批准的任何旅行计划之前都需要。' },
   'Optional. To discuss with whichever vet wins the job.':
@@ -1859,6 +1867,10 @@ const healthTextFa: Record<string, { title: string; detail: string }> = {
     { title: 'کنترل انگل', detail: 'قطره‌ی موضعی NexGard Combo دوباره در خانه استفاده شد، جدا و مالیده روی پوستِ پایه‌ی جمجمه. محافظِ کک، کنه و جربِ گوشش، بعد از کمی تأخیر دوباره سرِ جا.' },
   'The 3-monthly dewormer, given at home a little ahead of schedule alongside the parasite spot-on. A pill, smuggled inside something tasty.':
     { title: 'کرم‌زدایی شد', detail: 'کرم‌زدای سه‌ماهه، در خانه کمی زودتر از موعد و همراه با قطره‌ی ضدانگل داده شد. یک قرص، پنهان‌شده در چیزی خوشمزه.' },
+  "During her stay she doubled as a test patient for the clinic's new laser (photobiomodulation) therapy machine: a few sessions to nudge the stubborn wound along, goggles on and looking very professional.":
+    { title: 'جلسات لیزرتراپی', detail: 'در طول بستری، او هم‌زمان بیمارِ آزمایشیِ دستگاه جدیدِ لیزرتراپیِ (فوتوبیومدولاسیون) کلینیک شد: چند جلسه برای کمک به بهبودِ آن زخمِ لجوج، با عینک و قیافه‌ای کاملاً حرفه‌ای.' },
+  'Back home after a long stay. The reopened wound was cleaned for a couple of weeks, then re-stitched; the stitches gave way again after a few days because there was too much tension on it, though the opening is smaller now. Rather than stitch it a third time, the vet is letting it close on its own, so it is cone-and-rest for about two weeks. Tap to see how it looks tonight.':
+    { title: 'بازگشت از بیمارستان، دور دوم', detail: 'بعد از یک بستریِ طولانی، برگشت خانه. زخمِ دوباره‌بازشده چند هفته تمیز نگه داشته شد، بعد دوباره بخیه زده شد؛ اما بخیه‌ها پس از چند روز دوباره باز شدند چون فشار روی زخم زیاد بود، هرچند این‌بار دهانه‌ی زخم کوچک‌تر است. دامپزشک به‌جای بخیه‌ی سوم، گذاشت خودش بسته شود، پس حدود دو هفته گردن‌پوش و استراحت. برای دیدن وضعیتِ امشب ضربه بزنید.' },
   'Required before any travel plans Her Fluffiness may approve.':
     { title: 'واکسن هاری', detail: 'پیش از هر برنامه‌ی سفری که علیاحضرت پشمالو تأیید کند لازم است.' },
   'Optional. To discuss with whichever vet wins the job.':
