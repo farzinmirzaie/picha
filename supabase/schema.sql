@@ -238,6 +238,63 @@ revoke all on function public.log_care(text, date, text) from public;
 grant execute on function public.log_care(text, date, text) to anon;
 
 -- ---------------------------------------------------------------------------
+-- Body measurements (the sizing tool). One row per measurement date; each
+-- dimension is nullable so a session can fill only what she tolerated. Content
+-- (dimension labels, how-to) lives in the repo; only the numbers live here.
+-- Read at build time by src/data/measurements.ts; same registrar PIN as the rest.
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.picha_measurements (
+  date       date primary key,
+  back_cm    numeric(4, 1) check (back_cm  > 0 and back_cm  < 200),
+  chest_cm   numeric(4, 1) check (chest_cm > 0 and chest_cm < 200),
+  neck_cm    numeric(4, 1) check (neck_cm  > 0 and neck_cm  < 200),
+  belly_cm   numeric(4, 1) check (belly_cm > 0 and belly_cm < 200),
+  leg_cm     numeric(4, 1) check (leg_cm   > 0 and leg_cm   < 200),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.picha_measurements enable row level security;
+
+drop policy if exists "anon read" on public.picha_measurements;
+create policy "anon read" on public.picha_measurements
+  for select to anon using (true);
+
+-- Record/patch a session's measurements. A NULL argument leaves that dimension
+-- as it was (COALESCE), so you can add one measurement to an existing date later
+-- without wiping the others. Rows are created lazily on first write.
+create or replace function public.log_measurement(
+  p_date date,
+  p_back numeric,
+  p_chest numeric,
+  p_neck numeric,
+  p_belly numeric,
+  p_leg numeric,
+  p_pin text
+)
+returns void
+language plpgsql
+security definer
+set search_path = public, private
+as $$
+begin
+  perform private.verify_staff_pin(p_pin);
+  insert into public.picha_measurements (date, back_cm, chest_cm, neck_cm, belly_cm, leg_cm, updated_at)
+    values (p_date, p_back, p_chest, p_neck, p_belly, p_leg, now())
+  on conflict (date) do update set
+    back_cm  = coalesce(excluded.back_cm,  public.picha_measurements.back_cm),
+    chest_cm = coalesce(excluded.chest_cm, public.picha_measurements.chest_cm),
+    neck_cm  = coalesce(excluded.neck_cm,  public.picha_measurements.neck_cm),
+    belly_cm = coalesce(excluded.belly_cm, public.picha_measurements.belly_cm),
+    leg_cm   = coalesce(excluded.leg_cm,   public.picha_measurements.leg_cm),
+    updated_at = now();
+end;
+$$;
+
+revoke all on function public.log_measurement(date, numeric, numeric, numeric, numeric, numeric, text) from public;
+grant execute on function public.log_measurement(date, numeric, numeric, numeric, numeric, numeric, text) to anon;
+
+-- ---------------------------------------------------------------------------
 -- PIN gate for the Staff tool (/tools/staff/). Verifies the registrar PIN
 -- without touching any data: raises 'wrong pin' on a mismatch (same message
 -- the write RPCs use) so the client can reuse the shared sbRpc helper. The PIN

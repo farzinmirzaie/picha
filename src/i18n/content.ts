@@ -295,6 +295,10 @@ export const toolsCopy: Record<string, ToolsCopy> = {
         detail: 'Every weigh-in, charted, so the royal waistline never sneaks up on anyone.',
       },
       {
+        title: 'Measurements',
+        detail: 'Her sizes on file, for ordering clothes and harnesses without the guesswork.',
+      },
+      {
         title: 'Cat-years converter',
         detail: 'Her age in human years, plus the maths for any cat you know.',
       },
@@ -332,6 +336,10 @@ export const toolsCopy: Record<string, ToolsCopy> = {
         detail: 'Setiap timbangan, dicarta, supaya ukur lilit pinggang diraja tidak menyelinap naik tanpa disedari.',
       },
       {
+        title: 'Ukuran',
+        detail: 'Saiznya dalam fail, untuk menempah pakaian dan abah-abah tanpa meneka.',
+      },
+      {
         title: 'Penukar tahun kucing',
         detail: 'Usianya dalam tahun manusia, berserta kiraan untuk mana-mana kucing yang anda kenal.',
       },
@@ -360,6 +368,7 @@ export const toolsCopy: Record<string, ToolsCopy> = {
     cards: [
       { title: '员工室', detail: '人类存放零食和登记员 PIN 的地方。仅限会员。' },
       { title: '体重追踪器', detail: '每一次称重都绘成图表，让皇家腰围永远不会悄悄失控。' },
+      { title: '身体尺寸', detail: '她的尺寸都存档，订衣服和胸背带不用再猜。' },
       { title: '猫龄换算器', detail: '她换算成人类年龄的岁数，外加适用于你认识的任何猫的算法。' },
       { title: '皇家学院', detail: '员工在这里一门课一门课地修炼猫咪合作之道。' },
       { title: '解读 Picha', detail: '一份关于她情绪以及她想告诉你什么的实地指南。' },
@@ -380,6 +389,7 @@ export const toolsCopy: Record<string, ToolsCopy> = {
     cards: [
       { title: 'اتاق کارکنان', detail: 'جایی که انسان‌ها تنقلات و پینِ ثبت‌کننده را نگه می‌دارند. فقط اعضا.' },
       { title: 'ردیاب وزن', detail: 'هر وزن‌کشی، روی نمودار، تا دور کمر سلطنتی هرگز بی‌خبر بالا نرود.' },
+      { title: 'اندازه‌ها', detail: 'سایزهایش در پرونده، برای سفارش لباس و قلاده بدون حدس زدن.' },
       { title: 'مبدل سال گربه', detail: 'سن او به سال انسانی، به‌همراه محاسبه برای هر گربه‌ای که می‌شناسید.' },
       { title: 'آکادمی سلطنتی', detail: 'جایی که کارکنان در همکاری گربه‌ای خبره می‌شوند، یک دوره در هر بار.' },
       { title: 'خواندنِ Picha', detail: 'راهنمای میدانیِ حال‌وهوای او و اینکه چه چیزی به شما می‌گوید.' },
@@ -2152,6 +2162,278 @@ export const weightCopy: Record<string, WeightCopy> = {
   },
 };
 export const getWeightCopy = (locale?: string): WeightCopy => weightCopy[locale ?? 'en'] ?? weightCopy.en;
+
+// ---------------------------------------------------------------------------
+// Measurements (the sizing tool). Dimension ids/icons/columns are facts in
+// picha.ts (measurementDims); the numbers live in Supabase. Labels, how-to and
+// chrome are prose here. Units stay Latin (cm). Client-safe getter used by the
+// page build + its live re-render.
+// ---------------------------------------------------------------------------
+export interface MeasureCopy {
+  metaTitle: string;
+  metaDescription: string;
+  appTitle: string;
+  kicker: string;
+  title: string;
+  blurb: string;
+  note: string;
+  cardLabel: string;
+  unit: string; // "cm"
+  notMeasured: string;
+  measuredPre: string; // "measured {date}"
+  weightLabel: string;
+  weightSub: string;
+  guideLabel: string;
+  guideIntro: string;
+  dims: Record<string, { label: string; how: string }>;
+  historyLabel: string;
+  empty: string;
+  shopNote: string;
+  logLabel: string;
+  staffOnly: string;
+  form: {
+    date: string;
+    record: string;
+    leaveBlankNote: string;
+    filing: string;
+    recorded: string;
+    signExpired: string;
+    couldNotRecord: string;
+    nothingEntered: string;
+  };
+}
+export const measureCopy: Record<string, MeasureCopy> = {
+  en: {
+    metaTitle: 'Measurements · Picha 🐾',
+    metaDescription:
+      "Picha's measurements: back length, girths and more, for sizing her clothes and harnesses.",
+    appTitle: 'Sizes',
+    kicker: 'Tools · In service',
+    title: 'The royal tailor',
+    blurb:
+      'Her measurements, kept on file so ordering clothes and harnesses is a matter of matching numbers, not guessing.',
+    note: 'Soft tape, let her stand, snug but never tight. She is still growing, so re-measure now and then.',
+    cardLabel: 'Current sizes',
+    unit: 'cm',
+    notMeasured: 'Not measured yet',
+    measuredPre: 'measured',
+    weightLabel: 'Weight',
+    weightSub: 'from the tracker',
+    guideLabel: 'How to measure',
+    guideIntro:
+      'Use a soft measuring tape with her standing. Keep it snug, not tight, and jot the number straight into the log.',
+    dims: {
+      back: {
+        label: 'Back length',
+        how: 'Along the spine, from the base of the neck to the base of the tail. This is the main clothing size.',
+      },
+      chest: {
+        label: 'Chest girth',
+        how: 'All the way around the widest part of the ribcage, just behind the front legs. The make-or-break fit number.',
+      },
+      neck: {
+        label: 'Neck',
+        how: 'Around the base of the neck, where a collar naturally sits.',
+      },
+      belly: {
+        label: 'Belly girth',
+        how: 'Around the narrowest part of the tummy, just ahead of the back legs.',
+      },
+      leg: {
+        label: 'Front leg',
+        how: 'From the top of the front leg down to the floor, for sleeves and leg holes.',
+      },
+    },
+    historyLabel: 'Measurement log',
+    empty: 'No measurements on file yet. Pop them in once she is healed and out of the cone.',
+    shopNote:
+      "Shopping online? Match her back length and chest girth to the brand's size chart first; those two matter most.",
+    logLabel: 'Add measurements',
+    staffOnly: 'staff only',
+    form: {
+      date: 'Date',
+      record: 'Save measurements',
+      leaveBlankNote: 'Leave any you did not measure blank; they keep their last value.',
+      filing: 'Filing the paperwork…',
+      recorded: 'Saved. The tailor is pleased.',
+      signExpired: 'Sign-in expired. Re-enter the PIN in the Staff room.',
+      couldNotRecord: 'Could not save it. Check the connection and try again.',
+      nothingEntered: 'Enter at least one measurement.',
+    },
+  },
+  ms: {
+    metaTitle: 'Ukuran · Picha 🐾',
+    metaDescription:
+      'Ukuran Picha: panjang badan, ukur lilit dan lain-lain, untuk memilih saiz pakaian dan abah-abahnya.',
+    appTitle: 'Saiz',
+    kicker: 'Alatan · Sedang bertugas',
+    title: 'Tukang jahit diraja',
+    blurb:
+      'Ukurannya disimpan dalam fail supaya menempah pakaian dan abah-abah hanya soal memadankan nombor, bukan meneka.',
+    note: 'Pita lembut, biar dia berdiri, kemas tetapi tidak ketat. Dia masih membesar, jadi ukur semula dari semasa ke semasa.',
+    cardLabel: 'Saiz semasa',
+    unit: 'cm',
+    notMeasured: 'Belum diukur',
+    measuredPre: 'diukur',
+    weightLabel: 'Berat',
+    weightSub: 'daripada penjejak',
+    guideLabel: 'Cara mengukur',
+    guideIntro:
+      'Gunakan pita ukur lembut sambil dia berdiri. Kekal kemas, bukan ketat, dan catat nombornya terus ke dalam log.',
+    dims: {
+      back: {
+        label: 'Panjang badan',
+        how: 'Sepanjang tulang belakang, dari pangkal leher ke pangkal ekor. Ini saiz pakaian yang utama.',
+      },
+      chest: {
+        label: 'Ukur lilit dada',
+        how: 'Keliling bahagian paling lebar tulang rusuk, tepat di belakang kaki hadapan. Nombor penentu kesesuaian.',
+      },
+      neck: {
+        label: 'Leher',
+        how: 'Keliling pangkal leher, di tempat kalung biasa duduk.',
+      },
+      belly: {
+        label: 'Ukur lilit perut',
+        how: 'Keliling bahagian paling sempit perut, tepat di hadapan kaki belakang.',
+      },
+      leg: {
+        label: 'Kaki hadapan',
+        how: 'Dari atas kaki hadapan hingga ke lantai, untuk lengan dan lubang kaki.',
+      },
+    },
+    historyLabel: 'Log ukuran',
+    empty: 'Belum ada ukuran dalam fail. Masukkan setelah dia sembuh dan keluar dari kolar.',
+    shopNote:
+      'Beli dalam talian? Padankan panjang badan dan ukur lilit dadanya dengan carta saiz jenama dahulu; dua itu paling penting.',
+    logLabel: 'Tambah ukuran',
+    staffOnly: 'kakitangan sahaja',
+    form: {
+      date: 'Tarikh',
+      record: 'Simpan ukuran',
+      leaveBlankNote: 'Biar kosong mana-mana yang tidak diukur; ia mengekalkan nilai terakhirnya.',
+      filing: 'Memfailkan dokumen…',
+      recorded: 'Disimpan. Tukang jahit berpuas hati.',
+      signExpired: 'Log masuk tamat. Masukkan semula PIN di Bilik Kakitangan.',
+      couldNotRecord: 'Gagal menyimpan. Semak sambungan dan cuba lagi.',
+      nothingEntered: 'Masukkan sekurang-kurangnya satu ukuran.',
+    },
+  },
+  zh: {
+    metaTitle: '尺寸 · Picha 🐾',
+    metaDescription: 'Picha 的身体尺寸：背长、围度等，方便为她选购衣服和胸背带的尺码。',
+    appTitle: '尺寸',
+    kicker: '工具 · 使用中',
+    title: '御用裁缝',
+    blurb: '她的尺寸都存档在此，这样订购衣服和胸背带只需对照数字，而不用猜。',
+    note: '用软尺，让她站着，贴身但不紧绷。她还在长大，记得时不时重新量一量。',
+    cardLabel: '当前尺寸',
+    unit: 'cm',
+    notMeasured: '尚未测量',
+    measuredPre: '测量于',
+    weightLabel: '体重',
+    weightSub: '来自体重追踪',
+    guideLabel: '如何测量',
+    guideIntro: '让她站着，用软皮尺测量。保持贴身而不紧绷，量好后直接记入日志。',
+    dims: {
+      back: {
+        label: '背长',
+        how: '沿脊柱，从颈根量到尾根。这是衣服尺码的主要依据。',
+      },
+      chest: {
+        label: '胸围',
+        how: '绕胸廓最宽处一圈，就在前腿后方。决定合不合身的关键数字。',
+      },
+      neck: {
+        label: '颈围',
+        how: '绕颈根一圈，即项圈自然落下的位置。',
+      },
+      belly: {
+        label: '腹围',
+        how: '绕腹部最窄处一圈，就在后腿前方。',
+      },
+      leg: {
+        label: '前腿',
+        how: '从前腿顶端量到地面，用于袖子和腿孔。',
+      },
+    },
+    historyLabel: '测量记录',
+    empty: '尚无尺寸记录。等她伤好、摘掉项圈后再填进来。',
+    shopNote: '网购吗？先把她的背长和胸围对照品牌的尺码表，这两项最重要。',
+    logLabel: '添加尺寸',
+    staffOnly: '仅限员工',
+    form: {
+      date: '日期',
+      record: '保存尺寸',
+      leaveBlankNote: '没量的留空即可，会保留上次的数值。',
+      filing: '正在归档…',
+      recorded: '已保存。裁缝很满意。',
+      signExpired: '登录已过期。请在员工室重新输入 PIN。',
+      couldNotRecord: '保存失败。请检查网络后重试。',
+      nothingEntered: '请至少输入一项尺寸。',
+    },
+  },
+  fa: {
+    metaTitle: 'اندازه‌ها · Picha 🐾',
+    metaDescription:
+      'اندازه‌های Picha: طول بدن، دورها و موارد دیگر، برای انتخاب سایزِ لباس و قلاده‌اش.',
+    appTitle: 'اندازه‌ها',
+    kicker: 'ابزارها · در خدمت',
+    title: 'خیاطِ سلطنتی',
+    blurb:
+      'اندازه‌هایش اینجا بایگانی شده تا سفارش لباس و قلاده فقط مسئله‌ی تطبیقِ عددها باشد، نه حدس زدن.',
+    note: 'متر پارچه‌ای نرم، بگذارید بایستد، چسبان اما نه تنگ. هنوز در حال رشد است، پس هرازگاهی دوباره اندازه بگیرید.',
+    cardLabel: 'سایزهای فعلی',
+    unit: 'cm',
+    notMeasured: 'هنوز اندازه‌گیری نشده',
+    measuredPre: 'اندازه‌گیری',
+    weightLabel: 'وزن',
+    weightSub: 'از بخشِ وزن',
+    guideLabel: 'روش اندازه‌گیری',
+    guideIntro:
+      'با متر پارچه‌ای نرم و درحالی‌که ایستاده اندازه بگیرید. چسبان نگه دارید، نه تنگ، و عدد را مستقیم در لاگ یادداشت کنید.',
+    dims: {
+      back: {
+        label: 'طول بدن',
+        how: 'در امتداد ستون فقرات، از پایه‌ی گردن تا پایه‌ی دم. سایزِ اصلیِ لباس همین است.',
+      },
+      chest: {
+        label: 'دورِ سینه',
+        how: 'دور تا دورِ پهن‌ترین بخشِ قفسه‌ی سینه، درست پشتِ پاهای جلو. عددِ تعیین‌کننده‌ی اندازه.',
+      },
+      neck: {
+        label: 'گردن',
+        how: 'دورِ پایه‌ی گردن، جایی که قلاده به‌طور طبیعی می‌نشیند.',
+      },
+      belly: {
+        label: 'دورِ شکم',
+        how: 'دورِ باریک‌ترین بخشِ شکم، درست جلوی پاهای عقب.',
+      },
+      leg: {
+        label: 'پای جلو',
+        how: 'از بالای پای جلو تا کفِ زمین، برای آستین و جای پا.',
+      },
+    },
+    historyLabel: 'لاگِ اندازه‌ها',
+    empty: 'هنوز اندازه‌ای ثبت نشده. بعد از بهبودی و درآوردنِ گردن‌پوش واردشان کنید.',
+    shopNote:
+      'خرید اینترنتی؟ اول طول بدن و دورِ سینه‌اش را با جدولِ سایزِ برند تطبیق دهید؛ این دو از همه مهم‌ترند.',
+    logLabel: 'افزودن اندازه',
+    staffOnly: 'فقط کارکنان',
+    form: {
+      date: 'تاریخ',
+      record: 'ذخیره‌ی اندازه‌ها',
+      leaveBlankNote: 'هر کدام را که اندازه نگرفتید خالی بگذارید؛ مقدار قبلی‌شان حفظ می‌شود.',
+      filing: 'در حال بایگانی…',
+      recorded: 'ذخیره شد. خیاط راضی است.',
+      signExpired: 'ورود منقضی شد. پین را در اتاق کارکنان دوباره وارد کنید.',
+      couldNotRecord: 'ذخیره نشد. اتصال را بررسی کنید و دوباره تلاش کنید.',
+      nothingEntered: 'حداقل یک اندازه وارد کنید.',
+    },
+  },
+};
+export const getMeasureCopy = (locale?: string): MeasureCopy =>
+  measureCopy[locale ?? 'en'] ?? measureCopy.en;
 
 // ---------------------------------------------------------------------------
 // Royal Academy (training hub + course pages). Facts (slug, icon, resistance,

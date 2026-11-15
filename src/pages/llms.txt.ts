@@ -41,6 +41,9 @@ import {
 } from '../data/picha';
 
 import { recurringCare } from '../data/care';
+import { currentMeasurements, hasMeasurements } from '../data/measurements';
+import { measurementDims } from '../data/picha';
+import { getMeasureCopy } from '../i18n/content';
 import { addDays, inDaysLabel } from '../lib/dates';
 
 const SITE = 'https://farzinmirzaie.github.io/picha';
@@ -113,6 +116,17 @@ ${identity.looks} Home: ${identity.home}.
 - History (oldest first): ${weightHistory.map((w) => `${w.date}: ${w.kg} kg`).join('; ')}
 - Target band: ${weightTarget.min}-${weightTarget.max} kg
 - Weigh-in cadence: every ${weight.auditEveryDays} days (tracked on the Weight page, not in the health record)
+
+## Measurements
+
+For sizing her clothes and harnesses (all centimetres).${hasMeasurements ? '' : ' None recorded yet.'}
+${measurementDims
+  .map((d) => {
+    const mc = getMeasureCopy('en');
+    const cur = currentMeasurements[d.id];
+    return `- ${mc.dims[d.id].label}: ${cur ? `${cur.cm} cm (measured ${cur.date})` : 'not measured yet'}. ${mc.dims[d.id].how}`;
+  })
+  .join('\n')}
 
 ## Health record
 

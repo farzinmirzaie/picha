@@ -167,6 +167,48 @@ export const weight = {
   auditEveryDays: 30,
 };
 
+/**
+ * Body measurements — the "sizing card" tool. Like the weight ledger, the live
+ * values live in Supabase (`picha_measurements`, one row per date) and are
+ * loaded at build + re-fetched client-side by src/data/measurements.ts; this
+ * array is the offline seed. All values are centimetres. A session may fill
+ * only some dimensions (measure what she will tolerate), so each is optional.
+ * Used for buying her clothes/harnesses online: match these to a size chart.
+ */
+export interface MeasureEntry {
+  /** ISO date (YYYY-MM-DD). */
+  date: string;
+  /** Back length: base of neck to base of tail (cm). */
+  back?: number;
+  /** Chest girth: around the widest point behind the front legs (cm). */
+  chest?: number;
+  /** Neck circumference (cm). */
+  neck?: number;
+  /** Belly girth: narrowest point ahead of the back legs (cm). */
+  belly?: number;
+  /** Front-leg length: top of the front leg to the floor (cm). */
+  leg?: number;
+}
+
+/** Seed measurement ledger — offline fallback; the live rows live in Supabase. */
+export const measurementHistory: MeasureEntry[] = [];
+
+/**
+ * Dimension definitions (facts: stable id, icon, kind). Labels + the how-to
+ * guide are prose in i18n (getMeasureCopy). `girth` dimensions are a loop of
+ * the tape; `length` dimensions are a straight run. Keep ids stable: they are
+ * the MeasureEntry keys and the Supabase columns (<id>_cm).
+ */
+export const measurementDims = [
+  { id: 'back', icon: 'ph:ruler', kind: 'length' },
+  { id: 'chest', icon: 'ph:circle-dashed', kind: 'girth' },
+  { id: 'neck', icon: 'ph:circle', kind: 'girth' },
+  { id: 'belly', icon: 'ph:circle-dashed', kind: 'girth' },
+  { id: 'leg', icon: 'ph:ruler', kind: 'length' },
+] as const;
+
+export type MeasureDimId = (typeof measurementDims)[number]['id'];
+
 export const vet = {
   // Her regular vet now: Dr. Al-Syafiq Halim at Animal Central (Sentul).
   status: 'Her regular vet is Dr. Al-Syafiq Halim at Animal Central.',

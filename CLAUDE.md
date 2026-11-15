@@ -45,6 +45,10 @@ src/
                        # from Supabase (picha_care) merged over the picha.ts seed
                        # (newest wins) — server-only import. lib/health reads
                        # recurringCare from HERE, not picha.ts
+  data/measurements.ts # build-time loader: body measurements from Supabase
+                       # (picha_measurements) with seed fallback — server-only.
+                       # Exports measurementHistory + currentMeasurements (latest
+                       # per dimension). Powers the Measurements/sizing tool
   lib/dates.ts         # shared date helpers (dateLabel/shortLabel/addDays/inDaysLabel)
   lib/health.ts        # health-timeline derivations (upcoming / next / isDueSoon)
                        # — one source for the Health page, the Nav "due soon"
@@ -79,6 +83,9 @@ src/
     WeighInForm.astro  # the weigh-in entry form — rendered twice on /weight
                        # (desktop accordion after the ledger + mobile dialog
                        # opened from the app-bar action)
+    MeasureForm.astro  # the body-measurement entry form (5 optional cm fields),
+                       # rendered twice on /measurements like WeighInForm;
+                       # PIN-gated via the log_measurement RPC
     Footer.astro       # paw divider + credits — desktop-only unless `showOnMobile`
     ui/                # reusable design primitives — reach for these first
       Button.astro     # the pill / form button. variant solid|outline, `block`
@@ -115,6 +122,10 @@ src/
     tools.astro        # Tools — in-service list (passport, weight) + 3am note
     weight.astro       # Weight tracker — build-time SVG chart + stats + ledger,
                        # all rendered from weightHistory (current="tools")
+    measurements.astro # Measurements / sizing tool — current-sizes card (back,
+                       # chest, neck, belly, front leg + weight), how-to guide,
+                       # session log + PIN-gated entry form (current="tools").
+                       # Cloud-logged like weight (picha_measurements)
     cat-years.astro    # Cat-years converter — her age in human years + slider
                        # converter + life stages; logic (catYears, humanAgeLine,
                        # felineStages) lives in picha.ts (current="tools")
@@ -260,6 +271,16 @@ Between rebuilds the Health client re-applies the cloud override, re-sorts
 "Coming up", and refreshes the due-soon badges live (no reload). Medical events
 (deworming, parasite, boosters, vet visits) stay OFF the button: they are logged
 as dated `healthTimeline` record rows instead.
+
+**Body measurements** live in `picha_measurements` (one row per date; a column
+per dimension in cm, all nullable). Dimension definitions (ids, icons) stay in
+`measurementDims` in picha.ts; labels + the how-to guide are prose in
+`getMeasureCopy` (i18n). `src/data/measurements.ts` loads the rows at build
+(seed fallback) and derives `currentMeasurements` (latest value per dimension).
+The `/measurements` page re-fetches live and writes through the PIN-gated
+`log_measurement(p_date, p_back, p_chest, p_neck, p_belly, p_leg, p_pin)` RPC
+(same registrar PIN) from `MeasureForm`; NULL args keep a dimension's previous
+value (COALESCE), so a session can be filled in piecemeal. Units stay Latin (cm).
 
 **Push subscriptions** live in `push_subscriptions` (endpoint + keys). Unlike
 the other tables it has **no anon read** (subscriptions are device secrets):
