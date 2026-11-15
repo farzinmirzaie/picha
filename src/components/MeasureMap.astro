@@ -17,7 +17,7 @@ const cur = currentMeasurements;
 // drawing is shifted 20 left to leave room for the leg chip on phones).
 // Keep in sync with the leader-line end points in the SVG below.
 const LAYOUT: Record<string, { lx: number; ly: number }> = {
-  back: { lx: 39.3, ly: 13.9 },
+  back: { lx: 40.9, ly: 13.9 },
   chest: { lx: 47.8, ly: 92.2 },
   neck: { lx: 71.7, ly: 92.2 },
   belly: { lx: 21.7, ly: 92.2 },
@@ -28,38 +28,26 @@ const LAYOUT: Record<string, { lx: number; ly: number }> = {
 <figure class="relative mx-auto w-full" aria-label={c.cardLabel}>
   <svg viewBox="0 0 460 345" class="h-auto w-full" role="presentation">
     <g transform="translate(-20 0)">
-    <!-- tail -->
-    <path
-      d="M104 142 C64 142 42 112 46 82 C48 60 62 48 78 52"
-      class="fill-none stroke-blush-200 dark:stroke-plum-700"
-      stroke-width="15"
-      stroke-linecap="round"></path>
-
-    <!-- far-side legs + far ear (a shade deeper, for depth) -->
-    <g class="fill-blush-300/60 dark:fill-plum-800">
+    <!-- silhouette: a flat "shadow" of a cat standing side-on, one tone -->
+    <g class="fill-blush-200 dark:fill-plum-700">
+      <!-- tail -->
+      <path
+        d="M118 142 C78 142 56 112 60 82 C62 60 76 48 92 52"
+        class="fill-none stroke-blush-200 dark:stroke-plum-700"
+        stroke-width="15"
+        stroke-linecap="round"></path>
+      <!-- far-side legs + far ear (peek through the gaps) -->
       <path
         d="M298 198 C304 222 306 248 306 264 C306 270 310 273 314 274 L292 274 C290 262 290 240 288 208 Z"
       ></path>
       <path
-        d="M208 198 C212 214 200 230 188 242 C182 250 182 262 186 268 C190 272 196 273 198 274 L172 274 C170 266 170 256 170 248 C172 236 186 220 192 202 Z"
+        d="M216 198 C220 214 210 230 200 242 C195 250 195 262 198 268 C201 272 206 273 208 274 L186 274 C184 266 184 256 184 248 C186 236 196 220 202 202 Z"
       ></path>
-      <path d="M316 110 L322 74 L338 100 Z"></path>
-    </g>
-
-    <!-- near-side body: one outline, nose to tail -->
-    <path
-      class="fill-blush-200 dark:fill-plum-700"
-      d="M104 134 C150 120 240 138 292 128 C306 122 316 112 324 106 L340 58 L360 84 C374 82 386 90 392 100 C396 106 402 110 406 116 C406 122 400 126 394 128 C392 134 384 138 376 138 C364 140 352 144 346 150 C350 166 354 180 344 198 C340 212 340 240 340 262 C340 268 346 271 350 273 L350 274 L324 274 C322 268 322 262 322 256 C322 236 320 214 312 204 C290 208 240 210 204 200 C194 200 190 206 190 214 C188 226 166 236 158 244 C155 252 156 264 160 270 C163 273 170 273 172 274 L146 274 C143 266 143 254 142 246 C140 240 134 236 130 230 C114 216 98 202 94 182 C90 160 96 140 104 134 Z"
-    ></path>
-
-    <!-- face: inner ear, eye, nose, whiskers -->
-    <path d="M333 96 L341 68 L354 84 Z" class="fill-blush-300 dark:fill-blush-700/50"></path>
-    <ellipse cx="378" cy="104" rx="4.5" ry="3.2" class="fill-ink-600 dark:fill-plum-950"></ellipse>
-    <path d="M402 113 L407 116 L402 119 Z" class="fill-blush-500 dark:fill-blush-400"></path>
-    <g class="stroke-ink-400" stroke-width="1.2" stroke-linecap="round" fill="none">
-      <path d="M394 124 L432 118"></path>
-      <path d="M394 126 L434 127"></path>
-      <path d="M393 128 L429 136"></path>
+      <path d="M316 106 L322 74 Q324 68 328 72 L340 94 Z"></path>
+      <!-- near side: one outline, nose to tail -->
+      <path
+        d="M118 134 C160 121 240 138 292 128 C306 122 316 112 324 104 C328 98 331 93 334 89 L344 60 Q347 53 351 59 L364 83 C376 82 387 90 392 100 C396 106 402 110 406 116 C406 122 400 126 394 128 C392 134 384 138 376 138 C364 140 352 144 346 150 C350 166 354 180 344 198 C340 212 340 240 340 262 C340 268 346 271 350 273 L350 274 L324 274 C322 268 322 262 322 256 C322 236 320 214 312 204 C290 208 245 210 212 200 C203 200 199 206 198 213 C196 225 183 235 176 243 C173 251 174 263 177 269 C179 272 184 273 186 274 L163 274 C161 266 161 254 160 246 C158 240 154 236 150 230 C138 219 114 206 109 182 C105 160 108 141 118 134 Z"
+      ></path>
     </g>
 
     <!-- ground -->
@@ -80,8 +68,8 @@ const LAYOUT: Record<string, { lx: number; ly: number }> = {
       fill="none"
       stroke-linecap="round"
     >
-      <line x1="108" y1="120" x2="294" y2="114"></line>
-      <line x1="108" y1="113" x2="108" y2="128"></line>
+      <line x1="122" y1="120" x2="294" y2="114"></line>
+      <line x1="122" y1="113" x2="122" y2="128"></line>
       <line x1="294" y1="107" x2="294" y2="122"></line>
       <line x1="360" y1="204" x2="360" y2="274"></line>
       <line x1="354" y1="204" x2="366" y2="204"></line>
@@ -92,22 +80,22 @@ const LAYOUT: Record<string, { lx: number; ly: number }> = {
     <g class="stroke-blush-400 dark:stroke-blush-300" stroke-width="2.5" fill="none" stroke-dasharray="4 5">
       <ellipse cx="333" cy="128" rx="8" ry="24" transform="rotate(-33 333 128)"></ellipse>
       <ellipse cx="300" cy="167" rx="15" ry="42"></ellipse>
-      <ellipse cx="212" cy="167" rx="14" ry="37"></ellipse>
+      <ellipse cx="228" cy="167" rx="14" ry="38"></ellipse>
     </g>
 
     <!-- leaders from each guide to its chip -->
     <g class="stroke-blush-300 dark:stroke-blush-500" stroke-width="1.4" stroke-dasharray="2 4">
-      <line x1="201" y1="117" x2="201" y2="62"></line>
+      <line x1="208" y1="117" x2="208" y2="62"></line>
       <line x1="300" y1="209" x2="240" y2="304"></line>
       <line x1="346" y1="148" x2="350" y2="304"></line>
-      <line x1="212" y1="204" x2="120" y2="304"></line>
+      <line x1="228" y1="205" x2="120" y2="304"></line>
       <line x1="360" y1="239" x2="420" y2="239"></line>
     </g>
     <g class="fill-blush-400 dark:fill-blush-300">
-      <circle cx="201" cy="117" r="3"></circle>
+      <circle cx="208" cy="117" r="3"></circle>
       <circle cx="300" cy="209" r="3"></circle>
       <circle cx="346" cy="148" r="3"></circle>
-      <circle cx="212" cy="204" r="3"></circle>
+      <circle cx="228" cy="205" r="3"></circle>
       <circle cx="360" cy="239" r="3"></circle>
     </g>
     </g>
