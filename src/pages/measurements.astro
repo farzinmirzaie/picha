@@ -47,7 +47,18 @@ const ledger = [...measurementHistory].reverse(); // newest first
   <!-- Current sizes: grouped inset list, one row per dimension + weight. Each
        row's value/date update live (client re-fetch). -->
   <section class="mx-auto w-full max-w-2xl px-5 pt-5" aria-label={c.cardLabel}>
-    <SectionLabel class="reveal mb-2">{c.cardLabel}</SectionLabel>
+    <div class="reveal mb-2 flex items-center justify-between gap-3">
+      <SectionLabel class="!mb-0">{c.cardLabel}</SectionLabel>
+      <div
+        role="group"
+        aria-label={c.unitsLabel}
+        data-unit-toggle
+        class="inline-flex overflow-hidden rounded-full border border-blush-200/70 text-[11px] font-bold dark:border-plum-700"
+      >
+        <button type="button" data-unit-btn="cm" class="bg-blush-600 px-2.5 py-1 text-white transition-colors">cm</button>
+        <button type="button" data-unit-btn="in" class="px-2.5 py-1 text-ink-500 transition-colors dark:text-ink-400">in</button>
+      </div>
+    </div>
     <div
       class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 dark:border-plum-700 dark:bg-plum-900"
       data-supabase-url={supabaseClient?.url}
@@ -66,7 +77,11 @@ const ledger = [...measurementHistory].reverse(); // newest first
                     {cur ? `${c.measuredPre} ${shortLabel(cur.date, locale)}` : c.notMeasured}
                   </p>
                 </div>
-                <p class="font-display text-lg font-semibold whitespace-nowrap" data-dim-value>
+                <p
+                  class="font-display text-lg font-semibold whitespace-nowrap"
+                  data-dim-value
+                  {...(cur ? { 'data-cm': cur.cm } : {})}
+                >
                   {cur ? `${cur.cm} ${c.unit}` : '—'}
                 </p>
               </li>
@@ -178,6 +193,9 @@ const ledger = [...measurementHistory].reverse(); // newest first
     )
   }
 
+  {/* a little breathing room above the mobile tab bar (last section varies) */}
+  <div class="h-8 md:hidden" aria-hidden="true"></div>
+
   <Footer />
 
   <script>
@@ -192,6 +210,31 @@ const ledger = [...measurementHistory].reverse(); // newest first
     const COLS = measurementDims.map((d) => ({ id: d.id, col: `${d.id}_cm` }));
 
     let liveRefresh: (() => Promise<void>) | null = null;
+    let lastRows: Row[] | null = null;
+
+    // cm/inch display toggle (remembered per device; facts stay cm).
+    const UNIT_KEY = 'picha-measure-unit';
+    let unitMem: 'cm' | 'in' | null = null;
+    const curUnit = (): 'cm' | 'in' => {
+      if (unitMem) return unitMem;
+      try {
+        return localStorage.getItem(UNIT_KEY) === 'in' ? 'in' : 'cm';
+      } catch {
+        return 'cm';
+      }
+    };
+    const setUnit = (u: 'cm' | 'in') => {
+      unitMem = u;
+      try {
+        localStorage.setItem(UNIT_KEY, u);
+      } catch {
+        /* private mode: the in-memory choice still applies */
+      }
+    };
+    const unitLabel = (unit: 'cm' | 'in', c: { unit: string }) =>
+      unit === 'in' ? 'in' : c.unit;
+    const toDisplay = (cm: number, unit: 'cm' | 'in') =>
+      unit === 'in' ? (cm / 2.54).toFixed(1) : String(cm);
 
     // Latest value + date per dimension across all sessions.
     function currentOf(rows: Row[]) {
@@ -210,7 +253,9 @@ const ledger = [...measurementHistory].reverse(); // newest first
     }
 
     function render(rows: Row[]) {
+      lastRows = rows;
       const locale = mLocale();
+      const unit = curUnit();
       const c = getMeasureCopy(locale);
       const cur = currentOf(rows);
 
@@ -221,7 +266,11 @@ const ledger = [...measurementHistory].reverse(); // newest first
         const v = cur[id];
         const val = row.querySelector<HTMLElement>('[data-dim-value]');
         const date = row.querySelector<HTMLElement>('[data-dim-date]');
-        if (val) val.textContent = v ? `${v.cm} ${c.unit}` : '—';
+        if (val) {
+          if (v) val.setAttribute('data-cm', String(v.cm));
+          else val.removeAttribute('data-cm');
+          val.textContent = v ? `${toDisplay(v.cm, unit)} ${unitLabel(unit, c)}` : '—';
+        }
         if (date) date.textContent = v ? `${c.measuredPre} ${shortLabel(v.date, locale)}` : c.notMeasured;
       }
 
@@ -240,14 +289,50 @@ const ledger = [...measurementHistory].reverse(); // newest first
             li.querySelector<HTMLElement>('[data-row-date]')!.textContent = dateLabel(e.date, locale);
             const dims = measurementDims
               .filter((d) => e[`${d.id}_cm`] !== undefined && e[`${d.id}_cm`] !== null && e[`${d.id}_cm`] !== '')
-              .map((d) => `${c.dims[d.id].label} ${Number(e[`${d.id}_cm`])}`)
+              .map((d) => `${c.dims[d.id].label} ${toDisplay(Number(e[`${d.id}_cm`]), unit)}`)
               .join(' · ');
-            li.querySelector<HTMLElement>('[data-row-dims]')!.textContent = `${dims} ${c.unit}`;
+            li.querySelector<HTMLElement>('[data-row-dims]')!.textContent = `${dims} ${unitLabel(unit, c)}`;
             return li;
           });
           list.replaceChildren(...nodes);
         }
       }
+    }
+
+    // Apply the active unit to the toggle, the card, the history and the forms.
+    function applyUnit() {
+      const unit = curUnit();
+      const c = getMeasureCopy(mLocale());
+      document.querySelectorAll<HTMLElement>('[data-unit-btn]').forEach((btn) => {
+        const active = btn.dataset.unitBtn === unit;
+        btn.classList.toggle('bg-blush-600', active);
+        btn.classList.toggle('text-white', active);
+        btn.classList.toggle('text-ink-500', !active);
+        btn.classList.toggle('dark:text-ink-400', !active);
+      });
+      document
+        .querySelectorAll<HTMLElement>('[data-unit-label]')
+        .forEach((el) => (el.textContent = unitLabel(unit, c)));
+      document
+        .querySelectorAll<HTMLFormElement>('[data-measure-form]')
+        .forEach((f) => (f.dataset.unit = unit));
+      if (lastRows) render(lastRows);
+      else
+        document.querySelectorAll<HTMLElement>('[data-dim-value][data-cm]').forEach((el) => {
+          el.textContent = `${toDisplay(Number(el.dataset.cm), unit)} ${unitLabel(unit, c)}`;
+        });
+    }
+
+    function bindUnitToggle() {
+      document
+        .querySelectorAll<HTMLElement>('[data-unit-btn]:not([data-bound])')
+        .forEach((btn) => {
+          btn.dataset.bound = '1';
+          btn.addEventListener('click', () => {
+            setUnit(btn.dataset.unitBtn === 'in' ? 'in' : 'cm');
+            applyUnit();
+          });
+        });
     }
 
     function bindForm(form: HTMLFormElement, refresh: () => Promise<void>) {
@@ -267,9 +352,13 @@ const ledger = [...measurementHistory].reverse(); // newest first
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        // The form shows whatever unit is active, but we always store cm.
+        const toCm = form.dataset.unit === 'in';
         const num = (name: string) => {
           const el = form.elements.namedItem(name) as HTMLInputElement | null;
-          return el && el.value.trim() !== '' ? Number(el.value) : null;
+          if (!el || el.value.trim() === '') return null;
+          const n = Number(el.value);
+          return toCm ? Math.round(n * 2.54 * 10) / 10 : n;
         };
         const vals = {
           p_back: num('back'),
@@ -318,6 +407,8 @@ const ledger = [...measurementHistory].reverse(); // newest first
 
     async function setup() {
       applyStaffVisibility();
+      bindUnitToggle();
+      applyUnit();
       const root = document.querySelector<HTMLElement>('[data-supabase-url][data-supabase-key]');
       const url = root?.dataset.supabaseUrl;
       const key = root?.dataset.supabaseKey;

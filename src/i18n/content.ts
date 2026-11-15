@@ -2179,6 +2179,7 @@ export interface MeasureCopy {
   note: string;
   cardLabel: string;
   unit: string; // "cm"
+  unitsLabel: string; // a11y label for the cm/in toggle
   notMeasured: string;
   measuredPre: string; // "measured {date}"
   weightLabel: string;
@@ -2215,6 +2216,7 @@ export const measureCopy: Record<string, MeasureCopy> = {
     note: 'Soft tape, let her stand, snug but never tight. She is still growing, so re-measure now and then.',
     cardLabel: 'Current sizes',
     unit: 'cm',
+    unitsLabel: 'Units',
     notMeasured: 'Not measured yet',
     measuredPre: 'measured',
     weightLabel: 'Weight',
@@ -2273,6 +2275,7 @@ export const measureCopy: Record<string, MeasureCopy> = {
     note: 'Pita lembut, biar dia berdiri, kemas tetapi tidak ketat. Dia masih membesar, jadi ukur semula dari semasa ke semasa.',
     cardLabel: 'Saiz semasa',
     unit: 'cm',
+    unitsLabel: 'Unit',
     notMeasured: 'Belum diukur',
     measuredPre: 'diukur',
     weightLabel: 'Berat',
@@ -2329,6 +2332,7 @@ export const measureCopy: Record<string, MeasureCopy> = {
     note: '用软尺，让她站着，贴身但不紧绷。她还在长大，记得时不时重新量一量。',
     cardLabel: '当前尺寸',
     unit: 'cm',
+    unitsLabel: '单位',
     notMeasured: '尚未测量',
     measuredPre: '测量于',
     weightLabel: '体重',
@@ -2385,6 +2389,7 @@ export const measureCopy: Record<string, MeasureCopy> = {
     note: 'متر پارچه‌ای نرم، بگذارید بایستد، چسبان اما نه تنگ. هنوز در حال رشد است، پس هرازگاهی دوباره اندازه بگیرید.',
     cardLabel: 'سایزهای فعلی',
     unit: 'cm',
+    unitsLabel: 'واحد',
     notMeasured: 'هنوز اندازه‌گیری نشده',
     measuredPre: 'اندازه‌گیری',
     weightLabel: 'وزن',

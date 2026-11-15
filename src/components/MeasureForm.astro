@@ -42,7 +42,7 @@ const c = getMeasureCopy(Astro.currentLocale);
       measurementDims.map((d) => (
         <label class="block">
           <span class="text-[10px] font-bold tracking-[0.14em] text-ink-400 uppercase">
-            {c.dims[d.id].label} ({c.unit})
+            {c.dims[d.id].label} (<span data-unit-label>{c.unit}</span>)
           </span>
           <input
             type="number"
