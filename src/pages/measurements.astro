@@ -4,6 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Footer from '../components/Footer.astro';
 import MeasureForm from '../components/MeasureForm.astro';
+import MeasureMap from '../components/MeasureMap.astro';
 import IconButton from '../components/ui/IconButton.astro';
 import SheetHeader from '../components/ui/SheetHeader.astro';
 import SectionLabel from '../components/ui/SectionLabel.astro';
@@ -43,6 +44,16 @@ const ledger = [...measurementHistory].reverse(); // newest first
     )
   }
   <PageHeader kicker={c.kicker} title={c.title} blurb={`${c.blurb} ${c.note}`} />
+
+  <!-- Measurement map: the visual, each size pinned where it is taken. Chips
+       share the [data-dim] hooks with the list below, so they update together. -->
+  <section class="mx-auto w-full max-w-2xl px-5 pt-5">
+    <div
+      class="reveal overflow-hidden rounded-3xl border border-blush-200/70 bg-paper-50 px-2 py-3 sm:px-5 sm:py-4 dark:border-plum-700 dark:bg-plum-900"
+    >
+      <MeasureMap />
+    </div>
+  </section>
 
   <!-- Current sizes: grouped inset list, one row per dimension + weight. Each
        row's value/date update live (client re-fetch). -->
@@ -259,19 +270,20 @@ const ledger = [...measurementHistory].reverse(); // newest first
       const c = getMeasureCopy(locale);
       const cur = currentOf(rows);
 
-      // current-sizes rows
+      // current-sizes rows + the measurement-map chips (both use [data-dim])
       for (const { id } of COLS) {
-        const row = document.querySelector<HTMLElement>(`[data-dim="${id}"]`);
-        if (!row) continue;
         const v = cur[id];
-        const val = row.querySelector<HTMLElement>('[data-dim-value]');
-        const date = row.querySelector<HTMLElement>('[data-dim-date]');
-        if (val) {
-          if (v) val.setAttribute('data-cm', String(v.cm));
-          else val.removeAttribute('data-cm');
-          val.textContent = v ? `${toDisplay(v.cm, unit)} ${unitLabel(unit, c)}` : '—';
-        }
-        if (date) date.textContent = v ? `${c.measuredPre} ${shortLabel(v.date, locale)}` : c.notMeasured;
+        document.querySelectorAll<HTMLElement>(`[data-dim="${id}"]`).forEach((host) => {
+          const val = host.querySelector<HTMLElement>('[data-dim-value]');
+          const date = host.querySelector<HTMLElement>('[data-dim-date]');
+          if (val) {
+            if (v) val.setAttribute('data-cm', String(v.cm));
+            else val.removeAttribute('data-cm');
+            val.textContent = v ? `${toDisplay(v.cm, unit)} ${unitLabel(unit, c)}` : '—';
+          }
+          if (date)
+            date.textContent = v ? `${c.measuredPre} ${shortLabel(v.date, locale)}` : c.notMeasured;
+        });
       }
 
       // history ledger

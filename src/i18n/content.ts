@@ -2186,7 +2186,7 @@ export interface MeasureCopy {
   weightSub: string;
   guideLabel: string;
   guideIntro: string;
-  dims: Record<string, { label: string; how: string }>;
+  dims: Record<string, { label: string; short: string; how: string }>;
   historyLabel: string;
   empty: string;
   shopNote: string;
@@ -2227,22 +2227,27 @@ export const measureCopy: Record<string, MeasureCopy> = {
     dims: {
       back: {
         label: 'Back length',
+        short: 'Back',
         how: 'Along the spine, from the base of the neck to the base of the tail. This is the main clothing size.',
       },
       chest: {
         label: 'Chest girth',
+        short: 'Chest',
         how: 'All the way around the widest part of the ribcage, just behind the front legs. The make-or-break fit number.',
       },
       neck: {
         label: 'Neck',
+        short: 'Neck',
         how: 'Around the base of the neck, where a collar naturally sits.',
       },
       belly: {
         label: 'Belly girth',
+        short: 'Belly',
         how: 'Around the narrowest part of the tummy, just ahead of the back legs.',
       },
       leg: {
         label: 'Front leg',
+        short: 'Leg',
         how: 'From the top of the front leg down to the floor, for sleeves and leg holes.',
       },
     },
@@ -2286,22 +2291,27 @@ export const measureCopy: Record<string, MeasureCopy> = {
     dims: {
       back: {
         label: 'Panjang badan',
+        short: 'Badan',
         how: 'Sepanjang tulang belakang, dari pangkal leher ke pangkal ekor. Ini saiz pakaian yang utama.',
       },
       chest: {
         label: 'Ukur lilit dada',
+        short: 'Dada',
         how: 'Keliling bahagian paling lebar tulang rusuk, tepat di belakang kaki hadapan. Nombor penentu kesesuaian.',
       },
       neck: {
         label: 'Leher',
+        short: 'Leher',
         how: 'Keliling pangkal leher, di tempat kalung biasa duduk.',
       },
       belly: {
         label: 'Ukur lilit perut',
+        short: 'Perut',
         how: 'Keliling bahagian paling sempit perut, tepat di hadapan kaki belakang.',
       },
       leg: {
         label: 'Kaki hadapan',
+        short: 'Kaki',
         how: 'Dari atas kaki hadapan hingga ke lantai, untuk lengan dan lubang kaki.',
       },
     },
@@ -2342,22 +2352,27 @@ export const measureCopy: Record<string, MeasureCopy> = {
     dims: {
       back: {
         label: '背长',
+        short: '背长',
         how: '沿脊柱，从颈根量到尾根。这是衣服尺码的主要依据。',
       },
       chest: {
         label: '胸围',
+        short: '胸围',
         how: '绕胸廓最宽处一圈，就在前腿后方。决定合不合身的关键数字。',
       },
       neck: {
         label: '颈围',
+        short: '颈围',
         how: '绕颈根一圈，即项圈自然落下的位置。',
       },
       belly: {
         label: '腹围',
+        short: '腹围',
         how: '绕腹部最窄处一圈，就在后腿前方。',
       },
       leg: {
         label: '前腿',
+        short: '前腿',
         how: '从前腿顶端量到地面，用于袖子和腿孔。',
       },
     },
@@ -2400,22 +2415,27 @@ export const measureCopy: Record<string, MeasureCopy> = {
     dims: {
       back: {
         label: 'طول بدن',
+        short: 'پشت',
         how: 'در امتداد ستون فقرات، از پایه‌ی گردن تا پایه‌ی دم. سایزِ اصلیِ لباس همین است.',
       },
       chest: {
         label: 'دورِ سینه',
+        short: 'سینه',
         how: 'دور تا دورِ پهن‌ترین بخشِ قفسه‌ی سینه، درست پشتِ پاهای جلو. عددِ تعیین‌کننده‌ی اندازه.',
       },
       neck: {
         label: 'گردن',
+        short: 'گردن',
         how: 'دورِ پایه‌ی گردن، جایی که قلاده به‌طور طبیعی می‌نشیند.',
       },
       belly: {
         label: 'دورِ شکم',
+        short: 'شکم',
         how: 'دورِ باریک‌ترین بخشِ شکم، درست جلوی پاهای عقب.',
       },
       leg: {
         label: 'پای جلو',
+        short: 'پا',
         how: 'از بالای پای جلو تا کفِ زمین، برای آستین و جای پا.',
       },
     },
