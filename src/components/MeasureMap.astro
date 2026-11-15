@@ -1,10 +1,10 @@
 ---
 /**
- * The measurement map: a side-profile cat with each dimension drawn where it is
- * actually taken (spine line, girth rings, front-leg line), each pinned to a
- * value chip. The chips reuse the [data-dim]/[data-dim-value] hooks, so the page
- * script's live re-fetch + cm/inch toggle update them exactly like the list.
- * A "royal tailor's" chart, zero JS of its own.
+ * The measurement map: a walking cat in profile (flat "shadow" silhouette, one
+ * tone) with each dimension drawn where it is actually taken (spine line,
+ * girth rings, front-leg line), each pinned to a value chip. The chips reuse the
+ * [data-dim]/[data-dim-value] hooks, so the page script's live re-fetch +
+ * cm/inch toggle update them exactly like the list. Zero JS of its own.
  */
 import { measurementDims } from '../data/picha';
 import { currentMeasurements } from '../data/measurements';
@@ -13,91 +13,84 @@ import { getMeasureCopy } from '../i18n/content';
 const c = getMeasureCopy(Astro.currentLocale);
 const cur = currentMeasurements;
 
-// Chip anchor per dimension, as % of the figure box (viewBox 460 x 345; the
-// drawing is shifted 20 left to leave room for the leg chip on phones).
-// Keep in sync with the leader-line end points in the SVG below.
+// Chip anchor per dimension, as % of the figure box (viewBox 460 x 360). The
+// drawing sits in <g translate(14 0)>, so chip lx = (x + 14) / 460 where x is
+// the leader-line end point in the SVG below. Keep them in sync.
 const LAYOUT: Record<string, { lx: number; ly: number }> = {
-  back: { lx: 40.9, ly: 13.9 },
-  chest: { lx: 53.9, ly: 92.2 },
-  neck: { lx: 86.5, ly: 48.7 },
-  belly: { lx: 28.3, ly: 92.2 },
-  leg: { lx: 87, ly: 69.3 },
+  neck: { lx: 30.2, ly: 13.9 },
+  back: { lx: 49.8, ly: 13.9 },
+  leg: { lx: 11.3, ly: 91.7 },
+  chest: { lx: 52.6, ly: 91.7 },
+  belly: { lx: 74.8, ly: 91.7 },
 };
 ---
 
 <figure class="relative mx-auto w-full" aria-label={c.cardLabel}>
-  <svg viewBox="0 0 460 345" class="h-auto w-full" role="presentation">
-    <g transform="translate(-20 0)">
-    <!-- silhouette: a flat "shadow" of a cat standing side-on, one tone -->
-    <g class="fill-blush-200 dark:fill-plum-700">
-      <!-- tail -->
-      <path
-        d="M118 142 C78 142 56 112 60 82 C62 60 76 48 92 52"
-        class="fill-none stroke-blush-200 dark:stroke-plum-700"
-        stroke-width="15"
-        stroke-linecap="round"></path>
-      <!-- far-side legs + far ear (peek through the gaps) -->
-      <path
-        d="M298 198 C304 222 306 248 306 264 C306 270 310 273 314 274 L292 274 C290 262 290 240 288 208 Z"
-      ></path>
-      <path
-        d="M216 198 C220 214 210 230 200 242 C195 250 195 262 198 268 C201 272 206 273 208 274 L186 274 C184 266 184 256 184 248 C186 236 196 220 202 202 Z"
-      ></path>
-      <path d="M320 102 L324 72 Q326 66 330 70 L342 92 Z"></path>
-      <!-- near side: one outline, nose to tail -->
-      <path
-        d="M118 134 C160 121 240 138 292 128 C306 122 316 112 324 104 C328 98 331 93 334 89 L344 60 Q347 53 351 59 L364 83 C376 82 387 90 392 100 C396 106 402 110 406 116 C406 122 400 126 394 128 C392 134 384 138 376 138 C364 140 352 144 346 150 C350 166 354 180 344 198 C340 212 340 240 340 262 C340 268 346 271 350 273 L350 274 L324 274 C322 268 322 262 322 256 C322 236 320 214 312 204 C290 208 245 210 212 202 C196 204 186 210 180 218 C172 228 164 236 162 248 C160 258 162 267 168 271 C171 273 174 273 176 274 L148 274 C145 266 143 256 141 248 C139 240 134 234 128 226 C114 210 106 186 108 160 C109 148 112 139 118 134 Z"
-      ></path>
-    </g>
+  <svg viewBox="0 0 460 360" class="h-auto w-full" role="presentation">
+    <g transform="translate(14 0)">
+      <!-- silhouette: a cat walking left, one flat tone -->
+      <g class="fill-blush-200 dark:fill-plum-700">
+        <!-- far hind leg + far ear (show through the gaps) -->
+        <path
+          d="M272 220 L318 226 C322 240 322 252 312 262 C304 270 300 276 298 282 C296 286 292 288 286 288 L270 288 C264 288 264 282 270 281 C278 278 286 270 290 260 C294 250 284 236 272 220 Z"
+        ></path>
+        <path d="M74 108 L80 90 Q82 86 85 89 L94 104 Z"></path>
+        <!-- near side: head, body, tail, near hind leg, both front legs -->
+        <path
+          d="M50 136 C54 124 64 110 78 104 L84 104 L94 84 Q96 80 99 84 L112 107 C124 114 132 124 148 129 C170 134 190 133 210 132 C245 129 275 125 300 127 C312 128 318 131 324 131 C340 120 358 104 380 96 C400 90 420 96 428 112 C438 130 430 152 420 162 C414 168 408 162 412 154 C420 140 418 122 404 116 C388 110 372 120 362 136 C356 146 352 156 352 164 C356 186 366 206 378 222 C382 240 382 262 384 278 C385 284 380 287 374 287 L362 287 C358 287 358 282 362 281 C364 268 362 252 358 242 C344 234 320 228 300 222 C280 222 250 228 212 229 C212 246 210 266 210 280 C210 286 206 289 200 289 L188 289 C182 289 182 283 188 282 C194 280 194 270 192 262 C188 250 178 236 160 224 C140 236 116 256 96 276 C92 282 88 286 82 286 L66 286 C58 286 58 280 64 278 C76 272 92 250 100 228 C104 214 108 200 106 190 C100 172 88 160 72 156 C62 154 54 150 52 144 Z"
+        ></path>
+      </g>
 
-    <!-- ground -->
-    <line
-      x1="40"
-      y1="276"
-      x2="420"
-      y2="276"
-      class="stroke-blush-200 dark:stroke-ink-600/60"
-      stroke-width="3"
-      stroke-dasharray="2 8"
-      stroke-linecap="round"></line>
+      <!-- ground -->
+      <line
+        x1="30"
+        y1="290"
+        x2="440"
+        y2="290"
+        class="stroke-blush-200 dark:stroke-ink-600/60"
+        stroke-width="3"
+        stroke-dasharray="2 8"
+        stroke-linecap="round"></line>
 
-    <!-- length guides: back (neck base to tail base) + front leg, with end ticks -->
-    <g
-      class="stroke-blush-400 dark:stroke-blush-300"
-      stroke-width="2.5"
-      fill="none"
-      stroke-linecap="round"
-    >
-      <line x1="124" y1="142" x2="300" y2="134"></line>
-      <line x1="124" y1="135" x2="124" y2="149"></line>
-      <line x1="300" y1="127" x2="300" y2="141"></line>
-      <line x1="360" y1="204" x2="360" y2="274"></line>
-      <line x1="354" y1="204" x2="366" y2="204"></line>
-      <line x1="354" y1="274" x2="366" y2="274"></line>
-    </g>
+      <!-- length guides with end ticks: back (neck base to tail base, on the
+           spine) + front leg (shoulder to floor, along the leading leg) -->
+      <g
+        class="stroke-blush-400 dark:stroke-blush-300"
+        stroke-width="2.5"
+        fill="none"
+        stroke-linecap="round"
+      >
+        <line x1="152" y1="139" x2="320" y2="137"></line>
+        <line x1="152" y1="132" x2="152" y2="146"></line>
+        <line x1="320" y1="130" x2="320" y2="144"></line>
+        <line x1="96" y1="198" x2="52" y2="278"></line>
+        <line x1="90" y1="195" x2="102" y2="201"></line>
+        <line x1="46" y1="275" x2="58" y2="281"></line>
+      </g>
 
-    <!-- girth guides: neck (tilted with the neck), chest, belly rings -->
-    <g class="stroke-blush-400 dark:stroke-blush-300" stroke-width="2.5" fill="none" stroke-dasharray="4 5">
-      <ellipse cx="328" cy="132" rx="8" ry="25" transform="rotate(-30 328 132)"></ellipse>
-      <ellipse cx="282" cy="168" rx="15" ry="41"></ellipse>
-      <ellipse cx="228" cy="167" rx="14" ry="38"></ellipse>
-    </g>
+      <!-- girth guides: neck (tilted with the neck), chest (behind the front
+           legs), belly (narrowest, just ahead of the back legs) -->
+      <g class="stroke-blush-400 dark:stroke-blush-300" stroke-width="2.5" fill="none" stroke-dasharray="4 5">
+        <ellipse cx="118" cy="142" rx="9" ry="26" transform="rotate(35 118 142)"></ellipse>
+        <ellipse cx="222" cy="181" rx="15" ry="48"></ellipse>
+        <ellipse cx="268" cy="176" rx="13" ry="46"></ellipse>
+      </g>
 
-    <!-- leaders from each guide to its chip -->
-    <g class="stroke-blush-300 dark:stroke-blush-500" stroke-width="1.4" stroke-dasharray="2 4">
-      <line x1="208" y1="138" x2="208" y2="62"></line>
-      <line x1="282" y1="209" x2="268" y2="304"></line>
-      <line x1="340" y1="153" x2="416" y2="168"></line>
-      <line x1="228" y1="205" x2="150" y2="304"></line>
-      <line x1="360" y1="239" x2="420" y2="239"></line>
-    </g>
-    <g class="fill-blush-400 dark:fill-blush-300">
-      <circle cx="208" cy="138" r="3"></circle>
-      <circle cx="282" cy="209" r="3"></circle>
-      <circle cx="340" cy="153" r="3"></circle>
-      <circle cx="228" cy="205" r="3"></circle>
-      <circle cx="360" cy="239" r="3"></circle>
-    </g>
+      <!-- leaders from each guide to its chip -->
+      <g class="stroke-blush-300 dark:stroke-blush-500" stroke-width="1.4" stroke-dasharray="2 4">
+        <line x1="133" y1="121" x2="125" y2="64"></line>
+        <line x1="180" y1="138" x2="215" y2="64"></line>
+        <line x1="74" y1="238" x2="38" y2="316"></line>
+        <line x1="222" y1="229" x2="228" y2="316"></line>
+        <line x1="268" y1="222" x2="330" y2="316"></line>
+      </g>
+      <g class="fill-blush-400 dark:fill-blush-300">
+        <circle cx="133" cy="121" r="3"></circle>
+        <circle cx="180" cy="138" r="3"></circle>
+        <circle cx="74" cy="238" r="3"></circle>
+        <circle cx="222" cy="229" r="3"></circle>
+        <circle cx="268" cy="222" r="3"></circle>
+      </g>
     </g>
   </svg>
 
