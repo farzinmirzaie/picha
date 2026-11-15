@@ -18,9 +18,9 @@ const cur = currentMeasurements;
 // Keep in sync with the leader-line end points in the SVG below.
 const LAYOUT: Record<string, { lx: number; ly: number }> = {
   back: { lx: 40.9, ly: 13.9 },
-  chest: { lx: 47.8, ly: 92.2 },
-  neck: { lx: 71.7, ly: 92.2 },
-  belly: { lx: 21.7, ly: 92.2 },
+  chest: { lx: 53.9, ly: 92.2 },
+  neck: { lx: 86.5, ly: 48.7 },
+  belly: { lx: 28.3, ly: 92.2 },
   leg: { lx: 87, ly: 69.3 },
 };
 ---
@@ -43,10 +43,10 @@ const LAYOUT: Record<string, { lx: number; ly: number }> = {
       <path
         d="M216 198 C220 214 210 230 200 242 C195 250 195 262 198 268 C201 272 206 273 208 274 L186 274 C184 266 184 256 184 248 C186 236 196 220 202 202 Z"
       ></path>
-      <path d="M316 106 L322 74 Q324 68 328 72 L340 94 Z"></path>
+      <path d="M320 102 L324 72 Q326 66 330 70 L342 92 Z"></path>
       <!-- near side: one outline, nose to tail -->
       <path
-        d="M118 134 C160 121 240 138 292 128 C306 122 316 112 324 104 C328 98 331 93 334 89 L344 60 Q347 53 351 59 L364 83 C376 82 387 90 392 100 C396 106 402 110 406 116 C406 122 400 126 394 128 C392 134 384 138 376 138 C364 140 352 144 346 150 C350 166 354 180 344 198 C340 212 340 240 340 262 C340 268 346 271 350 273 L350 274 L324 274 C322 268 322 262 322 256 C322 236 320 214 312 204 C290 208 245 210 212 200 C203 200 199 206 198 213 C196 225 183 235 176 243 C173 251 174 263 177 269 C179 272 184 273 186 274 L163 274 C161 266 161 254 160 246 C158 240 154 236 150 230 C138 219 114 206 109 182 C105 160 108 141 118 134 Z"
+        d="M118 134 C160 121 240 138 292 128 C306 122 316 112 324 104 C328 98 331 93 334 89 L344 60 Q347 53 351 59 L364 83 C376 82 387 90 392 100 C396 106 402 110 406 116 C406 122 400 126 394 128 C392 134 384 138 376 138 C364 140 352 144 346 150 C350 166 354 180 344 198 C340 212 340 240 340 262 C340 268 346 271 350 273 L350 274 L324 274 C322 268 322 262 322 256 C322 236 320 214 312 204 C290 208 245 210 212 202 C196 204 186 210 180 218 C172 228 164 236 162 248 C160 258 162 267 168 271 C171 273 174 273 176 274 L148 274 C145 266 143 256 141 248 C139 240 134 234 128 226 C114 210 106 186 108 160 C109 148 112 139 118 134 Z"
       ></path>
     </g>
 
@@ -56,7 +56,7 @@ const LAYOUT: Record<string, { lx: number; ly: number }> = {
       y1="276"
       x2="420"
       y2="276"
-      class="stroke-blush-200 dark:stroke-plum-700"
+      class="stroke-blush-200 dark:stroke-ink-600/60"
       stroke-width="3"
       stroke-dasharray="2 8"
       stroke-linecap="round"></line>
@@ -68,9 +68,9 @@ const LAYOUT: Record<string, { lx: number; ly: number }> = {
       fill="none"
       stroke-linecap="round"
     >
-      <line x1="122" y1="120" x2="294" y2="114"></line>
-      <line x1="122" y1="113" x2="122" y2="128"></line>
-      <line x1="294" y1="107" x2="294" y2="122"></line>
+      <line x1="124" y1="142" x2="300" y2="134"></line>
+      <line x1="124" y1="135" x2="124" y2="149"></line>
+      <line x1="300" y1="127" x2="300" y2="141"></line>
       <line x1="360" y1="204" x2="360" y2="274"></line>
       <line x1="354" y1="204" x2="366" y2="204"></line>
       <line x1="354" y1="274" x2="366" y2="274"></line>
@@ -78,23 +78,23 @@ const LAYOUT: Record<string, { lx: number; ly: number }> = {
 
     <!-- girth guides: neck (tilted with the neck), chest, belly rings -->
     <g class="stroke-blush-400 dark:stroke-blush-300" stroke-width="2.5" fill="none" stroke-dasharray="4 5">
-      <ellipse cx="333" cy="128" rx="8" ry="24" transform="rotate(-33 333 128)"></ellipse>
-      <ellipse cx="300" cy="167" rx="15" ry="42"></ellipse>
+      <ellipse cx="328" cy="132" rx="8" ry="25" transform="rotate(-30 328 132)"></ellipse>
+      <ellipse cx="282" cy="168" rx="15" ry="41"></ellipse>
       <ellipse cx="228" cy="167" rx="14" ry="38"></ellipse>
     </g>
 
     <!-- leaders from each guide to its chip -->
     <g class="stroke-blush-300 dark:stroke-blush-500" stroke-width="1.4" stroke-dasharray="2 4">
-      <line x1="208" y1="117" x2="208" y2="62"></line>
-      <line x1="300" y1="209" x2="240" y2="304"></line>
-      <line x1="346" y1="148" x2="350" y2="304"></line>
-      <line x1="228" y1="205" x2="120" y2="304"></line>
+      <line x1="208" y1="138" x2="208" y2="62"></line>
+      <line x1="282" y1="209" x2="268" y2="304"></line>
+      <line x1="340" y1="153" x2="416" y2="168"></line>
+      <line x1="228" y1="205" x2="150" y2="304"></line>
       <line x1="360" y1="239" x2="420" y2="239"></line>
     </g>
     <g class="fill-blush-400 dark:fill-blush-300">
-      <circle cx="208" cy="117" r="3"></circle>
-      <circle cx="300" cy="209" r="3"></circle>
-      <circle cx="346" cy="148" r="3"></circle>
+      <circle cx="208" cy="138" r="3"></circle>
+      <circle cx="282" cy="209" r="3"></circle>
+      <circle cx="340" cy="153" r="3"></circle>
       <circle cx="228" cy="205" r="3"></circle>
       <circle cx="360" cy="239" r="3"></circle>
     </g>
@@ -112,7 +112,7 @@ const LAYOUT: Record<string, { lx: number; ly: number }> = {
           style={`left:${pos.lx}%;top:${pos.ly}%`}
           data-dim={d.id}
         >
-          <span class="inline-flex flex-col items-center rounded-full border border-blush-200/80 bg-paper-50/95 px-2.5 py-1 shadow-sm dark:border-plum-700 dark:bg-plum-900/95">
+          <span class="inline-flex flex-col items-center rounded-full border border-blush-200/80 bg-paper-50/95 px-2.5 py-1 shadow-sm dark:border-ink-600 dark:bg-plum-900/95">
             <span class="text-[9px] font-extrabold tracking-[0.08em] text-blush-500 uppercase dark:text-blush-300">
               {c.dims[d.id].short}
             </span>
