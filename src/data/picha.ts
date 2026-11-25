@@ -659,7 +659,7 @@ export const recurringCare: RecurringItem[] = [
       'Front paws first, back paws only with royal consent. Management files a formal complaint every time, then submits to the clippers.',
     everyLabel: 'Every 2–4 weeks',
     intervalDays: 21,
-    lastDone: '2026-09-12',
+    lastDone: '2026-11-25',
     where: 'at home',
     quickDone: true,
   },
